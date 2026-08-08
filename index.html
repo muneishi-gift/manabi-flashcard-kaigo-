@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>介護用語フラッシュカード｜一般社団法人GIFT協会</title>
-<meta name="description" content="介護福祉士試験対策 多言語フラッシュカード - インドネシア語・ベトナム語・タイ語対応">
+<meta name="description" content="介護福祉士試験対策 多言語フラッシュカード - 日本語・インドネシア語・ベトナム語・タイ語対応">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -28,6 +28,12 @@ body{
 /* ========================================
    カラーテーマ（言語別・色彩心理学ベース）
    ======================================== */
+body.lang-ja{
+  background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 40%,#f48fb1 100%);
+  --accent:#c62828;--accent-rgb:198,40,40;--accent-light:#ffcdd2;
+  --accent-glow:rgba(198,40,40,.1);--card-bg:#ffffff;--text:#b71c1c;
+  --btn-ok:#c62828;--btn-again:#455a64;--surface:#fff5f5;
+}
 body.lang-id{
   background:linear-gradient(160deg,#e8f5e9 0%,#c8e6c9 40%,#a5d6a7 100%);
   --accent:#2e7d32;--accent-rgb:46,125,50;--accent-light:#c8e6c9;
@@ -81,10 +87,41 @@ body.lang-th{
   max-width:520px;line-height:1.7;font-weight:300;
 }
 
-.lang-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:8px}
+/* ボタングリッド */
+.lang-section{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;width:100%;max-width:520px}
+
+/* 日本語ボタン（日の丸デザイン） */
+.lang-btn-ja{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  width:100%;max-width:480px;padding:22px 24px;border-radius:24px;
+  border:2px solid rgba(255,255,255,.2);cursor:pointer;
+  font-size:1rem;font-weight:700;color:#fff;
+  transition:transform .25s,box-shadow .25s,border-color .25s;
+  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);background:transparent;
+}
+.lang-btn-ja::before{
+  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
+  background:linear-gradient(135deg,#f5f5f5 0%,#e0e0e0 100%);opacity:.92;
+}
+.lang-btn-ja>*{position:relative;z-index:1}
+.lang-btn-ja:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,.3);border-color:rgba(255,255,255,.4)}
+.lang-btn-ja:active{transform:scale(.97)}
+.hinomaru{
+  width:52px;height:52px;border-radius:50%;
+  background:radial-gradient(circle,#c62828 0%,#b71c1c 60%,#d32f2f 100%);
+  box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);
+  flex-shrink:0;
+}
+.ja-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.ja-text .lang-main{font-size:1.3rem;font-weight:900;color:#333}
+.ja-text .lang-sub{font-size:.8rem;color:#888;font-weight:400}
+
+/* 3言語ボタン */
+.lang-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%}
 .lang-btn{
   display:flex;flex-direction:column;align-items:center;gap:10px;
-  width:160px;padding:28px 16px;border-radius:24px;
+  flex:1;min-width:140px;max-width:180px;padding:24px 14px;border-radius:24px;
   border:2px solid rgba(255,255,255,.15);cursor:pointer;
   font-size:1rem;font-weight:700;color:#fff;
   transition:transform .25s,box-shadow .25s,border-color .25s;
@@ -101,13 +138,13 @@ body.lang-th{
 .lang-btn.th::before{background:linear-gradient(135deg,#42a5f5,#1565c0)}
 .lang-btn:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,.4)}
 .lang-btn:active{transform:scale(.96)}
-.lang-btn .flag{font-size:2.6rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
-.lang-btn .lang-name{font-size:1.05rem;font-weight:700}
-.lang-btn .lang-label{font-size:.78rem;opacity:.8;font-weight:400}
+.lang-btn .flag{font-size:2.2rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.lang-btn .lang-name{font-size:.95rem;font-weight:700}
+.lang-btn .lang-label{font-size:.75rem;opacity:.8;font-weight:400}
 
 /* クレジット */
 .credit{
-  margin-top:24px;padding:16px 24px;
+  margin-top:20px;padding:16px 24px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
   border-radius:16px;backdrop-filter:blur(8px);
   text-align:center;
@@ -273,6 +310,12 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .back-meaning-ja .ja-flag{font-size:.75rem;margin-right:4px}
 
+/* 日本語モード裏面専用 */
+.back-furigana-line{
+  font-size:1.1rem;color:var(--accent);font-weight:400;
+  margin-bottom:4px;
+}
+
 /* ========================================
    アクションボタン
    ======================================== */
@@ -389,7 +432,8 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
    ======================================== */
 @media(max-width:480px){
   .card-face{padding:28px 16px}
-  .lang-btn{width:44%;padding:22px 10px}
+  .lang-btn{min-width:100px;padding:20px 10px}
+  .lang-btn-ja{padding:18px 20px}
   .back-desc-lang,.back-meaning-ja{font-size:.82rem}
   header h2{font-size:.82rem}
 }
@@ -415,23 +459,37 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
     母国語で楽しく覚えよう！<br>
     タップでカードをめくって学習できます
   </p>
-  <div class="lang-grid">
-    <button class="lang-btn id" onclick="startApp('id')">
-      <span class="flag">🇮🇩</span>
-      <span class="lang-name">Indonesia</span>
-      <span class="lang-label">インドネシア語</span>
+
+  <div class="lang-section">
+    <!-- 日本語ボタン（日の丸デザイン） -->
+    <button class="lang-btn-ja" onclick="startApp('ja')">
+      <div class="hinomaru"></div>
+      <div class="ja-text">
+        <span class="lang-main">日本語で学ぶ</span>
+        <span class="lang-sub">単語 → ふりがな・意味</span>
+      </div>
     </button>
-    <button class="lang-btn vi" onclick="startApp('vi')">
-      <span class="flag">🇻🇳</span>
-      <span class="lang-name">Tiếng Việt</span>
-      <span class="lang-label">ベトナム語</span>
-    </button>
-    <button class="lang-btn th" onclick="startApp('th')">
-      <span class="flag">🇹🇭</span>
-      <span class="lang-name">ภาษาไทย</span>
-      <span class="lang-label">タイ語</span>
-    </button>
+
+    <!-- 3言語ボタン -->
+    <div class="lang-grid">
+      <button class="lang-btn id" onclick="startApp('id')">
+        <span class="flag">🇮🇩</span>
+        <span class="lang-name">Indonesia</span>
+        <span class="lang-label">インドネシア語</span>
+      </button>
+      <button class="lang-btn vi" onclick="startApp('vi')">
+        <span class="flag">🇻🇳</span>
+        <span class="lang-name">Tiếng Việt</span>
+        <span class="lang-label">ベトナム語</span>
+      </button>
+      <button class="lang-btn th" onclick="startApp('th')">
+        <span class="flag">🇹🇭</span>
+        <span class="lang-name">ภาษาไทย</span>
+        <span class="lang-label">タイ語</span>
+      </button>
+    </div>
   </div>
+
   <div class="credit">
     <div class="credit-org">一般社団法人 GIFT協会</div>
     <div class="credit-name">宗石 光英</div>
@@ -484,6 +542,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
         </div>
         <div class="card-face card-back">
           <span class="back-lang-label" id="cLangLabel"></span>
+          <div class="back-furigana-line" id="cFuriBack" style="display:none"></div>
           <div class="back-translation" id="cTrans"></div>
           <div class="back-desc-lang" id="cDescLang"></div>
           <div class="back-meaning-ja" id="cMeanJa"></div>
@@ -529,9 +588,10 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv';
 
 const LANG_META = {
-  id:{ col:2, descCol:6, name:'Indonesia',  label:'インドネシア語', flag:'🇮🇩', font:"'Noto Sans',sans-serif" },
-  vi:{ col:3, descCol:7, name:'Tiếng Việt', label:'ベトナム語',   flag:'🇻🇳', font:"'Noto Sans',sans-serif" },
-  th:{ col:4, descCol:8, name:'ภาษาไทย',    label:'タイ語',       flag:'🇹🇭', font:"'Noto Sans Thai','Noto Sans',sans-serif" }
+  ja:{ col:-1, descCol:-1, name:'日本語',     label:'日本語',       flag:'🇯🇵', font:"'Noto Sans JP',sans-serif" },
+  id:{ col:2,  descCol:6,  name:'Indonesia',  label:'インドネシア語', flag:'🇮🇩', font:"'Noto Sans',sans-serif" },
+  vi:{ col:3,  descCol:7,  name:'Tiếng Việt', label:'ベトナム語',   flag:'🇻🇳', font:"'Noto Sans',sans-serif" },
+  th:{ col:4,  descCol:8,  name:'ภาษาไทย',    label:'タイ語',       flag:'🇹🇭', font:"'Noto Sans Thai','Noto Sans',sans-serif" }
 };
 
 /* ----- 応援メッセージ（10問ごと） ----- */
@@ -623,7 +683,7 @@ let idx = 0;
 let okCount = 0;
 let totalAnswered = 0;
 let againList = [];
-let currentLang = 'th';
+let currentLang = 'ja';
 let cheerQueue = [];
 
 /* =============================================================
@@ -683,26 +743,48 @@ function showCard(){
   if(idx >= deck.length){ showComplete(); return; }
   const c = deck[idx];
   const m = LANG_META[currentLang];
+
   document.getElementById('cNo').textContent = '#' + c.no;
   document.getElementById('cWord').textContent = c.word;
-  document.getElementById('cFuri').textContent = c.furigana ? '（' + c.furigana + '）' : '';
-  document.getElementById('cLangLabel').innerHTML = m.flag + ' ' + m.name;
-  const transEl = document.getElementById('cTrans');
-  transEl.textContent = c.trans[currentLang];
-  transEl.style.fontFamily = m.font;
-  const descEl = document.getElementById('cDescLang');
-  descEl.textContent = c.desc[currentLang];
-  descEl.style.fontFamily = m.font;
-  document.getElementById('cMeanJa').innerHTML = '<span class="ja-flag">🇯🇵</span>' + c.meaningJa;
 
-  // カードを表に戻す（アニメーション付き）
+  const furiBackEl = document.getElementById('cFuriBack');
+  const transEl = document.getElementById('cTrans');
+  const descEl = document.getElementById('cDescLang');
+  const meanJaEl = document.getElementById('cMeanJa');
+
+  if(currentLang === 'ja'){
+    // 日本語モード：表は漢字のみ（ふりがな非表示）、裏にふりがな＋意味
+    document.getElementById('cFuri').textContent = '';
+    document.getElementById('cLangLabel').innerHTML = '🇯🇵 日本語';
+    furiBackEl.style.display = 'block';
+    furiBackEl.textContent = c.furigana ? '（' + c.furigana + '）' : '';
+    transEl.textContent = '';
+    transEl.style.display = 'none';
+    descEl.textContent = c.meaningJa;
+    descEl.style.fontFamily = "'Noto Sans JP',sans-serif";
+    meanJaEl.style.display = 'none';
+  } else {
+    // 多言語モード
+    document.getElementById('cFuri').textContent = c.furigana ? '（' + c.furigana + '）' : '';
+    document.getElementById('cLangLabel').innerHTML = m.flag + ' ' + m.name;
+    furiBackEl.style.display = 'none';
+    transEl.textContent = c.trans[currentLang];
+    transEl.style.display = 'block';
+    transEl.style.fontFamily = m.font;
+    descEl.textContent = c.desc[currentLang];
+    descEl.style.fontFamily = m.font;
+    meanJaEl.style.display = 'block';
+    meanJaEl.innerHTML = '<span class="ja-flag">🇯🇵</span>' + c.meaningJa;
+  }
+
+  // カードを表に戻す
   const card = document.getElementById('card');
   card.classList.remove('flipped');
 
   // 入場アニメーション
   const container = document.getElementById('cardContainer');
   container.style.animation = 'none';
-  container.offsetHeight; // reflow
+  container.offsetHeight;
   container.style.animation = 'cardEnter .35s ease-out';
 
   updateProgress();
@@ -772,7 +854,6 @@ function checkCheer(){
 }
 
 function showCheer(data){
-  // 紙吹雪
   confetti({ particleCount:80, spread:70, origin:{y:0.6}, colors:['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd'] });
   setTimeout(()=>{
     confetti({ particleCount:40, angle:60, spread:55, origin:{x:0} });
@@ -785,18 +866,20 @@ function showCheer(data){
 
   const msgsEl = document.getElementById('cheerMsgs');
   msgsEl.innerHTML = '';
-  // 日本語
+  // 日本語メッセージ
   const jaDiv = document.createElement('div');
   jaDiv.className = 'cheer-msg ja';
   jaDiv.textContent = '🇯🇵 ' + data.ja;
   msgsEl.appendChild(jaDiv);
-  // 選択中の言語
-  const m = LANG_META[currentLang];
-  const fDiv = document.createElement('div');
-  fDiv.className = 'cheer-msg foreign';
-  fDiv.style.fontFamily = m.font;
-  fDiv.textContent = m.flag + ' ' + data[currentLang];
-  msgsEl.appendChild(fDiv);
+  // 日本語モード以外なら選択言語のメッセージも表示
+  if(currentLang !== 'ja'){
+    const m = LANG_META[currentLang];
+    const fDiv = document.createElement('div');
+    fDiv.className = 'cheer-msg foreign';
+    fDiv.style.fontFamily = m.font;
+    fDiv.textContent = m.flag + ' ' + data[currentLang];
+    msgsEl.appendChild(fDiv);
+  }
 
   overlay.classList.add('show');
 }
@@ -825,7 +908,6 @@ function showComplete(){
   document.getElementById('progPct').textContent = '100%';
   document.getElementById('progText').textContent = '🎉 すべて完了！';
 
-  // 完了紙吹雪
   const end = Date.now() + 2500;
   (function frame(){
     confetti({ particleCount:5, angle:60, spread:55, origin:{x:0}, colors:['#ff6b6b','#feca57','#48dbfb'] });
@@ -891,7 +973,7 @@ document.addEventListener('touchend', function(e){
   else prevCard();
 }, {passive:true});
 
-/* カード入場アニメーション用CSS（JSで付与） */
+/* カード入場アニメーション */
 const styleSheet = document.createElement('style');
 styleSheet.textContent = '@keyframes cardEnter{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}';
 document.head.appendChild(styleSheet);
