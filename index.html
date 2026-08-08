@@ -19,7 +19,6 @@ body{
   overflow-x:hidden;-webkit-tap-highlight-color:transparent;user-select:none;
 }
 
-/* カラーテーマ */
 body.lang-ja{
   background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 40%,#f48fb1 100%);
   --accent:#c62828;--accent-rgb:198,40,40;--accent-light:#ffcdd2;
@@ -45,7 +44,6 @@ body.lang-th{
   --btn-ok:#1976d2;--btn-again:#c62828;--surface:#e3f2fd;
 }
 
-/* ランディング */
 .landing{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:100dvh;gap:20px;padding:32px 20px;
@@ -74,10 +72,8 @@ body.lang-th{
   max-width:520px;line-height:1.7;font-weight:300;
 }
 
-/* ボタンセクション */
 .lang-section{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;width:100%;max-width:520px}
 
-/* 日本語ボタン */
 .lang-btn-ja{
   display:flex;align-items:center;justify-content:center;gap:16px;
   width:100%;max-width:480px;padding:22px 24px;border-radius:24px;
@@ -97,14 +93,12 @@ body.lang-th{
 .hinomaru{
   width:52px;height:52px;border-radius:50%;
   background:radial-gradient(circle,#c62828 0%,#b71c1c 60%,#d32f2f 100%);
-  box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);
-  flex-shrink:0;
+  box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);flex-shrink:0;
 }
 .ja-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .ja-text .lang-main{font-size:1.3rem;font-weight:900;color:#333}
 .ja-text .lang-sub{font-size:.8rem;color:#888;font-weight:400}
 
-/* 3言語ボタン */
 .lang-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%}
 .lang-btn{
   display:flex;flex-direction:column;align-items:center;gap:8px;
@@ -116,8 +110,7 @@ body.lang-th{
   backdrop-filter:blur(8px);
 }
 .lang-btn::before{
-  content:'';position:absolute;inset:0;opacity:.85;border-radius:22px;z-index:0;
-  transition:opacity .3s;
+  content:'';position:absolute;inset:0;opacity:.85;border-radius:22px;z-index:0;transition:opacity .3s;
 }
 .lang-btn>*{position:relative;z-index:1}
 .lang-btn.id::before{background:linear-gradient(135deg,#43a047,#2e7d32)}
@@ -128,14 +121,11 @@ body.lang-th{
 .lang-btn .lang-name{font-size:.95rem;font-weight:700}
 .lang-btn .lang-label{font-size:.75rem;opacity:.8;font-weight:400}
 
-/* 国旗画像 */
 .flag-img{
   width:72px;height:auto;border-radius:6px;
-  box-shadow:0 2px 8px rgba(0,0,0,.25);
-  object-fit:contain;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);object-fit:contain;
 }
 
-/* 操作説明 */
 .how-to{
   margin-top:6px;padding:14px 20px;
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
@@ -144,7 +134,6 @@ body.lang-th{
 .how-to p{font-size:clamp(.78rem,2.2vw,.88rem);opacity:.75;line-height:1.6;font-weight:300}
 .how-to .icon{font-size:1rem;vertical-align:middle;margin-right:2px}
 
-/* クレジット */
 .credit{
   margin-top:20px;padding:16px 24px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
@@ -159,7 +148,6 @@ body.lang-th{
 .credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff;margin-top:2px;letter-spacing:.03em}
 .credit-title{font-size:.75rem;opacity:.5;margin-top:4px}
 
-/* ヘッダー */
 header{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 16px;background:var(--accent);color:#fff;
@@ -176,7 +164,6 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .hbtn:hover{background:rgba(255,255,255,.32)}
 
-/* プログレスバー */
 .progress-area{padding:10px 16px 4px}
 .progress-row{display:flex;align-items:center;gap:10px}
 .progress-bar{flex:1;height:10px;background:var(--accent-light);border-radius:10px;overflow:hidden;position:relative}
@@ -192,14 +179,12 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .progress-pct{font-size:.85rem;font-weight:700;color:var(--accent);min-width:42px;text-align:right}
 .progress-text{font-size:.72rem;color:var(--text);text-align:center;opacity:.5;margin-top:2px}
 
-/* 操作ヒント */
 .hint-bar{
   display:flex;justify-content:center;gap:18px;
   padding:6px 16px;opacity:.55;font-size:.75rem;color:var(--text);
 }
 .hint-bar span{display:flex;align-items:center;gap:4px}
 
-/* カードエリア */
 .card-area{
   flex:1;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -215,48 +200,62 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .nav-btn:hover{background:var(--accent);color:#fff}
 
-/* フリップカード */
 .flip-container{
-  width:min(88vw,400px);aspect-ratio:3/2;perspective:1200px;
+  width:min(88vw,400px);perspective:1200px;
   cursor:pointer;position:relative;
 }
 .flip-card{
-  width:100%;height:100%;position:relative;
+  width:100%;position:relative;
   transition:transform .6s cubic-bezier(.4,.2,.2,1);
   transform-style:preserve-3d;
 }
 .flip-container.flipped .flip-card{transform:rotateY(180deg)}
 .flip-front,.flip-back{
-  position:absolute;inset:0;backface-visibility:hidden;
+  width:100%;backface-visibility:hidden;
   border-radius:24px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;padding:24px 20px;gap:8px;
+  align-items:center;justify-content:center;padding:28px 20px;gap:8px;
   background:var(--card-bg);
   box-shadow:0 8px 32px rgba(var(--accent-rgb),.12),0 2px 8px rgba(0,0,0,.06);
   border:2px solid var(--accent-light);overflow:hidden;
+  min-height:220px;
 }
+.flip-front{position:relative;}
 .flip-front::after{
   content:'';position:absolute;top:-30%;right:-30%;width:60%;height:60%;
   background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
   pointer-events:none;
 }
-.flip-back{transform:rotateY(180deg);background:var(--surface)}
-.card-num{position:absolute;top:12px;left:16px;font-size:.7rem;font-weight:700;color:var(--accent);opacity:.5}
+.flip-back{
+  position:absolute;top:0;left:0;
+  transform:rotateY(180deg);background:var(--surface);
+}
+.card-num{
+  position:absolute;top:12px;left:16px;
+  font-size:.7rem;font-weight:700;color:var(--accent);opacity:.5;
+}
 .card-front-main{
   font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--text);
   text-align:center;line-height:1.4;word-break:keep-all;
 }
 .card-front-sub{font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400}
 .card-back-word{
-  font-size:clamp(1.2rem,4vw,1.6rem);font-weight:800;color:var(--accent);
+  font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
   text-align:center;line-height:1.3;
 }
+.card-back-meaning{
+  font-size:clamp(.78rem,2.3vw,.88rem);color:#555;
+  text-align:center;line-height:1.5;
+  padding:6px 12px;margin:4px 0;
+  background:rgba(0,0,0,.04);border-radius:10px;
+  border-left:3px solid var(--accent);
+}
 .card-back-desc{
-  font-size:clamp(.82rem,2.5vw,.95rem);color:var(--text);
-  text-align:center;line-height:1.6;opacity:.8;max-height:40%;overflow-y:auto;
+  font-size:clamp(.78rem,2.3vw,.88rem);color:var(--text);
+  text-align:center;line-height:1.5;opacity:.8;
+  max-height:35%;overflow-y:auto;
 }
 .tap-hint{position:absolute;bottom:10px;font-size:.65rem;opacity:.35;color:var(--text)}
 
-/* スワイプアニメ */
 .flip-container.swipe-left .flip-card{animation:swipeLeft .35s ease-out forwards}
 .flip-container.swipe-right .flip-card{animation:swipeRight .35s ease-out forwards}
 @keyframes swipeLeft{0%{transform:translateX(0) rotate(0);opacity:1}100%{transform:translateX(-120%) rotate(-8deg);opacity:0}}
@@ -266,7 +265,6 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 @keyframes enterLeft{0%{transform:translateX(120%) rotate(8deg);opacity:0}100%{transform:translateX(0) rotate(0);opacity:1}}
 @keyframes enterRight{0%{transform:translateX(-120%) rotate(-8deg);opacity:0}100%{transform:translateX(0) rotate(0);opacity:1}}
 
-/* 応援モーダル */
 .cheer-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.6);
   display:flex;align-items:center;justify-content:center;
@@ -294,7 +292,6 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
 </head>
 <body>
 
-<!-- ランディングページ -->
 <div class="landing" id="landing">
   <div class="brand">
     <div class="brand-logo">🏥</div>
@@ -304,7 +301,6 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   <p class="landing-desc">
     介護福祉士の試験に出る用語を<br>母国語で楽しく覚えよう！
   </p>
-
   <div class="lang-section">
     <div class="lang-btn-ja" onclick="startApp('ja')">
       <div class="hinomaru"></div>
@@ -331,14 +327,12 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
       </div>
     </div>
   </div>
-
   <div class="how-to" id="howTo">
     <p>
       <span class="icon">👆</span> タップでカードを裏返す<br>
       <span class="icon">👈👉</span> スワイプでカード切り替え
     </p>
   </div>
-
   <div class="credit">
     <div class="credit-org">一般社団法人 GIFT協会</div>
     <div class="credit-name">宗石 光英</div>
@@ -346,7 +340,6 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   </div>
 </div>
 
-<!-- 学習画面 -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
   <header>
     <h2 id="headerTitle">📖 学習中</h2>
@@ -378,6 +371,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
         <div class="flip-back" id="cardBack">
           <span class="card-num" id="cardNumBack"></span>
           <div class="card-back-word" id="backWord"></div>
+          <div class="card-back-meaning" id="backMeaning"></div>
           <div class="card-back-desc" id="backDesc"></div>
           <span class="tap-hint" id="tapHintBack"></span>
         </div>
@@ -391,7 +385,6 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   <footer>© 一般社団法人 GIFT協会</footer>
 </div>
 
-<!-- 応援モーダル -->
 <div class="cheer-overlay" id="cheerOverlay">
   <div class="cheer-box">
     <div class="cheer-emoji" id="cheerEmoji"></div>
@@ -482,28 +475,41 @@ function showCard(){
   const meta=LANG_META[currentLang];
   document.getElementById('tapHintFront').textContent=meta.tapFront;
   document.getElementById('tapHintBack').textContent=meta.tapBack;
+
+  /* ふりがな分離 */
   let mainText='',subText='';
   const m=d.word.match(/^(.+?)（(.+?)）$/);
   if(m){mainText=m[1];subText=m[2];}else{mainText=d.word;subText='';}
+
+  document.getElementById('cardNum').textContent='No.'+d.no;
+  document.getElementById('cardNumBack').textContent='No.'+d.no;
+
   if(currentLang==='ja'){
+    /* 日本語モード：表＝漢字、裏＝ふりがな＋意味 */
     document.getElementById('frontMain').textContent=mainText;
     document.getElementById('frontSub').textContent='';
-    document.getElementById('cardNum').textContent='No.'+d.no;
-    document.getElementById('cardNumBack').textContent='No.'+d.no;
     document.getElementById('backWord').textContent=subText||mainText;
-    document.getElementById('backDesc').textContent=d.meaning;
+    document.getElementById('backMeaning').textContent=d.meaning;
+    document.getElementById('backMeaning').style.display='block';
+    document.getElementById('backDesc').textContent='';
+    document.getElementById('backDesc').style.display='none';
   }else{
+    /* 外国語モード：表＝日本語、裏＝外国語単語＋日本語意味＋外国語説明 */
     document.getElementById('frontMain').textContent=mainText;
     document.getElementById('frontSub').textContent=subText;
-    document.getElementById('cardNum').textContent='No.'+d.no;
-    document.getElementById('cardNumBack').textContent='No.'+d.no;
+
     let bW='',bD='';
     if(currentLang==='id'){bW=d.idWord;bD=d.idDesc;}
     else if(currentLang==='vi'){bW=d.viWord;bD=d.viDesc;}
     else if(currentLang==='th'){bW=d.thWord;bD=d.thDesc;}
+
     document.getElementById('backWord').textContent=bW;
+    document.getElementById('backMeaning').textContent=d.meaning;
+    document.getElementById('backMeaning').style.display='block';
     document.getElementById('backDesc').textContent=bD;
+    document.getElementById('backDesc').style.display='block';
   }
+
   document.getElementById('flipContainer').classList.remove('flipped');
 }
 
@@ -543,7 +549,6 @@ function shuffleCards(){
   idx=0;viewedCount=0;lastCheerAt=0;showCard();
 }
 
-/* スワイプ */
 (function(){
   let sx=0,sy=0,dragging=false;
   document.addEventListener('touchstart',function(e){
@@ -577,7 +582,6 @@ function showCheer(emoji,msg){
 }
 function closeCheer(){document.getElementById('cheerOverlay').classList.remove('show')}
 
-/* ホバーで操作説明切替 */
 document.querySelectorAll('.lang-btn-ja').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.ja}));
 document.querySelectorAll('.lang-btn.id').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.id}));
 document.querySelectorAll('.lang-btn.vi').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.vi}));
