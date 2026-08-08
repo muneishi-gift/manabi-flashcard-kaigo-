@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>介護用語フラッシュカード｜一般社団法人GIFT協会</title>
+<meta name="description" content="介護福祉士試験対策 多言語フラッシュカード - インドネシア語・ベトナム語・タイ語対応">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+<style>
+/* ========================================
+   リセット＆ベース
+   ======================================== */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans JP','Noto Sans',sans-serif;
+  min-height:100dvh;
+  display:flex;flex-direction:column;
+  transition:background .5s ease,color .5s ease;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* ========================================
+   カラーテーマ（言語別・色彩心理学ベース）
+   ======================================== */
+body.lang-id{
+  background:linear-gradient(160deg,#e8f5e9 0%,#c8e6c9 40%,#a5d6a7 100%);
+  --accent:#2e7d32;--accent-rgb:46,125,50;--accent-light:#c8e6c9;
+  --accent-glow:rgba(46,125,50,.15);--card-bg:#ffffff;--text:#1b5e20;
+  --btn-ok:#43a047;--btn-again:#e53935;--surface:#f1f8e9;
+}
+body.lang-vi{
+  background:linear-gradient(160deg,#fff3e0 0%,#ffe0b2 40%,#ffcc80 100%);
+  --accent:#e65100;--accent-rgb:230,81,0;--accent-light:#ffcc80;
+  --accent-glow:rgba(230,81,0,.12);--card-bg:#ffffff;--text:#bf360c;
+  --btn-ok:#f57c00;--btn-again:#c62828;--surface:#fff8e1;
+}
+body.lang-th{
+  background:linear-gradient(160deg,#e3f2fd 0%,#bbdefb 40%,#90caf9 100%);
+  --accent:#1565c0;--accent-rgb:21,101,192;--accent-light:#bbdefb;
+  --accent-glow:rgba(21,101,192,.12);--card-bg:#ffffff;--text:#0d47a1;
+  --btn-ok:#1976d2;--btn-again:#c62828;--surface:#e3f2fd;
+}
+
+/* ========================================
+   ランディングページ
+   ======================================== */
+.landing{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100dvh;gap:20px;padding:32px 20px;
+  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+  color:#fff;text-align:center;position:relative;overflow:hidden;
+}
+.landing::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 80%,rgba(255,120,200,.1) 0%,transparent 60%);
+  pointer-events:none;
+}
+.landing>*{position:relative;z-index:1}
+
+.brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
+.brand-logo{font-size:3rem;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.brand h1{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;
+  letter-spacing:-.02em;
+  background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.brand-sub{font-size:clamp(.85rem,2.5vw,1rem);opacity:.7;font-weight:300}
+.landing-desc{
+  font-size:clamp(.95rem,2.8vw,1.15rem);opacity:.85;
+  max-width:520px;line-height:1.7;font-weight:300;
+}
+
+.lang-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:8px}
+.lang-btn{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  width:160px;padding:28px 16px;border-radius:24px;
+  border:2px solid rgba(255,255,255,.15);cursor:pointer;
+  font-size:1rem;font-weight:700;color:#fff;
+  transition:transform .25s,box-shadow .25s,border-color .25s;
+  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+.lang-btn::before{
+  content:'';position:absolute;inset:0;opacity:.85;border-radius:22px;z-index:0;
+  transition:opacity .3s;
+}
+.lang-btn>*{position:relative;z-index:1}
+.lang-btn.id::before{background:linear-gradient(135deg,#43a047,#2e7d32)}
+.lang-btn.vi::before{background:linear-gradient(135deg,#ff8f00,#e65100)}
+.lang-btn.th::before{background:linear-gradient(135deg,#42a5f5,#1565c0)}
+.lang-btn:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,.4)}
+.lang-btn:active{transform:scale(.96)}
+.lang-btn .flag{font-size:2.6rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.lang-btn .lang-name{font-size:1.05rem;font-weight:700}
+.lang-btn .lang-label{font-size:.78rem;opacity:.8;font-weight:400}
+
+/* クレジット */
+.credit{
+  margin-top:24px;padding:16px 24px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;backdrop-filter:blur(8px);
+  text-align:center;
+}
+.credit-org{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(.8rem,2.2vw,.95rem);font-weight:600;
+  letter-spacing:.04em;
+  background:linear-gradient(90deg,#ffd54f,#ffb300);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.credit-name{
+  font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;
+  color:#fff;margin-top:2px;letter-spacing:.03em;
+}
+.credit-title{font-size:.75rem;opacity:.5;margin-top:4px}
+
+/* ========================================
+   ヘッダー
+   ======================================== */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;
+  background:var(--accent);color:#fff;
+  box-shadow:0 2px 12px rgba(var(--accent-rgb),.3);
+  position:sticky;top:0;z-index:100;
+}
+header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.header-btns{display:flex;gap:6px}
+.hbtn{
+  background:rgba(255,255,255,.18);border:none;color:#fff;
+  padding:6px 12px;border-radius:20px;cursor:pointer;
+  font-size:.8rem;font-weight:700;transition:background .2s;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.hbtn:hover{background:rgba(255,255,255,.32)}
+
+/* ========================================
+   プログレスバー
+   ======================================== */
+.progress-area{padding:10px 16px 4px}
+.progress-row{display:flex;align-items:center;gap:10px}
+.progress-bar{flex:1;height:10px;background:var(--accent-light);border-radius:10px;overflow:hidden;position:relative}
+.progress-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--accent),rgba(var(--accent-rgb),.7));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+.progress-fill::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:20px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));
+  border-radius:10px;
+}
+.progress-pct{
+  font-size:.85rem;font-weight:700;color:var(--accent);
+  min-width:42px;text-align:right;
+}
+.progress-text{font-size:.72rem;color:var(--text);text-align:center;opacity:.5;margin-top:2px}
+
+/* ========================================
+   カードエリア
+   ======================================== */
+.card-area{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:12px 16px 20px;gap:14px;
+}
+
+/* ナビ */
+.nav-row{display:flex;gap:12px;align-items:center}
+.nav-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--accent);background:var(--card-bg);
+  color:var(--accent);font-size:1.2rem;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(var(--accent-rgb),.1);
+}
+.nav-btn:hover{background:var(--accent);color:#fff;transform:scale(1.1)}
+.nav-btn:active{transform:scale(.95)}
+.counter{font-size:.9rem;color:var(--text);font-weight:700;min-width:80px;text-align:center}
+
+/* カード */
+.card-container{perspective:1200px;width:100%;max-width:400px}
+.card{
+  position:relative;width:100%;min-height:300px;
+  cursor:pointer;transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.4,.0,.2,1);
+  border-radius:28px;
+}
+.card.flipped{transform:rotateY(180deg)}
+.card-face{
+  position:absolute;inset:0;backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:28px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:36px 24px;text-align:center;
+  background:var(--card-bg);
+  box-shadow:0 4px 24px rgba(var(--accent-rgb),.08),0 12px 40px rgba(0,0,0,.06);
+  border:2px solid rgba(var(--accent-rgb),.12);
+}
+
+/* 表面 */
+.card-front{position:relative}
+.card-front::before{
+  content:'FRONT';position:absolute;top:14px;left:18px;
+  font-size:.6rem;font-weight:700;letter-spacing:.12em;
+  color:var(--accent);opacity:.25;
+}
+.card-front .no-badge{
+  position:absolute;top:12px;right:16px;
+  background:var(--accent);color:#fff;
+  font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;
+  opacity:.7;
+}
+.card-front .word{
+  font-size:clamp(1.8rem,6vw,2.6rem);font-weight:900;
+  color:var(--text);line-height:1.3;
+  transition:transform .3s;
+}
+.card-front .furigana{
+  font-size:clamp(.9rem,3vw,1.1rem);color:var(--accent);
+  margin-top:8px;font-weight:400;opacity:.8;
+}
+.card-front .tap-hint{
+  margin-top:24px;font-size:.78rem;color:#aaa;
+  display:flex;align-items:center;gap:6px;
+  animation:hintPulse 2.5s ease-in-out infinite;
+}
+@keyframes hintPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.05)}}
+
+/* 裏面 */
+.card-back{
+  transform:rotateY(180deg);gap:12px;overflow-y:auto;
+  justify-content:flex-start;padding-top:28px;
+}
+.card-back::before{
+  content:'BACK';position:absolute;top:14px;left:18px;
+  font-size:.6rem;font-weight:700;letter-spacing:.12em;
+  color:var(--accent);opacity:.25;
+}
+.back-lang-label{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);color:#fff;
+  font-size:.7rem;font-weight:700;padding:4px 14px;
+  border-radius:20px;letter-spacing:.04em;
+}
+.back-translation{
+  font-size:clamp(1.2rem,4vw,1.7rem);font-weight:700;
+  color:var(--accent);line-height:1.5;margin:4px 0;
+}
+.back-desc-lang{
+  width:100%;font-size:.88rem;line-height:1.65;
+  color:var(--text);background:var(--accent-glow);
+  border-radius:14px;padding:12px 14px;
+  border-left:3px solid var(--accent);
+}
+.back-meaning-ja{
+  width:100%;font-size:.85rem;line-height:1.65;color:#666;
+  border-top:1px dashed rgba(var(--accent-rgb),.2);
+  padding-top:10px;
+}
+.back-meaning-ja .ja-flag{font-size:.75rem;margin-right:4px}
+
+/* ========================================
+   アクションボタン
+   ======================================== */
+.action-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.abtn{
+  padding:12px 24px;border-radius:50px;border:none;
+  font-size:.95rem;font-weight:700;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+  font-family:'Noto Sans JP',sans-serif;
+  display:flex;align-items:center;gap:6px;
+  box-shadow:0 4px 14px rgba(0,0,0,.1);
+}
+.abtn:active{transform:scale(.93)}
+.abtn-again{background:var(--btn-again);color:#fff}
+.abtn-again:hover{box-shadow:0 6px 20px rgba(229,57,53,.35)}
+.abtn-ok{background:var(--btn-ok);color:#fff}
+.abtn-ok:hover{box-shadow:0 6px 20px rgba(var(--accent-rgb),.35)}
+
+/* ========================================
+   応援モーダル
+   ======================================== */
+.cheer-overlay{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;
+  transition:opacity .4s ease;
+}
+.cheer-overlay.show{opacity:1;pointer-events:auto}
+.cheer-box{
+  background:#fff;border-radius:28px;padding:36px 28px;
+  max-width:360px;width:90%;text-align:center;
+  transform:scale(.8) translateY(20px);
+  transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 24px 64px rgba(0,0,0,.2);
+  position:relative;overflow:hidden;
+}
+.cheer-overlay.show .cheer-box{transform:scale(1) translateY(0)}
+.cheer-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3,#54a0ff);
+}
+.cheer-emoji{font-size:3.5rem;margin-bottom:8px;animation:cheerBounce .6s ease}
+@keyframes cheerBounce{0%{transform:scale(0) rotate(-10deg)}50%{transform:scale(1.3) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.cheer-title{font-size:1.2rem;font-weight:900;color:#333;margin-bottom:12px}
+.cheer-msgs{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.cheer-msg{
+  font-size:.88rem;line-height:1.5;padding:6px 12px;
+  border-radius:12px;background:#f8f9fa;
+}
+.cheer-msg.ja{color:#333;font-weight:700}
+.cheer-msg.foreign{color:#666}
+.cheer-close{
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;border:none;padding:10px 32px;
+  border-radius:50px;font-size:.95rem;font-weight:700;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+  transition:transform .2s;
+}
+.cheer-close:hover{transform:scale(1.05)}
+
+/* ========================================
+   完了画面
+   ======================================== */
+.complete{
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;min-height:60vh;
+  text-align:center;gap:16px;padding:32px 24px;
+}
+.complete-icon{font-size:4rem;animation:cheerBounce .8s ease}
+.complete h2{font-size:1.6rem;color:var(--accent);font-weight:900}
+.complete .stats{
+  font-size:1rem;color:var(--text);line-height:2;
+  background:var(--card-bg);border-radius:20px;
+  padding:20px 28px;box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.complete .stats b{color:var(--accent)}
+.cbtn{
+  padding:14px 32px;border-radius:50px;border:none;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;color:#fff;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 4px 14px rgba(0,0,0,.12);
+  display:flex;align-items:center;gap:6px;
+}
+.cbtn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.cbtn:active{transform:scale(.95)}
+.cbtn-restart{background:var(--accent)}
+.cbtn-retry{background:var(--btn-again)}
+.cbtn-home{background:#78909c}
+
+/* ========================================
+   ローディング
+   ======================================== */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:16px}
+.spinner{
+  width:44px;height:44px;
+  border:4px solid var(--accent-light);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .75s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading span{color:var(--text);font-size:.9rem;opacity:.7}
+
+/* ========================================
+   フッター（学習画面内）
+   ======================================== */
+.app-footer{
+  text-align:center;padding:10px 16px 14px;
+  font-size:.65rem;color:var(--text);opacity:.3;
+}
+
+/* ========================================
+   レスポンシブ
+   ======================================== */
+@media(max-width:480px){
+  .card-face{padding:28px 16px}
+  .lang-btn{width:44%;padding:22px 10px}
+  .back-desc-lang,.back-meaning-ja{font-size:.82rem}
+  header h2{font-size:.82rem}
+}
+@media(min-width:768px){
+  .card-container{max-width:460px}
+  .card{min-height:340px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ランディング画面
+     ============================================================ -->
+<div class="landing" id="landing">
+  <div class="brand">
+    <div class="brand-logo">🏥</div>
+    <h1>介護用語フラッシュカード</h1>
+    <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
+  </div>
+  <p class="landing-desc">
+    介護福祉士の試験に出る用語を<br>
+    母国語で楽しく覚えよう！<br>
+    タップでカードをめくって学習できます
+  </p>
+  <div class="lang-grid">
+    <button class="lang-btn id" onclick="startApp('id')">
+      <span class="flag">🇮🇩</span>
+      <span class="lang-name">Indonesia</span>
+      <span class="lang-label">インドネシア語</span>
+    </button>
+    <button class="lang-btn vi" onclick="startApp('vi')">
+      <span class="flag">🇻🇳</span>
+      <span class="lang-name">Tiếng Việt</span>
+      <span class="lang-label">ベトナム語</span>
+    </button>
+    <button class="lang-btn th" onclick="startApp('th')">
+      <span class="flag">🇹🇭</span>
+      <span class="lang-name">ภาษาไทย</span>
+      <span class="lang-label">タイ語</span>
+    </button>
+  </div>
+  <div class="credit">
+    <div class="credit-org">一般社団法人 GIFT協会</div>
+    <div class="credit-name">宗石 光英</div>
+    <div class="credit-title">Created by Mitsuei Muneishi</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     学習画面
+     ============================================================ -->
+<div id="app" style="display:none;flex-direction:column;min-height:100dvh">
+  <header>
+    <h2 id="langTitle"></h2>
+    <div class="header-btns">
+      <button class="hbtn" onclick="shuffleDeck()">🔀 シャッフル</button>
+      <button class="hbtn" onclick="backToLanding()">🏠 戻る</button>
+    </div>
+  </header>
+
+  <!-- プログレス -->
+  <div class="progress-area">
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+      <div class="progress-pct" id="progPct">0%</div>
+    </div>
+    <div class="progress-text" id="progText"></div>
+  </div>
+
+  <!-- ローディング -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span>データ読み込み中…</span>
+  </div>
+
+  <!-- カード -->
+  <div class="card-area" id="cardArea" style="display:none">
+    <div class="nav-row">
+      <button class="nav-btn" onclick="prevCard()" aria-label="前へ">◀</button>
+      <span class="counter" id="counter"></span>
+      <button class="nav-btn" onclick="nextCard()" aria-label="次へ">▶</button>
+    </div>
+
+    <div class="card-container" id="cardContainer">
+      <div class="card" id="card" onclick="flipCard()">
+        <div class="card-face card-front">
+          <span class="no-badge" id="cNo"></span>
+          <div class="word" id="cWord"></div>
+          <div class="furigana" id="cFuri"></div>
+          <div class="tap-hint">👆 タップでめくる</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="back-lang-label" id="cLangLabel"></span>
+          <div class="back-translation" id="cTrans"></div>
+          <div class="back-desc-lang" id="cDescLang"></div>
+          <div class="back-meaning-ja" id="cMeanJa"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-btns">
+      <button class="abtn abtn-again" onclick="markAgain()">🔄 もう一度</button>
+      <button class="abtn abtn-ok" onclick="markOk()">✅ 覚えた！</button>
+    </div>
+  </div>
+
+  <!-- 完了画面 -->
+  <div class="complete" id="complete">
+    <div class="complete-icon">🎉</div>
+    <h2>おつかれさまでした！</h2>
+    <div class="stats" id="stats"></div>
+    <button class="cbtn cbtn-restart" onclick="restartDeck()">📖 もう一度やる</button>
+    <button class="cbtn cbtn-retry" onclick="retryMissed()" id="retryBtn">🔄 間違えたカードだけ復習</button>
+    <button class="cbtn cbtn-home" onclick="backToLanding()">🏠 言語選択に戻る</button>
+  </div>
+
+  <div class="app-footer">© 一般社団法人GIFT協会　宗石光英</div>
+</div>
+
+<!-- ============================================================
+     応援モーダル
+     ============================================================ -->
+<div class="cheer-overlay" id="cheerOverlay" onclick="closeCheer(event)">
+  <div class="cheer-box" id="cheerBox">
+    <div class="cheer-emoji" id="cheerEmoji"></div>
+    <div class="cheer-title" id="cheerTitle"></div>
+    <div class="cheer-msgs" id="cheerMsgs"></div>
+    <button class="cheer-close" onclick="closeCheer()">つづける 💪</button>
+  </div>
+</div>
+
+<script>
+/* =============================================================
+   定数
+   ============================================================= */
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv';
+
+const LANG_META = {
+  id:{ col:2, descCol:6, name:'Indonesia',  label:'インドネシア語', flag:'🇮🇩', font:"'Noto Sans',sans-serif" },
+  vi:{ col:3, descCol:7, name:'Tiếng Việt', label:'ベトナム語',   flag:'🇻🇳', font:"'Noto Sans',sans-serif" },
+  th:{ col:4, descCol:8, name:'ภาษาไทย',    label:'タイ語',       flag:'🇹🇭', font:"'Noto Sans Thai','Noto Sans',sans-serif" }
+};
+
+/* ----- 応援メッセージ（10問ごと） ----- */
+const CHEER_DATA = [
+  { at:10, emoji:'💪', ja:'いい調子！その勢いで頑張ろう！',
+    id:'Bagus sekali! Terus semangat ya!',
+    vi:'Tuyệt vời! Hãy tiếp tục cố gắng nhé!',
+    th:'เก่งมาก! สู้ต่อไปนะคะ!' },
+  { at:20, emoji:'🌟', ja:'20問クリア！すごい集中力だね！',
+    id:'20 soal selesai! Konsentrasimu hebat!',
+    vi:'Đã hoàn thành 20 câu! Bạn tập trung tuyệt vời!',
+    th:'ผ่าน 20 ข้อแล้ว! สมาธิดีมากเลยค่ะ!' },
+  { at:30, emoji:'🔥', ja:'30問突破！燃えてるね！',
+    id:'30 soal terlewati! Semangatmu membara!',
+    vi:'Vượt qua 30 câu rồi! Bạn đang rất nhiệt huyết!',
+    th:'ผ่าน 30 ข้อแล้ว! ไฟแรงมากเลยค่ะ!' },
+  { at:40, emoji:'🏆', ja:'40問達成！もう立派な実力だよ！',
+    id:'40 soal tercapai! Kemampuanmu sudah luar biasa!',
+    vi:'Đạt 40 câu! Năng lực của bạn thật đáng nể!',
+    th:'ครบ 40 ข้อ! เก่งมากๆ เลยค่ะ!' },
+  { at:50, emoji:'🎯', ja:'半分クリア！折り返し地点だよ！',
+    id:'Setengah jalan! Kamu sudah di titik balik!',
+    vi:'Đã qua nửa chặng đường rồi!',
+    th:'ผ่านครึ่งทางแล้ว! สู้ต่อไปนะคะ!' },
+  { at:60, emoji:'✨', ja:'60問！キラキラ輝いてるよ！',
+    id:'60 soal! Kamu bersinar terang!',
+    vi:'60 câu rồi! Bạn đang tỏa sáng!',
+    th:'60 ข้อแล้ว! เปล่งประกายมากเลยค่ะ!' },
+  { at:70, emoji:'🚀', ja:'70問突破！ロケットみたいに進んでる！',
+    id:'70 soal! Melaju seperti roket!',
+    vi:'70 câu! Tiến nhanh như tên lửa!',
+    th:'70 ข้อแล้ว! พุ่งแรงเหมือนจรวดเลยค่ะ!' },
+  { at:80, emoji:'👑', ja:'80問クリア！あなたは王者だ！',
+    id:'80 soal! Kamu adalah juaranya!',
+    vi:'80 câu! Bạn là nhà vô địch!',
+    th:'80 ข้อแล้ว! คุณคือแชมป์เลยค่ะ!' },
+  { at:90, emoji:'🌈', ja:'90問！ゴールはもうすぐ！',
+    id:'90 soal! Garis finish sudah dekat!',
+    vi:'90 câu! Đích đến đã gần kề!',
+    th:'90 ข้อแล้ว! ใกล้ถึงเส้นชัยแล้วค่ะ!' },
+  { at:100, emoji:'💯', ja:'100問達成！完璧だね！',
+    id:'100 soal tercapai! Sempurna!',
+    vi:'Đạt 100 câu! Hoàn hảo!',
+    th:'ครบ 100 ข้อ! สมบูรณ์แบบเลยค่ะ!' },
+  { at:110, emoji:'🎸', ja:'110問！止まらないね！',
+    id:'110 soal! Tidak bisa berhenti!',
+    vi:'110 câu! Không thể dừng lại!',
+    th:'110 ข้อแล้ว! หยุดไม่ได้เลยค่ะ!' },
+  { at:120, emoji:'🧠', ja:'120問！脳がレベルアップしたよ！',
+    id:'120 soal! Otakmu sudah naik level!',
+    vi:'120 câu! Não bộ đã lên cấp!',
+    th:'120 ข้อ! สมองเลเวลอัพแล้วค่ะ!' },
+  { at:130, emoji:'💎', ja:'130問！ダイヤモンド級の努力！',
+    id:'130 soal! Usahamu sekelas berlian!',
+    vi:'130 câu! Nỗ lực cấp độ kim cương!',
+    th:'130 ข้อ! ความพยายามระดับเพชรเลยค่ะ!' },
+  { at:140, emoji:'🎪', ja:'140問！もうプロ級だよ！',
+    id:'140 soal! Kamu sudah level profesional!',
+    vi:'140 câu! Bạn đã ở trình độ chuyên nghiệp!',
+    th:'140 ข้อ! ระดับมืออาชีพแล้วค่ะ!' },
+  { at:150, emoji:'🌸', ja:'150問クリア！咲き誇ってるね！',
+    id:'150 soal! Kamu sedang mekar!',
+    vi:'150 câu! Bạn đang nở rộ!',
+    th:'150 ข้อ! บานสะพรั่งเลยค่ะ!' },
+  { at:160, emoji:'⚡', ja:'160問！電光石火の勢い！',
+    id:'160 soal! Secepat kilat!',
+    vi:'160 câu! Nhanh như chớp!',
+    th:'160 ข้อ! เร็วปานสายฟ้าเลยค่ะ!' },
+  { at:170, emoji:'🎓', ja:'170問！もうすぐ卒業だよ！',
+    id:'170 soal! Sebentar lagi lulus!',
+    vi:'170 câu! Sắp tốt nghiệp rồi!',
+    th:'170 ข้อ! ใกล้จบหลักสูตรแล้วค่ะ!' },
+  { at:180, emoji:'🏅', ja:'180問！メダル級の頑張り！',
+    id:'180 soal! Perjuanganmu layak mendapat medali!',
+    vi:'180 câu! Xứng đáng nhận huy chương!',
+    th:'180 ข้อ! สมควรได้รับเหรียญรางวัลค่ะ!' },
+  { at:190, emoji:'🎊', ja:'190問！あと少しで全制覇！',
+    id:'190 soal! Tinggal sedikit lagi!',
+    vi:'190 câu! Chỉ còn một chút nữa thôi!',
+    th:'190 ข้อ! อีกนิดเดียวจะครบหมดแล้วค่ะ!' },
+];
+
+/* =============================================================
+   状態変数
+   ============================================================= */
+let allCards = [];
+let deck = [];
+let idx = 0;
+let okCount = 0;
+let totalAnswered = 0;
+let againList = [];
+let currentLang = 'th';
+let cheerQueue = [];
+
+/* =============================================================
+   アプリ起動
+   ============================================================= */
+function startApp(lang){
+  currentLang = lang;
+  const m = LANG_META[lang];
+  document.body.className = 'lang-' + lang;
+  document.getElementById('langTitle').innerHTML = m.flag + ' ' + m.name + '<span style="opacity:.7;font-weight:400;margin-left:6px;font-size:.8rem">' + m.label + '</span>';
+  document.getElementById('landing').style.display = 'none';
+  const app = document.getElementById('app');
+  app.style.display = 'flex';
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('cardArea').style.display = 'none';
+  document.getElementById('complete').style.display = 'none';
+
+  if(allCards.length > 0){ buildDeck(); }
+  else {
+    Papa.parse(CSV_URL, {
+      download:true, header:false,
+      complete:function(results){
+        const rows = results.data.filter(r => r.length >= 9 && r[0] && !isNaN(r[0]));
+        allCards = rows.map(r => {
+          const raw = (r[1]||'').trim();
+          let word = raw, furi = '';
+          const m2 = raw.match(/^(.+?)（(.+?)）$/);
+          if(m2){ word = m2[1]; furi = m2[2]; }
+          return {
+            no: r[0],
+            word, furigana: furi,
+            trans:{ id:r[2]||'', vi:r[3]||'', th:r[4]||'' },
+            meaningJa: r[5]||'',
+            desc:{ id:r[6]||'', vi:r[7]||'', th:r[8]||'' }
+          };
+        });
+        buildDeck();
+      }
+    });
+  }
+}
+
+function buildDeck(){
+  deck = [...allCards];
+  idx = 0; okCount = 0; totalAnswered = 0; againList = [];
+  cheerQueue = CHEER_DATA.map(c => c.at);
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('cardArea').style.display = 'flex';
+  document.getElementById('complete').style.display = 'none';
+  showCard();
+}
+
+/* =============================================================
+   カード表示
+   ============================================================= */
+function showCard(){
+  if(idx >= deck.length){ showComplete(); return; }
+  const c = deck[idx];
+  const m = LANG_META[currentLang];
+  document.getElementById('cNo').textContent = '#' + c.no;
+  document.getElementById('cWord').textContent = c.word;
+  document.getElementById('cFuri').textContent = c.furigana ? '（' + c.furigana + '）' : '';
+  document.getElementById('cLangLabel').innerHTML = m.flag + ' ' + m.name;
+  const transEl = document.getElementById('cTrans');
+  transEl.textContent = c.trans[currentLang];
+  transEl.style.fontFamily = m.font;
+  const descEl = document.getElementById('cDescLang');
+  descEl.textContent = c.desc[currentLang];
+  descEl.style.fontFamily = m.font;
+  document.getElementById('cMeanJa').innerHTML = '<span class="ja-flag">🇯🇵</span>' + c.meaningJa;
+
+  // カードを表に戻す（アニメーション付き）
+  const card = document.getElementById('card');
+  card.classList.remove('flipped');
+
+  // 入場アニメーション
+  const container = document.getElementById('cardContainer');
+  container.style.animation = 'none';
+  container.offsetHeight; // reflow
+  container.style.animation = 'cardEnter .35s ease-out';
+
+  updateProgress();
+}
+
+function flipCard(){
+  document.getElementById('card').classList.toggle('flipped');
+}
+
+/* =============================================================
+   ナビゲーション
+   ============================================================= */
+function nextCard(){ if(idx < deck.length - 1){ idx++; showCard(); } }
+function prevCard(){ if(idx > 0){ idx--; showCard(); } }
+
+function markOk(){
+  okCount++;
+  totalAnswered++;
+  idx++;
+  checkCheer();
+  showCard();
+}
+
+function markAgain(){
+  againList.push(deck[idx]);
+  totalAnswered++;
+  idx++;
+  checkCheer();
+  showCard();
+}
+
+/* =============================================================
+   シャッフル
+   ============================================================= */
+function shuffleDeck(){
+  for(let i = deck.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  idx = 0; okCount = 0; totalAnswered = 0; againList = [];
+  cheerQueue = CHEER_DATA.map(c => c.at);
+  showCard();
+}
+
+/* =============================================================
+   プログレス
+   ============================================================= */
+function updateProgress(){
+  const total = deck.length;
+  const pct = total > 0 ? Math.round(idx / total * 100) : 0;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+  document.getElementById('progText').textContent = '✅ ' + okCount + '  🔄 ' + againList.length + '  📚 残り ' + (total - idx);
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + total;
+}
+
+/* =============================================================
+   応援（10問ごと）
+   ============================================================= */
+function checkCheer(){
+  if(cheerQueue.length === 0) return;
+  if(totalAnswered >= cheerQueue[0]){
+    const at = cheerQueue.shift();
+    const data = CHEER_DATA.find(c => c.at === at);
+    if(data) showCheer(data);
+  }
+}
+
+function showCheer(data){
+  // 紙吹雪
+  confetti({ particleCount:80, spread:70, origin:{y:0.6}, colors:['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd'] });
+  setTimeout(()=>{
+    confetti({ particleCount:40, angle:60, spread:55, origin:{x:0} });
+    confetti({ particleCount:40, angle:120, spread:55, origin:{x:1} });
+  }, 300);
+
+  const overlay = document.getElementById('cheerOverlay');
+  document.getElementById('cheerEmoji').textContent = data.emoji;
+  document.getElementById('cheerTitle').textContent = data.at + '問クリア！';
+
+  const msgsEl = document.getElementById('cheerMsgs');
+  msgsEl.innerHTML = '';
+  // 日本語
+  const jaDiv = document.createElement('div');
+  jaDiv.className = 'cheer-msg ja';
+  jaDiv.textContent = '🇯🇵 ' + data.ja;
+  msgsEl.appendChild(jaDiv);
+  // 選択中の言語
+  const m = LANG_META[currentLang];
+  const fDiv = document.createElement('div');
+  fDiv.className = 'cheer-msg foreign';
+  fDiv.style.fontFamily = m.font;
+  fDiv.textContent = m.flag + ' ' + data[currentLang];
+  msgsEl.appendChild(fDiv);
+
+  overlay.classList.add('show');
+}
+
+function closeCheer(e){
+  if(e && e.target !== document.getElementById('cheerOverlay') && !e.target.classList.contains('cheer-close')) return;
+  document.getElementById('cheerOverlay').classList.remove('show');
+}
+
+/* =============================================================
+   完了画面
+   ============================================================= */
+function showComplete(){
+  document.getElementById('cardArea').style.display = 'none';
+  const comp = document.getElementById('complete');
+  comp.style.display = 'flex';
+  const total = deck.length;
+  const rate = total > 0 ? Math.round(okCount / total * 100) : 0;
+  document.getElementById('stats').innerHTML =
+    '✅ 覚えた：<b>' + okCount + '</b> 語<br>' +
+    '🔄 もう一度：<b>' + againList.length + '</b> 語<br>' +
+    '📚 合計：<b>' + total + '</b> 語<br>' +
+    '🎯 正答率：<b>' + rate + '%</b>';
+  document.getElementById('retryBtn').style.display = againList.length > 0 ? '' : 'none';
+  document.getElementById('progFill').style.width = '100%';
+  document.getElementById('progPct').textContent = '100%';
+  document.getElementById('progText').textContent = '🎉 すべて完了！';
+
+  // 完了紙吹雪
+  const end = Date.now() + 2500;
+  (function frame(){
+    confetti({ particleCount:5, angle:60, spread:55, origin:{x:0}, colors:['#ff6b6b','#feca57','#48dbfb'] });
+    confetti({ particleCount:5, angle:120, spread:55, origin:{x:1}, colors:['#ff9ff3','#54a0ff','#5f27cd'] });
+    if(Date.now() < end) requestAnimationFrame(frame);
+  })();
+}
+
+function restartDeck(){
+  deck = [...allCards]; idx = 0; okCount = 0; totalAnswered = 0; againList = [];
+  cheerQueue = CHEER_DATA.map(c => c.at);
+  document.getElementById('complete').style.display = 'none';
+  document.getElementById('cardArea').style.display = 'flex';
+  showCard();
+}
+
+function retryMissed(){
+  deck = [...againList]; idx = 0; okCount = 0; totalAnswered = 0; againList = [];
+  cheerQueue = CHEER_DATA.map(c => c.at);
+  document.getElementById('complete').style.display = 'none';
+  document.getElementById('cardArea').style.display = 'flex';
+  showCard();
+}
+
+/* =============================================================
+   ランディングに戻る
+   ============================================================= */
+function backToLanding(){
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('landing').style.display = 'flex';
+  document.body.className = '';
+}
+
+/* =============================================================
+   キーボード操作
+   ============================================================= */
+document.addEventListener('keydown', function(e){
+  if(document.getElementById('cheerOverlay').classList.contains('show')){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); closeCheer(); }
+    return;
+  }
+  if(document.getElementById('app').style.display === 'none') return;
+  if(e.key === 'ArrowRight') nextCard();
+  else if(e.key === 'ArrowLeft') prevCard();
+  else if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); flipCard(); }
+});
+
+/* =============================================================
+   スワイプ操作（モバイル）
+   ============================================================= */
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', function(e){
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, {passive:true});
+document.addEventListener('touchend', function(e){
+  if(document.getElementById('app').style.display === 'none') return;
+  if(document.getElementById('cheerOverlay').classList.contains('show')) return;
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if(Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+  if(dx < 0) nextCard();
+  else prevCard();
+}, {passive:true});
+
+/* カード入場アニメーション用CSS（JSで付与） */
+const styleSheet = document.createElement('style');
+styleSheet.textContent = '@keyframes cardEnter{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}';
+document.head.appendChild(styleSheet);
+</script>
+</body>
+</html>
