@@ -26,7 +26,7 @@ body{
 }
 
 /* ========================================
-   カラーテーマ（言語別・色彩心理学ベース）
+   カラーテーマ（言語別）
    ======================================== */
 body.lang-ja{
   background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 40%,#f48fb1 100%);
@@ -142,6 +142,19 @@ body.lang-th{
 .lang-btn .lang-name{font-size:.95rem;font-weight:700}
 .lang-btn .lang-label{font-size:.75rem;opacity:.8;font-weight:400}
 
+/* 操作説明 */
+.how-to{
+  margin-top:6px;padding:14px 20px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;backdrop-filter:blur(6px);
+  max-width:480px;width:100%;
+}
+.how-to p{
+  font-size:clamp(.78rem,2.2vw,.88rem);opacity:.75;
+  line-height:1.6;font-weight:300;
+}
+.how-to .icon{font-size:1rem;vertical-align:middle;margin-right:2px}
+
 /* クレジット */
 .credit{
   margin-top:20px;padding:16px 24px;
@@ -207,6 +220,15 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .progress-text{font-size:.72rem;color:var(--text);text-align:center;opacity:.5;margin-top:2px}
 
 /* ========================================
+   操作ヒント（学習画面内）
+   ======================================== */
+.hint-bar{
+  display:flex;justify-content:center;gap:18px;
+  padding:6px 16px;opacity:.55;font-size:.75rem;color:var(--text);
+}
+.hint-bar span{display:flex;align-items:center;gap:4px}
+
+/* ========================================
    カードエリア
    ======================================== */
 .card-area{
@@ -222,272 +244,178 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   border:2px solid var(--accent);background:var(--card-bg);
   color:var(--accent);font-size:1.2rem;cursor:pointer;
   transition:all .2s;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(var(--accent-rgb),.1);
+  box-shadow:0 2px 8px rgba(var(--accent-rgb),.15);
 }
-.nav-btn:hover{background:var(--accent);color:#fff;transform:scale(1.1)}
-.nav-btn:active{transform:scale(.95)}
-.counter{font-size:.9rem;color:var(--text);font-weight:700;min-width:80px;text-align:center}
+.nav-btn:hover{background:var(--accent);color:#fff}
 
-/* カード */
-.card-container{perspective:1200px;width:100%;max-width:400px}
-.card{
-  position:relative;width:100%;min-height:300px;
-  cursor:pointer;transform-style:preserve-3d;
-  transition:transform .55s cubic-bezier(.4,.0,.2,1);
-  border-radius:28px;
+/* フリップカード */
+.flip-container{
+  width:min(88vw,400px);aspect-ratio:3/2;perspective:1200px;
+  cursor:pointer;position:relative;
 }
-.card.flipped{transform:rotateY(180deg)}
-.card-face{
+.flip-card{
+  width:100%;height:100%;position:relative;
+  transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.flip-container.flipped .flip-card{transform:rotateY(180deg)}
+.flip-front,.flip-back{
   position:absolute;inset:0;backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  border-radius:28px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:36px 24px;text-align:center;
+  border-radius:24px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px 20px;gap:8px;
   background:var(--card-bg);
-  box-shadow:0 4px 24px rgba(var(--accent-rgb),.08),0 12px 40px rgba(0,0,0,.06);
-  border:2px solid rgba(var(--accent-rgb),.12);
+  box-shadow:0 8px 32px rgba(var(--accent-rgb),.12),0 2px 8px rgba(0,0,0,.06);
+  border:2px solid var(--accent-light);
+  overflow:hidden;
+}
+.flip-front::after{
+  content:'';position:absolute;top:-30%;right:-30%;width:60%;height:60%;
+  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+.flip-back{transform:rotateY(180deg);background:var(--surface)}
+.card-num{
+  position:absolute;top:12px;left:16px;
+  font-size:.7rem;font-weight:700;color:var(--accent);opacity:.5;
+}
+.card-front-main{
+  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--text);
+  text-align:center;line-height:1.4;word-break:keep-all;
+}
+.card-front-sub{
+  font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400;
+}
+.card-back-word{
+  font-size:clamp(1.2rem,4vw,1.6rem);font-weight:800;color:var(--accent);
+  text-align:center;line-height:1.3;
+}
+.card-back-desc{
+  font-size:clamp(.82rem,2.5vw,.95rem);color:var(--text);
+  text-align:center;line-height:1.6;opacity:.8;
+  max-height:40%;overflow-y:auto;
+}
+.tap-hint{
+  position:absolute;bottom:10px;
+  font-size:.65rem;opacity:.35;color:var(--text);
 }
 
-/* 表面 */
-.card-front{position:relative}
-.card-front::before{
-  content:'FRONT';position:absolute;top:14px;left:18px;
-  font-size:.6rem;font-weight:700;letter-spacing:.12em;
-  color:var(--accent);opacity:.25;
+/* スワイプアニメーション */
+.flip-container.swipe-left .flip-card{
+  animation:swipeLeft .35s ease-out forwards;
 }
-.card-front .no-badge{
-  position:absolute;top:12px;right:16px;
-  background:var(--accent);color:#fff;
-  font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;
-  opacity:.7;
+.flip-container.swipe-right .flip-card{
+  animation:swipeRight .35s ease-out forwards;
 }
-.card-front .word{
-  font-size:clamp(1.8rem,6vw,2.6rem);font-weight:900;
-  color:var(--text);line-height:1.3;
-  transition:transform .3s;
+@keyframes swipeLeft{
+  0%{transform:translateX(0) rotate(0);opacity:1}
+  100%{transform:translateX(-120%) rotate(-8deg);opacity:0}
 }
-.card-front .furigana{
-  font-size:clamp(.9rem,3vw,1.1rem);color:var(--accent);
-  margin-top:8px;font-weight:400;opacity:.8;
+@keyframes swipeRight{
+  0%{transform:translateX(0) rotate(0);opacity:1}
+  100%{transform:translateX(120%) rotate(8deg);opacity:0}
 }
-.card-front .tap-hint{
-  margin-top:24px;font-size:.78rem;color:#aaa;
-  display:flex;align-items:center;gap:6px;
-  animation:hintPulse 2.5s ease-in-out infinite;
+.flip-container.enter-left .flip-card{
+  animation:enterLeft .35s ease-out forwards;
 }
-@keyframes hintPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.05)}}
-
-/* 裏面 */
-.card-back{
-  transform:rotateY(180deg);gap:12px;overflow-y:auto;
-  justify-content:flex-start;padding-top:28px;
+.flip-container.enter-right .flip-card{
+  animation:enterRight .35s ease-out forwards;
 }
-.card-back::before{
-  content:'BACK';position:absolute;top:14px;left:18px;
-  font-size:.6rem;font-weight:700;letter-spacing:.12em;
-  color:var(--accent);opacity:.25;
+@keyframes enterLeft{
+  0%{transform:translateX(120%) rotate(8deg);opacity:0}
+  100%{transform:translateX(0) rotate(0);opacity:1}
 }
-.back-lang-label{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--accent);color:#fff;
-  font-size:.7rem;font-weight:700;padding:4px 14px;
-  border-radius:20px;letter-spacing:.04em;
+@keyframes enterRight{
+  0%{transform:translateX(-120%) rotate(-8deg);opacity:0}
+  100%{transform:translateX(0) rotate(0);opacity:1}
 }
-.back-translation{
-  font-size:clamp(1.2rem,4vw,1.7rem);font-weight:700;
-  color:var(--accent);line-height:1.5;margin:4px 0;
-}
-.back-desc-lang{
-  width:100%;font-size:.88rem;line-height:1.65;
-  color:var(--text);background:var(--accent-glow);
-  border-radius:14px;padding:12px 14px;
-  border-left:3px solid var(--accent);
-}
-.back-meaning-ja{
-  width:100%;font-size:.85rem;line-height:1.65;color:#666;
-  border-top:1px dashed rgba(var(--accent-rgb),.2);
-  padding-top:10px;
-}
-.back-meaning-ja .ja-flag{font-size:.75rem;margin-right:4px}
-
-/* 日本語モード裏面専用 */
-.back-furigana-line{
-  font-size:1.1rem;color:var(--accent);font-weight:400;
-  margin-bottom:4px;
-}
-
-/* ========================================
-   アクションボタン
-   ======================================== */
-.action-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.abtn{
-  padding:12px 24px;border-radius:50px;border:none;
-  font-size:.95rem;font-weight:700;cursor:pointer;
-  transition:transform .15s,box-shadow .15s;
-  font-family:'Noto Sans JP',sans-serif;
-  display:flex;align-items:center;gap:6px;
-  box-shadow:0 4px 14px rgba(0,0,0,.1);
-}
-.abtn:active{transform:scale(.93)}
-.abtn-again{background:var(--btn-again);color:#fff}
-.abtn-again:hover{box-shadow:0 6px 20px rgba(229,57,53,.35)}
-.abtn-ok{background:var(--btn-ok);color:#fff}
-.abtn-ok:hover{box-shadow:0 6px 20px rgba(var(--accent-rgb),.35)}
 
 /* ========================================
    応援モーダル
    ======================================== */
 .cheer-overlay{
-  position:fixed;inset:0;z-index:9999;
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
   display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
-  opacity:0;pointer-events:none;
-  transition:opacity .4s ease;
+  z-index:9999;opacity:0;pointer-events:none;transition:opacity .4s;
 }
 .cheer-overlay.show{opacity:1;pointer-events:auto}
 .cheer-box{
   background:#fff;border-radius:28px;padding:36px 28px;
-  max-width:360px;width:90%;text-align:center;
-  transform:scale(.8) translateY(20px);
-  transition:transform .45s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 24px 64px rgba(0,0,0,.2);
-  position:relative;overflow:hidden;
+  text-align:center;max-width:340px;width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  transform:scale(.8);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
 }
-.cheer-overlay.show .cheer-box{transform:scale(1) translateY(0)}
-.cheer-box::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:6px;
-  background:linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3,#54a0ff);
-}
-.cheer-emoji{font-size:3.5rem;margin-bottom:8px;animation:cheerBounce .6s ease}
-@keyframes cheerBounce{0%{transform:scale(0) rotate(-10deg)}50%{transform:scale(1.3) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
-.cheer-title{font-size:1.2rem;font-weight:900;color:#333;margin-bottom:12px}
-.cheer-msgs{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
-.cheer-msg{
-  font-size:.88rem;line-height:1.5;padding:6px 12px;
-  border-radius:12px;background:#f8f9fa;
-}
-.cheer-msg.ja{color:#333;font-weight:700}
-.cheer-msg.foreign{color:#666}
+.cheer-overlay.show .cheer-box{transform:scale(1)}
+.cheer-emoji{font-size:3rem;margin-bottom:8px}
+.cheer-msg{font-size:1rem;font-weight:700;line-height:1.7;color:#333;white-space:pre-line}
 .cheer-close{
-  background:linear-gradient(135deg,#667eea,#764ba2);
-  color:#fff;border:none;padding:10px 32px;
-  border-radius:50px;font-size:.95rem;font-weight:700;
-  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
-  transition:transform .2s;
-}
-.cheer-close:hover{transform:scale(1.05)}
-
-/* ========================================
-   完了画面
-   ======================================== */
-.complete{
-  display:none;flex-direction:column;align-items:center;
-  justify-content:center;min-height:60vh;
-  text-align:center;gap:16px;padding:32px 24px;
-}
-.complete-icon{font-size:4rem;animation:cheerBounce .8s ease}
-.complete h2{font-size:1.6rem;color:var(--accent);font-weight:900}
-.complete .stats{
-  font-size:1rem;color:var(--text);line-height:2;
-  background:var(--card-bg);border-radius:20px;
-  padding:20px 28px;box-shadow:0 4px 20px rgba(0,0,0,.06);
-}
-.complete .stats b{color:var(--accent)}
-.cbtn{
-  padding:14px 32px;border-radius:50px;border:none;
-  font-size:1rem;font-weight:700;cursor:pointer;
-  font-family:'Noto Sans JP',sans-serif;color:#fff;
-  transition:transform .2s,box-shadow .2s;
-  box-shadow:0 4px 14px rgba(0,0,0,.12);
-  display:flex;align-items:center;gap:6px;
-}
-.cbtn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
-.cbtn:active{transform:scale(.95)}
-.cbtn-restart{background:var(--accent)}
-.cbtn-retry{background:var(--btn-again)}
-.cbtn-home{background:#78909c}
-
-/* ========================================
-   ローディング
-   ======================================== */
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:16px}
-.spinner{
-  width:44px;height:44px;
-  border:4px solid var(--accent-light);border-top-color:var(--accent);
-  border-radius:50%;animation:spin .75s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading span{color:var(--text);font-size:.9rem;opacity:.7}
-
-/* ========================================
-   フッター（学習画面内）
-   ======================================== */
-.app-footer{
-  text-align:center;padding:10px 16px 14px;
-  font-size:.65rem;color:var(--text);opacity:.3;
+  margin-top:16px;padding:10px 32px;border-radius:20px;
+  border:none;background:linear-gradient(135deg,#a78bfa,#60a5fa);
+  color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
 }
 
 /* ========================================
-   レスポンシブ
+   フッター
    ======================================== */
-@media(max-width:480px){
-  .card-face{padding:28px 16px}
-  .lang-btn{min-width:100px;padding:20px 10px}
-  .lang-btn-ja{padding:18px 20px}
-  .back-desc-lang,.back-meaning-ja{font-size:.82rem}
-  header h2{font-size:.82rem}
-}
-@media(min-width:768px){
-  .card-container{max-width:460px}
-  .card{min-height:340px}
+footer{
+  text-align:center;padding:14px;
+  font-size:.7rem;opacity:.4;color:var(--text);
 }
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     ランディング画面
-     ============================================================ -->
+<!-- ==========================================
+     ランディングページ
+     ========================================== -->
 <div class="landing" id="landing">
   <div class="brand">
     <div class="brand-logo">🏥</div>
     <h1>介護用語フラッシュカード</h1>
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
+
   <p class="landing-desc">
     介護福祉士の試験に出る用語を<br>
-    母国語で楽しく覚えよう！<br>
-    タップでカードをめくって学習できます
+    母国語で楽しく覚えよう！
   </p>
 
   <div class="lang-section">
-    <!-- 日本語ボタン（日の丸デザイン） -->
-    <button class="lang-btn-ja" onclick="startApp('ja')">
+    <!-- 日本語ボタン -->
+    <div class="lang-btn-ja" onclick="startApp('ja')">
       <div class="hinomaru"></div>
       <div class="ja-text">
         <span class="lang-main">日本語で学ぶ</span>
         <span class="lang-sub">単語 → ふりがな・意味</span>
       </div>
-    </button>
+    </div>
 
     <!-- 3言語ボタン -->
     <div class="lang-grid">
-      <button class="lang-btn id" onclick="startApp('id')">
-        <span class="flag">🇮🇩</span>
+      <div class="lang-btn id" onclick="startApp('id')">
+        <span class="flag">ID</span>
         <span class="lang-name">Indonesia</span>
         <span class="lang-label">インドネシア語</span>
-      </button>
-      <button class="lang-btn vi" onclick="startApp('vi')">
-        <span class="flag">🇻🇳</span>
+      </div>
+      <div class="lang-btn vi" onclick="startApp('vi')">
+        <span class="flag">VN</span>
         <span class="lang-name">Tiếng Việt</span>
         <span class="lang-label">ベトナム語</span>
-      </button>
-      <button class="lang-btn th" onclick="startApp('th')">
-        <span class="flag">🇹🇭</span>
+      </div>
+      <div class="lang-btn th" onclick="startApp('th')">
+        <span class="flag">TH</span>
         <span class="lang-name">ภาษาไทย</span>
         <span class="lang-label">タイ語</span>
-      </button>
+      </div>
     </div>
+  </div>
+
+  <!-- 操作説明 -->
+  <div class="how-to" id="howTo">
+    <p>
+      <span class="icon">👆</span> タップでカードを裏返す<br>
+      <span class="icon">👈👉</span> スワイプでカード切り替え
+    </p>
   </div>
 
   <div class="credit">
@@ -497,486 +425,361 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   </div>
 </div>
 
-<!-- ============================================================
+<!-- ==========================================
      学習画面
-     ============================================================ -->
+     ========================================== -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
   <header>
-    <h2 id="langTitle"></h2>
+    <h2 id="headerTitle">📖 学習中</h2>
     <div class="header-btns">
-      <button class="hbtn" onclick="shuffleDeck()">🔀 シャッフル</button>
-      <button class="hbtn" onclick="backToLanding()">🏠 戻る</button>
+      <button class="hbtn" onclick="shuffleCards()">🔀</button>
+      <button class="hbtn" onclick="backToTop()">🏠</button>
     </div>
   </header>
 
-  <!-- プログレス -->
   <div class="progress-area">
     <div class="progress-row">
-      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
-      <div class="progress-pct" id="progPct">0%</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-pct" id="progressPct">0%</span>
     </div>
-    <div class="progress-text" id="progText"></div>
+    <div class="progress-text" id="progressText"></div>
   </div>
 
-  <!-- ローディング -->
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <span>データ読み込み中…</span>
+  <!-- 操作ヒント（学習画面上部） -->
+  <div class="hint-bar" id="hintBar">
+    <span>👆 タップ＝裏返す</span>
+    <span>👈👉 スワイプ＝次/前</span>
   </div>
 
-  <!-- カード -->
-  <div class="card-area" id="cardArea" style="display:none">
-    <div class="nav-row">
-      <button class="nav-btn" onclick="prevCard()" aria-label="前へ">◀</button>
-      <span class="counter" id="counter"></span>
-      <button class="nav-btn" onclick="nextCard()" aria-label="次へ">▶</button>
-    </div>
-
-    <div class="card-container" id="cardContainer">
-      <div class="card" id="card" onclick="flipCard()">
-        <div class="card-face card-front">
-          <span class="no-badge" id="cNo"></span>
-          <div class="word" id="cWord"></div>
-          <div class="furigana" id="cFuri"></div>
-          <div class="tap-hint">👆 タップでめくる</div>
+  <div class="card-area">
+    <div class="flip-container" id="flipContainer" onclick="flipCard()">
+      <div class="flip-card" id="flipCard">
+        <div class="flip-front" id="cardFront">
+          <span class="card-num" id="cardNum"></span>
+          <div class="card-front-main" id="frontMain"></div>
+          <div class="card-front-sub" id="frontSub"></div>
+          <span class="tap-hint" id="tapHintFront"></span>
         </div>
-        <div class="card-face card-back">
-          <span class="back-lang-label" id="cLangLabel"></span>
-          <div class="back-furigana-line" id="cFuriBack" style="display:none"></div>
-          <div class="back-translation" id="cTrans"></div>
-          <div class="back-desc-lang" id="cDescLang"></div>
-          <div class="back-meaning-ja" id="cMeanJa"></div>
+        <div class="flip-back" id="cardBack">
+          <span class="card-num" id="cardNumBack"></span>
+          <div class="card-back-word" id="backWord"></div>
+          <div class="card-back-desc" id="backDesc"></div>
+          <span class="tap-hint" id="tapHintBack"></span>
         </div>
       </div>
     </div>
-
-    <div class="action-btns">
-      <button class="abtn abtn-again" onclick="markAgain()">🔄 もう一度</button>
-      <button class="abtn abtn-ok" onclick="markOk()">✅ 覚えた！</button>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="prevCard()">◀</button>
+      <button class="nav-btn" onclick="nextCard()">▶</button>
     </div>
   </div>
-
-  <!-- 完了画面 -->
-  <div class="complete" id="complete">
-    <div class="complete-icon">🎉</div>
-    <h2>おつかれさまでした！</h2>
-    <div class="stats" id="stats"></div>
-    <button class="cbtn cbtn-restart" onclick="restartDeck()">📖 もう一度やる</button>
-    <button class="cbtn cbtn-retry" onclick="retryMissed()" id="retryBtn">🔄 間違えたカードだけ復習</button>
-    <button class="cbtn cbtn-home" onclick="backToLanding()">🏠 言語選択に戻る</button>
-  </div>
-
-  <div class="app-footer">© 一般社団法人GIFT協会　宗石光英</div>
+  <footer>© 一般社団法人 GIFT協会</footer>
 </div>
 
-<!-- ============================================================
-     応援モーダル
-     ============================================================ -->
-<div class="cheer-overlay" id="cheerOverlay" onclick="closeCheer(event)">
-  <div class="cheer-box" id="cheerBox">
+<!-- 応援モーダル -->
+<div class="cheer-overlay" id="cheerOverlay">
+  <div class="cheer-box">
     <div class="cheer-emoji" id="cheerEmoji"></div>
-    <div class="cheer-title" id="cheerTitle"></div>
-    <div class="cheer-msgs" id="cheerMsgs"></div>
-    <button class="cheer-close" onclick="closeCheer()">つづける 💪</button>
+    <div class="cheer-msg" id="cheerMsg"></div>
+    <button class="cheer-close" onclick="closeCheer()">OK!</button>
   </div>
 </div>
 
 <script>
-/* =============================================================
-   定数
-   ============================================================= */
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv';
+/* ========================================
+   データ＆状態
+   ======================================== */
+const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv';
+let allData=[],currentLang='',idx=0,viewedCount=0,lastCheerAt=0;
 
-const LANG_META = {
-  ja:{ col:-1, descCol:-1, name:'日本語',     label:'日本語',       flag:'🇯🇵', font:"'Noto Sans JP',sans-serif" },
-  id:{ col:2,  descCol:6,  name:'Indonesia',  label:'インドネシア語', flag:'🇮🇩', font:"'Noto Sans',sans-serif" },
-  vi:{ col:3,  descCol:7,  name:'Tiếng Việt', label:'ベトナム語',   flag:'🇻🇳', font:"'Noto Sans',sans-serif" },
-  th:{ col:4,  descCol:8,  name:'ภาษาไทย',    label:'タイ語',       flag:'🇹🇭', font:"'Noto Sans Thai','Noto Sans',sans-serif" }
+/* 言語メタ情報 */
+const LANG_META={
+  ja:{
+    header:'📖 日本語で学習中',
+    tapFront:'タップで意味を見る',
+    tapBack:'タップで表に戻す',
+    hintTap:'👆 タップ＝裏返す',
+    hintSwipe:'👈👉 スワイプ＝次/前'
+  },
+  id:{
+    header:'📖 Belajar Bahasa Indonesia',
+    tapFront:'Ketuk untuk lihat arti',
+    tapBack:'Ketuk untuk kembali',
+    hintTap:'👆 Ketuk = balik kartu',
+    hintSwipe:'👈👉 Geser = kartu berikutnya'
+  },
+  vi:{
+    header:'📖 Học Tiếng Việt',
+    tapFront:'Chạm để xem nghĩa',
+    tapBack:'Chạm để quay lại',
+    hintTap:'👆 Chạm = lật thẻ',
+    hintSwipe:'👈👉 Vuốt = thẻ tiếp theo'
+  },
+  th:{
+    header:'📖 เรียนภาษาไทย',
+    tapFront:'แตะเพื่อดูความหมาย',
+    tapBack:'แตะเพื่อกลับด้านหน้า',
+    hintTap:'👆 แตะ = พลิกการ์ด',
+    hintSwipe:'👈👉 ปัด = การ์ดถัดไป'
+  }
 };
 
-/* ----- 応援メッセージ（10問ごと） ----- */
-const CHEER_DATA = [
-  { at:10, emoji:'💪', ja:'いい調子！その勢いで頑張ろう！',
-    id:'Bagus sekali! Terus semangat ya!',
-    vi:'Tuyệt vời! Hãy tiếp tục cố gắng nhé!',
-    th:'เก่งมาก! สู้ต่อไปนะคะ!' },
-  { at:20, emoji:'🌟', ja:'20問クリア！すごい集中力だね！',
-    id:'20 soal selesai! Konsentrasimu hebat!',
-    vi:'Đã hoàn thành 20 câu! Bạn tập trung tuyệt vời!',
-    th:'ผ่าน 20 ข้อแล้ว! สมาธิดีมากเลยค่ะ!' },
-  { at:30, emoji:'🔥', ja:'30問突破！燃えてるね！',
-    id:'30 soal terlewati! Semangatmu membara!',
-    vi:'Vượt qua 30 câu rồi! Bạn đang rất nhiệt huyết!',
-    th:'ผ่าน 30 ข้อแล้ว! ไฟแรงมากเลยค่ะ!' },
-  { at:40, emoji:'🏆', ja:'40問達成！もう立派な実力だよ！',
-    id:'40 soal tercapai! Kemampuanmu sudah luar biasa!',
-    vi:'Đạt 40 câu! Năng lực của bạn thật đáng nể!',
-    th:'ครบ 40 ข้อ! เก่งมากๆ เลยค่ะ!' },
-  { at:50, emoji:'🎯', ja:'半分クリア！折り返し地点だよ！',
-    id:'Setengah jalan! Kamu sudah di titik balik!',
-    vi:'Đã qua nửa chặng đường rồi!',
-    th:'ผ่านครึ่งทางแล้ว! สู้ต่อไปนะคะ!' },
-  { at:60, emoji:'✨', ja:'60問！キラキラ輝いてるよ！',
-    id:'60 soal! Kamu bersinar terang!',
-    vi:'60 câu rồi! Bạn đang tỏa sáng!',
-    th:'60 ข้อแล้ว! เปล่งประกายมากเลยค่ะ!' },
-  { at:70, emoji:'🚀', ja:'70問突破！ロケットみたいに進んでる！',
-    id:'70 soal! Melaju seperti roket!',
-    vi:'70 câu! Tiến nhanh như tên lửa!',
-    th:'70 ข้อแล้ว! พุ่งแรงเหมือนจรวดเลยค่ะ!' },
-  { at:80, emoji:'👑', ja:'80問クリア！あなたは王者だ！',
-    id:'80 soal! Kamu adalah juaranya!',
-    vi:'80 câu! Bạn là nhà vô địch!',
-    th:'80 ข้อแล้ว! คุณคือแชมป์เลยค่ะ!' },
-  { at:90, emoji:'🌈', ja:'90問！ゴールはもうすぐ！',
-    id:'90 soal! Garis finish sudah dekat!',
-    vi:'90 câu! Đích đến đã gần kề!',
-    th:'90 ข้อแล้ว! ใกล้ถึงเส้นชัยแล้วค่ะ!' },
-  { at:100, emoji:'💯', ja:'100問達成！完璧だね！',
-    id:'100 soal tercapai! Sempurna!',
-    vi:'Đạt 100 câu! Hoàn hảo!',
-    th:'ครบ 100 ข้อ! สมบูรณ์แบบเลยค่ะ!' },
-  { at:110, emoji:'🎸', ja:'110問！止まらないね！',
-    id:'110 soal! Tidak bisa berhenti!',
-    vi:'110 câu! Không thể dừng lại!',
-    th:'110 ข้อแล้ว! หยุดไม่ได้เลยค่ะ!' },
-  { at:120, emoji:'🧠', ja:'120問！脳がレベルアップしたよ！',
-    id:'120 soal! Otakmu sudah naik level!',
-    vi:'120 câu! Não bộ đã lên cấp!',
-    th:'120 ข้อ! สมองเลเวลอัพแล้วค่ะ!' },
-  { at:130, emoji:'💎', ja:'130問！ダイヤモンド級の努力！',
-    id:'130 soal! Usahamu sekelas berlian!',
-    vi:'130 câu! Nỗ lực cấp độ kim cương!',
-    th:'130 ข้อ! ความพยายามระดับเพชรเลยค่ะ!' },
-  { at:140, emoji:'🎪', ja:'140問！もうプロ級だよ！',
-    id:'140 soal! Kamu sudah level profesional!',
-    vi:'140 câu! Bạn đã ở trình độ chuyên nghiệp!',
-    th:'140 ข้อ! ระดับมืออาชีพแล้วค่ะ!' },
-  { at:150, emoji:'🌸', ja:'150問クリア！咲き誇ってるね！',
-    id:'150 soal! Kamu sedang mekar!',
-    vi:'150 câu! Bạn đang nở rộ!',
-    th:'150 ข้อ! บานสะพรั่งเลยค่ะ!' },
-  { at:160, emoji:'⚡', ja:'160問！電光石火の勢い！',
-    id:'160 soal! Secepat kilat!',
-    vi:'160 câu! Nhanh như chớp!',
-    th:'160 ข้อ! เร็วปานสายฟ้าเลยค่ะ!' },
-  { at:170, emoji:'🎓', ja:'170問！もうすぐ卒業だよ！',
-    id:'170 soal! Sebentar lagi lulus!',
-    vi:'170 câu! Sắp tốt nghiệp rồi!',
-    th:'170 ข้อ! ใกล้จบหลักสูตรแล้วค่ะ!' },
-  { at:180, emoji:'🏅', ja:'180問！メダル級の頑張り！',
-    id:'180 soal! Perjuanganmu layak mendapat medali!',
-    vi:'180 câu! Xứng đáng nhận huy chương!',
-    th:'180 ข้อ! สมควรได้รับเหรียญรางวัลค่ะ!' },
-  { at:190, emoji:'🎊', ja:'190問！あと少しで全制覇！',
-    id:'190 soal! Tinggal sedikit lagi!',
-    vi:'190 câu! Chỉ còn một chút nữa thôi!',
-    th:'190 ข้อ! อีกนิดเดียวจะครบหมดแล้วค่ะ!' },
+/* 操作説明テキスト（ランディングページ用） */
+const HOW_TO_TEXT={
+  ja:'<span class="icon">👆</span> タップでカードを裏返す<br><span class="icon">👈👉</span> スワイプでカード切り替え',
+  id:'<span class="icon">👆</span> Ketuk untuk membalik kartu<br><span class="icon">👈👉</span> Geser untuk ganti kartu',
+  vi:'<span class="icon">👆</span> Chạm để lật thẻ<br><span class="icon">👈👉</span> Vuốt để chuyển thẻ',
+  th:'<span class="icon">👆</span> แตะเพื่อพลิกการ์ด<br><span class="icon">👈👉</span> ปัดเพื่อเปลี่ยนการ์ด'
+};
+
+/* 応援メッセージ */
+const CHEERS=[
+  {at:10 ,emoji:'🌟',msg:'すごい！10問クリア！\nHebat! 10 soal selesai!\nTuyệt vời! 10 câu rồi!\nเก่งมาก! 10 ข้อแล้ว!'},
+  {at:20 ,emoji:'🔥',msg:'20問突破！調子いいね！\n20 soal! Lanjutkan!\n20 câu rồi! Tiếp tục nhé!\n20 ข้อแล้ว! ไปต่อเลย!'},
+  {at:30 ,emoji:'💪',msg:'30問！頑張ってるね♪\n30 soal! Semangat terus!\n30 câu! Cố lên nhé♪\n30 ข้อ! สู้ๆ นะ♪'},
+  {at:40 ,emoji:'🎯',msg:'40問達成！素晴らしい！\n40 soal tercapai! Luar biasa!\n40 câu đạt được! Xuất sắc!\nทำได้ 40 ข้อ! ยอดเยี่ยม!'},
+  {at:50 ,emoji:'🏆',msg:'半分クリア！50問！\nSetengah jalan! 50 soal!\nĐã qua nửa! 50 câu!\nครึ่งทางแล้ว! 50 ข้อ!'},
+  {at:60 ,emoji:'🚀',msg:'60問！止まらないね！\n60 soal! Tak terhentikan!\n60 câu! Không dừng lại!\n60 ข้อ! หยุดไม่อยู่!'},
+  {at:70 ,emoji:'⭐',msg:'70問！キラキラ輝いてる！\n70 soal! Bersinar terang!\n70 câu! Tỏa sáng rực rỡ!\n70 ข้อ! เจิดจรัสมาก!'},
+  {at:80 ,emoji:'🎉',msg:'80問！もう少し！\n80 soal! Sedikit lagi!\n80 câu! Sắp xong rồi!\n80 ข้อ! อีกนิดเดียว!'},
+  {at:90 ,emoji:'🌈',msg:'90問！あと少しだよ！\n90 soal! Hampir selesai!\n90 câu! Gần xong rồi!\n90 ข้อ! เกือบครบแล้ว!'},
+  {at:100,emoji:'👑',msg:'100問達成！王者だ！\n100 soal! Kamu juara!\n100 câu! Bạn là nhà vô địch!\n100 ข้อ! คุณคือแชมป์!'},
+  {at:110,emoji:'💎',msg:'110問！ダイヤモンド級！\n110 soal! Level berlian!\n110 câu! Cấp kim cương!\n110 ข้อ! ระดับเพชร!'},
+  {at:120,emoji:'🔥',msg:'120問！情熱がすごい！\n120 soal! Semangat luar biasa!\n120 câu! Nhiệt huyết tuyệt vời!\n120 ข้อ! มีไฟมาก!'},
+  {at:130,emoji:'🌸',msg:'130問！花が咲くよ！\n130 soal! Berbunga-bunga!\n130 câu! Hoa sẽ nở!\n130 ข้อ! ดอกไม้จะบาน!'},
+  {at:140,emoji:'⚡',msg:'140問！電光石火！\n140 soal! Secepat kilat!\n140 câu! Nhanh như chớp!\n140 ข้อ! เร็วปานสายฟ้า!'},
+  {at:150,emoji:'🎊',msg:'150問！伝説レベル！\n150 soal! Level legenda!\n150 câu! Huyền thoại!\n150 ข้อ! ระดับตำนาน!'},
+  {at:160,emoji:'🏅',msg:'160問！メダル確定！\n160 soal! Medali pasti!\n160 câu! Chắc chắn có huy chương!\n160 ข้อ! ได้เหรียญแน่นอน!'},
+  {at:170,emoji:'✨',msg:'170問！神レベル！\n170 soal! Level dewa!\n170 câu! Cấp thần!\n170 ข้อ! ระดับเทพ!'},
+  {at:180,emoji:'🎓',msg:'180問！合格間違いなし！\nPasti lulus! 180 soal!\nChắc chắn đỗ! 180 câu!\nสอบผ่านแน่นอน! 180 ข้อ!'},
+  {at:190,emoji:'🏆',msg:'190問！もうマスターだ！\nSudah master! 190 soal!\nĐã thành thạo! 190 câu!\nเป็นมาสเตอร์แล้ว! 190 ข้อ!'}
 ];
 
-/* =============================================================
-   状態変数
-   ============================================================= */
-let allCards = [];
-let deck = [];
-let idx = 0;
-let okCount = 0;
-let totalAnswered = 0;
-let againList = [];
-let currentLang = 'ja';
-let cheerQueue = [];
-
-/* =============================================================
+/* ========================================
    アプリ起動
-   ============================================================= */
+   ======================================== */
 function startApp(lang){
-  currentLang = lang;
-  const m = LANG_META[lang];
-  document.body.className = 'lang-' + lang;
-  document.getElementById('langTitle').innerHTML = m.flag + ' ' + m.name + '<span style="opacity:.7;font-weight:400;margin-left:6px;font-size:.8rem">' + m.label + '</span>';
-  document.getElementById('landing').style.display = 'none';
-  const app = document.getElementById('app');
-  app.style.display = 'flex';
-  document.getElementById('loading').style.display = 'flex';
-  document.getElementById('cardArea').style.display = 'none';
-  document.getElementById('complete').style.display = 'none';
+  currentLang=lang;
+  document.getElementById('landing').style.display='none';
+  const app=document.getElementById('app');
+  app.style.display='flex';
+  document.body.className='lang-'+lang;
 
-  if(allCards.length > 0){ buildDeck(); }
-  else {
-    Papa.parse(CSV_URL, {
-      download:true, header:false,
-      complete:function(results){
-        const rows = results.data.filter(r => r.length >= 9 && r[0] && !isNaN(r[0]));
-        allCards = rows.map(r => {
-          const raw = (r[1]||'').trim();
-          let word = raw, furi = '';
-          const m2 = raw.match(/^(.+?)（(.+?)）$/);
-          if(m2){ word = m2[1]; furi = m2[2]; }
-          return {
-            no: r[0],
-            word, furigana: furi,
-            trans:{ id:r[2]||'', vi:r[3]||'', th:r[4]||'' },
-            meaningJa: r[5]||'',
-            desc:{ id:r[6]||'', vi:r[7]||'', th:r[8]||'' }
-          };
-        });
-        buildDeck();
-      }
-    });
-  }
+  const meta=LANG_META[lang];
+  document.getElementById('headerTitle').textContent=meta.header;
+
+  /* 学習画面内のヒントバーを言語対応 */
+  document.getElementById('hintBar').innerHTML=
+    '<span>'+meta.hintTap+'</span><span>'+meta.hintSwipe+'</span>';
+
+  loadData();
 }
 
-function buildDeck(){
-  deck = [...allCards];
-  idx = 0; okCount = 0; totalAnswered = 0; againList = [];
-  cheerQueue = CHEER_DATA.map(c => c.at);
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('cardArea').style.display = 'flex';
-  document.getElementById('complete').style.display = 'none';
-  showCard();
+function backToTop(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('landing').style.display='flex';
+  document.body.className='';
+  viewedCount=0;lastCheerAt=0;idx=0;
+  /* ランディングページの操作説明をリセット */
+  document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.ja;
 }
 
-/* =============================================================
+/* ========================================
+   データ読み込み
+   ======================================== */
+function loadData(){
+  Papa.parse(CSV_URL,{
+    download:true,header:false,skipEmptyLines:true,
+    complete:function(results){
+      const rows=results.data.slice(1);
+      allData=rows.filter(r=>r[0]&&r[1]).map(r=>({
+        no:r[0],word:r[1],
+        idWord:r[2]||'',viWord:r[3]||'',thWord:r[4]||'',
+        meaning:r[5]||'',
+        idDesc:r[6]||'',viDesc:r[7]||'',thDesc:r[8]||''
+      }));
+      idx=0;viewedCount=0;lastCheerAt=0;
+      showCard();
+    }
+  });
+}
+
+/* ========================================
    カード表示
-   ============================================================= */
+   ======================================== */
 function showCard(){
-  if(idx >= deck.length){ showComplete(); return; }
-  const c = deck[idx];
-  const m = LANG_META[currentLang];
+  if(!allData.length)return;
+  const d=allData[idx];
+  const total=allData.length;
+  const pct=Math.round(((idx+1)/total)*100);
 
-  document.getElementById('cNo').textContent = '#' + c.no;
-  document.getElementById('cWord').textContent = c.word;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressText').textContent=(idx+1)+' / '+total;
 
-  const furiBackEl = document.getElementById('cFuriBack');
-  const transEl = document.getElementById('cTrans');
-  const descEl = document.getElementById('cDescLang');
-  const meanJaEl = document.getElementById('cMeanJa');
+  const meta=LANG_META[currentLang];
+  document.getElementById('tapHintFront').textContent=meta.tapFront;
+  document.getElementById('tapHintBack').textContent=meta.tapBack;
 
-  if(currentLang === 'ja'){
-    // 日本語モード：表は漢字のみ（ふりがな非表示）、裏にふりがな＋意味
-    document.getElementById('cFuri').textContent = '';
-    document.getElementById('cLangLabel').innerHTML = '🇯🇵 日本語';
-    furiBackEl.style.display = 'block';
-    furiBackEl.textContent = c.furigana ? '（' + c.furigana + '）' : '';
-    transEl.textContent = '';
-    transEl.style.display = 'none';
-    descEl.textContent = c.meaningJa;
-    descEl.style.fontFamily = "'Noto Sans JP',sans-serif";
-    meanJaEl.style.display = 'none';
-  } else {
-    // 多言語モード
-    document.getElementById('cFuri').textContent = c.furigana ? '（' + c.furigana + '）' : '';
-    document.getElementById('cLangLabel').innerHTML = m.flag + ' ' + m.name;
-    furiBackEl.style.display = 'none';
-    transEl.textContent = c.trans[currentLang];
-    transEl.style.display = 'block';
-    transEl.style.fontFamily = m.font;
-    descEl.textContent = c.desc[currentLang];
-    descEl.style.fontFamily = m.font;
-    meanJaEl.style.display = 'block';
-    meanJaEl.innerHTML = '<span class="ja-flag">🇯🇵</span>' + c.meaningJa;
+  /* 表のふりがなと漢字を分離 */
+  let mainText='',subText='';
+  const w=d.word;
+  const m=w.match(/^(.+?)（(.+?)）$/);
+  if(m){mainText=m[1];subText=m[2];}
+  else{mainText=w;subText='';}
+
+  if(currentLang==='ja'){
+    /* 日本語モード：表＝漢字、裏＝ふりがな＋意味 */
+    document.getElementById('frontMain').textContent=mainText;
+    document.getElementById('frontSub').textContent='';
+    document.getElementById('cardNum').textContent='No.'+d.no;
+    document.getElementById('cardNumBack').textContent='No.'+d.no;
+    document.getElementById('backWord').textContent=subText||mainText;
+    document.getElementById('backDesc').textContent=d.meaning;
+  }else{
+    /* 外国語モード：表＝日本語（漢字＋ふりがな）、裏＝外国語 */
+    document.getElementById('frontMain').textContent=mainText;
+    document.getElementById('frontSub').textContent=subText;
+    document.getElementById('cardNum').textContent='No.'+d.no;
+    document.getElementById('cardNumBack').textContent='No.'+d.no;
+
+    let bWord='',bDesc='';
+    if(currentLang==='id'){bWord=d.idWord;bDesc=d.idDesc;}
+    else if(currentLang==='vi'){bWord=d.viWord;bDesc=d.viDesc;}
+    else if(currentLang==='th'){bWord=d.thWord;bDesc=d.thDesc;}
+
+    document.getElementById('backWord').textContent=bWord;
+    document.getElementById('backDesc').textContent=bDesc;
   }
 
-  // カードを表に戻す
-  const card = document.getElementById('card');
-  card.classList.remove('flipped');
-
-  // 入場アニメーション
-  const container = document.getElementById('cardContainer');
-  container.style.animation = 'none';
-  container.offsetHeight;
-  container.style.animation = 'cardEnter .35s ease-out';
-
-  updateProgress();
+  /* カードを表に戻す */
+  document.getElementById('flipContainer').classList.remove('flipped');
 }
 
+/* ========================================
+   カード操作
+   ======================================== */
 function flipCard(){
-  document.getElementById('card').classList.toggle('flipped');
+  document.getElementById('flipContainer').classList.toggle('flipped');
 }
 
-/* =============================================================
-   ナビゲーション
-   ============================================================= */
-function nextCard(){ if(idx < deck.length - 1){ idx++; showCard(); } }
-function prevCard(){ if(idx > 0){ idx--; showCard(); } }
-
-function markOk(){
-  okCount++;
-  totalAnswered++;
-  idx++;
-  checkCheer();
-  showCard();
-}
-
-function markAgain(){
-  againList.push(deck[idx]);
-  totalAnswered++;
-  idx++;
-  checkCheer();
-  showCard();
-}
-
-/* =============================================================
-   シャッフル
-   ============================================================= */
-function shuffleDeck(){
-  for(let i = deck.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-  idx = 0; okCount = 0; totalAnswered = 0; againList = [];
-  cheerQueue = CHEER_DATA.map(c => c.at);
-  showCard();
-}
-
-/* =============================================================
-   プログレス
-   ============================================================= */
-function updateProgress(){
-  const total = deck.length;
-  const pct = total > 0 ? Math.round(idx / total * 100) : 0;
-  document.getElementById('progFill').style.width = pct + '%';
-  document.getElementById('progPct').textContent = pct + '%';
-  document.getElementById('progText').textContent = '✅ ' + okCount + '  🔄 ' + againList.length + '  📚 残り ' + (total - idx);
-  document.getElementById('counter').textContent = (idx + 1) + ' / ' + total;
-}
-
-/* =============================================================
-   応援（10問ごと）
-   ============================================================= */
-function checkCheer(){
-  if(cheerQueue.length === 0) return;
-  if(totalAnswered >= cheerQueue[0]){
-    const at = cheerQueue.shift();
-    const data = CHEER_DATA.find(c => c.at === at);
-    if(data) showCheer(data);
-  }
-}
-
-function showCheer(data){
-  confetti({ particleCount:80, spread:70, origin:{y:0.6}, colors:['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd'] });
+function nextCard(){
+  if(!allData.length)return;
+  const container=document.getElementById('flipContainer');
+  container.classList.add('swipe-left');
   setTimeout(()=>{
-    confetti({ particleCount:40, angle:60, spread:55, origin:{x:0} });
-    confetti({ particleCount:40, angle:120, spread:55, origin:{x:1} });
-  }, 300);
-
-  const overlay = document.getElementById('cheerOverlay');
-  document.getElementById('cheerEmoji').textContent = data.emoji;
-  document.getElementById('cheerTitle').textContent = data.at + '問クリア！';
-
-  const msgsEl = document.getElementById('cheerMsgs');
-  msgsEl.innerHTML = '';
-  // 日本語メッセージ
-  const jaDiv = document.createElement('div');
-  jaDiv.className = 'cheer-msg ja';
-  jaDiv.textContent = '🇯🇵 ' + data.ja;
-  msgsEl.appendChild(jaDiv);
-  // 日本語モード以外なら選択言語のメッセージも表示
-  if(currentLang !== 'ja'){
-    const m = LANG_META[currentLang];
-    const fDiv = document.createElement('div');
-    fDiv.className = 'cheer-msg foreign';
-    fDiv.style.fontFamily = m.font;
-    fDiv.textContent = m.flag + ' ' + data[currentLang];
-    msgsEl.appendChild(fDiv);
-  }
-
-  overlay.classList.add('show');
+    container.classList.remove('swipe-left','flipped');
+    idx=(idx+1)%allData.length;
+    viewedCount++;
+    showCard();
+    checkCheer();
+    container.classList.add('enter-left');
+    setTimeout(()=>container.classList.remove('enter-left'),350);
+  },300);
 }
 
-function closeCheer(e){
-  if(e && e.target !== document.getElementById('cheerOverlay') && !e.target.classList.contains('cheer-close')) return;
+function prevCard(){
+  if(!allData.length)return;
+  const container=document.getElementById('flipContainer');
+  container.classList.add('swipe-right');
+  setTimeout(()=>{
+    container.classList.remove('swipe-right','flipped');
+    idx=(idx-1+allData.length)%allData.length;
+    showCard();
+    container.classList.add('enter-right');
+    setTimeout(()=>container.classList.remove('enter-right'),350);
+  },300);
+}
+
+function shuffleCards(){
+  for(let i=allData.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [allData[i],allData[j]]=[allData[j],allData[i]];
+  }
+  idx=0;viewedCount=0;lastCheerAt=0;showCard();
+}
+
+/* ========================================
+   スワイプ操作
+   ======================================== */
+(function(){
+  let startX=0,startY=0,isDragging=false;
+  const threshold=50;
+
+  document.addEventListener('touchstart',function(e){
+    const t=e.touches[0];
+    startX=t.clientX;startY=t.clientY;isDragging=true;
+  },{passive:true});
+
+  document.addEventListener('touchend',function(e){
+    if(!isDragging)return;
+    isDragging=false;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-startX;
+    const dy=t.clientY-startY;
+    if(Math.abs(dx)>threshold && Math.abs(dx)>Math.abs(dy)*1.2){
+      if(dx<0)nextCard();
+      else prevCard();
+    }
+  },{passive:true});
+})();
+
+/* キーボード操作 */
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight')nextCard();
+  else if(e.key==='ArrowLeft')prevCard();
+  else if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+});
+
+/* ========================================
+   応援チェック
+   ======================================== */
+function checkCheer(){
+  for(const c of CHEERS){
+    if(viewedCount>=c.at && lastCheerAt<c.at){
+      lastCheerAt=c.at;
+      showCheer(c.emoji,c.msg);
+      return;
+    }
+  }
+}
+
+function showCheer(emoji,msg){
+  document.getElementById('cheerEmoji').textContent=emoji;
+  document.getElementById('cheerMsg').textContent=msg;
+  document.getElementById('cheerOverlay').classList.add('show');
+  if(typeof confetti==='function'){
+    confetti({particleCount:120,spread:80,origin:{y:.6},colors:['#a78bfa','#60a5fa','#34d399','#fbbf24','#f472b6']});
+  }
+}
+
+function closeCheer(){
   document.getElementById('cheerOverlay').classList.remove('show');
 }
 
-/* =============================================================
-   完了画面
-   ============================================================= */
-function showComplete(){
-  document.getElementById('cardArea').style.display = 'none';
-  const comp = document.getElementById('complete');
-  comp.style.display = 'flex';
-  const total = deck.length;
-  const rate = total > 0 ? Math.round(okCount / total * 100) : 0;
-  document.getElementById('stats').innerHTML =
-    '✅ 覚えた：<b>' + okCount + '</b> 語<br>' +
-    '🔄 もう一度：<b>' + againList.length + '</b> 語<br>' +
-    '📚 合計：<b>' + total + '</b> 語<br>' +
-    '🎯 正答率：<b>' + rate + '%</b>';
-  document.getElementById('retryBtn').style.display = againList.length > 0 ? '' : 'none';
-  document.getElementById('progFill').style.width = '100%';
-  document.getElementById('progPct').textContent = '100%';
-  document.getElementById('progText').textContent = '🎉 すべて完了！';
-
-  const end = Date.now() + 2500;
-  (function frame(){
-    confetti({ particleCount:5, angle:60, spread:55, origin:{x:0}, colors:['#ff6b6b','#feca57','#48dbfb'] });
-    confetti({ particleCount:5, angle:120, spread:55, origin:{x:1}, colors:['#ff9ff3','#54a0ff','#5f27cd'] });
-    if(Date.now() < end) requestAnimationFrame(frame);
-  })();
-}
-
-function restartDeck(){
-  deck = [...allCards]; idx = 0; okCount = 0; totalAnswered = 0; againList = [];
-  cheerQueue = CHEER_DATA.map(c => c.at);
-  document.getElementById('complete').style.display = 'none';
-  document.getElementById('cardArea').style.display = 'flex';
-  showCard();
-}
-
-function retryMissed(){
-  deck = [...againList]; idx = 0; okCount = 0; totalAnswered = 0; againList = [];
-  cheerQueue = CHEER_DATA.map(c => c.at);
-  document.getElementById('complete').style.display = 'none';
-  document.getElementById('cardArea').style.display = 'flex';
-  showCard();
-}
-
-/* =============================================================
-   ランディングに戻る
-   ============================================================= */
-function backToLanding(){
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('landing').style.display = 'flex';
-  document.body.className = '';
-}
-
-/* =============================================================
-   キーボード操作
-   ============================================================= */
-document.addEventListener('keydown', function(e){
-  if(document.getElementById('cheerOverlay').classList.contains('show')){
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); closeCheer(); }
-    return;
-  }
-  if(document.getElementById('app').style.display === 'none') return;
-  if(e.key === 'ArrowRight') nextCard();
-  else if(e.key === 'ArrowLeft') prevCard();
-  else if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); flipCard(); }
+/* ========================================
+   ランディングページ：ホバーで操作説明を言語切替
+   ======================================== */
+document.querySelectorAll('.lang-btn-ja').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.ja;
+  });
 });
-
-/* =============================================================
-   スワイプ操作（モバイル）
-   ============================================================= */
-let touchStartX = 0, touchStartY = 0;
-document.addEventListener('touchstart', function(e){
-  touchStartX = e.changedTouches[0].screenX;
-  touchStartY = e.changedTouches[0].screenY;
-}, {passive:true});
-document.addEventListener('touchend', function(e){
-  if(document.getElementById('app').style.display === 'none') return;
-  if(document.getElementById('cheerOverlay').classList.contains('show')) return;
-  const dx = e.changedTouches[0].screenX - touchStartX;
-  const dy = e.changedTouches[0].screenY - touchStartY;
-  if(Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
-  if(dx < 0) nextCard();
-  else prevCard();
-}, {passive:true});
-
-/* カード入場アニメーション */
-const styleSheet = document.createElement('style');
-styleSheet.textContent = '@keyframes cardEnter{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}';
-document.head.appendChild(styleSheet);
+document.querySelectorAll('.lang-btn.id').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.id;
+  });
+});
+document.querySelectorAll('.lang-btn.vi').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.vi;
+  });
+});
+document.querySelectorAll('.lang-btn.th').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.th;
+  });
+});
 </script>
 </body>
 </html>
