@@ -317,6 +317,9 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .flip-back{
   position:absolute;top:0;left:0;
   transform:rotateY(180deg);background:var(--surface);
+  /* 裏面：長い文でもスクロール可能に */
+  overflow-y:auto;max-height:60vh;
+  justify-content:flex-start;padding:24px 18px 18px;
 }
 .card-num{
   position:absolute;top:12px;left:16px;
@@ -335,41 +338,45 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .card-front-sub{font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400}
 .card-back-word{
   font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
-  text-align:center;line-height:1.3;
+  text-align:center;line-height:1.3;margin-top:12px;
 }
 .card-back-meaning{
-  font-size:clamp(.78rem,2.3vw,.88rem);color:#555;
+  font-size:clamp(.75rem,2.2vw,.85rem);color:#555;
   text-align:center;line-height:1.5;
   padding:6px 12px;margin:4px 0;
   background:rgba(0,0,0,.04);border-radius:10px;
   border-left:3px solid var(--accent);
 }
 .card-back-desc{
-  font-size:clamp(.78rem,2.3vw,.88rem);color:var(--text);
+  font-size:clamp(.75rem,2.2vw,.85rem);color:var(--text);
   text-align:center;line-height:1.5;opacity:.8;
-  max-height:35%;overflow-y:auto;
 }
-.tap-hint{position:absolute;bottom:10px;font-size:.65rem;opacity:.35;color:var(--text)}
+.tap-hint{font-size:.65rem;opacity:.35;color:var(--text);margin-top:6px}
 
-/* ===== Judge Buttons ===== */
+/* ===== Judge Buttons — カードの外に配置 ===== */
 .judge-row{
-  display:flex;gap:12px;align-items:center;margin-top:4px;
+  display:flex;gap:14px;align-items:center;margin-top:6px;
   opacity:0;transform:translateY(10px);
   transition:opacity .3s,transform .3s;pointer-events:none;
+  /* 高さゼロにして非表示時にスペースを取らない */
+  max-height:0;overflow:hidden;
 }
-.judge-row.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.judge-row.visible{
+  opacity:1;transform:translateY(0);pointer-events:auto;
+  max-height:80px;
+}
 .judge-btn{
-  padding:12px 24px;border-radius:20px;border:none;
-  font-size:.95rem;font-weight:800;cursor:pointer;
+  padding:14px 28px;border-radius:24px;border:none;
+  font-size:1rem;font-weight:800;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
   transition:transform .15s,box-shadow .15s;
-  box-shadow:0 3px 12px rgba(0,0,0,.15);
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
 }
 .judge-btn:active{transform:scale(.92)}
 .judge-ok{background:var(--btn-ok);color:#fff}
-.judge-ok:hover{box-shadow:0 6px 20px rgba(var(--accent-rgb),.4)}
+.judge-ok:hover{box-shadow:0 6px 24px rgba(var(--accent-rgb),.45)}
 .judge-again{background:var(--btn-again);color:#fff}
-.judge-again:hover{box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.judge-again:hover{box-shadow:0 6px 24px rgba(0,0,0,.3)}
 
 /* ===== Swipe Animations ===== */
 .flip-container.swipe-left .flip-card{animation:swipeLeft .35s ease-out forwards}
@@ -419,7 +426,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
   <p class="landing-desc">
-    かいごふくししのしけんにでるようごを<br>ぼこくごでたのしくおぼえよう！
+    かいごふくししのしけんにでるようごを<br>介護福祉士の試験に出る用語を<br>ぼこくごでたのしくおぼえよう！<br>母国語で楽しく覚えよう！
   </p>
   <div class="lang-section">
     <div class="lang-btn-ja" onclick="chooseLang('ja')">
@@ -454,7 +461,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
       </div>
     </div>
   </div>
-  <div class="how-to" id="howTo">
+  <div class="how-to">
     <p>
       <span class="icon">👆</span> タップでカードを裏返す<br>
       <span class="icon">👈👉</span> スワイプでカード切り替え
@@ -479,7 +486,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
     <div class="start-bar-wrap"><div class="start-bar-fill" id="startBarFill" style="width:0%"></div></div>
     <div class="start-lets-try" id="startLetsTry"></div>
   </div>
-  <button class="start-btn" id="startBtn" onclick="startQuiz(false)">▶ START</button>
+  <button class="start-btn" onclick="startQuiz(false)">▶ START</button>
   <button class="start-weak-btn" id="startWeakBtn" onclick="startQuiz(true)">🔄 にがてだけ特訓</button>
   <button class="start-back" id="startBackBtn" onclick="backToLanding()">← 言語選択に戻る</button>
 </div>
@@ -525,6 +532,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
         </div>
       </div>
     </div>
+    <!-- ボタンはカードの完全に外側 -->
     <div class="judge-row" id="judgeRow">
       <button class="judge-btn judge-again" id="judgeAgain" onclick="judgeCard(false)">🔄 もう一回</button>
       <button class="judge-btn judge-ok" id="judgeOk" onclick="judgeCard(true)">✅ 覚えた！</button>
