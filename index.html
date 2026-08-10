@@ -276,7 +276,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 /* ===== Card ===== */
 .card-area{
   flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
+  align-items:center;justify-content:flex-start;
   padding:12px 16px 20px;gap:14px;
 }
 .nav-row{display:flex;gap:12px;align-items:center}
@@ -317,9 +317,8 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .flip-back{
   position:absolute;top:0;left:0;
   transform:rotateY(180deg);background:var(--surface);
-  /* 裏面：長い文でもスクロール可能に */
-  overflow-y:auto;max-height:60vh;
   justify-content:flex-start;padding:24px 18px 18px;
+  /* ★変更: max-heightを削除、overflow-yも削除 → コンテンツに合わせて伸びる */
 }
 .card-num{
   position:absolute;top:12px;left:16px;
@@ -355,15 +354,16 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 
 /* ===== Judge Buttons — カードの外に配置 ===== */
 .judge-row{
-  display:flex;gap:14px;align-items:center;margin-top:6px;
+  display:flex;gap:14px;align-items:center;justify-content:center;
+  width:100%;max-width:400px;
+  margin-top:10px;
   opacity:0;transform:translateY(10px);
   transition:opacity .3s,transform .3s;pointer-events:none;
-  /* 高さゼロにして非表示時にスペースを取らない */
   max-height:0;overflow:hidden;
 }
 .judge-row.visible{
   opacity:1;transform:translateY(0);pointer-events:auto;
-  max-height:80px;
+  max-height:80px;margin-top:14px;
 }
 .judge-btn{
   padding:14px 28px;border-radius:24px;border:none;
@@ -821,6 +821,13 @@ function showCard(){
     document.getElementById('backDesc').textContent=bD;
     document.getElementById('backDesc').style.display=bD?'block':'none';
   }
+
+  /* ★追加: 裏面の実際の高さに合わせてflip-cardのmin-heightを更新 */
+  requestAnimationFrame(()=>{
+    const frontH=document.getElementById('cardFront').scrollHeight;
+    const backH=document.getElementById('cardBack').scrollHeight;
+    document.getElementById('flipCard').style.minHeight=Math.max(frontH,backH)+'px';
+  });
 }
 
 /* ========== FLIP ========== */
