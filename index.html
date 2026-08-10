@@ -192,7 +192,7 @@ body.lang-th{
 .credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff;letter-spacing:.03em}
 .credit-title{font-size:.75rem;opacity:.5}
 
-/* ===== Start Screen (NEW) ===== */
+/* ===== Start Screen ===== */
 .start-screen{
   display:none;flex-direction:column;align-items:center;justify-content:center;
   min-height:100dvh;gap:20px;padding:32px 20px;text-align:center;
@@ -351,7 +351,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .tap-hint{position:absolute;bottom:10px;font-size:.65rem;opacity:.35;color:var(--text)}
 
-/* ===== Judge Buttons (NEW) ===== */
+/* ===== Judge Buttons ===== */
 .judge-row{
   display:flex;gap:12px;align-items:center;margin-top:4px;
   opacity:0;transform:translateY(10px);
@@ -419,7 +419,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
   <p class="landing-desc">
-    かいごふくししのしけんにでるようごを<br>介護福祉士の試験に出る用語を<br>ぼこくごでたのしくおぼえよう！<br>母国語で楽しく覚えよう！
+    かいごふくししのしけんにでるようごを<br>ぼこくごでたのしくおぼえよう！
   </p>
   <div class="lang-section">
     <div class="lang-btn-ja" onclick="chooseLang('ja')">
@@ -472,7 +472,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   </div>
 </div>
 
-<!-- ===== START SCREEN (NEW) ===== -->
+<!-- ===== START SCREEN ===== -->
 <div class="start-screen" id="startScreen">
   <div class="start-progress-box">
     <div class="start-mastered" id="startMastered">🎯 覚えた単語：0 / 0</div>
@@ -481,7 +481,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   </div>
   <button class="start-btn" id="startBtn" onclick="startQuiz(false)">▶ START</button>
   <button class="start-weak-btn" id="startWeakBtn" onclick="startQuiz(true)">🔄 にがてだけ特訓</button>
-  <button class="start-back" onclick="backToLanding()">← 言語選択に戻る</button>
+  <button class="start-back" id="startBackBtn" onclick="backToLanding()">← 言語選択に戻る</button>
 </div>
 
 <!-- ===== MAIN APP ===== -->
@@ -525,7 +525,6 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
         </div>
       </div>
     </div>
-    <!-- Judge Buttons (NEW) -->
     <div class="judge-row" id="judgeRow">
       <button class="judge-btn judge-again" id="judgeAgain" onclick="judgeCard(false)">🔄 もう一回</button>
       <button class="judge-btn judge-ok" id="judgeOk" onclick="judgeCard(true)">✅ 覚えた！</button>
@@ -561,23 +560,28 @@ const LANG_META={
   ja:{header:'📖 日本語で学習中',tapFront:'タップで意味を見る',tapBack:'タップで表に戻す',
       hintTap:'👆 タップ＝裏返す',hintSwipe:'👈👉 スワイプ＝次/前',
       letsTry:'レッツトライ！',okBtn:'✅ 覚えた！',againBtn:'🔄 もう一回',
-      weakBtn:'にがてだけ特訓',masteredLabel:'覚えた'},
+      weakBtn:'にがてだけ特訓',masteredLabel:'覚えた',
+      backBtn:'← 言語選択に戻る'},
   en:{header:'📖 Learning in English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',
       hintTap:'👆 Tap = flip card',hintSwipe:'👈👉 Swipe = next/prev',
       letsTry:"Let's try!",okBtn:'✅ Got it!',againBtn:'🔄 One more time',
-      weakBtn:'Weak cards only',masteredLabel:'Mastered'},
+      weakBtn:'Weak cards only',masteredLabel:'Mastered',
+      backBtn:'← Back to language select'},
   id:{header:'📖 Belajar Bahasa Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',
       hintTap:'👆 Ketuk = balik kartu',hintSwipe:'👈👉 Geser = kartu berikutnya',
       letsTry:'Ayo coba!',okBtn:'✅ Hafal!',againBtn:'🔄 Sekali lagi',
-      weakBtn:'Kartu sulit saja',masteredLabel:'Hafal'},
+      weakBtn:'Kartu sulit saja',masteredLabel:'Hafal',
+      backBtn:'← Kembali ke pilihan bahasa'},
   vi:{header:'📖 Học Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',
       hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ tiếp theo',
       letsTry:'Hãy thử nào!',okBtn:'✅ Thuộc rồi!',againBtn:'🔄 Một lần nữa',
-      weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc'},
+      weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc',
+      backBtn:'← Quay lại chọn ngôn ngữ'},
   th:{header:'📖 เรียนภาษาไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับด้านหน้า',
       hintTap:'👆 แตะ = พลิกการ์ด',hintSwipe:'👈👉 ปัด = การ์ดถัดไป',
       letsTry:'มาลองกันเลย!',okBtn:'✅ จำได้แล้ว!',againBtn:'🔄 อีกครั้ง',
-      weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้'}
+      weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้',
+      backBtn:'← กลับไปเลือกภาษา'}
 };
 
 const CHEERS=[
@@ -662,7 +666,6 @@ function chooseLang(lang){
   loadMastered();
   document.getElementById('landing').style.display='none';
   document.getElementById('startScreen').style.display='flex';
-  /* Load data for start screen count */
   loadDataForStart();
 }
 
@@ -695,10 +698,10 @@ function updateStartScreen(){
   document.getElementById('startMastered').textContent='🎯 '+meta.masteredLabel+'：'+m+' / '+total;
   document.getElementById('startBarFill').style.width=pct+'%';
   document.getElementById('startLetsTry').textContent=meta.letsTry;
-  /* Show weak-only button only if there are weak cards */
   const weakCount=allData.filter(d=>!masteredSet.has(d.no)).length;
   document.getElementById('startWeakBtn').style.display=(weakCount>0&&weakCount<total)?'inline-block':'none';
   document.getElementById('startWeakBtn').textContent='🔄 '+meta.weakBtn+'（'+weakCount+'）';
+  document.getElementById('startBackBtn').textContent=meta.backBtn;
 }
 
 function startQuiz(weak){
@@ -738,7 +741,7 @@ function backToLanding(){
 function toggleWeakMode(){
   if(!weakMode){
     const weak=allData.filter(d=>!masteredSet.has(d.no));
-    if(!weak.length){return;}
+    if(!weak.length)return;
     displayData=weak;weakMode=true;
   }else{
     displayData=[...allData];weakMode=false;
@@ -817,20 +820,16 @@ function flipCard(){
   const fc=document.getElementById('flipContainer');
   fc.classList.toggle('flipped');
   playFlip();
-  /* Show judge buttons when flipped to back */
   if(fc.classList.contains('flipped')){
     document.getElementById('judgeRow').classList.add('visible');
   }else{
     document.getElementById('judgeRow').classList.remove('visible');
   }
 }
-/* Attach click handler */
 document.getElementById('flipContainer').addEventListener('click',function(e){
   if(e.target.closest('.judge-btn'))return;
   flipCard();
 });
-/* Remove inline onclick from flipContainer if present */
-document.getElementById('flipContainer').removeAttribute('onclick');
 
 /* ========== JUDGE ========== */
 function judgeCard(mastered){
@@ -838,7 +837,6 @@ function judgeCard(mastered){
   if(mastered){
     masteredSet.add(d.no);
     playOk();
-    /* Small confetti burst */
     confetti({particleCount:30,spread:50,origin:{y:.7},colors:['#4caf50','#81c784','#fff']});
   }else{
     masteredSet.delete(d.no);
@@ -846,7 +844,6 @@ function judgeCard(mastered){
   }
   saveMastered();
   checkMilestone();
-  /* Auto advance to next card */
   nextCard();
 }
 
@@ -854,22 +851,17 @@ function judgeCard(mastered){
 function checkMilestone(){
   const m=masteredSet.size;
   const total=allData.length;
-  /* Percentage milestones */
-  const pctMilestones=[25,50,75,100];
-  const pct=total?Math.round(m/total*100):0;
-
-  /* Check fixed number milestones */
   for(const c of CHEERS){
     if(m>=c.at&&lastMilestone<c.at){
       lastMilestone=c.at;
       showCheer(c.emoji,c.msg);
       confetti({particleCount:120,spread:80,origin:{y:.6}});
-      if(m>=total){playClear();}
+      if(m>=total)playClear();
       return;
     }
   }
-  /* Check percentage milestones for small datasets */
   if(total<=50){
+    const pctMilestones=[25,50,75,100];
     for(const p of pctMilestones){
       const threshold=Math.round(total*p/100);
       if(m>=threshold&&lastMilestone<threshold&&threshold>0){
