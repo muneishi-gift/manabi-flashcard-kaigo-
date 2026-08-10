@@ -57,8 +57,18 @@ body.lang-th{
   pointer-events:none;
 }
 .landing>*{position:relative;z-index:1}
+
+/* ===== ブランドロゴ（GIFT協会ロゴ） ===== */
 .brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
-.brand-logo{font-size:3rem;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));animation:float 3s ease-in-out infinite}
+.brand-logo{
+  animation:float 3s ease-in-out infinite;
+}
+.brand-logo img{
+  width:clamp(100px,25vw,160px);height:auto;
+  border-radius:20px;
+  filter:drop-shadow(0 6px 20px rgba(255,255,255,.25));
+  object-fit:contain;
+}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .brand h1{
   font-family:'Poppins','Noto Sans JP',sans-serif;
@@ -134,10 +144,24 @@ body.lang-th{
 .how-to p{font-size:clamp(.78rem,2.2vw,.88rem);opacity:.75;line-height:1.6;font-weight:300}
 .how-to .icon{font-size:1rem;vertical-align:middle;margin-right:2px}
 
+/* ===== クレジット（キャラクター付き） ===== */
 .credit{
   margin-top:20px;padding:16px 24px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;backdrop-filter:blur(8px);text-align:center;
+  border-radius:16px;backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:16px;
+  max-width:480px;width:100%;
+}
+.credit-avatar{
+  flex-shrink:0;
+}
+.credit-avatar img{
+  height:80px;width:auto;
+  filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));
+  object-fit:contain;
+}
+.credit-info{
+  display:flex;flex-direction:column;gap:2px;text-align:left;
 }
 .credit-org{
   font-family:'Poppins','Noto Sans JP',sans-serif;
@@ -145,8 +169,8 @@ body.lang-th{
   background:linear-gradient(90deg,#ffd54f,#ffb300);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff;margin-top:2px;letter-spacing:.03em}
-.credit-title{font-size:.75rem;opacity:.5;margin-top:4px}
+.credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff;letter-spacing:.03em}
+.credit-title{font-size:.75rem;opacity:.5}
 
 header{
   display:flex;align-items:center;justify-content:space-between;
@@ -294,7 +318,9 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
 
 <div class="landing" id="landing">
   <div class="brand">
-    <div class="brand-logo">🏥</div>
+    <div class="brand-logo">
+      <img src="gift-logo.png" alt="GIFT協会ロゴ">
+    </div>
     <h1>介護用語フラッシュカード</h1>
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
@@ -334,9 +360,14 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
     </p>
   </div>
   <div class="credit">
-    <div class="credit-org">一般社団法人 GIFT協会</div>
-    <div class="credit-name">宗石 光英</div>
-    <div class="credit-title">Created by Mitsuhide Muneishi</div>
+    <div class="credit-avatar">
+      <img src="muneishi-icon.png" alt="宗石光英">
+    </div>
+    <div class="credit-info">
+      <div class="credit-org">一般社団法人 GIFT協会</div>
+      <div class="credit-name">宗石 光英</div>
+      <div class="credit-title">Created by Mitsuhide Muneishi</div>
+    </div>
   </div>
 </div>
 
@@ -476,7 +507,6 @@ function showCard(){
   document.getElementById('tapHintFront').textContent=meta.tapFront;
   document.getElementById('tapHintBack').textContent=meta.tapBack;
 
-  /* ふりがな分離 */
   let mainText='',subText='';
   const m=d.word.match(/^(.+?)（(.+?)）$/);
   if(m){mainText=m[1];subText=m[2];}else{mainText=d.word;subText='';}
@@ -485,7 +515,6 @@ function showCard(){
   document.getElementById('cardNumBack').textContent='No.'+d.no;
 
   if(currentLang==='ja'){
-    /* 日本語モード：表＝漢字、裏＝ふりがな＋意味 */
     document.getElementById('frontMain').textContent=mainText;
     document.getElementById('frontSub').textContent='';
     document.getElementById('backWord').textContent=subText||mainText;
@@ -494,7 +523,6 @@ function showCard(){
     document.getElementById('backDesc').textContent='';
     document.getElementById('backDesc').style.display='none';
   }else{
-    /* 外国語モード：表＝日本語、裏＝外国語単語＋日本語意味＋外国語説明 */
     document.getElementById('frontMain').textContent=mainText;
     document.getElementById('frontSub').textContent=subText;
 
