@@ -18,6 +18,7 @@ body{
   transition:background .5s ease,color .5s ease;
   overflow-x:hidden;-webkit-tap-highlight-color:transparent;user-select:none;
 }
+
 body.lang-ja{
   background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 40%,#f48fb1 100%);
   --accent:#c62828;--accent-rgb:198,40,40;--accent-light:#ffcdd2;
@@ -49,7 +50,7 @@ body.lang-th{
   --btn-ok:#1976d2;--btn-again:#c62828;--surface:#e3f2fd;
 }
 
-/* ===== ランディング ===== */
+/* ===== Landing ===== */
 .landing{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:100dvh;gap:20px;padding:32px 20px;
@@ -63,9 +64,13 @@ body.lang-th{
   pointer-events:none;
 }
 .landing>*{position:relative;z-index:1}
+
 .brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
 .brand-logo{animation:float 3s ease-in-out infinite}
-.brand-logo img{width:clamp(100px,25vw,160px);height:auto;border-radius:20px;filter:drop-shadow(0 6px 20px rgba(255,255,255,.25));object-fit:contain}
+.brand-logo img{
+  width:clamp(100px,25vw,160px);height:auto;border-radius:20px;
+  filter:drop-shadow(0 6px 20px rgba(255,255,255,.25));object-fit:contain;
+}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .brand h1{
   font-family:'Poppins','Noto Sans JP',sans-serif;
@@ -74,21 +79,34 @@ body.lang-th{
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .brand-sub{font-size:clamp(.85rem,2.5vw,1rem);opacity:.7;font-weight:300}
-.landing-desc{font-size:clamp(.95rem,2.8vw,1.15rem);opacity:.85;max-width:520px;line-height:1.7;font-weight:300}
+.landing-desc{
+  font-size:clamp(.95rem,2.8vw,1.15rem);opacity:.85;
+  max-width:520px;line-height:1.7;font-weight:300;
+}
 
 .lang-section{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;width:100%;max-width:520px}
+
 .lang-btn-ja{
   display:flex;align-items:center;justify-content:center;gap:16px;
   width:100%;max-width:480px;padding:22px 24px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.2);cursor:pointer;font-size:1rem;font-weight:700;color:#fff;
+  border:2px solid rgba(255,255,255,.2);cursor:pointer;
+  font-size:1rem;font-weight:700;color:#fff;
   transition:transform .25s,box-shadow .25s,border-color .25s;
-  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;backdrop-filter:blur(8px);background:transparent;
+  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);background:transparent;
 }
-.lang-btn-ja::before{content:'';position:absolute;inset:0;border-radius:22px;z-index:0;background:linear-gradient(135deg,#f5f5f5 0%,#e0e0e0 100%);opacity:.92}
+.lang-btn-ja::before{
+  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
+  background:linear-gradient(135deg,#f5f5f5 0%,#e0e0e0 100%);opacity:.92;
+}
 .lang-btn-ja>*{position:relative;z-index:1}
 .lang-btn-ja:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,.3);border-color:rgba(255,255,255,.4)}
 .lang-btn-ja:active{transform:scale(.97)}
-.hinomaru{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,#c62828 0%,#b71c1c 60%,#d32f2f 100%);box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);flex-shrink:0}
+.hinomaru{
+  width:52px;height:52px;border-radius:50%;
+  background:radial-gradient(circle,#c62828 0%,#b71c1c 60%,#d32f2f 100%);
+  box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);flex-shrink:0;
+}
 .ja-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .ja-text .lang-main{font-size:1.3rem;font-weight:900;color:#333}
 .ja-text .lang-sub{font-size:.8rem;color:#888;font-weight:400}
@@ -96,15 +114,27 @@ body.lang-th{
 .lang-btn-en{
   display:flex;align-items:center;justify-content:center;gap:16px;
   width:100%;max-width:480px;padding:22px 24px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.2);cursor:pointer;font-size:1rem;font-weight:700;color:#fff;
+  border:2px solid rgba(255,255,255,.2);cursor:pointer;
+  font-size:1rem;font-weight:700;color:#fff;
   transition:transform .25s,box-shadow .25s,border-color .25s;
-  font-family:'Poppins','Noto Sans JP',sans-serif;position:relative;overflow:hidden;backdrop-filter:blur(8px);background:transparent;
+  font-family:'Poppins','Noto Sans JP',sans-serif;position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);background:transparent;
 }
-.lang-btn-en::before{content:'';position:absolute;inset:0;border-radius:22px;z-index:0;background:linear-gradient(135deg,#7c4dff 0%,#536dfe 50%,#448aff 100%);opacity:.92}
+.lang-btn-en::before{
+  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
+  background:linear-gradient(135deg,#7c4dff 0%,#536dfe 50%,#448aff 100%);opacity:.92;
+}
 .lang-btn-en>*{position:relative;z-index:1}
 .lang-btn-en:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,.3);border-color:rgba(255,255,255,.4)}
 .lang-btn-en:active{transform:scale(.97)}
-.en-icon{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:#4527a0;letter-spacing:-.02em;box-shadow:0 0 16px rgba(69,39,160,.3),inset 0 -2px 4px rgba(0,0,0,.08);flex-shrink:0}
+.en-icon{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;
+  color:#4527a0;letter-spacing:-.02em;
+  box-shadow:0 0 16px rgba(69,39,160,.3),inset 0 -2px 4px rgba(0,0,0,.08);flex-shrink:0;
+}
 .en-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .en-text .lang-main{font-size:1.3rem;font-weight:800;color:#fff;letter-spacing:.03em}
 .en-text .lang-sub{font-size:.8rem;color:rgba(255,255,255,.7);font-weight:400}
@@ -113,11 +143,15 @@ body.lang-th{
 .lang-btn{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   flex:1;min-width:140px;max-width:180px;padding:20px 14px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.15);cursor:pointer;font-size:1rem;font-weight:700;color:#fff;
+  border:2px solid rgba(255,255,255,.15);cursor:pointer;
+  font-size:1rem;font-weight:700;color:#fff;
   transition:transform .25s,box-shadow .25s,border-color .25s;
-  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;backdrop-filter:blur(8px);
+  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);
 }
-.lang-btn::before{content:'';position:absolute;inset:0;opacity:.85;border-radius:22px;z-index:0;transition:opacity .3s}
+.lang-btn::before{
+  content:'';position:absolute;inset:0;opacity:.85;border-radius:22px;z-index:0;transition:opacity .3s;
+}
 .lang-btn>*{position:relative;z-index:1}
 .lang-btn.id::before{background:linear-gradient(135deg,#43a047,#2e7d32)}
 .lang-btn.vi::before{background:linear-gradient(135deg,#ff8f00,#e65100)}
@@ -126,65 +160,78 @@ body.lang-th{
 .lang-btn:active{transform:scale(.96)}
 .lang-btn .lang-name{font-size:.95rem;font-weight:700}
 .lang-btn .lang-label{font-size:.75rem;opacity:.8;font-weight:400}
-.flag-img{width:72px;height:auto;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.25);object-fit:contain}
 
-.how-to{margin-top:6px;padding:14px 20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;backdrop-filter:blur(6px);max-width:480px;width:100%}
+.flag-img{
+  width:72px;height:auto;border-radius:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);object-fit:contain;
+}
+
+.how-to{
+  margin-top:6px;padding:14px 20px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;backdrop-filter:blur(6px);max-width:480px;width:100%;
+}
 .how-to p{font-size:clamp(.78rem,2.2vw,.88rem);opacity:.75;line-height:1.6;font-weight:300}
 .how-to .icon{font-size:1rem;vertical-align:middle;margin-right:2px}
 
-.credit{margin-top:20px;padding:16px 24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;backdrop-filter:blur(8px);display:flex;align-items:center;gap:16px;max-width:480px;width:100%}
+.credit{
+  margin-top:20px;padding:16px 24px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:16px;max-width:480px;width:100%;
+}
 .credit-avatar{flex-shrink:0}
-.credit-avatar img{height:80px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));object-fit:contain}
+.credit-avatar img{height:80px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));object-fit:contain;}
 .credit-info{display:flex;flex-direction:column;gap:2px;text-align:left}
-.credit-org{font-family:'Poppins','Noto Sans JP',sans-serif;font-size:clamp(.8rem,2.2vw,.95rem);font-weight:600;letter-spacing:.04em;background:linear-gradient(90deg,#ffd54f,#ffb300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.credit-org{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(.8rem,2.2vw,.95rem);font-weight:600;letter-spacing:.04em;
+  background:linear-gradient(90deg,#ffd54f,#ffb300);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
 .credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff;letter-spacing:.03em}
 .credit-title{font-size:.75rem;opacity:.5}
 
-/* ===== スタート画面（新規） ===== */
+/* ===== Start Screen (NEW) ===== */
 .start-screen{
   display:none;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100dvh;gap:24px;padding:40px 20px;text-align:center;
+  min-height:100dvh;gap:20px;padding:32px 20px;text-align:center;
 }
-.start-stats{
-  padding:24px 32px;border-radius:24px;
-  background:var(--card-bg);
-  box-shadow:0 8px 32px rgba(var(--accent-rgb),.15);
-  border:2px solid var(--accent-light);
-  max-width:400px;width:100%;
+.start-progress-box{
+  background:rgba(255,255,255,.15);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.2);border-radius:24px;
+  padding:28px 32px;max-width:400px;width:100%;
 }
-.start-stats-title{font-size:.85rem;color:var(--text);opacity:.6;margin-bottom:8px}
-.start-stats-num{
-  font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(2rem,7vw,3rem);font-weight:900;color:var(--accent);
+.start-mastered{font-size:1.5rem;font-weight:900;color:var(--text)}
+.start-bar-wrap{margin:12px 0;height:14px;background:rgba(0,0,0,.1);border-radius:14px;overflow:hidden}
+.start-bar-fill{height:100%;border-radius:14px;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.start-lets-try{
+  font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
+  margin-top:8px;
 }
-.start-stats-num small{font-size:.5em;font-weight:400;opacity:.6}
-.start-stats-bar{width:100%;height:10px;background:var(--accent-light);border-radius:10px;overflow:hidden;margin-top:12px}
-.start-stats-bar-fill{height:100%;border-radius:10px;background:var(--accent);transition:width .6s ease}
-
-.start-lets{
-  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--text);
-  line-height:1.4;
-}
-.start-go-btn{
-  padding:18px 60px;border-radius:50px;border:none;
-  background:var(--accent);color:#fff;
-  font-size:1.2rem;font-weight:800;cursor:pointer;
-  font-family:'Poppins','Noto Sans JP',sans-serif;
+.start-btn{
+  margin-top:16px;padding:16px 48px;border-radius:30px;border:none;
+  background:var(--accent);color:#fff;font-size:1.2rem;font-weight:800;
+  cursor:pointer;font-family:'Poppins','Noto Sans JP',sans-serif;
   box-shadow:0 6px 24px rgba(var(--accent-rgb),.35);
   transition:transform .2s,box-shadow .2s;
-  letter-spacing:.05em;
 }
-.start-go-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 10px 32px rgba(var(--accent-rgb),.45)}
-.start-go-btn:active{transform:scale(.96)}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(var(--accent-rgb),.5)}
+.start-btn:active{transform:scale(.95)}
 .start-back{
-  background:none;border:2px solid var(--accent);color:var(--accent);
-  padding:10px 28px;border-radius:30px;cursor:pointer;
-  font-size:.85rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;
-  transition:all .2s;
+  margin-top:10px;background:none;border:none;color:var(--text);
+  font-size:.9rem;cursor:pointer;opacity:.6;font-family:'Noto Sans JP',sans-serif;
 }
-.start-back:hover{background:var(--accent);color:#fff}
+.start-back:hover{opacity:1}
+.start-weak-btn{
+  margin-top:8px;padding:10px 28px;border-radius:20px;
+  border:2px solid var(--accent);background:transparent;color:var(--accent);
+  font-size:.95rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;transition:all .2s;
+}
+.start-weak-btn:hover{background:var(--accent);color:#fff}
 
-/* ===== 学習画面 ===== */
+/* ===== Header ===== */
 header{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 16px;background:var(--accent);color:#fff;
@@ -200,65 +247,38 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   font-family:'Noto Sans JP',sans-serif;
 }
 .hbtn:hover{background:rgba(255,255,255,.32)}
+.hbtn.active{background:rgba(255,255,0,.35)}
 
+/* ===== Progress ===== */
 .progress-area{padding:10px 16px 4px}
 .progress-row{display:flex;align-items:center;gap:10px}
 .progress-bar{flex:1;height:10px;background:var(--accent-light);border-radius:10px;overflow:hidden;position:relative}
-.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--accent),rgba(var(--accent-rgb),.7));transition:width .5s cubic-bezier(.4,0,.2,1);position:relative}
-.progress-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));border-radius:10px}
+.progress-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--accent),rgba(var(--accent-rgb),.7));
+  transition:width .5s cubic-bezier(.4,0,.2,1);position:relative;
+}
+.progress-fill::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:20px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));border-radius:10px;
+}
 .progress-pct{font-size:.85rem;font-weight:700;color:var(--accent);min-width:42px;text-align:right}
 .progress-text{font-size:.72rem;color:var(--text);text-align:center;opacity:.5;margin-top:2px}
+.mastered-text{font-size:.78rem;color:var(--accent);text-align:center;font-weight:700;margin-top:4px}
 
-.hint-bar{display:flex;justify-content:center;gap:18px;padding:6px 16px;opacity:.55;font-size:.75rem;color:var(--text)}
+/* ===== Hint ===== */
+.hint-bar{
+  display:flex;justify-content:center;gap:18px;
+  padding:6px 16px;opacity:.55;font-size:.75rem;color:var(--text);
+}
 .hint-bar span{display:flex;align-items:center;gap:4px}
 
-.card-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 16px 8px;gap:10px}
-
-.flip-container{width:min(88vw,400px);perspective:1200px;cursor:pointer;position:relative}
-.flip-card{width:100%;position:relative;transition:transform .6s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
-.flip-container.flipped .flip-card{transform:rotateY(180deg)}
-.flip-front,.flip-back{
-  width:100%;backface-visibility:hidden;border-radius:24px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:28px 20px;gap:8px;background:var(--card-bg);
-  box-shadow:0 8px 32px rgba(var(--accent-rgb),.12),0 2px 8px rgba(0,0,0,.06);
-  border:2px solid var(--accent-light);overflow:hidden;min-height:220px;
+/* ===== Card ===== */
+.card-area{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:12px 16px 20px;gap:14px;
 }
-.flip-front{position:relative}
-.flip-front::after{content:'';position:absolute;top:-30%;right:-30%;width:60%;height:60%;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none}
-.flip-back{position:absolute;top:0;left:0;transform:rotateY(180deg);background:var(--surface)}
-.card-num{position:absolute;top:12px;left:16px;font-size:.7rem;font-weight:700;color:var(--accent);opacity:.5}
-.card-front-main{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--text);text-align:center;line-height:1.4;word-break:keep-all}
-.card-front-sub{font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400}
-.card-back-word{font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);text-align:center;line-height:1.3}
-.card-back-meaning{font-size:clamp(.78rem,2.3vw,.88rem);color:#555;text-align:center;line-height:1.5;padding:6px 12px;margin:4px 0;background:rgba(0,0,0,.04);border-radius:10px;border-left:3px solid var(--accent)}
-.card-back-desc{font-size:clamp(.78rem,2.3vw,.88rem);color:var(--text);text-align:center;line-height:1.5;opacity:.8;max-height:35%;overflow-y:auto}
-.tap-hint{position:absolute;bottom:10px;font-size:.65rem;opacity:.35;color:var(--text)}
-
-/* ===== 覚えた・もう一回ボタン ===== */
-.judge-row{
-  display:flex;gap:12px;align-items:center;justify-content:center;
-  padding:4px 0;
-}
-.judge-btn{
-  padding:12px 24px;border-radius:50px;border:none;cursor:pointer;
-  font-size:.9rem;font-weight:800;font-family:'Noto Sans JP',sans-serif;
-  transition:transform .2s,box-shadow .2s;
-  display:flex;align-items:center;gap:6px;
-}
-.judge-btn:active{transform:scale(.93)}
-.judge-btn.ok{
-  background:var(--btn-ok);color:#fff;
-  box-shadow:0 4px 16px rgba(var(--accent-rgb),.3);
-}
-.judge-btn.ok:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(var(--accent-rgb),.4)}
-.judge-btn.again{
-  background:#fff;color:var(--btn-again);
-  border:2px solid var(--btn-again);
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-.judge-btn.again:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
-
 .nav-row{display:flex;gap:12px;align-items:center}
 .nav-btn{
   width:44px;height:44px;border-radius:50%;
@@ -269,6 +289,89 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .nav-btn:hover{background:var(--accent);color:#fff}
 
+.flip-container{
+  width:min(88vw,400px);perspective:1200px;
+  cursor:pointer;position:relative;
+}
+.flip-card{
+  width:100%;position:relative;
+  transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.flip-container.flipped .flip-card{transform:rotateY(180deg)}
+.flip-front,.flip-back{
+  width:100%;backface-visibility:hidden;
+  border-radius:24px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:28px 20px;gap:8px;
+  background:var(--card-bg);
+  box-shadow:0 8px 32px rgba(var(--accent-rgb),.12),0 2px 8px rgba(0,0,0,.06);
+  border:2px solid var(--accent-light);overflow:hidden;
+  min-height:220px;
+}
+.flip-front{position:relative;}
+.flip-front::after{
+  content:'';position:absolute;top:-30%;right:-30%;width:60%;height:60%;
+  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+.flip-back{
+  position:absolute;top:0;left:0;
+  transform:rotateY(180deg);background:var(--surface);
+}
+.card-num{
+  position:absolute;top:12px;left:16px;
+  font-size:.7rem;font-weight:700;color:var(--accent);opacity:.5;
+}
+.card-mastered-badge{
+  position:absolute;top:10px;right:14px;
+  font-size:.7rem;font-weight:700;color:#fff;
+  background:var(--btn-ok);padding:2px 10px;border-radius:10px;
+  display:none;
+}
+.card-front-main{
+  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--text);
+  text-align:center;line-height:1.4;word-break:keep-all;
+}
+.card-front-sub{font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400}
+.card-back-word{
+  font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
+  text-align:center;line-height:1.3;
+}
+.card-back-meaning{
+  font-size:clamp(.78rem,2.3vw,.88rem);color:#555;
+  text-align:center;line-height:1.5;
+  padding:6px 12px;margin:4px 0;
+  background:rgba(0,0,0,.04);border-radius:10px;
+  border-left:3px solid var(--accent);
+}
+.card-back-desc{
+  font-size:clamp(.78rem,2.3vw,.88rem);color:var(--text);
+  text-align:center;line-height:1.5;opacity:.8;
+  max-height:35%;overflow-y:auto;
+}
+.tap-hint{position:absolute;bottom:10px;font-size:.65rem;opacity:.35;color:var(--text)}
+
+/* ===== Judge Buttons (NEW) ===== */
+.judge-row{
+  display:flex;gap:12px;align-items:center;margin-top:4px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .3s,transform .3s;pointer-events:none;
+}
+.judge-row.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.judge-btn{
+  padding:12px 24px;border-radius:20px;border:none;
+  font-size:.95rem;font-weight:800;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:0 3px 12px rgba(0,0,0,.15);
+}
+.judge-btn:active{transform:scale(.92)}
+.judge-ok{background:var(--btn-ok);color:#fff}
+.judge-ok:hover{box-shadow:0 6px 20px rgba(var(--accent-rgb),.4)}
+.judge-again{background:var(--btn-again);color:#fff}
+.judge-again:hover{box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
+/* ===== Swipe Animations ===== */
 .flip-container.swipe-left .flip-card{animation:swipeLeft .35s ease-out forwards}
 .flip-container.swipe-right .flip-card{animation:swipeRight .35s ease-out forwards}
 @keyframes swipeLeft{0%{transform:translateX(0) rotate(0);opacity:1}100%{transform:translateX(-120%) rotate(-8deg);opacity:0}}
@@ -278,56 +381,89 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 @keyframes enterLeft{0%{transform:translateX(120%) rotate(8deg);opacity:0}100%{transform:translateX(0) rotate(0);opacity:1}}
 @keyframes enterRight{0%{transform:translateX(-120%) rotate(-8deg);opacity:0}100%{transform:translateX(0) rotate(0);opacity:1}}
 
-.cheer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .4s}
+/* ===== Cheer Overlay ===== */
+.cheer-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;opacity:0;pointer-events:none;transition:opacity .4s;
+}
 .cheer-overlay.show{opacity:1;pointer-events:auto}
-.cheer-box{background:#fff;border-radius:28px;padding:36px 28px;text-align:center;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:scale(.8);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.cheer-box{
+  background:#fff;border-radius:28px;padding:36px 28px;
+  text-align:center;max-width:340px;width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  transform:scale(.8);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+}
 .cheer-overlay.show .cheer-box{transform:scale(1)}
 .cheer-emoji{font-size:3rem;margin-bottom:8px}
 .cheer-msg{font-size:1rem;font-weight:700;line-height:1.7;color:#333;white-space:pre-line}
-.cheer-close{margin-top:16px;padding:10px 32px;border-radius:20px;border:none;background:linear-gradient(135deg,#a78bfa,#60a5fa);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif}
+.cheer-close{
+  margin-top:16px;padding:10px 32px;border-radius:20px;
+  border:none;background:linear-gradient(135deg,#a78bfa,#60a5fa);
+  color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+}
 
 footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--text)}
 </style>
 </head>
 <body>
 
-<!-- ===== ランディング画面 ===== -->
+<!-- ===== LANDING ===== -->
 <div class="landing" id="landing">
   <div class="brand">
-    <div class="brand-logo"><img src="gift-logo.png" alt="GIFT協会ロゴ"></div>
+    <div class="brand-logo">
+      <img src="gift-logo.png" alt="GIFT協会ロゴ">
+    </div>
     <h1>介護用語フラッシュカード</h1>
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
-  <p class="landing-desc">介護福祉士の試験に出る用語を<br>母国語で楽しく覚えよう！</p>
+  <p class="landing-desc">
+    かいごふくししのしけんにでるようごを<br>介護福祉士の試験に出る用語を<br>ぼこくごでたのしくおぼえよう！<br>母国語で楽しく覚えよう！
+  </p>
   <div class="lang-section">
     <div class="lang-btn-ja" onclick="chooseLang('ja')">
       <div class="hinomaru"></div>
-      <div class="ja-text"><span class="lang-main">日本語で学ぶ</span><span class="lang-sub">単語 → ふりがな・意味</span></div>
+      <div class="ja-text">
+        <span class="lang-main">日本語で学ぶ</span>
+        <span class="lang-sub">単語 → ふりがな・意味</span>
+      </div>
     </div>
     <div class="lang-btn-en" onclick="chooseLang('en')">
       <div class="en-icon">EN</div>
-      <div class="en-text"><span class="lang-main">Learn in English</span><span class="lang-sub">Word → English meaning</span></div>
+      <div class="en-text">
+        <span class="lang-main">Learn in English</span>
+        <span class="lang-sub">Word → English meaning</span>
+      </div>
     </div>
     <div class="lang-grid">
       <div class="lang-btn id" onclick="chooseLang('id')">
         <img class="flag-img" src="https://flagcdn.com/w160/id.png" alt="Indonesia">
-        <span class="lang-name">Indonesia</span><span class="lang-label">インドネシア語</span>
+        <span class="lang-name">Indonesia</span>
+        <span class="lang-label">インドネシア語</span>
       </div>
       <div class="lang-btn vi" onclick="chooseLang('vi')">
         <img class="flag-img" src="https://flagcdn.com/w160/vn.png" alt="Việt Nam">
-        <span class="lang-name">Tiếng Việt</span><span class="lang-label">ベトナム語</span>
+        <span class="lang-name">Tiếng Việt</span>
+        <span class="lang-label">ベトナム語</span>
       </div>
       <div class="lang-btn th" onclick="chooseLang('th')">
         <img class="flag-img" src="https://flagcdn.com/w160/th.png" alt="ไทย">
-        <span class="lang-name">ภาษาไทย</span><span class="lang-label">タイ語</span>
+        <span class="lang-name">ภาษาไทย</span>
+        <span class="lang-label">タイ語</span>
       </div>
     </div>
   </div>
   <div class="how-to" id="howTo">
-    <p><span class="icon">👆</span> タップでカードを裏返す<br><span class="icon">👈👉</span> スワイプでカード切り替え</p>
+    <p>
+      <span class="icon">👆</span> タップでカードを裏返す<br>
+      <span class="icon">👈👉</span> スワイプでカード切り替え
+    </p>
   </div>
   <div class="credit">
-    <div class="credit-avatar"><img src="muneishi-icon.png" alt="宗石光英"></div>
+    <div class="credit-avatar">
+      <img src="muneishi-icon.png" alt="宗石光英">
+    </div>
     <div class="credit-info">
       <div class="credit-org">一般社団法人 GIFT協会</div>
       <div class="credit-name">宗石 光英</div>
@@ -336,23 +472,24 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   </div>
 </div>
 
-<!-- ===== スタート画面（新規） ===== -->
+<!-- ===== START SCREEN (NEW) ===== -->
 <div class="start-screen" id="startScreen">
-  <div class="start-stats">
-    <div class="start-stats-title" id="startStatsTitle">🎯 覚えた単語</div>
-    <div class="start-stats-num"><span id="startMastered">0</span><small> / <span id="startTotal">0</span></small></div>
-    <div class="start-stats-bar"><div class="start-stats-bar-fill" id="startBarFill" style="width:0%"></div></div>
+  <div class="start-progress-box">
+    <div class="start-mastered" id="startMastered">🎯 覚えた単語：0 / 0</div>
+    <div class="start-bar-wrap"><div class="start-bar-fill" id="startBarFill" style="width:0%"></div></div>
+    <div class="start-lets-try" id="startLetsTry"></div>
   </div>
-  <div class="start-lets" id="startLets">レッツトライ！</div>
-  <button class="start-go-btn" id="startGoBtn" onclick="startQuiz()">▶ START</button>
-  <button class="start-back" onclick="backToTop()">← 言語選択に戻る</button>
+  <button class="start-btn" id="startBtn" onclick="startQuiz(false)">▶ START</button>
+  <button class="start-weak-btn" id="startWeakBtn" onclick="startQuiz(true)">🔄 にがてだけ特訓</button>
+  <button class="start-back" onclick="backToLanding()">← 言語選択に戻る</button>
 </div>
 
-<!-- ===== 学習画面 ===== -->
+<!-- ===== MAIN APP ===== -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
   <header>
     <h2 id="headerTitle">📖 学習中</h2>
     <div class="header-btns">
+      <button class="hbtn" id="btnWeak" onclick="toggleWeakMode()">😤</button>
       <button class="hbtn" onclick="shuffleCards()">🔀</button>
       <button class="hbtn" onclick="backToStart()">🏠</button>
     </div>
@@ -363,13 +500,18 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
       <span class="progress-pct" id="progressPct">0%</span>
     </div>
     <div class="progress-text" id="progressText"></div>
+    <div class="mastered-text" id="masteredText"></div>
   </div>
-  <div class="hint-bar" id="hintBar"><span>👆 タップ＝裏返す</span><span>👈👉 スワイプ＝次/前</span></div>
+  <div class="hint-bar" id="hintBar">
+    <span>👆 タップ＝裏返す</span>
+    <span>👈👉 スワイプ＝次/前</span>
+  </div>
   <div class="card-area">
-    <div class="flip-container" id="flipContainer" onclick="flipCard()">
+    <div class="flip-container" id="flipContainer">
       <div class="flip-card" id="flipCard">
         <div class="flip-front" id="cardFront">
           <span class="card-num" id="cardNum"></span>
+          <span class="card-mastered-badge" id="masteredBadge">✓</span>
           <div class="card-front-main" id="frontMain"></div>
           <div class="card-front-sub" id="frontSub"></div>
           <span class="tap-hint" id="tapHintFront"></span>
@@ -383,9 +525,10 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
         </div>
       </div>
     </div>
-    <div class="judge-row" id="judgeRow" style="display:none">
-      <button class="judge-btn again" onclick="judgeCard('again')">🔄 <span id="btnAgainLabel">もう一回</span></button>
-      <button class="judge-btn ok" onclick="judgeCard('ok')">✅ <span id="btnOkLabel">覚えた！</span></button>
+    <!-- Judge Buttons (NEW) -->
+    <div class="judge-row" id="judgeRow">
+      <button class="judge-btn judge-again" id="judgeAgain" onclick="judgeCard(false)">🔄 もう一回</button>
+      <button class="judge-btn judge-ok" id="judgeOk" onclick="judgeCard(true)">✅ 覚えた！</button>
     </div>
     <div class="nav-row">
       <button class="nav-btn" onclick="prevCard()">◀</button>
@@ -395,7 +538,7 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
   <footer>© 一般社団法人 GIFT協会</footer>
 </div>
 
-<!-- ===== 応援オーバーレイ ===== -->
+<!-- ===== CHEER OVERLAY ===== -->
 <div class="cheer-overlay" id="cheerOverlay">
   <div class="cheer-box">
     <div class="cheer-emoji" id="cheerEmoji"></div>
@@ -405,139 +548,238 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
 </div>
 
 <script>
+/* ========== CONFIG ========== */
 const CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=0';
 const CSV_EN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=519389580';
 
-let allData=[],currentLang='',idx=0,viewedCount=0,lastCheerAt=0;
-let masteredSet=new Set(); /* 覚えた単語のNo管理 */
-const STORAGE_KEY='kaigo-mastered-';
+let allData=[],displayData=[],currentLang='',idx=0,weakMode=false;
+let masteredSet=new Set();
+let lastMilestone=0;
 
+/* ========== LANG META ========== */
 const LANG_META={
-  ja:{header:'📖 日本語で学習中',tapFront:'タップで意味を見る',tapBack:'タップで表に戻す',hintTap:'👆 タップ＝裏返す',hintSwipe:'👈👉 スワイプ＝次/前',lets:'レッツトライ！',statsTitle:'🎯 覚えた単語',okLabel:'覚えた！',againLabel:'もう一回'},
-  en:{header:'📖 Learning in English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',hintTap:'👆 Tap = flip card',hintSwipe:'👈👉 Swipe = next/prev',lets:"Let's try!",statsTitle:'🎯 Words Mastered',okLabel:'Got it!',againLabel:'Again'},
-  id:{header:'📖 Belajar Bahasa Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',hintTap:'👆 Ketuk = balik kartu',hintSwipe:'👈👉 Geser = kartu berikutnya',lets:'Ayo coba!',statsTitle:'🎯 Kata yang dikuasai',okLabel:'Hafal!',againLabel:'Sekali lagi'},
-  vi:{header:'📖 Học Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ tiếp theo',lets:'Hãy thử nào!',statsTitle:'🎯 Từ đã thuộc',okLabel:'Thuộc rồi!',againLabel:'Lần nữa'},
-  th:{header:'📖 เรียนภาษาไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับด้านหน้า',hintTap:'👆 แตะ = พลิกการ์ด',hintSwipe:'👈👉 ปัด = การ์ดถัดไป',lets:'มาลองกันเลย!',statsTitle:'🎯 คำที่จำได้แล้ว',okLabel:'จำได้แล้ว!',againLabel:'อีกครั้ง'}
-};
-
-const HOW_TO_TEXT={
-  ja:'<span class="icon">👆</span> タップでカードを裏返す<br><span class="icon">👈👉</span> スワイプでカード切り替え',
-  en:'<span class="icon">👆</span> Tap to flip the card<br><span class="icon">👈👉</span> Swipe to change cards',
-  id:'<span class="icon">👆</span> Ketuk untuk membalik kartu<br><span class="icon">👈👉</span> Geser untuk ganti kartu',
-  vi:'<span class="icon">👆</span> Chạm để lật thẻ<br><span class="icon">👈👉</span> Vuốt để chuyển thẻ',
-  th:'<span class="icon">👆</span> แตะเพื่อพลิกการ์ด<br><span class="icon">👈👉</span> ปัดเพื่อเปลี่ยนการ์ด'
+  ja:{header:'📖 日本語で学習中',tapFront:'タップで意味を見る',tapBack:'タップで表に戻す',
+      hintTap:'👆 タップ＝裏返す',hintSwipe:'👈👉 スワイプ＝次/前',
+      letsTry:'レッツトライ！',okBtn:'✅ 覚えた！',againBtn:'🔄 もう一回',
+      weakBtn:'にがてだけ特訓',masteredLabel:'覚えた'},
+  en:{header:'📖 Learning in English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',
+      hintTap:'👆 Tap = flip card',hintSwipe:'👈👉 Swipe = next/prev',
+      letsTry:"Let's try!",okBtn:'✅ Got it!',againBtn:'🔄 One more time',
+      weakBtn:'Weak cards only',masteredLabel:'Mastered'},
+  id:{header:'📖 Belajar Bahasa Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',
+      hintTap:'👆 Ketuk = balik kartu',hintSwipe:'👈👉 Geser = kartu berikutnya',
+      letsTry:'Ayo coba!',okBtn:'✅ Hafal!',againBtn:'🔄 Sekali lagi',
+      weakBtn:'Kartu sulit saja',masteredLabel:'Hafal'},
+  vi:{header:'📖 Học Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',
+      hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ tiếp theo',
+      letsTry:'Hãy thử nào!',okBtn:'✅ Thuộc rồi!',againBtn:'🔄 Một lần nữa',
+      weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc'},
+  th:{header:'📖 เรียนภาษาไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับด้านหน้า',
+      hintTap:'👆 แตะ = พลิกการ์ด',hintSwipe:'👈👉 ปัด = การ์ดถัดไป',
+      letsTry:'มาลองกันเลย!',okBtn:'✅ จำได้แล้ว!',againBtn:'🔄 อีกครั้ง',
+      weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้'}
 };
 
 const CHEERS=[
-  {at:10,emoji:'🌟',msg:'すごい！10問クリア！\nGreat! 10 cards done!\nHebat! 10 soal selesai!\nTuyệt vời! 10 câu rồi!\nเก่งมาก! 10 ข้อแล้ว!'},
-  {at:20,emoji:'🔥',msg:'20問突破！\n20 cards! Keep going!\n20 soal! Lanjutkan!\n20 câu! Tiếp tục nhé!\n20 ข้อแล้ว! ไปต่อเลย!'},
-  {at:30,emoji:'💪',msg:'30問！頑張ってるね♪\n30 cards! Great job♪\n30 soal! Semangat!\n30 câu! Cố lên♪\n30 ข้อ! สู้ๆ♪'},
-  {at:40,emoji:'🎯',msg:'40問達成！\n40 cards! Wonderful!\n40 soal! Luar biasa!\n40 câu! Xuất sắc!\n40 ข้อ! ยอดเยี่ยม!'},
-  {at:50,emoji:'🏆',msg:'半分クリア！50問！\nHalfway! 50 cards!\nSetengah jalan! 50!\nĐã qua nửa! 50!\nครึ่งทางแล้ว! 50!'},
-  {at:60,emoji:'🚀',msg:'60問！止まらないね！\n60! Unstoppable!\n60! Tak terhentikan!\n60! Không dừng lại!\n60! หยุดไม่อยู่!'},
-  {at:70,emoji:'⭐',msg:'70問！キラキラ！\n70! Shining bright!\n70! Bersinar!\n70! Tỏa sáng!\n70! เจิดจรัส!'},
-  {at:80,emoji:'🎉',msg:'80問！もう少し！\n80! Almost there!\n80! Sedikit lagi!\n80! Sắp xong!\n80! อีกนิดเดียว!'},
-  {at:90,emoji:'🌈',msg:'90問！あと少し！\n90! Just a bit more!\n90! Hampir selesai!\n90! Gần xong!\n90! เกือบครบ!'},
-  {at:100,emoji:'👑',msg:'100問達成！王者！\n100! Champion!\n100! Juara!\n100! Vô địch!\n100! แชมป์!'},
-  {at:120,emoji:'🔥',msg:'120問！情熱！\n120! On fire!\n120! Semangat!\n120! Nhiệt huyết!\n120! มีไฟ!'},
-  {at:150,emoji:'🎊',msg:'150問！伝説！\n150! Legendary!\n150! Legenda!\n150! Huyền thoại!\n150! ตำนาน!'},
-  {at:180,emoji:'🎓',msg:'180問！合格確定！\n180! You\'ll pass!\n180! Pasti lulus!\n180! Chắc đỗ!\n180! สอบผ่านแน่!'},
-  {at:190,emoji:'🏆',msg:'190問！マスター！\n190! Master!\n190! Master!\n190! Thành thạo!\n190! มาสเตอร์!'}
+  {at:10,emoji:'🌟',msg:'すごい！10問クリア！\nGreat! 10 cards done!'},
+  {at:25,emoji:'🔥',msg:'25問突破！調子いいね！\n25 cards! Keep going!'},
+  {at:50,emoji:'🏆',msg:'50問マスター！すごい！\n50 mastered! Amazing!'},
+  {at:75,emoji:'💎',msg:'75問！ダイヤモンド級！\n75 cards! Diamond level!'},
+  {at:100,emoji:'👑',msg:'100問達成！王者だ！\n100 mastered! Champion!'},
+  {at:150,emoji:'🚀',msg:'150問！伝説レベル！\n150 cards! Legendary!'},
+  {at:200,emoji:'🎓',msg:'200問！合格間違いなし！\n200! You will definitely pass!'}
 ];
 
-/* ===== localStorage で覚えた単語を保持 ===== */
-function loadMastered(){
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY+currentLang);
-    masteredSet=raw?new Set(JSON.parse(raw)):new Set();
-  }catch(e){masteredSet=new Set()}
-}
-function saveMastered(){
-  try{localStorage.setItem(STORAGE_KEY+currentLang,JSON.stringify([...masteredSet]))}catch(e){}
+/* ========== SOUND (Web Audio API) ========== */
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx;
+function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx();}
+
+function playFlip(){
+  ensureAudio();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(800,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(400,audioCtx.currentTime+.08);
+  g.gain.setValueAtTime(.12,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.1);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start();o.stop(audioCtx.currentTime+.1);
 }
 
-/* ===== 言語選択 → スタート画面 ===== */
+function playOk(){
+  ensureAudio();
+  const t=audioCtx.currentTime;
+  [523.25,659.25,783.99].forEach((f,i)=>{
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.15,t+i*.08);
+    g.gain.exponentialRampToValueAtTime(.001,t+i*.08+.2);
+    o.connect(g);g.connect(audioCtx.destination);
+    o.start(t+i*.08);o.stop(t+i*.08+.2);
+  });
+}
+
+function playAgain(){
+  ensureAudio();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type='triangle';o.frequency.setValueAtTime(300,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(200,audioCtx.currentTime+.15);
+  g.gain.setValueAtTime(.1,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.15);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start();o.stop(audioCtx.currentTime+.15);
+}
+
+function playClear(){
+  ensureAudio();
+  const t=audioCtx.currentTime;
+  [523.25,659.25,783.99,1046.5].forEach((f,i)=>{
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.18,t+i*.12);
+    g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.35);
+    o.connect(g);g.connect(audioCtx.destination);
+    o.start(t+i*.12);o.stop(t+i*.12+.35);
+  });
+}
+
+/* ========== STORAGE ========== */
+function storageKey(){return 'kaigo-mastered-'+currentLang;}
+function loadMastered(){
+  try{
+    const s=localStorage.getItem(storageKey());
+    masteredSet=s?new Set(JSON.parse(s)):new Set();
+  }catch(e){masteredSet=new Set();}
+}
+function saveMastered(){
+  try{localStorage.setItem(storageKey(),JSON.stringify([...masteredSet]));}catch(e){}
+}
+
+/* ========== FLOW ========== */
 function chooseLang(lang){
   currentLang=lang;
   document.body.className='lang-'+lang;
+  loadMastered();
   document.getElementById('landing').style.display='none';
   document.getElementById('startScreen').style.display='flex';
-  loadMastered();
+  /* Load data for start screen count */
+  loadDataForStart();
+}
 
-  const meta=LANG_META[lang];
-  document.getElementById('startStatsTitle').textContent=meta.statsTitle;
-  document.getElementById('startLets').textContent=meta.lets;
-
-  /* データ読み込み → 総数を反映 */
-  const url=(lang==='en')?CSV_EN:CSV_MAIN;
+function loadDataForStart(){
+  const url=(currentLang==='en')?CSV_EN:CSV_MAIN;
   Papa.parse(url,{
     download:true,header:false,skipEmptyLines:true,
     complete:function(r){
       const rows=r.data.slice(1);
-      if(lang==='en'){
-        allData=rows.filter(r=>r[0]&&r[1]).map(r=>({no:r[0],word:r[1],meaning:r[2]||'',enWord:r[3]||'',enDesc:r[4]||''}));
+      if(currentLang==='en'){
+        allData=rows.filter(r=>r[0]&&r[1]).map(r=>({
+          no:r[0],word:r[1],meaning:r[2]||'',enWord:r[3]||'',enDesc:r[4]||''
+        }));
       }else{
-        allData=rows.filter(r=>r[0]&&r[1]).map(r=>({no:r[0],word:r[1],idWord:r[2]||'',viWord:r[3]||'',thWord:r[4]||'',meaning:r[5]||'',idDesc:r[6]||'',viDesc:r[7]||'',thDesc:r[8]||''}));
+        allData=rows.filter(r=>r[0]&&r[1]).map(r=>({
+          no:r[0],word:r[1],idWord:r[2]||'',viWord:r[3]||'',thWord:r[4]||'',
+          meaning:r[5]||'',idDesc:r[6]||'',viDesc:r[7]||'',thDesc:r[8]||''
+        }));
       }
-      updateStartStats();
+      updateStartScreen();
     }
   });
 }
 
-function updateStartStats(){
+function updateStartScreen(){
   const total=allData.length;
-  const mastered=masteredSet.size;
-  document.getElementById('startMastered').textContent=mastered;
-  document.getElementById('startTotal').textContent=total;
-  const pct=total>0?Math.round((mastered/total)*100):0;
+  const m=masteredSet.size;
+  const pct=total?Math.round(m/total*100):0;
+  const meta=LANG_META[currentLang];
+  document.getElementById('startMastered').textContent='🎯 '+meta.masteredLabel+'：'+m+' / '+total;
   document.getElementById('startBarFill').style.width=pct+'%';
+  document.getElementById('startLetsTry').textContent=meta.letsTry;
+  /* Show weak-only button only if there are weak cards */
+  const weakCount=allData.filter(d=>!masteredSet.has(d.no)).length;
+  document.getElementById('startWeakBtn').style.display=(weakCount>0&&weakCount<total)?'inline-block':'none';
+  document.getElementById('startWeakBtn').textContent='🔄 '+meta.weakBtn+'（'+weakCount+'）';
 }
 
-/* ===== スタート → 学習画面 ===== */
-function startQuiz(){
+function startQuiz(weak){
+  weakMode=weak;
+  if(weak){
+    displayData=allData.filter(d=>!masteredSet.has(d.no));
+    if(!displayData.length){displayData=[...allData];weakMode=false;}
+  }else{
+    displayData=[...allData];
+  }
+  idx=0;
+  lastMilestone=0;
   document.getElementById('startScreen').style.display='none';
   document.getElementById('app').style.display='flex';
   const meta=LANG_META[currentLang];
   document.getElementById('headerTitle').textContent=meta.header;
   document.getElementById('hintBar').innerHTML='<span>'+meta.hintTap+'</span><span>'+meta.hintSwipe+'</span>';
-  document.getElementById('btnOkLabel').textContent=meta.okLabel;
-  document.getElementById('btnAgainLabel').textContent=meta.againLabel;
-  idx=0;viewedCount=0;lastCheerAt=0;
+  document.getElementById('judgeOk').textContent=meta.okBtn;
+  document.getElementById('judgeAgain').textContent=meta.againBtn;
+  document.getElementById('btnWeak').classList.toggle('active',weakMode);
   showCard();
 }
 
-/* ===== 戻る ===== */
-function backToTop(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('startScreen').style.display='none';
-  document.getElementById('landing').style.display='flex';
-  document.body.className='';
-  viewedCount=0;lastCheerAt=0;idx=0;
-  document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.ja;
-}
 function backToStart(){
   document.getElementById('app').style.display='none';
   document.getElementById('startScreen').style.display='flex';
-  updateStartStats();
+  weakMode=false;
+  updateStartScreen();
 }
 
-/* ===== カード表示 ===== */
+function backToLanding(){
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('landing').style.display='flex';
+  document.body.className='';
+}
+
+function toggleWeakMode(){
+  if(!weakMode){
+    const weak=allData.filter(d=>!masteredSet.has(d.no));
+    if(!weak.length){return;}
+    displayData=weak;weakMode=true;
+  }else{
+    displayData=[...allData];weakMode=false;
+  }
+  idx=0;
+  document.getElementById('btnWeak').classList.toggle('active',weakMode);
+  showCard();
+}
+
+/* ========== CARD DISPLAY ========== */
 function showCard(){
-  if(!allData.length)return;
-  const d=allData[idx],total=allData.length,pct=Math.round(((idx+1)/total)*100);
+  if(!displayData.length)return;
+  const fc=document.getElementById('flipContainer');
+  fc.classList.remove('flipped');
+  document.getElementById('judgeRow').classList.remove('visible');
+
+  const d=displayData[idx],total=displayData.length;
+  const pct=Math.round(((idx+1)/total)*100);
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressPct').textContent=pct+'%';
   document.getElementById('progressText').textContent=(idx+1)+' / '+total;
+
+  const mCount=masteredSet.size;
+  const aTotal=allData.length;
+  const mPct=aTotal?Math.round(mCount/aTotal*100):0;
   const meta=LANG_META[currentLang];
+  document.getElementById('masteredText').textContent='🎯 '+meta.masteredLabel+'：'+mCount+' / '+aTotal+'（'+mPct+'%）';
+
   document.getElementById('tapHintFront').textContent=meta.tapFront;
   document.getElementById('tapHintBack').textContent=meta.tapBack;
 
   let mainText='',subText='';
-  const m=d.word.match(/^(.+?)（(.+?)）$/);
-  if(m){mainText=m[1];subText=m[2];}else{mainText=d.word;subText='';}
+  const match=d.word.match(/^(.+?)（(.+?)）$/);
+  if(match){mainText=match[1];subText=match[2];}else{mainText=d.word;subText='';}
 
   document.getElementById('cardNum').textContent='No.'+d.no;
   document.getElementById('cardNumBack').textContent='No.'+d.no;
+
+  const badge=document.getElementById('masteredBadge');
+  if(masteredSet.has(d.no)){badge.style.display='inline-block';badge.textContent='✓ '+meta.masteredLabel;}
+  else{badge.style.display='none';}
 
   if(currentLang==='ja'){
     document.getElementById('frontMain').textContent=mainText;
@@ -554,7 +796,7 @@ function showCard(){
     document.getElementById('backMeaning').textContent=d.meaning;
     document.getElementById('backMeaning').style.display='block';
     document.getElementById('backDesc').textContent=d.enDesc;
-    document.getElementById('backDesc').style.display='block';
+    document.getElementById('backDesc').style.display=d.enDesc?'block':'none';
   }else{
     document.getElementById('frontMain').textContent=mainText;
     document.getElementById('frontSub').textContent=subText;
@@ -566,118 +808,146 @@ function showCard(){
     document.getElementById('backMeaning').textContent=d.meaning;
     document.getElementById('backMeaning').style.display='block';
     document.getElementById('backDesc').textContent=bD;
-    document.getElementById('backDesc').style.display='block';
+    document.getElementById('backDesc').style.display=bD?'block':'none';
   }
-
-  document.getElementById('flipContainer').classList.remove('flipped');
-  document.getElementById('judgeRow').style.display='none';
 }
 
-/* ===== カード裏返し → 覚えた/もう一回ボタン表示 ===== */
+/* ========== FLIP ========== */
 function flipCard(){
   const fc=document.getElementById('flipContainer');
   fc.classList.toggle('flipped');
+  playFlip();
+  /* Show judge buttons when flipped to back */
   if(fc.classList.contains('flipped')){
-    document.getElementById('judgeRow').style.display='flex';
+    document.getElementById('judgeRow').classList.add('visible');
   }else{
-    document.getElementById('judgeRow').style.display='none';
+    document.getElementById('judgeRow').classList.remove('visible');
   }
 }
+/* Attach click handler */
+document.getElementById('flipContainer').addEventListener('click',function(e){
+  if(e.target.closest('.judge-btn'))return;
+  flipCard();
+});
+/* Remove inline onclick from flipContainer if present */
+document.getElementById('flipContainer').removeAttribute('onclick');
 
-/* ===== 覚えた / もう一回 判定 ===== */
-function judgeCard(type){
-  const d=allData[idx];
-  if(type==='ok'){
+/* ========== JUDGE ========== */
+function judgeCard(mastered){
+  const d=displayData[idx];
+  if(mastered){
     masteredSet.add(d.no);
+    playOk();
+    /* Small confetti burst */
+    confetti({particleCount:30,spread:50,origin:{y:.7},colors:['#4caf50','#81c784','#fff']});
   }else{
     masteredSet.delete(d.no);
+    playAgain();
   }
   saveMastered();
-  viewedCount++;
-  /* 次のカードへ（アニメーション付き） */
-  const c=document.getElementById('flipContainer');
-  c.classList.add('swipe-left');
-  setTimeout(()=>{
-    c.classList.remove('swipe-left','flipped');
-    document.getElementById('judgeRow').style.display='none';
-    idx=(idx+1)%allData.length;
-    showCard();checkCheer();
-    c.classList.add('enter-left');
-    setTimeout(()=>c.classList.remove('enter-left'),350);
-  },300);
+  checkMilestone();
+  /* Auto advance to next card */
+  nextCard();
 }
 
-function nextCard(){
-  if(!allData.length)return;
-  const c=document.getElementById('flipContainer');
-  c.classList.add('swipe-left');
-  setTimeout(()=>{
-    c.classList.remove('swipe-left','flipped');
-    document.getElementById('judgeRow').style.display='none';
-    idx=(idx+1)%allData.length;viewedCount++;
-    showCard();checkCheer();
-    c.classList.add('enter-left');
-    setTimeout(()=>c.classList.remove('enter-left'),350);
-  },300);
-}
+/* ========== MILESTONE ========== */
+function checkMilestone(){
+  const m=masteredSet.size;
+  const total=allData.length;
+  /* Percentage milestones */
+  const pctMilestones=[25,50,75,100];
+  const pct=total?Math.round(m/total*100):0;
 
-function prevCard(){
-  if(!allData.length)return;
-  const c=document.getElementById('flipContainer');
-  c.classList.add('swipe-right');
-  setTimeout(()=>{
-    c.classList.remove('swipe-right','flipped');
-    document.getElementById('judgeRow').style.display='none';
-    idx=(idx-1+allData.length)%allData.length;
-    showCard();
-    c.classList.add('enter-right');
-    setTimeout(()=>c.classList.remove('enter-right'),350);
-  },300);
-}
-
-function shuffleCards(){
-  for(let i=allData.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [allData[i],allData[j]]=[allData[j],allData[i]];
+  /* Check fixed number milestones */
+  for(const c of CHEERS){
+    if(m>=c.at&&lastMilestone<c.at){
+      lastMilestone=c.at;
+      showCheer(c.emoji,c.msg);
+      confetti({particleCount:120,spread:80,origin:{y:.6}});
+      if(m>=total){playClear();}
+      return;
+    }
   }
-  idx=0;viewedCount=0;lastCheerAt=0;
-  document.getElementById('judgeRow').style.display='none';
-  showCard();
+  /* Check percentage milestones for small datasets */
+  if(total<=50){
+    for(const p of pctMilestones){
+      const threshold=Math.round(total*p/100);
+      if(m>=threshold&&lastMilestone<threshold&&threshold>0){
+        lastMilestone=threshold;
+        const emoji=p===100?'🎊':p>=75?'💎':p>=50?'🏆':'🌟';
+        showCheer(emoji,p+'% マスター！\n'+p+'% Mastered!');
+        confetti({particleCount:120,spread:80,origin:{y:.6}});
+        if(p===100)playClear();
+        return;
+      }
+    }
+  }
 }
 
-/* ===== スワイプ ===== */
-(function(){
-  let sx=0,sy=0,dragging=false;
-  document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;dragging=true},{passive:true});
-  document.addEventListener('touchend',function(e){
-    if(!dragging)return;dragging=false;
-    const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.2){if(dx<0)nextCard();else prevCard();}
-  },{passive:true});
-})();
-
-document.addEventListener('keydown',function(e){
-  if(e.key==='ArrowRight')nextCard();
-  else if(e.key==='ArrowLeft')prevCard();
-  else if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
-});
-
-/* ===== 応援メッセージ ===== */
-function checkCheer(){for(const c of CHEERS){if(viewedCount>=c.at&&lastCheerAt<c.at){lastCheerAt=c.at;showCheer(c.emoji,c.msg);return}}}
 function showCheer(emoji,msg){
   document.getElementById('cheerEmoji').textContent=emoji;
   document.getElementById('cheerMsg').textContent=msg;
   document.getElementById('cheerOverlay').classList.add('show');
-  if(typeof confetti==='function')confetti({particleCount:120,spread:80,origin:{y:.6},colors:['#a78bfa','#60a5fa','#34d399','#fbbf24','#f472b6']});
 }
-function closeCheer(){document.getElementById('cheerOverlay').classList.remove('show')}
+function closeCheer(){
+  document.getElementById('cheerOverlay').classList.remove('show');
+}
 
-/* ===== ホバーで操作説明切替 ===== */
-document.querySelectorAll('.lang-btn-ja').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.ja}));
-document.querySelectorAll('.lang-btn-en').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.en}));
-document.querySelectorAll('.lang-btn.id').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.id}));
-document.querySelectorAll('.lang-btn.vi').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.vi}));
-document.querySelectorAll('.lang-btn.th').forEach(b=>b.addEventListener('mouseenter',()=>{document.getElementById('howTo').querySelector('p').innerHTML=HOW_TO_TEXT.th}));
+/* ========== NAVIGATION ========== */
+function nextCard(){
+  if(!displayData.length)return;
+  const fc=document.getElementById('flipContainer');
+  fc.classList.remove('flipped');
+  document.getElementById('judgeRow').classList.remove('visible');
+  fc.classList.add('swipe-left');
+  setTimeout(()=>{
+    fc.classList.remove('swipe-left');
+    idx=(idx+1)%displayData.length;
+    showCard();
+    fc.classList.add('enter-left');
+    setTimeout(()=>fc.classList.remove('enter-left'),350);
+  },300);
+}
+
+function prevCard(){
+  if(!displayData.length)return;
+  const fc=document.getElementById('flipContainer');
+  fc.classList.remove('flipped');
+  document.getElementById('judgeRow').classList.remove('visible');
+  fc.classList.add('swipe-right');
+  setTimeout(()=>{
+    fc.classList.remove('swipe-right');
+    idx=(idx-1+displayData.length)%displayData.length;
+    showCard();
+    fc.classList.add('enter-right');
+    setTimeout(()=>fc.classList.remove('enter-right'),350);
+  },300);
+}
+
+function shuffleCards(){
+  for(let i=displayData.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [displayData[i],displayData[j]]=[displayData[j],displayData[i]];
+  }
+  idx=0;showCard();
+}
+
+/* ========== SWIPE ========== */
+(function(){
+  let sx=0,sy=0,swiping=false;
+  const fc=document.getElementById('flipContainer');
+  fc.addEventListener('touchstart',function(e){
+    sx=e.touches[0].clientX;sy=e.touches[0].clientY;swiping=true;
+  },{passive:true});
+  fc.addEventListener('touchend',function(e){
+    if(!swiping)return;swiping=false;
+    const dx=e.changedTouches[0].clientX-sx;
+    const dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){
+      if(dx<0)nextCard();else prevCard();
+    }
+  },{passive:true});
+})();
 </script>
 </body>
 </html>
