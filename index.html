@@ -277,17 +277,10 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .card-area{
   flex:1;display:flex;flex-direction:column;
   align-items:center;justify-content:flex-start;
-  padding:12px 16px 20px;gap:14px;
+  padding:12px 16px 0;gap:14px;
+  /* ★変更: padding-bottomを0に。下部固定バーの分のスペースはmarginで確保 */
+  margin-bottom:140px;
 }
-.nav-row{display:flex;gap:12px;align-items:center}
-.nav-btn{
-  width:44px;height:44px;border-radius:50%;
-  border:2px solid var(--accent);background:var(--card-bg);
-  color:var(--accent);font-size:1.2rem;cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(var(--accent-rgb),.15);
-}
-.nav-btn:hover{background:var(--accent);color:#fff}
 
 .flip-container{
   width:min(88vw,400px);perspective:1200px;
@@ -318,7 +311,6 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   position:absolute;top:0;left:0;
   transform:rotateY(180deg);background:var(--surface);
   justify-content:flex-start;padding:24px 18px 18px;
-  /* ★変更: max-heightを削除、overflow-yも削除 → コンテンツに合わせて伸びる */
 }
 .card-num{
   position:absolute;top:12px;left:16px;
@@ -352,18 +344,28 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .tap-hint{font-size:.65rem;opacity:.35;color:var(--text);margin-top:6px}
 
-/* ===== Judge Buttons — カードの外に配置 ===== */
+/* ===== 画面下部固定バー ===== */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:90;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:10px 16px 6px;
+  background:linear-gradient(to top,rgba(255,255,255,.95) 60%,rgba(255,255,255,0) 100%);
+  backdrop-filter:blur(8px);
+  pointer-events:none; /* 子要素だけクリック可能にする */
+}
+.bottom-bar>*{pointer-events:auto;}
+
+/* ===== Judge Buttons ===== */
 .judge-row{
   display:flex;gap:14px;align-items:center;justify-content:center;
   width:100%;max-width:400px;
-  margin-top:10px;
   opacity:0;transform:translateY(10px);
-  transition:opacity .3s,transform .3s;pointer-events:none;
+  transition:opacity .3s,transform .3s;pointer-events:none !important;
   max-height:0;overflow:hidden;
 }
 .judge-row.visible{
-  opacity:1;transform:translateY(0);pointer-events:auto;
-  max-height:80px;margin-top:14px;
+  opacity:1;transform:translateY(0);pointer-events:auto !important;
+  max-height:80px;
 }
 .judge-btn{
   padding:14px 28px;border-radius:24px;border:none;
@@ -377,6 +379,22 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 .judge-ok:hover{box-shadow:0 6px 24px rgba(var(--accent-rgb),.45)}
 .judge-again{background:var(--btn-again);color:#fff}
 .judge-again:hover{box-shadow:0 6px 24px rgba(0,0,0,.3)}
+
+/* ===== Nav Row ===== */
+.nav-row{display:flex;gap:12px;align-items:center}
+.nav-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--accent);background:var(--card-bg);
+  color:var(--accent);font-size:1.2rem;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(var(--accent-rgb),.15);
+}
+.nav-btn:hover{background:var(--accent);color:#fff}
+
+.bottom-footer{
+  font-size:.7rem;opacity:.4;color:var(--text);
+  text-align:center;padding:2px 0 6px;
+}
 
 /* ===== Swipe Animations ===== */
 .flip-container.swipe-left .flip-card{animation:swipeLeft .35s ease-out forwards}
@@ -410,8 +428,6 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
 }
-
-footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--text)}
 </style>
 </head>
 <body>
@@ -532,7 +548,9 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
         </div>
       </div>
     </div>
-    <!-- ボタンはカードの完全に外側 -->
+  </div>
+  <!-- ★画面下部固定バー：判定ボタン＋ナビ＋フッター -->
+  <div class="bottom-bar" id="bottomBar">
     <div class="judge-row" id="judgeRow">
       <button class="judge-btn judge-again" id="judgeAgain" onclick="judgeCard(false)">🔄 もう一回</button>
       <button class="judge-btn judge-ok" id="judgeOk" onclick="judgeCard(true)">✅ 覚えた！</button>
@@ -541,8 +559,8 @@ footer{text-align:center;padding:14px;font-size:.7rem;opacity:.4;color:var(--tex
       <button class="nav-btn" onclick="prevCard()">◀</button>
       <button class="nav-btn" onclick="nextCard()">▶</button>
     </div>
+    <div class="bottom-footer">© 一般社団法人 GIFT協会</div>
   </div>
-  <footer>© 一般社団法人 GIFT協会</footer>
 </div>
 
 <!-- ===== CHEER OVERLAY ===== -->
@@ -724,6 +742,7 @@ function startQuiz(weak){
   lastMilestone=0;
   document.getElementById('startScreen').style.display='none';
   document.getElementById('app').style.display='flex';
+  document.getElementById('bottomBar').style.display='flex';
   const meta=LANG_META[currentLang];
   document.getElementById('headerTitle').textContent=meta.header;
   document.getElementById('hintBar').innerHTML='<span>'+meta.hintTap+'</span><span>'+meta.hintSwipe+'</span>';
@@ -735,6 +754,7 @@ function startQuiz(weak){
 
 function backToStart(){
   document.getElementById('app').style.display='none';
+  document.getElementById('bottomBar').style.display='none';
   document.getElementById('startScreen').style.display='flex';
   weakMode=false;
   updateStartScreen();
@@ -822,7 +842,6 @@ function showCard(){
     document.getElementById('backDesc').style.display=bD?'block':'none';
   }
 
-  /* ★追加: 裏面の実際の高さに合わせてflip-cardのmin-heightを更新 */
   requestAnimationFrame(()=>{
     const frontH=document.getElementById('cardFront').scrollHeight;
     const backH=document.getElementById('cardBack').scrollHeight;
