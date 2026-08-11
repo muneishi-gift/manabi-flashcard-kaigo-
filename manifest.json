@@ -1,0 +1,24 @@
+{
+  "name": "Kaigo Vocabulary Flashcards",
+  "short_name": "Kaigo.V.F",
+  "description": "介護福祉士試験対策 多言語フラッシュカード",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0c29",
+  "theme_color": "#302b63",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "gift-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "gift-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
