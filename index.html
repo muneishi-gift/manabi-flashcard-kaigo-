@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>介護用語フラッシュカード｜一般社団法人GIFT協会</title>
 <meta name="description" content="介護福祉士試験対策 多言語フラッシュカード - 日本語・英語・インドネシア語・ベトナム語・タイ語対応">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kaigo.V.F">
+<link rel="apple-touch-icon" href="gift-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -640,6 +645,13 @@ const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirv
 let allData=[],displayData=[],currentLang='',idx=0,weakMode=false;
 let masteredSet=new Set();
 let lastMilestone=0;
+
+/* ========== PWA: Service Worker登録 ========== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
 
 /* ========== LANG META ========== */
 const LANG_META={
