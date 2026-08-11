@@ -166,6 +166,52 @@ body.lang-th{
   box-shadow:0 2px 8px rgba(0,0,0,.25);object-fit:contain;
 }
 
+/* ===== Request Box ===== */
+.request-box{
+  width:100%;max-width:480px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;backdrop-filter:blur(8px);
+  padding:20px 20px 18px;margin-top:6px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.request-catchcopy{
+  font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
+  line-height:1.6;color:rgba(255,255,255,.9);text-align:center;
+}
+.request-catchcopy .highlight{
+  background:linear-gradient(90deg,#ffd54f,#ffb300);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:900;
+}
+.request-input-row{
+  display:flex;gap:8px;width:100%;
+}
+.request-input{
+  flex:1;padding:12px 16px;border-radius:14px;border:none;
+  font-size:.95rem;font-family:'Noto Sans JP',sans-serif;
+  background:rgba(255,255,255,.92);color:#333;
+  outline:none;transition:box-shadow .2s;
+}
+.request-input::placeholder{color:#aaa;font-size:.85rem}
+.request-input:focus{box-shadow:0 0 0 3px rgba(167,139,250,.5)}
+.request-send{
+  padding:12px 20px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#a78bfa,#60a5fa);
+  color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+  transition:transform .15s,box-shadow .15s;
+  white-space:nowrap;
+}
+.request-send:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(167,139,250,.4)}
+.request-send:active{transform:scale(.95)}
+.request-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.request-feedback{
+  font-size:.8rem;min-height:1.2em;
+  transition:opacity .3s;
+}
+.request-feedback.success{color:#69f0ae}
+.request-feedback.error{color:#ff8a80}
+
 .how-to{
   margin-top:6px;padding:14px 20px;
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
@@ -278,7 +324,6 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   flex:1;display:flex;flex-direction:column;
   align-items:center;justify-content:flex-start;
   padding:12px 16px 0;gap:14px;
-  /* ★変更: padding-bottomを0に。下部固定バーの分のスペースはmarginで確保 */
   margin-bottom:140px;
 }
 
@@ -351,7 +396,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   padding:10px 16px 6px;
   background:linear-gradient(to top,rgba(255,255,255,.95) 60%,rgba(255,255,255,0) 100%);
   backdrop-filter:blur(8px);
-  pointer-events:none; /* 子要素だけクリック可能にする */
+  pointer-events:none;
 }
 .bottom-bar>*{pointer-events:auto;}
 
@@ -477,6 +522,20 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
       </div>
     </div>
   </div>
+
+  <!-- ★ リクエスト入力欄 ★ -->
+  <div class="request-box">
+    <div class="request-catchcopy">
+      📝 <span class="highlight">あなたの疑問（ぎもん）は<br>誰（だれ）かの為（ため）になる</span>
+    </div>
+    <div class="request-input-row">
+      <input type="text" class="request-input" id="requestInput"
+             placeholder="知りたい用語を入力…" maxlength="100">
+      <button class="request-send" id="requestSendBtn" onclick="sendRequest()">送信</button>
+    </div>
+    <div class="request-feedback" id="requestFeedback"></div>
+  </div>
+
   <div class="how-to">
     <p>
       <span class="icon">👆</span> タップでカードを裏返す<br>
@@ -549,7 +608,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
       </div>
     </div>
   </div>
-  <!-- ★画面下部固定バー：判定ボタン＋ナビ＋フッター -->
+  <!-- ★画面下部固定バー -->
   <div class="bottom-bar" id="bottomBar">
     <div class="judge-row" id="judgeRow">
       <button class="judge-btn judge-again" id="judgeAgain" onclick="judgeCard(false)">🔄 もう一回</button>
@@ -576,6 +635,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 /* ========== CONFIG ========== */
 const CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=0';
 const CSV_EN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=519389580';
+const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
 
 let allData=[],displayData=[],currentLang='',idx=0,weakMode=false;
 let masteredSet=new Set();
@@ -619,6 +679,53 @@ const CHEERS=[
   {at:150,emoji:'🚀',msg:'150問！伝説レベル！\n150 cards! Legendary!'},
   {at:200,emoji:'🎓',msg:'200問！合格間違いなし！\n200! You will definitely pass!'}
 ];
+
+/* ========== REQUEST SEND ========== */
+function sendRequest(){
+  const input=document.getElementById('requestInput');
+  const btn=document.getElementById('requestSendBtn');
+  const fb=document.getElementById('requestFeedback');
+  const word=input.value.trim();
+
+  if(!word){
+    fb.textContent='⚠ 用語を入力してください';
+    fb.className='request-feedback error';
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent='送信中…';
+  fb.textContent='';
+  fb.className='request-feedback';
+
+  fetch(GAS_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({word:word})
+  })
+  .then(()=>{
+    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';
+    fb.className='request-feedback success';
+    input.value='';
+    setTimeout(()=>{fb.textContent='';fb.className='request-feedback';},4000);
+  })
+  .catch(()=>{
+    fb.textContent='❌ 送信に失敗しました。もう一度お試しください';
+    fb.className='request-feedback error';
+  })
+  .finally(()=>{
+    btn.disabled=false;
+    btn.textContent='送信';
+  });
+}
+
+/* Enterキーでも送信 */
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('requestInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();sendRequest();}
+  });
+});
 
 /* ========== SOUND (Web Audio API) ========== */
 const AudioCtx=window.AudioContext||window.webkitAudioContext;
