@@ -85,6 +85,73 @@ body > * {
   margin-top: 2px;
 }
 
+/* ---------- ふりがなトグルスイッチ ---------- */
+.furigana-toggle {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px 4px;
+}
+
+.furigana-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .7);
+}
+
+.furigana-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.furigana-switch-track {
+  width: 50px;
+  height: 28px;
+  background: rgba(255, 255, 255, .15);
+  border-radius: 14px;
+  position: relative;
+  transition: background 0.3s;
+  border: 1.5px solid rgba(255, 255, 255, .2);
+}
+
+.furigana-switch-track.active {
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+  border-color: rgba(255, 255, 255, .3);
+}
+
+.furigana-switch-thumb {
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s cubic-bezier(.4, .2, .2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+}
+
+.furigana-switch-track.active .furigana-switch-thumb {
+  transform: translateX(22px);
+}
+
+.furigana-status {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, .5);
+  min-width: 28px;
+  transition: color 0.3s;
+}
+
+.furigana-status.active {
+  color: #a78bfa;
+}
+
 /* ---------- 戻るボタン ---------- */
 .back-button {
   display: inline-flex;
@@ -255,7 +322,6 @@ body > * {
   padding: 10px 16px 40px;
 }
 
-/* プログレスバー */
 .quiz-progress {
   text-align: center;
   font-size: 0.8rem;
@@ -279,7 +345,6 @@ body > * {
   transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
 }
 
-/* 問番号・科目 */
 .quiz-meta {
   display: flex;
   align-items: center;
@@ -302,7 +367,6 @@ body > * {
   border-radius: 20px;
 }
 
-/* 設問カード */
 .quiz-question {
   background: rgba(255, 255, 255, .08);
   border: 1.5px solid rgba(255, 255, 255, .12);
@@ -371,7 +435,6 @@ body > * {
   flex: 1;
 }
 
-/* 画像選択肢（問49用） */
 .choice-button.image-choice {
   justify-content: center;
   align-items: center;
@@ -419,7 +482,6 @@ body > * {
   background-clip: text;
 }
 
-/* 正解番号 */
 .result-answer {
   background: rgba(255, 255, 255, .08);
   border: 1.5px solid rgba(255, 255, 255, .12);
@@ -445,7 +507,6 @@ body > * {
   background-clip: text;
 }
 
-/* 解説 */
 .result-explanation {
   background: rgba(255, 255, 255, .06);
   border-left: 4px solid #a78bfa;
@@ -465,7 +526,6 @@ body > * {
   margin-bottom: 8px;
 }
 
-/* 次へボタン */
 .next-button {
   display: inline-block;
   padding: 16px 60px;
