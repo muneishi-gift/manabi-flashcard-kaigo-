@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>過去問に挑戦｜介護福祉士国家試験対策</title>
+  <meta name="description" content="介護福祉士国家試験 過去問演習 - 一般社団法人GIFT協会">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <div class="exam-header">
+    <a href="../index.html">
+      <img src="../gift-logo.png" alt="GIFT協会ロゴ" class="exam-header-logo">
+    </a>
+    <div class="exam-header-title">過去問に挑戦</div>
+    <div class="exam-header-sub">介護福祉士国家試験対策</div>
+  </div>
+
+  <!-- ===== ふりがな切り替え（常に表示） ===== -->
+  <div class="furigana-toggle" id="furiganaToggle">
+    <span class="furigana-label">ふりがな</span>
+    <div class="furigana-switch" id="furiganaSwitch" onclick="toggleFurigana()">
+      <div class="furigana-switch-track" id="furiganaTrack">
+        <div class="furigana-switch-thumb" id="furiganaThumb"></div>
+      </div>
+      <span class="furigana-status" id="furiganaStatus">OFF</span>
+    </div>
+  </div>
+
+  <!-- ===== メインメニュー ===== -->
+  <div class="menu-container" id="mainMenu">
+    <a href="../index.html" class="back-button">← トップに戻る</a>
+
+    <div class="menu-section-title">回ごとに挑戦</div>
+    <ul class="menu-list">
+      <li>
+        <button class="menu-item highlight" onclick="startExam('38')">
+          <span class="menu-item-icon">📝</span>第38回 過去問に挑戦
+          <span class="menu-item-sub">全125問｜順番に出題</span>
+        </button>
+      </li>
+      <li>
+        <button class="menu-item disabled">
+          <span class="menu-item-icon">📝</span>第37回 過去問に挑戦
+          <span class="menu-item-sub">準備中</span>
+        </button>
+      </li>
+      <li>
+        <button class="menu-item disabled">
+          <span class="menu-item-icon">📝</span>第36回 過去問に挑戦
+          <span class="menu-item-sub">準備中</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="menu-section-title">モード別に挑戦</div>
+    <ul class="menu-list">
+      <li>
+        <button class="menu-item" onclick="showPartSelect()">
+          <span class="menu-item-icon">📂</span>パートごとに挑戦
+          <span class="menu-item-sub">A・B・Cパート別｜ランダム出題</span>
+        </button>
+      </li>
+      <li>
+        <button class="menu-item" onclick="showSubjectSelect()">
+          <span class="menu-item-icon">📚</span>科目ごとに挑戦
+          <span class="menu-item-sub">13科目から選択｜ランダム出題</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ===== パート選択画面 ===== -->
+  <div class="menu-container hidden" id="partSelect">
+    <button class="back-button" onclick="backToMain()">← 戻る</button>
+    <div class="menu-section-title">パートを選んでください</div>
+    <ul class="menu-list">
+      <li>
+        <button class="menu-item" onclick="startByPart('パートA')">
+          <span class="menu-item-icon">🅰️</span>Aパートに挑戦
+          <span class="menu-item-sub">人間と社会（問1〜16）</span>
+        </button>
+      </li>
+      <li>
+        <button class="menu-item" onclick="startByPart('パートB')">
+          <span class="menu-item-icon">🅱️</span>Bパートに挑戦
+          <span class="menu-item-sub">介護（問17〜77）</span>
+        </button>
+      </li>
+      <li>
+        <button class="menu-item" onclick="startByPart('パートC')">
+          <span class="menu-item-icon">🅲</span>Cパートに挑戦
+          <span class="menu-item-sub">こころとからだのしくみ（問78〜125）</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ===== 科目選択画面 ===== -->
+  <div class="menu-container hidden" id="subjectSelect">
+    <button class="back-button" onclick="backToMain()">← 戻る</button>
+    <div class="menu-section-title">科目を選んでください</div>
+    <ul class="subject-grid" id="subjectList">
+      <!-- app.js が JSON読み込み後に動的生成 -->
+    </ul>
+  </div>
+
+  <!-- ===== 出題画面 ===== -->
+  <div class="quiz-container hidden" id="quizScreen">
+    <button class="back-button" onclick="quitQuiz()">← やめる</button>
+
+    <div class="quiz-progress" id="quizProgressText">1 / 125</div>
+    <div class="quiz-progress-bar">
+      <div class="quiz-progress-fill" id="quizProgressFill" style="width:0%"></div>
+    </div>
+
+    <div class="quiz-meta">
+      <span class="quiz-number" id="quizNumber">問1</span>
+      <span class="quiz-subject" id="quizSubject">人間の尊厳と自立</span>
+    </div>
+
+    <div class="quiz-question" id="quizQuestion">
+      <!-- 設問文がここに入る -->
+    </div>
+
+    <ul class="choices-list" id="choicesList">
+      <!-- 選択肢がここに入る -->
+    </ul>
+  </div>
+
+  <!-- ===== 正誤画面 ===== -->
+  <div class="result-container hidden" id="resultScreen">
+    <div class="result-icon" id="resultIcon">⭕</div>
+    <div class="result-text" id="resultText">正解！</div>
+
+    <div class="result-answer">
+      <div class="result-answer-label">正解</div>
+      <div class="result-answer-number" id="resultAnswer">3</div>
+    </div>
+
+    <div class="result-explanation">
+      <div class="result-explanation-title">📖 解説</div>
+      <div id="resultExplanation">
+        <!-- 解説がここに入る -->
+      </div>
+    </div>
+
+    <button class="next-button" id="nextButton" onclick="nextQuestion()">
+      次へ ▶
+    </button>
+  </div>
+
+  <!-- ===== 結果サマリー画面 ===== -->
+  <div class="summary-container hidden" id="summaryScreen">
+    <div class="summary-card">
+      <div class="summary-emoji" id="summaryEmoji">🎉</div>
+      <div class="summary-score" id="summaryScore">0</div>
+      <div class="summary-total" id="summaryTotal">/ 125問中</div>
+      <div class="summary-bar">
+        <div class="summary-bar-correct" id="summaryBarFill" style="width:0%"></div>
+      </div>
+      <div class="summary-message" id="summaryMessage">お疲れさまでした！</div>
+    </div>
+    <div class="summary-buttons">
+      <button class="next-button" onclick="location.reload()">
+        🔄 もう一度挑戦
+      </button>
+      <button class="back-button" onclick="location.href='index.html'">
+        ← メニューに戻る
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== フッター ===== -->
+  <div class="exam-footer">
+    <div class="exam-footer-org">一般社団法人 GIFT協会</div>
+    <div class="exam-footer-name">宗石 光英</div>
+    <div class="exam-footer-credit">Created by Mitsuhide Muneishi</div>
+  </div>
+
+  <!-- ===== JavaScript ===== -->
+  <script src="app.js"></script>
+
+</body>
+</html>
