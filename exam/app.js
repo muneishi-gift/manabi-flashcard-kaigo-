@@ -305,8 +305,13 @@ function displayQuestion() {
     listEl.appendChild(li);
   });
 
+  // ★修正：古いナビボタンがあれば削除（重複防止）
+  var oldNav = listEl.parentNode.querySelector('.quiz-nav-buttons');
+  if (oldNav) oldNav.remove();
+
   // ナビゲーションボタン（戻る・次へ）
   var navDiv = document.createElement('div');
+  navDiv.className = 'quiz-nav-buttons'; // ★修正：クラス名追加
   navDiv.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:24px;';
 
   var prevBtn = document.createElement('button');
