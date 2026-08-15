@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>学びアプリ｜介護福祉士国家試験対策｜一般社団法人GIFT協会</title>
+<meta name="description" content="介護福祉士国家試験対策 - フラッシュカード＆過去問演習">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kaigo.V.F">
+<link rel="apple-touch-icon" href="gift-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans JP','Noto Sans',sans-serif;
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+  color:#fff;overflow-x:hidden;-webkit-tap-highlight-color:transparent;
+  user-select:none;position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 80%,rgba(255,120,200,.1) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+body>*{position:relative;z-index:1}
+
+.top-container{
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100dvh;gap:20px;padding:32px 20px;
+  text-align:center;width:100%;max-width:600px;
+}
+
+.brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
+.brand-logo{animation:float 3s ease-in-out infinite}
+.brand-logo img{
+  width:clamp(100px,25vw,160px);height:auto;border-radius:20px;
+  filter:drop-shadow(0 6px 20px rgba(255,255,255,.25));object-fit:contain;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.brand h1{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(1.4rem,4.5vw,2.2rem);font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.brand-sub{font-size:clamp(.8rem,2.2vw,.95rem);opacity:.6;font-weight:300}
+
+.section-title{
+  font-size:.8rem;color:rgba(255,255,255,.45);font-weight:700;
+  margin-top:24px;margin-bottom:10px;letter-spacing:.05em;
+  align-self:flex-start;padding-left:4px;
+}
+
+.menu-list{
+  list-style:none;display:flex;flex-direction:column;
+  gap:14px;width:100%;
+}
+
+.menu-card{
+  display:flex;align-items:center;gap:18px;
+  width:100%;padding:24px;border-radius:24px;
+  border:2px solid rgba(255,255,255,.15);
+  cursor:pointer;text-decoration:none;color:#fff;
+  transition:transform .25s,box-shadow .25s,border-color .25s,background .25s;
+  backdrop-filter:blur(8px);position:relative;overflow:hidden;
+}
+.menu-card::before{
+  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
+  opacity:.9;transition:opacity .3s;
+}
+.menu-card>*{position:relative;z-index:1}
+.menu-card:hover{
+  transform:translateY(-4px) scale(1.02);
+  box-shadow:0 12px 32px rgba(0,0,0,.3);
+  border-color:rgba(255,255,255,.4);
+}
+.menu-card:active{transform:scale(.97)}
+
+.menu-card.flashcard::before{
+  background:linear-gradient(135deg,#7c4dff 0%,#536dfe 50%,#448aff 100%);
+}
+.menu-card.exam::before{
+  background:linear-gradient(135deg,#00b894 0%,#00cec9 50%,#0984e3 100%);
+}
+.menu-card.request::before{
+  background:linear-gradient(135deg,#e17055 0%,#fdcb6e 100%);
+}
+
+.menu-icon{
+  font-size:2.2rem;flex-shrink:0;
+  width:60px;height:60px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.15);border-radius:16px;
+}
+.menu-info{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left}
+.menu-title{font-size:1.15rem;font-weight:800;line-height:1.3}
+.menu-desc{font-size:.78rem;opacity:.75;font-weight:400;line-height:1.5}
+/* ===== リクエストボックス ===== */
+.request-box{
+  width:100%;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;backdrop-filter:blur(8px);
+  padding:20px 20px 18px;margin-top:6px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.request-catchcopy{
+  font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
+  line-height:1.6;color:rgba(255,255,255,.9);text-align:center;
+}
+.request-catchcopy .highlight{
+  background:linear-gradient(90deg,#ffd54f,#ffb300);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:900;
+}
+.request-input-row{
+  display:flex;flex-direction:column;gap:10px;width:100%;
+}
+.request-input{
+  width:100%;padding:12px 16px;border-radius:14px;border:none;
+  font-size:.95rem;font-family:'Noto Sans JP',sans-serif;
+  background:rgba(255,255,255,.92);color:#333;
+  outline:none;transition:box-shadow .2s;
+}
+.request-input::placeholder{color:#aaa;font-size:.85rem}
+.request-input:focus{box-shadow:0 0 0 3px rgba(167,139,250,.5)}
+.request-send{
+  width:100%;padding:14px 20px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#a78bfa,#60a5fa);
+  color:#fff;font-size:1rem;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+  transition:transform .15s,box-shadow .15s;
+}
+.request-send:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(167,139,250,.4)}
+.request-send:active{transform:scale(.95)}
+.request-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.request-feedback{font-size:.8rem;min-height:1.2em;transition:opacity .3s}
+.request-feedback.success{color:#69f0ae}
+.request-feedback.error{color:#ff8a80}
+
+/* ===== クレジット ===== */
+.credit{
+  margin-top:20px;padding:16px 24px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:16px;width:100%;
+}
+.credit-avatar{flex-shrink:0}
+.credit-avatar img{height:80px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));object-fit:contain}
+.credit-info{display:flex;flex-direction:column;gap:2px;text-align:left}
+.credit-org{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(.8rem,2.2vw,.95rem);font-weight:600;
+  background:linear-gradient(90deg,#ffd54f,#ffb300);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff}
+.credit-title{font-size:.75rem;opacity:.5}
+
+@media(max-width:480px){
+  .menu-card{padding:20px 16px}
+  .menu-icon{width:50px;height:50px;font-size:1.8rem;border-radius:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="top-container">
+
+  <!-- ===== ブランド ===== -->
+  <div class="brand">
+    <div class="brand-logo">
+      <img src="gift-logo.png" alt="GIFT協会ロゴ">
+    </div>
+    <h1>介護福祉士 試験対策</h1>
+    <div class="brand-sub">一般社団法人GIFT協会</div>
+  </div>
+
+  <!-- ===== メニュー ===== -->
+  <div class="section-title">学習メニュー</div>
+  <ul class="menu-list">
+    <li>
+      <a href="flashcard.html" class="menu-card flashcard">
+        <div class="menu-icon">📚</div>
+        <div class="menu-info">
+          <div class="menu-title">介護用語フラッシュカード</div>
+          <div class="menu-desc">日本語・英語・インドネシア語・ベトナム語・タイ語対応<br>単語をカードで楽しく覚えよう</div>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="exam/index.html" class="menu-card exam">
+        <div class="menu-icon">📝</div>
+        <div class="menu-info">
+          <div class="menu-title">過去問に挑戦</div>
+          <div class="menu-desc">介護福祉士国家試験の過去問を解こう<br>科目別・パート別で学習できます</div>
+        </div>
+      </a>
+    </li>
+  </ul>
+
+  <!-- ===== リクエスト ===== -->
+  <div class="section-title">用語リクエスト</div>
+  <div class="request-box">
+    <div class="request-catchcopy">
+      📝 <span class="highlight">あなたの疑問（ぎもん）は<br>誰（だれ）かの為（ため）になる</span>
+    </div>
+    <div class="request-input-row">
+      <input type="text" class="request-input" id="requestInput"
+             placeholder="知りたい用語を入力…" maxlength="100">
+      <button class="request-send" id="requestSendBtn" onclick="sendRequest()">送信</button>
+    </div>
+    <div class="request-feedback" id="requestFeedback"></div>
+  </div>
+
+  <!-- ===== クレジット ===== -->
+  <div class="credit">
+    <div class="credit-avatar">
+      <img src="muneishi-icon.png" alt="宗石光英">
+    </div>
+    <div class="credit-info">
+      <div class="credit-org">一般社団法人 GIFT協会</div>
+      <div class="credit-name">宗石 光英</div>
+      <div class="credit-title">Created by Mitsuhide Muneishi</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
+
+function sendRequest(){
+  var input=document.getElementById('requestInput');
+  var btn=document.getElementById('requestSendBtn');
+  var fb=document.getElementById('requestFeedback');
+  var word=input.value.trim();
+
+  if(!word){
+    fb.textContent='⚠ 用語を入力してください';
+    fb.className='request-feedback error';
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent='送信中…';
+  fb.textContent='';
+  fb.className='request-feedback';
+
+  fetch(GAS_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({word:word})
+  })
+  .then(function(){
+    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';
+    fb.className='request-feedback success';
+    input.value='';
+    setTimeout(function(){fb.textContent='';fb.className='request-feedback';},4000);
+  })
+  .catch(function(){
+    fb.textContent='❌ 送信に失敗しました。もう一度お試しください';
+    fb.className='request-feedback error';
+  })
+  .finally(function(){
+    btn.disabled=false;
+    btn.textContent='送信';
+  });
+}
+
+document.getElementById('requestInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();sendRequest();}
+});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
