@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>CSV → past_exam.json 変換ツール</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+  h1 { font-size: 1.4em; }
+  #drop-zone {
+    border: 3px dashed #aaa; border-radius: 12px; padding: 40px;
+    text-align: center; color: #666; margin: 20px 0; cursor: pointer;
+  }
+  #drop-zone.hover { border-color: #4CAF50; background: #e8f5e9; }
+  #status { margin: 20px 0; white-space: pre-wrap; font-size: 0.95em; }
+  button {
+    display: none; padding: 12px 24px; font-size: 1em;
+    background: #4CAF50; color: #fff; border: none; border-radius: 8px; cursor: pointer;
+  }
+  button:hover { background: #388E3C; }
+  #preview { max-height: 300px; overflow: auto; background: #f5f5f5; padding: 12px; font-size: 0.85em; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<h1>CSV → past_exam.json 変換ツール</h1>
+
+<div id="drop-zone">
+  ここにCSVファイルをドラッグ＆ドロップ<br>
+  または クリックしてファイルを選択
+  <input type="file" id="file-input" accept=".csv" style="display:none">
+</div>
+
+<div id="status"></div>
+<button id="download-btn">past_exam.json をダウンロード</button>
+<div id="preview"></div>
+
+<script>
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const status = document.getElementById('status');
+const downloadBtn = document.getElementById('download-btn');
+const preview = document.getElementById('preview');
+
+let jsonResult = null;
+
+// クリックでファイル選択
+dropZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => { if (e.target.files[0]) processFile(e.target.files[0]); });
+
+// ドラッグ＆ドロップ
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('hover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('hover');
+  if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+});
+
+function processFile(file) {
+  status.textContent = '読み込み中...';
+
+  Papa.parse(file, {
+    header: false,
+    skipEmptyLines: true,
+    complete: function(results) {
+      const rows = results.data;
+      // ヘッダー行をスキップ（1行目がヘッダーの場合）
+      let startIndex = 0;
+      // A列が「パート」等のヘッダーっぽい文字なら飛ばす
+      if (rows[0] && rows[0][0] && /パート|part|Part|科目/.test(rows[0][0])) {
+        startIndex = 1;
+      }
+
+      const questions = [];
+      let skipped = [];
+
+      for (let i = startIndex; i < rows.length; i++) {
+        const row = rows[i];
+        // 最低限の列数チェック（A〜K = 11列）
+        if (!row || row.length < 10) continue;
+
+        const part = (row[0] || '').trim();
+        const subject = (row[1] || '').trim();
+        const questionNum = parseInt((row[2] || '').trim(), 10);
+        const questionText = (row[3] || '').trim();
+        const choice1 = (row[4] || '').trim();
+        const choice2 = (row[5] || '').trim();
+        const choice3 = (row[6] || '').trim();
+        const choice4 = (row[7] || '').trim();
+        const choice5 = (row[8] || '').trim();
+        const answerRaw = (row[9] || '').trim();
+        const explanation = (row[10] || '').trim();
+
+        // 問題番号が数値でない行はスキップ
+        if (isNaN(questionNum)) continue;
+
+        // 問題49をスキップ（選択肢が画像のため）
+        if (questionNum === 49) {
+          skipped.push(49);
+          continue;
+        }
+
+        // 選択肢が全て空の問題もスキップ
+        if (!choice1 && !choice2 && !choice3 && !choice4 && !choice5) {
+          skipped.push(questionNum);
+          continue;
+        }
+
+        // 正答番号を数値に変換
+        let answer = parseInt(answerRaw, 10);
+        if (isNaN(answer)) {
+          // 「1」「2」等でなく「A」「B」等の場合の対応
+          const letterMap = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5 };
+          answer = letterMap[answerRaw.toUpperCase()] || 0;
+        }
+
+        const choices = [choice1, choice2, choice3, choice4, choice5].filter(c => c !== '');
+
+        questions.push({
+          id: questionNum,
+          part: part,
+          subject: subject,
+          question: questionText,
+          choices: choices,
+          answer: answer,
+          explanation: explanation
+        });
+      }
+
+      jsonResult = questions;
+
+      // ステータス表示
+      let msg = `変換完了！\n`;
+      msg += `・変換された問題数: ${questions.length}問\n`;
+      if (skipped.length > 0) {
+        msg += `・スキップされた問題: ${skipped.join(', ')}\n`;
+      }
+      msg += `\n最初の3問のプレビュー:`;
+      status.textContent = msg;
+
+      // プレビュー表示
+      const previewData = questions.slice(0, 3);
+      preview.textContent = JSON.stringify(previewData, null, 2);
+
+      // ダウンロードボタン表示
+      downloadBtn.style.display = 'inline-block';
+    },
+    error: function(err) {
+      status.textContent = 'エラー: ' + err.message;
+    }
+  });
+}
+
+// ダウンロード
+downloadBtn.addEventListener('click', () => {
+  if (!jsonResult) return;
+  const blob = new Blob([JSON.stringify(jsonResult, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'past_exam.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
+</html>
