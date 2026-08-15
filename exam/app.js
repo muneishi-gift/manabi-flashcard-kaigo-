@@ -144,6 +144,7 @@ function updateFuriganaUI() {
     status.textContent = 'OFF';
   }
 }
+
 /* ========== 科目リスト生成 ========== */
 function buildSubjectList() {
   var subjectMap = {};
@@ -303,6 +304,51 @@ function displayQuestion() {
     li.appendChild(btn);
     listEl.appendChild(li);
   });
+
+  // ナビゲーションボタン（戻る・次へ）
+  var navDiv = document.createElement('div');
+  navDiv.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:24px;';
+
+  var prevBtn = document.createElement('button');
+  prevBtn.textContent = '◀ 戻る';
+  prevBtn.style.cssText = 'flex:1;max-width:180px;padding:14px 0;font-size:1.1rem;font-weight:700;border:none;border-radius:50px;letter-spacing:0.05em;';
+  if (currentIndex > 0) {
+    prevBtn.style.cssText += 'cursor:pointer;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,0.4);';
+    prevBtn.addEventListener('click', function() { goToPrevQuestion(); });
+  } else {
+    prevBtn.style.cssText += 'background:#555;color:#888;opacity:0.5;';
+    prevBtn.disabled = true;
+  }
+
+  var nextBtn = document.createElement('button');
+  nextBtn.textContent = '次へ ▶';
+  nextBtn.style.cssText = 'flex:1;max-width:180px;padding:14px 0;font-size:1.1rem;font-weight:700;border:none;border-radius:50px;letter-spacing:0.05em;';
+  if (currentIndex < total - 1) {
+    nextBtn.style.cssText += 'cursor:pointer;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,0.4);';
+    nextBtn.addEventListener('click', function() { goToNextQuestion(); });
+  } else {
+    nextBtn.style.cssText += 'background:#555;color:#888;opacity:0.5;';
+    nextBtn.disabled = true;
+  }
+
+  navDiv.appendChild(prevBtn);
+  navDiv.appendChild(nextBtn);
+  listEl.parentNode.appendChild(navDiv);
+}
+
+/* ========== 問題ナビゲーション（回答せずに移動） ========== */
+function goToPrevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    displayQuestion();
+  }
+}
+
+function goToNextQuestion() {
+  if (currentIndex < quizQuestions.length - 1) {
+    currentIndex++;
+    displayQuestion();
+  }
 }
 
 /* ========== 回答選択 ========== */
