@@ -28,17 +28,20 @@ function initScreens() {
 
 /* ========== ふりがな変換関数 ========== */
 
-// ふりがなOFF：「社会福祉（しゃかいふくし）」→「社会福祉」（括弧ごと削除）
+// ふりがなOFF：括弧とふりがなを削除（全角・半角両対応）
 function removeRuby(text) {
   if (!text) return '';
-  return text.replace(/（[^）]*）/g, '');
+  var result = text.replace(/（[^）]*）/g, '');
+  result = result.replace(/\([^)]*\)/g, '');
+  return result;
 }
 
-// ふりがなON：「社会福祉（しゃかいふくし）」→ そのまま表示（括弧付き）
+// ふりがなON：そのまま表示（括弧付き）
 function toHiragana(text) {
   if (!text) return '';
   return text;
 }
+
 /* ========== テキスト取得（ふりがなON/OFF対応） ========== */
 function getText(item, field) {
   var raw = item[field] || '';
@@ -179,10 +182,9 @@ function buildSubjectList() {
   });
 }
 
-/* ========== 出題モード：全問 ========== */
+/* ========== 出題モード：全問（順番通り） ========== */
 function startExam() {
   quizQuestions = allQuestions.slice();
-  shuffleArray(quizQuestions);
   currentIndex = 0;
   correctCount = 0;
   lastSelected = null;
@@ -190,7 +192,7 @@ function startExam() {
   displayQuestion();
 }
 
-/* ========== 出題モード：パート別 ========== */
+/* ========== 出題モード：パート別（ランダム） ========== */
 function showPartSelect() {
   showScreen('partSelect');
 }
@@ -211,7 +213,7 @@ function startByPart(partName) {
   displayQuestion();
 }
 
-/* ========== 出題モード：科目別 ========== */
+/* ========== 出題モード：科目別（ランダム） ========== */
 function showSubjectSelect() {
   buildSubjectList();
   showScreen('subjectSelect');
