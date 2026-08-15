@@ -28,21 +28,17 @@ function initScreens() {
 
 /* ========== ふりがな変換関数 ========== */
 
-// 「社会福祉（しゃかいふくし）」→「社会福祉」（括弧ごと削除）
+// ふりがなOFF：「社会福祉（しゃかいふくし）」→「社会福祉」（括弧ごと削除）
 function removeRuby(text) {
   if (!text) return '';
   return text.replace(/（[^）]*）/g, '');
 }
 
-// 「社会福祉（しゃかいふくし）の理念（りねん）」→「しゃかいふくしのりねん」
+// ふりがなON：「社会福祉（しゃかいふくし）」→ そのまま表示（括弧付き）
 function toHiragana(text) {
   if (!text) return '';
-  var result = text.replace(/[一-龥々〇ヶ]+（([^）]*)）/g, '$1');
-  result = result.replace(/[ァ-ヴー]+（([^）]*)）/g, '$1');
-  result = result.replace(/（[^）]*）/g, '');
-  return result;
+  return text;
 }
-
 /* ========== テキスト取得（ふりがなON/OFF対応） ========== */
 function getText(item, field) {
   var raw = item[field] || '';
