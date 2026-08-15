@@ -198,8 +198,8 @@ function displayQuestion() {
   var pct = Math.round(((currentIndex + 1) / total) * 100);
   document.getElementById('quizProgressFill').style.width = pct + '%';
 
-  // 問番号・科目
-  document.getElementById('quizNumber').textContent = '問' + q.number;
+  // 問番号・科目（q.id を使用）
+  document.getElementById('quizNumber').textContent = '問' + q.id;
   document.getElementById('quizSubject').textContent = getText(q, 'subject');
 
   // 設問文
