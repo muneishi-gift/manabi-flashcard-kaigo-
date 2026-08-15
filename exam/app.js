@@ -5,14 +5,14 @@
    =================================== */
 
 /* ========== グローバル変数 ========== */
-let allQuestions = [];      // 全問題データ
-let quizQuestions = [];     // 現在の出題リスト
-let currentIndex = 0;       // 現在の問題番号
-let correctCount = 0;       // 正解数
-let furiganaOn = false;     // ふりがなON/OFF
+var allQuestions = [];
+var quizQuestions = [];
+var currentIndex = 0;
+var correctCount = 0;
+var furiganaOn = false;
 
 /* ========== 画面の要素を取得 ========== */
-const screens = {
+var screens = {
   mainMenu:      document.getElementById('mainMenu'),
   partSelect:    document.getElementById('partSelect'),
   subjectSelect: document.getElementById('subjectSelect'),
@@ -20,6 +20,45 @@ const screens = {
   resultScreen:  document.getElementById('resultScreen'),
   summaryScreen: document.getElementById('summaryScreen')
 };
+
+/* ========== ふりがな変換関数 ========== */
+
+// 「社会福祉（しゃかいふくし）」→「社会福祉」（括弧ごと削除）
+function removeRuby(text) {
+  if (!text) return '';
+  return text.replace(/（[^）]*）/g, '');
+}
+
+// 「社会福祉（しゃかいふくし）の理念（りねん）」→「しゃかいふくしのりねん」
+// 漢字＋括弧 → 括弧内のふりがなだけ残す。括弧がない部分はそのまま。
+function toHiragana(text) {
+  if (!text) return '';
+  // 漢字等の直後の（ふりがな）→ ふりがなだけに置換
+  var result = text.replace(/[一-龥々〇ヶ]+（([^）]*)）/g, '$1');
+  // カタカナ語の後の括弧も同様に処理
+  result = result.replace(/[ァ-ヴー]+（([^）]*)）/g, '$1');
+  // まだ残っている括弧があれば削除（念のため）
+  result = result.replace(/（[^）]*）/g, '');
+  return result;
+}
+
+/* ========== テキスト取得（ふりがなON/OFF対応） ========== */
+function getText(item, field) {
+  var raw = item[field] || '';
+  if (furiganaOn) {
+    return toHiragana(raw);
+  }
+  return removeRuby(raw);
+}
+
+function getChoiceText(item, index) {
+  var raw = (item.choices && item.choices[index]) ? item.choices[index] : '';
+  if (typeof raw === 'object') return raw; // 画像選択肢はそのまま返す
+  if (furiganaOn) {
+    return toHiragana(raw);
+  }
+  return removeRuby(raw);
+}
 
 /* ========== 初期化：JSONデータ読み込み ========== */
 window.addEventListener('DOMContentLoaded', function() {
@@ -92,30 +131,15 @@ function updateFuriganaUI() {
   }
 }
 
-/* ========== テキスト取得（ふりがなON/OFF対応） ========== */
-function getText(item, field) {
-  if (furiganaOn && item[field + '_furigana']) {
-    return item[field + '_furigana'];
-  }
-  return item[field] || '';
-}
-
-function getChoiceText(item, index) {
-  if (furiganaOn && item.choices_furigana && item.choices_furigana[index]) {
-    return item.choices_furigana[index];
-  }
-  return item.choices[index] || '';
-}
-
 /* ========== 科目リスト生成 ========== */
 function buildSubjectList() {
   var subjectMap = {};
   allQuestions.forEach(function(q) {
-    var subj = q.subject;
+    var subj = removeRuby(q.subject);
     if (!subjectMap[subj]) {
-      subjectMap[subj] = 0;
+      subjectMap[subj] = { count: 0, raw: q.subject };
     }
-    subjectMap[subj]++;
+    subjectMap[subj].count++;
   });
 
   var listEl = document.getElementById('subjectList');
@@ -123,13 +147,14 @@ function buildSubjectList() {
 
   var index = 1;
   Object.keys(subjectMap).forEach(function(subj) {
-    var count = subjectMap[subj];
+    var info = subjectMap[subj];
+    var displayName = furiganaOn ? toHiragana(info.raw) : subj;
     var li = document.createElement('li');
     li.innerHTML =
-      '<div class="subject-item" onclick="startBySubject(\'' + subj.replace(/'/g, "\\'") + '\')">' +
+      '<div class="subject-item" onclick="startBySubject(\'' + info.raw.replace(/'/g, "\\'") + '\')">' +
         '<div class="subject-badge">' + index + '</div>' +
-        '<div class="subject-name">' + subj + '</div>' +
-        '<div class="subject-count">' + count + '問</div>' +
+        '<div class="subject-name">' + displayName + '</div>' +
+        '<div class="subject-count">' + info.count + '問</div>' +
       '</div>';
     listEl.appendChild(li);
     index++;
@@ -163,12 +188,13 @@ function startByPart(partName) {
 
 /* ========== 出題モード：科目別 ========== */
 function showSubjectSelect() {
+  buildSubjectList(); // ふりがな状態に応じて再描画
   showScreen('subjectSelect');
 }
 
-function startBySubject(subjectName) {
+function startBySubject(subjectRaw) {
   quizQuestions = allQuestions.filter(function(q) {
-    return q.subject === subjectName;
+    return q.subject === subjectRaw;
   });
   shuffleArray(quizQuestions);
   currentIndex = 0;
@@ -198,7 +224,7 @@ function displayQuestion() {
   var pct = Math.round(((currentIndex + 1) / total) * 100);
   document.getElementById('quizProgressFill').style.width = pct + '%';
 
-  // 問番号・科目（q.id を使用）
+  // 問番号・科目
   document.getElementById('quizNumber').textContent = '問' + q.id;
   document.getElementById('quizSubject').textContent = getText(q, 'subject');
 
@@ -214,17 +240,18 @@ function displayQuestion() {
     var btn = document.createElement('button');
     btn.className = 'choice-button';
 
-    // 画像選択肢（問49用）かどうかチェック
-    if (typeof choice === 'object' && choice.type === 'image') {
+    var choiceData = getChoiceText(q, i);
+
+    // 画像選択肢チェック
+    if (typeof choiceData === 'object' && choiceData.type === 'image') {
       btn.classList.add('image-choice');
       btn.innerHTML =
         '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<img src="' + choice.src + '" alt="' + (choice.alt || '選択肢' + (i + 1)) + '">';
+        '<img src="' + choiceData.src + '" alt="' + (choiceData.alt || '選択肢' + (i + 1)) + '">';
     } else {
-      var text = getChoiceText(q, i);
       btn.innerHTML =
         '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<span class="choice-text">' + text + '</span>';
+        '<span class="choice-text">' + choiceData + '</span>';
     }
 
     btn.addEventListener('click', function() {
@@ -258,7 +285,7 @@ function displayResult(qIndex, isCorrect) {
   var textEl = document.getElementById('resultText');
 
   if (isCorrect === null) {
-    // ふりがな切り替え時の再表示
+    // ふりがな切り替え時の再表示（アイコンそのまま）
   } else if (isCorrect) {
     iconEl.textContent = '⭕';
     textEl.textContent = '正解！';
@@ -307,7 +334,6 @@ function showSummary() {
   document.getElementById('summaryTotal').textContent = '/ ' + total + '問中';
   document.getElementById('summaryBarFill').style.width = pct + '%';
 
-  // メッセージとエモジ
   var emoji, message;
   if (pct === 100) {
     emoji = '👑';
