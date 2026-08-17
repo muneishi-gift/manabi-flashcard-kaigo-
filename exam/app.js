@@ -5,12 +5,14 @@
    =================================== */
 
 /* ========== グローバル変数 ========== */
-var allQuestions = [];
+var examData = {};        // { '38': [...], '37': [...] }
+var allQuestions = [];     // 現在選択中の回のデータ
 var quizQuestions = [];
 var currentIndex = 0;
 var correctCount = 0;
 var furiganaOn = false;
 var lastSelected = null;
+var currentKai = '38';    // 現在選択中の回
 
 /* ========== 画面の要素を取得 ========== */
 var screens = {};
@@ -27,8 +29,6 @@ function initScreens() {
 }
 
 /* ========== ふりがな変換関数 ========== */
-
-// ふりがなOFF：括弧とふりがなを削除（全角・半角両対応）
 function removeRuby(text) {
   if (!text) return '';
   var result = text.replace(/（[^）]*）/g, '');
@@ -36,7 +36,6 @@ function removeRuby(text) {
   return result;
 }
 
-// ふりがなON：そのまま表示（括弧付き）
 function toHiragana(text) {
   if (!text) return '';
   return text;
@@ -61,26 +60,35 @@ function getChoiceText(item, index) {
   return removeRuby(raw);
 }
 
-/* ========== 初期化：JSONデータ読み込み ========== */
+/* ========== 初期化：JSONデータ読み込み（両方読む） ========== */
 window.addEventListener('DOMContentLoaded', function() {
   initScreens();
 
-  fetch('data/past_exam.json')
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error('HTTP ' + response.status);
-      }
-      return response.json();
+  // 第38回と第37回を同時に読み込む
+  Promise.all([
+    fetch('data/past_exam_38.json').then(function(r) {
+      if (!r.ok) throw new Error('38回: HTTP ' + r.status);
+      return r.json();
+    }),
+    fetch('data/past_exam_37.json').then(function(r) {
+      if (!r.ok) throw new Error('37回: HTTP ' + r.status);
+      return r.json();
     })
-    .then(function(data) {
-      allQuestions = data;
-      console.log('問題データ読み込み完了：' + data.length + '問');
-      buildSubjectList();
-    })
-    .catch(function(error) {
-      console.error('データ読み込みエラー：', error);
-      alert('問題データの読み込みに失敗しました。\ndata/past_exam.json を確認してください。');
-    });
+  ])
+  .then(function(results) {
+    examData['38'] = results[0];
+    examData['37'] = results[1];
+    console.log('第38回：' + results[0].length + '問 読み込み完了');
+    console.log('第37回：' + results[1].length + '問 読み込み完了');
+
+    // デフォルトは第38回
+    allQuestions = examData['38'];
+    buildSubjectList();
+  })
+  .catch(function(error) {
+    console.error('データ読み込みエラー：', error);
+    alert('問題データの読み込みに失敗しました。\ndata/ フォルダ内の JSON を確認してください。\n\nエラー: ' + error.message);
+  });
 
   // ふりがな設定を復元
   var saved = localStorage.getItem('kaigo-exam-furigana');
@@ -89,6 +97,47 @@ window.addEventListener('DOMContentLoaded', function() {
     updateFuriganaUI();
   }
 });
+
+/* ========== 回の切り替え（モード別用） ========== */
+function switchKai(kai) {
+  if (!examData[kai]) {
+    alert('第' + kai + '回のデータはまだ準備中です。');
+    return;
+  }
+  currentKai = kai;
+  allQuestions = examData[kai];
+
+  // ボタンのアクティブ状態を更新
+  var btns = document.querySelectorAll('.menu-kai-btn');
+  btns.forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  var activeBtn = document.getElementById('kaiBtn' + kai);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // 科目リストが表示中なら更新
+  if (!screens.subjectSelect.classList.contains('hidden')) {
+    buildSubjectList();
+  }
+
+  console.log('第' + kai + '回に切り替え：' + allQuestions.length + '問');
+}
+
+/* ========== 回ごとに挑戦（順番通り） ========== */
+function startExamByKai(kai) {
+  if (!examData[kai]) {
+    alert('第' + kai + '回のデータはまだ準備中です。');
+    return;
+  }
+  currentKai = kai;
+  allQuestions = examData[kai];
+  quizQuestions = allQuestions.slice();
+  currentIndex = 0;
+  correctCount = 0;
+  lastSelected = null;
+  showScreen('quizScreen');
+  displayQuestion();
+}
 
 /* ========== 画面切り替え ========== */
 function showScreen(screenId) {
@@ -163,6 +212,10 @@ function buildSubjectList() {
   if (!listEl) return;
   listEl.innerHTML = '';
 
+  // タイトルに回を表示
+  var titleEl = document.getElementById('subjectSelectTitle');
+  if (titleEl) titleEl.textContent = '第' + currentKai + '回 ─ 科目を選んでください';
+
   subjectOrder.forEach(function(subj, i) {
     var info = subjectMap[subj];
     var displayName = furiganaOn ? toHiragana(info.raw) : subj;
@@ -183,18 +236,15 @@ function buildSubjectList() {
   });
 }
 
-/* ========== 出題モード：全問（順番通り） ========== */
+/* ========== 出題モード：全問（順番通り）※旧互換 ========== */
 function startExam() {
-  quizQuestions = allQuestions.slice();
-  currentIndex = 0;
-  correctCount = 0;
-  lastSelected = null;
-  showScreen('quizScreen');
-  displayQuestion();
+  startExamByKai(currentKai);
 }
 
 /* ========== 出題モード：パート別（ランダム） ========== */
 function showPartSelect() {
+  var titleEl = document.getElementById('partSelectTitle');
+  if (titleEl) titleEl.textContent = '第' + currentKai + '回 ─ パートを選んでください';
   showScreen('partSelect');
 }
 
@@ -251,7 +301,6 @@ function displayQuestion() {
   var q = quizQuestions[currentIndex];
   var total = quizQuestions.length;
 
-  // プログレス更新
   var progressText = document.getElementById('quizProgressText');
   var progressFill = document.getElementById('quizProgressFill');
   if (progressText) {
@@ -262,22 +311,18 @@ function displayQuestion() {
     progressFill.style.width = pct + '%';
   }
 
-  // 問番号・科目
   var numEl = document.getElementById('quizNumber');
   var subjEl = document.getElementById('quizSubject');
   if (numEl) numEl.textContent = '問' + q.id;
   if (subjEl) subjEl.textContent = getText(q, 'subject');
 
-  // 設問文
   var qEl = document.getElementById('quizQuestion');
   if (qEl) qEl.textContent = getText(q, 'question');
 
-  // 選択肢
   var listEl = document.getElementById('choicesList');
   if (!listEl) return;
   listEl.innerHTML = '';
 
-  /* ★変更：設問画像があれば表示 */
   if (q.questionImage) {
     var qImg = document.createElement('img');
     qImg.src = q.questionImage;
@@ -297,7 +342,6 @@ function displayQuestion() {
 
     var choiceData = getChoiceText(q, i);
 
-    /* ★変更：画像付き選択肢の判定を修正（image プロパティ対応） */
     if (typeof choiceData === 'object' && choiceData !== null && choiceData.image) {
       btn.classList.add('image-choice');
       var label = document.createElement('span');
@@ -344,11 +388,9 @@ function displayQuestion() {
     listEl.appendChild(li);
   });
 
-  // ★修正：古いナビボタンがあれば削除（重複防止）
   var oldNav = listEl.parentNode.querySelector('.quiz-nav-buttons');
   if (oldNav) oldNav.remove();
 
-  // ナビゲーションボタン（戻る・次へ）
   var navDiv = document.createElement('div');
   navDiv.className = 'quiz-nav-buttons';
   navDiv.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:24px;';
@@ -380,7 +422,7 @@ function displayQuestion() {
   listEl.parentNode.appendChild(navDiv);
 }
 
-/* ========== 問題ナビゲーション（回答せずに移動） ========== */
+/* ========== 問題ナビゲーション ========== */
 function goToPrevQuestion() {
   if (currentIndex > 0) {
     currentIndex--;
@@ -428,15 +470,12 @@ function displayResult(qIndex, isCorrect) {
     }
   }
 
-  // 正解番号
   var ansEl = document.getElementById('resultAnswer');
   if (ansEl) ansEl.textContent = q.answer;
 
-  // 解説
   var expEl = document.getElementById('resultExplanation');
   if (expEl) expEl.textContent = getText(q, 'explanation');
 
-  // ボタン文言
   var nextBtn = document.getElementById('nextButton');
   if (nextBtn) {
     if (currentIndex >= quizQuestions.length - 1) {
@@ -504,7 +543,7 @@ function backToMainFromSummary() {
   showScreen('mainMenu');
 }
 
-/* ========== もう一度挑戦（同じ問題セットで再シャッフル） ========== */
+/* ========== もう一度挑戦 ========== */
 function retryQuiz() {
   shuffleArray(quizQuestions);
   currentIndex = 0;
@@ -514,7 +553,7 @@ function retryQuiz() {
   displayQuestion();
 }
 
-/* ========== ★変更：画像拡大モーダル ========== */
+/* ========== 画像拡大モーダル ========== */
 (function() {
   var overlay = document.createElement('div');
   overlay.id = 'imgModal';
