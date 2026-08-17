@@ -675,3 +675,30 @@ body > * {
     padding: 16px 20px;
   }
 }
+/* ===== 回選択ボタン ===== */
+.menu-kai-btn {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid rgba(255,255,255,.3);
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.7);
+  font-size: .95rem;
+  font-weight: 700;
+  font-family: 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  transition: all .25s;
+}
+.menu-kai-btn:hover {
+  border-color: rgba(255,255,255,.5);
+  background: rgba(255,255,255,.15);
+}
+.menu-kai-btn.active {
+  background: linear-gradient(135deg, #00b894, #0984e3);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(9,132,227,.4);
+}
+.menu-kai-btn.disabled-kai {
+  opacity: .4;
+  cursor: not-allowed;
+}
