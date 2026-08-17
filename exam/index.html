@@ -38,15 +38,15 @@
     <div class="menu-section-title">回ごとに挑戦</div>
     <ul class="menu-list">
       <li>
-        <button class="menu-item highlight" onclick="startExam()">
+        <button class="menu-item highlight" onclick="startExamByKai('38')">
           <span class="menu-item-icon">📝</span>第38回 過去問に挑戦
           <span class="menu-item-sub">全125問｜順番に出題</span>
         </button>
       </li>
       <li>
-        <button class="menu-item disabled">
+        <button class="menu-item highlight" onclick="startExamByKai('37')">
           <span class="menu-item-icon">📝</span>第37回 過去問に挑戦
-          <span class="menu-item-sub">準備中</span>
+          <span class="menu-item-sub">全125問｜順番に出題</span>
         </button>
       </li>
       <li>
@@ -58,6 +58,14 @@
     </ul>
 
     <div class="menu-section-title">モード別に挑戦</div>
+
+    <!-- ===== 回の選択（モード別用） ===== -->
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="menu-kai-btn active" id="kaiBtn38" onclick="switchKai('38')">第38回</button>
+      <button class="menu-kai-btn" id="kaiBtn37" onclick="switchKai('37')">第37回</button>
+      <button class="menu-kai-btn disabled-kai" id="kaiBtn36" disabled>第36回（準備中）</button>
+    </div>
+
     <ul class="menu-list">
       <li>
         <button class="menu-item" onclick="showPartSelect()">
@@ -77,24 +85,24 @@
   <!-- ===== パート選択画面 ===== -->
   <div class="menu-container hidden" id="partSelect">
     <button class="back-button" onclick="backToMain()">← 戻る</button>
-    <div class="menu-section-title">パートを選んでください</div>
+    <div class="menu-section-title" id="partSelectTitle">パートを選んでください</div>
     <ul class="menu-list">
       <li>
         <button class="menu-item" onclick="startByPart('パートA')">
           <span class="menu-item-icon">🅰️</span>Aパートに挑戦
-          <span class="menu-item-sub">人間と社会（問1〜16）</span>
+          <span class="menu-item-sub">人間と社会</span>
         </button>
       </li>
       <li>
         <button class="menu-item" onclick="startByPart('パートB')">
           <span class="menu-item-icon">🅱️</span>Bパートに挑戦
-          <span class="menu-item-sub">介護（問17〜77）</span>
+          <span class="menu-item-sub">介護</span>
         </button>
       </li>
       <li>
         <button class="menu-item" onclick="startByPart('パートC')">
           <span class="menu-item-icon">🅲</span>Cパートに挑戦
-          <span class="menu-item-sub">こころとからだのしくみ（問78〜125）</span>
+          <span class="menu-item-sub">こころとからだのしくみ</span>
         </button>
       </li>
     </ul>
@@ -103,9 +111,9 @@
   <!-- ===== 科目選択画面 ===== -->
   <div class="menu-container hidden" id="subjectSelect">
     <button class="back-button" onclick="backToMain()">← 戻る</button>
-    <div class="menu-section-title">科目を選んでください</div>
+    <div class="menu-section-title" id="subjectSelectTitle">科目を選んでください</div>
     <ul class="subject-grid" id="subjectList">
-      <!-- app.js が JSON読み込み後に動的生成 -->
+      <!-- app.js が動的生成 -->
     </ul>
   </div>
 
@@ -123,13 +131,9 @@
       <span class="quiz-subject" id="quizSubject">人間の尊厳と自立</span>
     </div>
 
-    <div class="quiz-question" id="quizQuestion">
-      <!-- 設問文がここに入る -->
-    </div>
+    <div class="quiz-question" id="quizQuestion"></div>
 
-    <ul class="choices-list" id="choicesList">
-      <!-- 選択肢がここに入る -->
-    </ul>
+    <ul class="choices-list" id="choicesList"></ul>
   </div>
 
   <!-- ===== 正誤画面 ===== -->
@@ -144,9 +148,7 @@
 
     <div class="result-explanation">
       <div class="result-explanation-title">📖 解説</div>
-      <div id="resultExplanation">
-        <!-- 解説がここに入る -->
-      </div>
+      <div id="resultExplanation"></div>
     </div>
 
     <button class="next-button" id="nextButton" onclick="nextQuestion()">
@@ -166,10 +168,10 @@
       <div class="summary-message" id="summaryMessage">お疲れさまでした！</div>
     </div>
     <div class="summary-buttons">
-      <button class="next-button" onclick="location.reload()">
+      <button class="next-button" onclick="retryQuiz()">
         🔄 もう一度挑戦
       </button>
-      <button class="back-button" onclick="location.href='index.html'">
+      <button class="back-button" onclick="backToMainFromSummary()">
         ← メニューに戻る
       </button>
     </div>
@@ -182,7 +184,6 @@
     <div class="exam-footer-credit">Created by Mitsuhide Muneishi</div>
   </div>
 
-  <!-- ===== JavaScript ===== -->
   <script src="app.js"></script>
 
 </body>
