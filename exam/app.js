@@ -277,6 +277,19 @@ function displayQuestion() {
   if (!listEl) return;
   listEl.innerHTML = '';
 
+  /* ★変更：設問画像があれば表示 */
+  if (q.questionImage) {
+    var qImg = document.createElement('img');
+    qImg.src = q.questionImage;
+    qImg.alt = '設問画像';
+    qImg.style.cssText =
+      'display:block;max-width:90%;margin:12px auto;border:1px solid #ccc;border-radius:8px;cursor:pointer;';
+    qImg.addEventListener('click', function() {
+      openImageModal(this.src);
+    });
+    listEl.appendChild(qImg);
+  }
+
   q.choices.forEach(function(choice, i) {
     var li = document.createElement('li');
     var btn = document.createElement('button');
@@ -284,15 +297,41 @@ function displayQuestion() {
 
     var choiceData = getChoiceText(q, i);
 
-    if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
+    /* ★変更：画像付き選択肢の判定を修正（image プロパティ対応） */
+    if (typeof choiceData === 'object' && choiceData !== null && choiceData.image) {
+      btn.classList.add('image-choice');
+      var label = document.createElement('span');
+      label.className = 'choice-number';
+      label.textContent = (i + 1);
+      btn.appendChild(label);
+
+      var img = document.createElement('img');
+      img.src = choiceData.image;
+      img.alt = choiceData.text || ('選択肢' + (i + 1));
+      img.style.cssText = 'max-width:100%;border-radius:6px;margin-top:4px;';
+      img.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openImageModal(this.src);
+      });
+      btn.appendChild(img);
+
+      if (choiceData.text) {
+        var textSpan = document.createElement('span');
+        textSpan.className = 'choice-text';
+        textSpan.textContent = choiceData.text;
+        textSpan.style.cssText = 'display:block;margin-top:4px;font-weight:600;';
+        btn.appendChild(textSpan);
+      }
+    } else if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
       btn.classList.add('image-choice');
       btn.innerHTML =
         '<span class="choice-number">' + (i + 1) + '</span>' +
         '<img src="' + choiceData.src + '" alt="' + (choiceData.alt || '選択肢' + (i + 1)) + '">';
     } else {
+      var displayText = (typeof choiceData === 'object') ? (choiceData.text || '') : choiceData;
       btn.innerHTML =
         '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<span class="choice-text">' + choiceData + '</span>';
+        '<span class="choice-text">' + displayText + '</span>';
     }
 
     btn.addEventListener('click', (function(answerNum) {
@@ -311,7 +350,7 @@ function displayQuestion() {
 
   // ナビゲーションボタン（戻る・次へ）
   var navDiv = document.createElement('div');
-  navDiv.className = 'quiz-nav-buttons'; // ★修正：クラス名追加
+  navDiv.className = 'quiz-nav-buttons';
   navDiv.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:24px;';
 
   var prevBtn = document.createElement('button');
@@ -474,3 +513,36 @@ function retryQuiz() {
   showScreen('quizScreen');
   displayQuestion();
 }
+
+/* ========== ★変更：画像拡大モーダル ========== */
+(function() {
+  var overlay = document.createElement('div');
+  overlay.id = 'imgModal';
+  overlay.style.cssText =
+    'display:none;position:fixed;top:0;left:0;width:100%;height:100%;' +
+    'background:rgba(0,0,0,.85);z-index:9999;justify-content:center;' +
+    'align-items:center;cursor:pointer;';
+
+  var modalImg = document.createElement('img');
+  modalImg.style.cssText =
+    'max-width:92%;max-height:92%;border-radius:8px;box-shadow:0 0 20px #000;';
+  overlay.appendChild(modalImg);
+
+  var closeBtn = document.createElement('span');
+  closeBtn.textContent = '✕';
+  closeBtn.style.cssText =
+    'position:absolute;top:16px;right:24px;color:#fff;font-size:32px;' +
+    'font-weight:bold;cursor:pointer;';
+  overlay.appendChild(closeBtn);
+
+  document.body.appendChild(overlay);
+
+  window.openImageModal = function(src) {
+    modalImg.src = src;
+    overlay.style.display = 'flex';
+  };
+
+  overlay.addEventListener('click', function() {
+    overlay.style.display = 'none';
+  });
+})();
