@@ -478,6 +478,20 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
 }
+/* トップに戻るリンク */
+.back-to-top-link{
+  color:rgba(255,255,255,.75);
+  font-size:clamp(1.1rem,3.2vw,1.35rem);
+  font-weight:500;
+  text-decoration:none;
+  transition:color .2s,opacity .2s;
+  margin-top:4px;
+  margin-bottom:4px;
+}
+.back-to-top-link:hover{
+  color:#fff;
+  opacity:1;
+}
 </style>
 </head>
 <body>
@@ -491,6 +505,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
     <h1>介護用語フラッシュカード</h1>
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
+  <a href="index.html" class="back-to-top-link">← トップに戻る</a>
   <p class="landing-desc">
     かいごふくししのしけんにでるようごを<br>介護福祉士の試験に出る用語を<br>ぼこくごでたのしくおぼえよう！<br>母国語で楽しく覚えよう！
   </p>
