@@ -702,3 +702,7 @@ body > * {
   opacity: .4;
   cursor: not-allowed;
 }
+/* トップに戻るリンク フォントサイズアップ */
+.back-to-top{
+  font-size:clamp(1.1rem,3.2vw,1.35rem) !important;
+}
