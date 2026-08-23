@@ -2,11 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>CSV → past_exam_37.json 変換ツール</title>
+<title>CSV → past_exam_36.json 変換ツール</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
   h1 { font-size: 1.4em; }
+  p.note { color: #555; font-size: 0.9em; line-height: 1.6; }
   #drop-zone {
     border: 3px dashed #aaa; border-radius: 12px; padding: 40px;
     text-align: center; color: #666; margin: 20px 0; cursor: pointer;
@@ -18,129 +19,219 @@
     background: #4CAF50; color: #fff; border: none; border-radius: 8px; cursor: pointer;
   }
   button:hover { background: #388E3C; }
-  #preview { max-height: 300px; overflow: auto; background: #f5f5f5; padding: 12px; font-size: 0.85em; border-radius: 8px; }
+  #preview {
+    max-height: 360px; overflow: auto; background: #f5f5f5;
+    padding: 12px; font-size: 0.85em; border-radius: 8px;
+    white-space: pre-wrap; word-break: break-all;
+  }
 </style>
 </head>
 <body>
 
-<h1>CSV → past_exam_37.json 変換ツール</h1>
+<h1>CSV → past_exam_36.json 変換ツール</h1>
+
+<p class="note">
+  Google Sheets からエクスポートした CSV（UTF-8）をドロップしてください。<br>
+  ヘッダー行の列名は次の通りです：<br>
+  <code>パート / 科目 / 問題番号 / 問題文 / 選択肢1〜5 / 正解 / 解説 / 問題画像</code>
+</p>
 
 <div id="drop-zone">
-  ここにCSVファイルをドラッグ＆ドロップ<br>
+  ここに CSV ファイルをドラッグ＆ドロップ<br>
   または クリックしてファイルを選択
-  <input type="file" id="file-input" accept=".csv" style="display:none">
+  <input type="file" id="file-input" accept=".csv,.tsv,.txt" style="display:none">
 </div>
 
 <div id="status"></div>
-<button id="download-btn">past_exam_37.json をダウンロード</button>
+<button id="download-btn">past_exam_36.json をダウンロード</button>
 <div id="preview"></div>
 
 <script>
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('file-input');
-const status = document.getElementById('status');
+/* ---------- DOM ---------- */
+const dropZone    = document.getElementById('drop-zone');
+const fileInput   = document.getElementById('file-input');
+const statusEl    = document.getElementById('status');
 const downloadBtn = document.getElementById('download-btn');
-const preview = document.getElementById('preview');
+const previewEl   = document.getElementById('preview');
 
 let jsonResult = null;
 
+/* ---------- イベント ---------- */
 dropZone.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', (e) => { if (e.target.files[0]) processFile(e.target.files[0]); });
-
-dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('hover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
+dropZone.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('hover'); });
+dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('hover'));
 dropZone.addEventListener('drop', (e) => {
   e.preventDefault();
   dropZone.classList.remove('hover');
   if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
 });
 
+/* ---------- 列名の揺れ吸収 ---------- */
+// Google Sheets のエクスポートでは BOM が付くことがある。
+// また全角・半角やスペースの揺れを吸収する。
+function normalize(str) {
+  return (str || '')
+    .replace(/\uFEFF/g, '')          // BOM
+    .replace(/[\s\u3000]+/g, '')     // 全角半角スペース
+    .toLowerCase()
+    .normalize('NFKC');              // 全角英数→半角
+}
+
+/** ヘッダー配列から「目的の列名」のインデックスを返す */
+function findCol(headers, ...candidates) {
+  for (let i = 0; i < headers.length; i++) {
+    const h = normalize(headers[i]);
+    for (const c of candidates) {
+      if (h === normalize(c)) return i;
+    }
+  }
+  return -1;
+}
+
+/* ---------- メイン変換 ---------- */
 function processFile(file) {
-  status.textContent = '読み込み中...';
+  statusEl.textContent  = '読み込み中…';
+  previewEl.textContent = '';
+  downloadBtn.style.display = 'none';
 
   Papa.parse(file, {
-    header: false,
+    header: false,          // 自前でヘッダー解析する（揺れ吸収のため）
     skipEmptyLines: true,
     complete: function(results) {
-      const rows = results.data;
-      let startIndex = 0;
-      if (rows[0] && rows[0][0] && /パート|part|Part|科目/.test(rows[0][0])) {
-        startIndex = 1;
+      try {
+        convert(results.data);
+      } catch (err) {
+        statusEl.textContent = 'エラー: ' + err.message;
       }
-
-      const questions = [];
-      let skipped = [];
-
-      for (let i = startIndex; i < rows.length; i++) {
-        const row = rows[i];
-        if (!row || row.length < 10) continue;
-
-        const part = (row[0] || '').trim();
-        const subject = (row[1] || '').trim();
-        const questionNum = parseInt((row[2] || '').trim(), 10);
-        const questionText = (row[3] || '').trim();
-        const choice1 = (row[4] || '').trim();
-        const choice2 = (row[5] || '').trim();
-        const choice3 = (row[6] || '').trim();
-        const choice4 = (row[7] || '').trim();
-        const choice5 = (row[8] || '').trim();
-        const answerRaw = (row[9] || '').trim();
-        const explanation = (row[10] || '').trim();
-
-        if (isNaN(questionNum)) continue;
-
-        // 問題49のスキップを削除済み（第37回では不要）
-
-        if (!choice1 && !choice2 && !choice3 && !choice4 && !choice5) {
-          skipped.push(questionNum);
-          continue;
-        }
-
-        let answer = parseInt(answerRaw, 10);
-        if (isNaN(answer)) {
-          const letterMap = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5 };
-          answer = letterMap[answerRaw.toUpperCase()] || 0;
-        }
-
-        const choices = [choice1, choice2, choice3, choice4, choice5].filter(c => c !== '');
-
-        questions.push({
-          id: questionNum,
-          part: part,
-          subject: subject,
-          question: questionText,
-          choices: choices,
-          answer: answer,
-          explanation: explanation
-        });
-      }
-
-      jsonResult = questions;
-
-      let msg = `変換完了！\n`;
-      msg += `・変換された問題数: ${questions.length}問\n`;
-      if (skipped.length > 0) {
-        msg += `・スキップされた問題: ${skipped.join(', ')}\n`;
-      }
-      msg += `\n最初の3問のプレビュー:`;
-      status.textContent = msg;
-
-      preview.textContent = JSON.stringify(questions.slice(0, 3), null, 2);
-      downloadBtn.style.display = 'inline-block';
     },
     error: function(err) {
-      status.textContent = 'エラー: ' + err.message;
+      statusEl.textContent = 'パースエラー: ' + err.message;
     }
   });
 }
 
+function convert(rows) {
+  if (!rows || rows.length < 2) throw new Error('データが空、またはヘッダー行しかありません。');
+
+  /* --- ヘッダー解析 --- */
+  const hdr = rows[0];
+  const col = {
+    part:     findCol(hdr, 'パート', 'part'),
+    subject:  findCol(hdr, '科目', 'subject'),
+    num:      findCol(hdr, '問題番号', 'questionno', 'no'),
+    text:     findCol(hdr, '問題文', 'question'),
+    c1:       findCol(hdr, '選択肢1', 'choice1'),
+    c2:       findCol(hdr, '選択肢2', 'choice2'),
+    c3:       findCol(hdr, '選択肢3', 'choice3'),
+    c4:       findCol(hdr, '選択肢4', 'choice4'),
+    c5:       findCol(hdr, '選択肢5', 'choice5'),
+    answer:   findCol(hdr, '正解', 'answer'),
+    explain:  findCol(hdr, '解説', 'explanation'),
+    image:    findCol(hdr, '問題画像', 'image', '画像')
+  };
+
+  /* 必須列チェック */
+  const missing = [];
+  if (col.num  < 0) missing.push('問題番号');
+  if (col.text < 0) missing.push('問題文');
+  if (col.c1   < 0) missing.push('選択肢1');
+  if (col.answer < 0) missing.push('正解');
+  if (missing.length > 0) {
+    throw new Error('ヘッダーに必要な列が見つかりません: ' + missing.join(', ') +
+      '\n検出されたヘッダー: ' + hdr.join(' | '));
+  }
+
+  /* --- データ行変換 --- */
+  const questions = [];
+  const skipped   = [];
+  const warnings  = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const questionNum = parseInt((r[col.num] || '').trim(), 10);
+    if (isNaN(questionNum)) { skipped.push('行' + (i + 1)); continue; }
+
+    /* 選択肢 */
+    const choiceCols = [col.c1, col.c2, col.c3, col.c4, col.c5];
+    const choices = choiceCols
+      .filter(c => c >= 0)
+      .map(c => (r[c] || '').trim())
+      .filter(c => c !== '');
+
+    if (choices.length === 0) { skipped.push('問' + questionNum); continue; }
+
+    /* 正解 */
+    let answer = parseInt((r[col.answer] || '').trim(), 10);
+    if (isNaN(answer)) answer = 0;
+    if (answer < 1 || answer > choices.length) {
+      warnings.push('問' + questionNum + ': 正解番号(' + answer + ')が選択肢数(' + choices.length + ')と不整合');
+    }
+
+    /* オブジェクト生成 */
+    const obj = {
+      id:          questionNum,
+      part:        col.part    >= 0 ? (r[col.part]    || '').trim() : '',
+      subject:     col.subject >= 0 ? (r[col.subject] || '').trim() : '',
+      question:    (r[col.text] || '').trim(),
+      choices:     choices,
+      answer:      answer,
+      explanation: col.explain >= 0 ? (r[col.explain] || '').trim() : ''
+    };
+
+    /* 画像列 */
+    if (col.image >= 0) {
+      const img = (r[col.image] || '').trim();
+      if (img) obj.image = img;
+    }
+
+    questions.push(obj);
+  }
+
+  /* --- 結果レポート --- */
+  jsonResult = questions;
+
+  const withImage = questions.filter(q => q.image);
+
+  let msg = '';
+  msg += '✅ 変換完了\n';
+  msg += '─────────────────────────\n';
+  msg += '  変換された問題数 : ' + questions.length + ' 問\n';
+  msg += '  期待される問題数 : 125 問（第36回）\n';
+  if (skipped.length > 0) {
+    msg += '  スキップ         : ' + skipped.join(', ') + '\n';
+  }
+  if (withImage.length > 0) {
+    msg += '  画像付き問題     : ' + withImage.map(q => '問' + q.id + ' → ' + q.image).join('\n                     ') + '\n';
+  }
+  if (warnings.length > 0) {
+    msg += '\n⚠️ 警告:\n  ' + warnings.join('\n  ') + '\n';
+  }
+  msg += '─────────────────────────\n';
+  msg += '下のプレビューで画像付き問題を確認してください。';
+
+  statusEl.textContent = msg;
+
+  /* プレビュー: 画像付き問題 + 先頭3問 */
+  const previewItems = [];
+  withImage.forEach(q => previewItems.push(q));
+  questions.slice(0, 3).forEach(q => {
+    if (!previewItems.find(p => p.id === q.id)) previewItems.push(q);
+  });
+  previewItems.sort((a, b) => a.id - b.id);
+  previewEl.textContent = JSON.stringify(previewItems, null, 2);
+
+  downloadBtn.style.display = 'inline-block';
+}
+
+/* ---------- ダウンロード ---------- */
 downloadBtn.addEventListener('click', () => {
   if (!jsonResult) return;
   const blob = new Blob([JSON.stringify(jsonResult, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'past_exam_37.json';
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'past_exam_36.json';
   a.click();
   URL.revokeObjectURL(url);
 });
