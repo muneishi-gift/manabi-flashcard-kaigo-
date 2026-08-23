@@ -706,3 +706,22 @@ body > * {
 .back-to-top{
   font-size:clamp(1.1rem,3.2vw,1.35rem) !important;
 }
+/* ===== 事例と問題文の分離表示 ===== */
+.question-case {
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 4px solid #667eea;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  line-height: 1.9;
+  font-size: 0.95rem;
+}
+.question-ask {
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid #ffc107;
+  padding: 14px 16px;
+  border-radius: 8px;
+  line-height: 1.8;
+  font-size: 1.0rem;
+  font-weight: 700;
+}
