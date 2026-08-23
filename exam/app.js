@@ -302,6 +302,52 @@ function shuffleArray(arr) {
   }
 }
 
+/* ========== 事例と問題文の自動分割 ========== */
+function splitCaseAndQuestion(qText) {
+  // 〔事例〕を含まない場合は分割しない
+  if (qText.indexOf('〔事例〕') === -1 && qText.indexOf('（事例）') === -1 && qText.indexOf('【事例】') === -1) {
+    return null;
+  }
+
+  // 末尾の問いかけ文を検出するパターン（優先順）
+  var splitPatterns = [
+    /([。」])\s*(最も適切なものを.*)$/,
+    /([。」])\s*(最も適切な対応を.*)$/,
+    /([。」])\s*(最も優先すべき.*)$/,
+    /([。」])\s*(適切なものを.*)$/,
+    /([。」])\s*(次のうち.*)$/,
+    /([。」])\s*(今後、引き起こされる.*)$/,
+    /([。」])\s*(この場面で.*)$/,
+    /([。」])\s*(このときの.*)$/,
+    /([。」])\s*(その後.*)$/,
+    /([。」])\s*(Aさん|Bさん|Cさん|Dさん|Eさん|Fさん|Gさん|Hさん|Jさん|Kさん|Lさん|Mさん)(の食事|の入浴|の状態|の様子|の行動|の気持ち|の二次障害|に対する|に起こり|について|が利用|への)(.*)$/
+  ];
+
+  for (var p = 0; p < splitPatterns.length; p++) {
+    var m = qText.match(splitPatterns[p]);
+    if (m) {
+      var idx = qText.lastIndexOf(m[0]);
+      var casePart = qText.substring(0, idx + m[1].length).trim();
+      var askPart = qText.substring(idx + m[1].length).trim();
+      if (casePart && askPart) {
+        return { casePart: casePart, askPart: askPart };
+      }
+    }
+  }
+
+  // パターンにマッチしない場合、最後の「。」から後ろを問題文とする
+  var lastPeriod = qText.lastIndexOf('。', qText.length - 2);
+  if (lastPeriod > qText.length * 0.3) {
+    var casePart2 = qText.substring(0, lastPeriod + 1).trim();
+    var askPart2 = qText.substring(lastPeriod + 1).trim();
+    if (casePart2 && askPart2 && askPart2.length > 10) {
+      return { casePart: casePart2, askPart: askPart2 };
+    }
+  }
+
+  return null;
+}
+
 /* ========== 問題表示 ========== */
 function displayQuestion() {
   var q = quizQuestions[currentIndex];
@@ -322,8 +368,20 @@ function displayQuestion() {
   if (numEl) numEl.textContent = '問' + q.id;
   if (subjEl) subjEl.textContent = getText(q, 'subject');
 
+  /* --- 事例と問題文の分割表示 --- */
   var qEl = document.getElementById('quizQuestion');
-  if (qEl) qEl.textContent = getText(q, 'question');
+  if (qEl) {
+    var qText = getText(q, 'question');
+    var split = splitCaseAndQuestion(qText);
+
+    if (split) {
+      qEl.innerHTML =
+        '<div class="question-case">' + escapeHtml(split.casePart) + '</div>' +
+        '<div class="question-ask">' + escapeHtml(split.askPart) + '</div>';
+    } else {
+      qEl.textContent = qText;
+    }
+  }
 
   var listEl = document.getElementById('choicesList');
   if (!listEl) return;
@@ -426,6 +484,13 @@ function displayQuestion() {
   navDiv.appendChild(prevBtn);
   navDiv.appendChild(nextBtn);
   listEl.parentNode.appendChild(navDiv);
+}
+
+/* ========== HTMLエスケープ ========== */
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 /* ========== 問題ナビゲーション ========== */
