@@ -5,7 +5,7 @@
    =================================== */
 
 /* ========== グローバル変数 ========== */
-var examData = {};        // { '38': [...], '37': [...] }
+var examData = {};        // { '38': [...], '37': [...], '36': [...] }
 var allQuestions = [];     // 現在選択中の回のデータ
 var quizQuestions = [];
 var currentIndex = 0;
@@ -60,11 +60,11 @@ function getChoiceText(item, index) {
   return removeRuby(raw);
 }
 
-/* ========== 初期化：JSONデータ読み込み（両方読む） ========== */
+/* ========== 初期化：JSONデータ読み込み（3回分読む） ========== */
 window.addEventListener('DOMContentLoaded', function() {
   initScreens();
 
-  // 第38回と第37回を同時に読み込む
+  // 第38回・第37回・第36回を同時に読み込む
   Promise.all([
     fetch('data/past_exam_38.json').then(function(r) {
       if (!r.ok) throw new Error('38回: HTTP ' + r.status);
@@ -73,13 +73,19 @@ window.addEventListener('DOMContentLoaded', function() {
     fetch('data/past_exam_37.json').then(function(r) {
       if (!r.ok) throw new Error('37回: HTTP ' + r.status);
       return r.json();
+    }),
+    fetch('data/past_exam_36.json').then(function(r) {
+      if (!r.ok) throw new Error('36回: HTTP ' + r.status);
+      return r.json();
     })
   ])
   .then(function(results) {
     examData['38'] = results[0];
     examData['37'] = results[1];
+    examData['36'] = results[2];
     console.log('第38回：' + results[0].length + '問 読み込み完了');
     console.log('第37回：' + results[1].length + '問 読み込み完了');
+    console.log('第36回：' + results[2].length + '問 読み込み完了');
 
     // デフォルトは第38回
     allQuestions = examData['38'];
