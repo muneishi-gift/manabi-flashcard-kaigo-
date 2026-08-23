@@ -53,7 +53,14 @@ function getText(item, field) {
 function getChoiceText(item, index) {
   if (!item.choices || !item.choices[index]) return '';
   var raw = item.choices[index];
-  if (typeof raw === 'object') return raw;
+  // 画像オブジェクトの場合はそのまま返す
+  if (typeof raw === 'object' && raw !== null) {
+    // ふりがなOFF時はtextからルビを除去
+    if (!furiganaOn && raw.text) {
+      return { image: raw.image, text: removeRuby(raw.text), src: raw.src, alt: raw.alt, type: raw.type };
+    }
+    return raw;
+  }
   if (furiganaOn) {
     return toHiragana(raw);
   }
@@ -383,10 +390,12 @@ function displayQuestion() {
     }
   }
 
+  /* --- 選択肢リスト --- */
   var listEl = document.getElementById('choicesList');
   if (!listEl) return;
   listEl.innerHTML = '';
 
+  /* 問題画像（questionImage） */
   if (q.questionImage) {
     var qImg = document.createElement('img');
     qImg.src = q.questionImage;
@@ -399,6 +408,7 @@ function displayQuestion() {
     listEl.appendChild(qImg);
   }
 
+  /* 各選択肢 */
   q.choices.forEach(function(choice, i) {
     var li = document.createElement('li');
     var btn = document.createElement('button');
@@ -406,8 +416,10 @@ function displayQuestion() {
 
     var choiceData = getChoiceText(q, i);
 
+    /* --- パターン1: { image: "...", text: "..." } --- */
     if (typeof choiceData === 'object' && choiceData !== null && choiceData.image) {
       btn.classList.add('image-choice');
+
       var label = document.createElement('span');
       label.className = 'choice-number';
       label.textContent = (i + 1);
@@ -416,7 +428,7 @@ function displayQuestion() {
       var img = document.createElement('img');
       img.src = choiceData.image;
       img.alt = choiceData.text || ('選択肢' + (i + 1));
-      img.style.cssText = 'max-width:100%;border-radius:6px;margin-top:4px;';
+      img.style.cssText = 'max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;';
       img.addEventListener('click', function(e) {
         e.stopPropagation();
         openImageModal(this.src);
@@ -430,16 +442,20 @@ function displayQuestion() {
         textSpan.style.cssText = 'display:block;margin-top:4px;font-weight:600;';
         btn.appendChild(textSpan);
       }
+
+    /* --- パターン2: { type: "image", src: "...", alt: "..." } --- */
     } else if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
       btn.classList.add('image-choice');
       btn.innerHTML =
         '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<img src="' + choiceData.src + '" alt="' + (choiceData.alt || '選択肢' + (i + 1)) + '">';
+        '<img src="' + escapeHtml(choiceData.src) + '" alt="' + escapeHtml(choiceData.alt || '選択肢' + (i + 1)) + '" style="max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;">';
+
+    /* --- パターン3: 通常テキスト --- */
     } else {
-      var displayText = (typeof choiceData === 'object') ? (choiceData.text || '') : choiceData;
+      var displayText = (typeof choiceData === 'object' && choiceData !== null) ? (choiceData.text || '') : (choiceData || '');
       btn.innerHTML =
         '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<span class="choice-text">' + displayText + '</span>';
+        '<span class="choice-text">' + escapeHtml(displayText) + '</span>';
     }
 
     btn.addEventListener('click', (function(answerNum) {
@@ -452,6 +468,7 @@ function displayQuestion() {
     listEl.appendChild(li);
   });
 
+  /* --- ナビゲーションボタン --- */
   var oldNav = listEl.parentNode.querySelector('.quiz-nav-buttons');
   if (oldNav) oldNav.remove();
 
