@@ -50,9 +50,9 @@
         </button>
       </li>
       <li>
-        <button class="menu-item disabled">
+        <button class="menu-item highlight" onclick="startExamByKai('36')">
           <span class="menu-item-icon">📝</span>第36回 過去問に挑戦
-          <span class="menu-item-sub">準備中</span>
+          <span class="menu-item-sub">全125問｜順番に出題</span>
         </button>
       </li>
     </ul>
@@ -63,7 +63,7 @@
     <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
       <button class="menu-kai-btn active" id="kaiBtn38" onclick="switchKai('38')">第38回</button>
       <button class="menu-kai-btn" id="kaiBtn37" onclick="switchKai('37')">第37回</button>
-      <button class="menu-kai-btn disabled-kai" id="kaiBtn36" disabled>第36回（準備中）</button>
+      <button class="menu-kai-btn" id="kaiBtn36" onclick="switchKai('36')">第36回</button>
     </div>
 
     <ul class="menu-list">
