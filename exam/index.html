@@ -60,23 +60,22 @@
     <div class="menu-section-title">モード別に挑戦</div>
 
     <!-- ===== 回の選択（モード別用） ===== -->
-    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-      <button class="menu-kai-btn active" id="kaiBtn38" onclick="switchKai('38')">第38回</button>
-      <button class="menu-kai-btn" id="kaiBtn37" onclick="switchKai('37')">第37回</button>
-      <button class="menu-kai-btn" id="kaiBtn36" onclick="switchKai('36')">第36回</button>
+    <div style="font-size:.78rem;opacity:.55;margin-bottom:14px;padding-left:4px;line-height:1.7;">
+      第38回・第37回・第36回の3回分から、まとめてランダムに出題されます。<br>
+      ※ 第36回・第37回は当時パート区分がありませんでした。第38回からのパート区分に当てはめて分類しています。
     </div>
 
     <ul class="menu-list">
       <li>
         <button class="menu-item" onclick="showPartSelect()">
           <span class="menu-item-icon">📂</span>パートごとに挑戦
-          <span class="menu-item-sub">A・B・Cパート別｜ランダム出題</span>
+          <span class="menu-item-sub">A・B・Cパート別｜3回分からランダム出題</span>
         </button>
       </li>
       <li>
         <button class="menu-item" onclick="showSubjectSelect()">
           <span class="menu-item-icon">📚</span>科目ごとに挑戦
-          <span class="menu-item-sub">13科目から選択｜ランダム出題</span>
+          <span class="menu-item-sub">13科目から選択｜3回分からランダム出題</span>
         </button>
       </li>
     </ul>
@@ -90,19 +89,19 @@
       <li>
         <button class="menu-item" onclick="startByPart('パートA')">
           <span class="menu-item-icon">🅰️</span>Aパートに挑戦
-          <span class="menu-item-sub">人間と社会</span>
+          <span class="menu-item-sub">午前｜尊厳・介護の基本・社会・コミュニケーション・生活支援技術</span>
         </button>
       </li>
       <li>
         <button class="menu-item" onclick="startByPart('パートB')">
           <span class="menu-item-icon">🅱️</span>Bパートに挑戦
-          <span class="menu-item-sub">介護</span>
+          <span class="menu-item-sub">午後｜こころとからだ・発達と老化・認知症・障害・医療的ケア</span>
         </button>
       </li>
       <li>
         <button class="menu-item" onclick="startByPart('パートC')">
           <span class="menu-item-icon">🅲</span>Cパートに挑戦
-          <span class="menu-item-sub">こころとからだのしくみ</span>
+          <span class="menu-item-sub">午後｜介護過程・総合問題</span>
         </button>
       </li>
     </ul>
