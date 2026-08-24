@@ -2,12 +2,13 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>過去問に挑戦｜介護福祉士国家試験対策</title>
   <meta name="description" content="介護福祉士国家試験 過去問演習 - 一般社団法人GIFT協会">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="theme.js"></script>
 </head>
 <body>
 
@@ -28,6 +29,17 @@
         <div class="furigana-switch-thumb" id="furiganaThumb"></div>
       </div>
       <span class="furigana-status" id="furiganaStatus">OFF</span>
+    </div>
+  </div>
+
+  <!-- ===== 表示設定（テーマ・文字サイズ） ===== -->
+  <div class="display-settings">
+    <button type="button" class="theme-btn" id="themeToggle">☀️ ライト</button>
+    <div class="fs-group" role="group" aria-label="文字サイズ">
+      <span class="fs-label">文字</span>
+      <button type="button" class="fs-btn" data-fs="normal">標準</button>
+      <button type="button" class="fs-btn" data-fs="large">大</button>
+      <button type="button" class="fs-btn" data-fs="xlarge">特大</button>
     </div>
   </div>
 
@@ -59,8 +71,7 @@
 
     <div class="menu-section-title">モード別に挑戦</div>
 
-    <!-- ===== 回の選択（モード別用） ===== -->
-    <div style="font-size:.78rem;opacity:.55;margin-bottom:14px;padding-left:4px;line-height:1.7;">
+    <div class="menu-note">
       第38回・第37回・第36回の3回分から、まとめてランダムに出題されます。<br>
       ※ 第36回・第37回は当時パート区分がありませんでした。第38回からのパート区分に当てはめて分類しています。
     </div>
@@ -150,7 +161,7 @@
       <div class="result-explanation-title">📖 解説</div>
       <div id="resultExplanation"></div>
     </div>
-    
+
     <div class="confidence-box" id="confidenceBox">
       <div class="confidence-title">いまの手ごたえは？（任意）</div>
       <div class="confidence-buttons">
