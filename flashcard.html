@@ -660,6 +660,43 @@ const CSV_EN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQ
 const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
 
 let allData=[],displayData=[],currentLang='',idx=0,weakMode=false;
+/* ===== 過去問アプリからの単語指定（?word=…） ===== */
+let pendingWord='';
+
+function normalizeWord(s){
+  if(!s)return '';
+  return String(s)
+    .replace(/（[^）]*）/g,'')
+    .replace(/\([^)]*\)/g,'')
+    .replace(/[\s　]/g,'')
+    .trim();
+}
+
+function findCardIndex(word){
+  const target=normalizeWord(word);
+  if(!target)return -1;
+  for(let i=0;i<allData.length;i++){
+    if(normalizeWord(allData[i].word)===target)return i;
+  }
+  for(let i=0;i<allData.length;i++){
+    if(normalizeWord(allData[i].word).indexOf(target)!==-1)return i;
+  }
+  for(let i=0;i<allData.length;i++){
+    const w=normalizeWord(allData[i].word);
+    if(w&&target.indexOf(w)!==-1)return i;
+  }
+  return -1;
+}
+
+function jumpToPendingWord(){
+  if(!pendingWord)return;
+  const word=pendingWord;
+  pendingWord='';
+  const i=findCardIndex(word);
+  startQuiz(false);
+  if(i>=0){idx=i;showCard();}
+}
+
 let masteredSet=new Set();
 let lastMilestone=0;
 
@@ -848,6 +885,7 @@ function loadDataForStart(){
         }));
       }
       updateStartScreen();
+      if(pendingWord)jumpToPendingWord();
     }
   });
 }
@@ -1109,6 +1147,16 @@ function shuffleCards(){
       if(dx<0)nextCard();else prevCard();
     }
   },{passive:true});
+})();
+/* ===== URLで単語が指定されていたら自動で開く ===== */
+(function(){
+  const params=new URLSearchParams(location.search);
+  const w=params.get('word');
+  if(!w)return;
+  pendingWord=w;
+  let lang=params.get('lang')||'ja';
+  if(!LANG_META[lang])lang='ja';
+  chooseLang(lang);
 })();
 </script>
 </body>
