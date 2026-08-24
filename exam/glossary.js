@@ -190,7 +190,11 @@
       html += '<div class="gloss-note">「' + esc(word) + '」に近い言葉が見つかりました</div>';
     }
     res.items.forEach(function (d) { html += itemHTML(d); });
-    html += '<a class="gloss-link" href="../flashcard.html">📇 フラッシュカードでくわしく覚える</a>';
+
+    var jumpWord = (res.items[0] && res.items[0].base) ? res.items[0].base : word;
+    var url = '../flashcard.html?word=' + encodeURIComponent(jumpWord) + '&lang=ja';
+    html += '<a class="gloss-link" href="' + esc(url) + '">📇 フラッシュカードでくわしく覚える</a>';
+
     body.innerHTML = html;
     box.style.display = 'flex';
   }
