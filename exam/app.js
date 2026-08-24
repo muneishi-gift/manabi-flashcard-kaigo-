@@ -312,10 +312,9 @@ function shuffleArray(arr) {
 /* ========== 事例と問題文の自動分割 ========== */
 function splitCaseAndQuestion(qText) {
   // 〔事例〕を含まない場合は分割しない
-  if (qText.indexOf('〔事例') === -1 && qText.indexOf('（事例）') === -1 && qText.indexOf('【事例') === -1) {
+if (qText.indexOf('〔事例') === -1 && qText.indexOf('（事例）') === -1 && qText.indexOf('【事例】') === -1 && qText.indexOf('【事例') === -1) {
     return null;
-  }
-
+}
   // 末尾の問いかけ文を検出するパターン（優先順）
   var splitPatterns = [
     /([。」])\s*(最も適切なものを.*)$/,
