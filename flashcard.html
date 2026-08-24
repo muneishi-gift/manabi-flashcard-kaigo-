@@ -861,6 +861,7 @@ function saveMastered(){
 /* ========== FLOW ========== */
 function chooseLang(lang){
   currentLang=lang;
+  try{localStorage.setItem('kaigo-last-lang',lang);}catch(e){}
   document.body.className='lang-'+lang;
   loadMastered();
   document.getElementById('landing').style.display='none';
