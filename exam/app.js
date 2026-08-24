@@ -27,6 +27,10 @@
   var quizMode     = '';    // 'kai' | 'part' | 'subject'
   var furiganaOn   = false;
 
+  // 解説画面で表示中の内容を記憶する（ふりがな切り替えで描き直すため）
+  var lastResultQ        = null;
+  var lastResultSelected = null;
+
   /* =====================================================
    *  画面要素
    * ===================================================== */
@@ -261,6 +265,8 @@
     score        = 0;
     userAnswers  = [];
     quizMode     = mode;
+    lastResultQ        = null;
+    lastResultSelected = null;
     showScreen(quizScreen);
     renderQuestion();
   }
@@ -554,6 +560,10 @@
    *  正誤画面
    * ===================================================== */
   function showResult(q, selected) {
+    // ふりがな切り替えで描き直せるように内容を記憶しておく
+    lastResultQ        = q;
+    lastResultSelected = selected;
+
     var correct   = getCorrectIndex(q);
     var isCorrect = (selected === correct);
 
@@ -631,6 +641,8 @@
     currentIndex = 0;
     score        = 0;
     userAnswers  = [];
+    lastResultQ        = null;
+    lastResultSelected = null;
     if (quizMode !== 'kai') questions = shuffleArray(questions);
     showScreen(quizScreen);
     renderQuestion();
@@ -651,11 +663,17 @@
     }
     if (track) track.classList.toggle('active', furiganaOn);
 
+    // いま見えている画面だけを描き直す（スクロール位置は保持）
+    var y = window.pageYOffset;
+
     if (quizScreen && !quizScreen.classList.contains('hidden') && questions.length > 0) {
       renderQuestion();
-    }
-    if (subjectSelectEl && !subjectSelectEl.classList.contains('hidden')) {
-      showSubjectSelect();
+      window.scrollTo(0, y);
+    } else if (resultScreen && !resultScreen.classList.contains('hidden') && lastResultQ) {
+      showResult(lastResultQ, lastResultSelected);
+      window.scrollTo(0, y);
+    } else if (subjectSelectEl && !subjectSelectEl.classList.contains('hidden')) {
+      window.showSubjectSelect();
     }
   };
 
