@@ -924,3 +924,85 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   *{ animation:none !important; transition:none !important; }
   html{ scroll-behavior:auto; }
 }
+/* ---------- 解説画面：選択肢の再掲 ---------- */
+.result-choices{
+  width:100%;
+  margin-top:18px;
+}
+.result-choices-title{
+  font-size:.95rem;
+  font-weight:700;
+  margin-bottom:8px;
+  opacity:.85;
+}
+.review-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.review-item{
+  border:2px solid var(--line,rgba(255,255,255,.18));
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:var(--fs-body,1rem);
+  line-height:var(--lh-body,1.9);
+  opacity:.72;
+  -webkit-user-select:text;
+  user-select:text;
+}
+.review-item.is-correct{
+  border-style:solid;
+  border-color:#34d399;
+  background:rgba(52,211,153,.12);
+  opacity:1;
+}
+.review-item.is-picked{
+  border-style:dashed;
+  opacity:1;
+}
+.review-item.is-picked:not(.is-correct){
+  border-color:#f87171;
+  background:rgba(248,113,113,.12);
+}
+.review-tag{
+  display:inline-block;
+  font-size:.8rem;
+  font-weight:700;
+  margin-bottom:4px;
+  letter-spacing:.02em;
+}
+.review-body{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.review-body .choice-number{
+  flex:0 0 auto;
+  font-weight:700;
+  opacity:.8;
+}
+.review-item .choice-text,
+.review-body{
+  -webkit-user-select:text;
+  user-select:text;
+}
+
+/* ---------- なぞって質問（土台） ---------- */
+.ask-chip{
+  position:absolute;
+  z-index:9997;
+  display:none;
+  max-width:200px;
+  padding:8px 12px;
+  border:none;
+  border-radius:999px;
+  background:#4f46e5;
+  color:#fff;
+  font-size:.85rem;
+  font-weight:700;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  cursor:pointer;
+}
