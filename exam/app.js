@@ -27,7 +27,7 @@
   var quizMode     = '';    // 'kai' | 'part' | 'subject'
   var furiganaOn   = false;
 
-  // 解説画面で表示中の内容を記憶する（ふりがな切り替えで描き直すため）
+  // 解説画面に表示中の内容を記憶する（ふりがな切り替えで描き直すため）
   var lastResultQ        = null;
   var lastResultSelected = null;
 
@@ -425,6 +425,7 @@
    * ===================================================== */
   function renderQuestion() {
     var q = questions[currentIndex];
+    if (!q) return;
 
     var progressText = document.getElementById('quizProgressText');
     var progressFill = document.getElementById('quizProgressFill');
@@ -558,9 +559,12 @@
 
   /* =====================================================
    *  正誤画面
+   *  paintResult … 中身を描くだけ（画面は切り替えない）
+   *  showResult  … 中身を描いて画面を切り替える
    * ===================================================== */
-  function showResult(q, selected) {
-    // ふりがな切り替えで描き直せるように内容を記憶しておく
+  function paintResult(q, selected) {
+    if (!q) return;
+
     lastResultQ        = q;
     lastResultSelected = selected;
 
@@ -594,7 +598,10 @@
         ? '結果を見る 📊'
         : '次へ ▶';
     }
+  }
 
+  function showResult(q, selected) {
+    paintResult(q, selected);
     showScreen(resultScreen);
   }
 
@@ -606,6 +613,8 @@
     if (currentIndex >= questions.length) {
       showSummary();
     } else {
+      lastResultQ        = null;
+      lastResultSelected = null;
       showScreen(quizScreen);
       renderQuestion();
     }
@@ -650,6 +659,7 @@
 
   /* =====================================================
    *  ふりがな切り替え
+   *  条件判定をやめ、描画済みの画面すべてを描き直す
    * ===================================================== */
   window.toggleFurigana = function () {
     furiganaOn = !furiganaOn;
@@ -663,16 +673,14 @@
     }
     if (track) track.classList.toggle('active', furiganaOn);
 
-    // いま見えている画面だけを描き直す（スクロール位置は保持）
-    var y = window.pageYOffset;
+    // 出題画面（表示中でなくても描き直しておく）
+    if (questions.length > 0) renderQuestion();
 
-    if (quizScreen && !quizScreen.classList.contains('hidden') && questions.length > 0) {
-      renderQuestion();
-      window.scrollTo(0, y);
-    } else if (resultScreen && !resultScreen.classList.contains('hidden') && lastResultQ) {
-      showResult(lastResultQ, lastResultSelected);
-      window.scrollTo(0, y);
-    } else if (subjectSelectEl && !subjectSelectEl.classList.contains('hidden')) {
+    // 解説画面（画面切り替えを伴わないので、見ている場所は動かない）
+    if (lastResultQ) paintResult(lastResultQ, lastResultSelected);
+
+    // 科目選択画面（表示中のときだけ作り直す）
+    if (subjectSelectEl && !subjectSelectEl.classList.contains('hidden')) {
       window.showSubjectSelect();
     }
   };
