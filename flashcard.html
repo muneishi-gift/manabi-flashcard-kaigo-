@@ -1155,10 +1155,14 @@ function shuffleCards(){
   const w=params.get('word');
   if(!w)return;
   pendingWord=w;
-  let lang=params.get('lang')||'ja';
-  if(!LANG_META[lang])lang='ja';
+  let lang=params.get('lang');
+  if(!lang){
+    try{lang=localStorage.getItem('kaigo-last-lang');}catch(e){}
+  }
+  if(!lang||!LANG_META[lang])lang='ja';
   chooseLang(lang);
 })();
+
 </script>
 </body>
 </html>
