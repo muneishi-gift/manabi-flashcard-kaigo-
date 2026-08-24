@@ -29,24 +29,25 @@
   root.setAttribute('data-theme', theme);
   root.setAttribute('data-fs', fontSize);
 
-  function paint() {
-    var t = document.getElementById('themeToggle');
-    if (t) {
-      t.textContent = (theme === 'light') ? '🌙 ダーク' : '☀️ ライト';
-      t.setAttribute('aria-label',
-        (theme === 'light') ? 'ダークモードに切り替える' : 'ライトモードに切り替える');
-    }
-    var btns = document.querySelectorAll('.fs-btn');
+  // 「いまこれが選ばれている」を印で示す（押した結果ではなく現在の状態）
+  function mark(selector, attr, current) {
+    var btns = document.querySelectorAll(selector);
     for (var i = 0; i < btns.length; i++) {
-      var on = (btns[i].getAttribute('data-fs') === fontSize);
+      var on = (btns[i].getAttribute(attr) === current);
       if (on) { btns[i].classList.add('selected'); }
       else    { btns[i].classList.remove('selected'); }
       btns[i].setAttribute('aria-pressed', on ? 'true' : 'false');
     }
   }
 
+  function paint() {
+    mark('.theme-btn', 'data-theme-set', theme);
+    mark('.fs-btn', 'data-fs', fontSize);
+  }
+
   function setTheme(v) {
-    theme = (v === 'light') ? 'light' : 'dark';
+    if (v !== 'light' && v !== 'dark') return;
+    theme = v;
     root.setAttribute('data-theme', theme);
     write(KEY_THEME, theme);
     paint();
@@ -61,15 +62,15 @@
   }
 
   function bind() {
-    var t = document.getElementById('themeToggle');
-    if (t) {
-      t.addEventListener('click', function () {
-        setTheme(theme === 'light' ? 'dark' : 'light');
+    var tb = document.querySelectorAll('.theme-btn');
+    for (var i = 0; i < tb.length; i++) {
+      tb[i].addEventListener('click', function () {
+        setTheme(this.getAttribute('data-theme-set'));
       });
     }
-    var btns = document.querySelectorAll('.fs-btn');
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].addEventListener('click', function () {
+    var fb = document.querySelectorAll('.fs-btn');
+    for (var j = 0; j < fb.length; j++) {
+      fb[j].addEventListener('click', function () {
         setFontSize(this.getAttribute('data-fs'));
       });
     }
