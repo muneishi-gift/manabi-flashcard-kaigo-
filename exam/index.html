@@ -34,7 +34,10 @@
 
   <!-- ===== 表示設定（テーマ・文字サイズ） ===== -->
   <div class="display-settings">
-    <button type="button" class="theme-btn" id="themeToggle">☀️ ライト</button>
+    <div class="theme-group" role="group" aria-label="表示モード">
+      <button type="button" class="theme-btn" data-theme-set="light">☀️ ライト</button>
+      <button type="button" class="theme-btn" data-theme-set="dark">🌙 ダーク</button>
+    </div>
     <div class="fs-group" role="group" aria-label="文字サイズ">
       <span class="fs-label">文字</span>
       <button type="button" class="fs-btn" data-fs="normal">標準</button>
