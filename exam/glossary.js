@@ -192,7 +192,7 @@
     res.items.forEach(function (d) { html += itemHTML(d); });
 
     var jumpWord = (res.items[0] && res.items[0].base) ? res.items[0].base : word;
-    var url = '../flashcard.html?word=' + encodeURIComponent(jumpWord) + '&lang=ja';
+    var url = '../flashcard.html?word=' + encodeURIComponent(jumpWord);
     html += '<a class="gloss-link" href="' + esc(url) + '">📇 フラッシュカードでくわしく覚える</a>';
 
     body.innerHTML = html;
