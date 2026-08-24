@@ -139,6 +139,7 @@
   <div class="result-container hidden" id="resultScreen">
     <div class="result-icon" id="resultIcon">⭕</div>
     <div class="result-text" id="resultText">正解！</div>
+    <div class="result-time" id="resultTime"></div>
 
     <div class="result-answer">
       <div class="result-answer-label">正解</div>
@@ -148,6 +149,21 @@
     <div class="result-explanation">
       <div class="result-explanation-title">📖 解説</div>
       <div id="resultExplanation"></div>
+    </div>
+    
+    <div class="confidence-box" id="confidenceBox">
+      <div class="confidence-title">いまの手ごたえは？（任意）</div>
+      <div class="confidence-buttons">
+        <button type="button" class="confidence-btn" data-level="sure">
+          <span class="confidence-icon">◎</span><span class="confidence-label">自信あり</span>
+        </button>
+        <button type="button" class="confidence-btn" data-level="maybe">
+          <span class="confidence-icon">△</span><span class="confidence-label">たぶん</span>
+        </button>
+        <button type="button" class="confidence-btn" data-level="guess">
+          <span class="confidence-icon">？</span><span class="confidence-label">勘</span>
+        </button>
+      </div>
     </div>
 
     <button class="next-button" id="nextButton" onclick="nextQuestion()">
@@ -183,6 +199,7 @@
     <div class="exam-footer-credit">Created by Mitsuhide Muneishi</div>
   </div>
 
+  <script src="storage.js"></script>
   <script src="app.js"></script>
 
 </body>
