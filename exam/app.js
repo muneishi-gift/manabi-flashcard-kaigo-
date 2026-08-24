@@ -1,64 +1,37 @@
-// app.js – 介護福祉士国家試験 過去問アプリ（修正版）
+// app.js – 介護福祉士国家試験 過去問アプリ（index.html対応版）
 
-document.addEventListener('DOMContentLoaded', function () {
-
-  /* =====================================================
-   *  要素取得
-   * ===================================================== */
-  var startScreen      = document.getElementById('start-screen');
-  var quizScreen       = document.getElementById('quiz-screen');
-  var resultScreen     = document.getElementById('result-screen');
-  var reviewScreen     = document.getElementById('review-screen');
-  var startBtn         = document.getElementById('start-btn');
-  var nextBtn          = document.getElementById('next-btn');
-  var prevBtn          = document.getElementById('prev-btn');
-  var retryBtn         = document.getElementById('retry-btn');
-  var backBtn          = document.getElementById('back-btn');
-  var reviewRetryBtn   = document.getElementById('review-retry-btn');
-  var reviewBackBtn    = document.getElementById('review-back-btn');
-  var questionEl       = document.getElementById('question');
-  var choicesEl        = document.getElementById('choices');
-  var feedbackEl       = document.getElementById('feedback');
-  var progressEl       = document.getElementById('progress');
-  var scoreEl          = document.getElementById('score');
-  var reviewListEl     = document.getElementById('review-list');
-  var showReviewBtn    = document.getElementById('show-review-btn');
-  var roundSelect      = document.getElementById('round-select');
-  var partSelect       = document.getElementById('part-select');
-  var subjectSelect    = document.getElementById('subject-select');
-  var questionCounter  = document.getElementById('question-counter');
+(function () {
+  'use strict';
 
   /* =====================================================
    *  状態変数
    * ===================================================== */
-  var questions        = [];
-  var currentIndex     = 0;
-  var score            = 0;
-  var userAnswers      = [];
-  var answered         = false;
+  var allData        = {};   // { '36': [...], '37': [...], '38': [...] }
+  var currentKai     = '38'; // モード別で選択中の回
+  var questions      = [];
+  var currentIndex   = 0;
+  var score          = 0;
+  var userAnswers    = [];
+  var quizMode       = '';   // 'kai', 'part', 'subject'
+  var furiganaOn     = false;
 
   /* =====================================================
-   *  試験回データ定義
+   *  データファイル定義
    * ===================================================== */
-// 修正後（正しい）
-var roundFiles = {
-  '36': 'data/past_exam_36.json',
-  '37': 'data/past_exam_37.json',
-  '38': 'data/past_exam_38.json'
-};
+  var roundFiles = {
+    '36': 'data/past_exam_36.json',
+    '37': 'data/past_exam_37.json',
+    '38': 'data/past_exam_38.json'
+  };
+
   /* =====================================================
-   *  パート定義
+   *  パート・科目定義
    * ===================================================== */
   var partSubjects = {
     'パートA': [
       '人間の尊厳と自立(にんげんのそんげんとじりつ)',
       '人間関係とコミュニケーション(にんげんかんけいとこみゅにけーしょん)',
-      '社会の理解(しゃかいのりかい)',
-      'こころとからだのしくみ',
-      '発達と老化の理解(はったつとろうかのりかい)',
-      '認知症の理解(にんちしょうのりかい)',
-      '障害の理解(しょうがいのりかい)',
-      '医療的ケア(いりょうてきけあ)'
+      '社会の理解(しゃかいのりかい)'
     ],
     'パートB': [
       '介護の基本(かいごのきほん)',
@@ -66,93 +39,93 @@ var roundFiles = {
       '生活支援技術(せいかつしえんぎじゅつ)'
     ],
     'パートC': [
+      'こころとからだのしくみ',
+      '発達と老化の理解(はったつとろうかのりかい)',
+      '認知症の理解(にんちしょうのりかい)',
+      '障害の理解(しょうがいのりかい)',
+      '医療的ケア(いりょうてきけあ)',
       '介護過程(かいごかてい)',
       '総合問題(そうごうもんだい)'
     ]
   };
 
   /* =====================================================
-   *  科目プルダウン生成
+   *  画面要素の取得
    * ===================================================== */
-  function populateSubjects() {
-    var part = partSelect.value;
-    subjectSelect.innerHTML = '<option value="all">すべて</option>';
-    if (part === 'all') {
-      Object.keys(partSubjects).forEach(function (p) {
-        partSubjects[p].forEach(function (s) {
-          var opt = document.createElement('option');
-          opt.value = s;
-          opt.textContent = s;
-          subjectSelect.appendChild(opt);
-        });
-      });
-    } else if (partSubjects[part]) {
-      partSubjects[part].forEach(function (s) {
-        var opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
-        subjectSelect.appendChild(opt);
-      });
-    }
-  }
-  partSelect.addEventListener('change', populateSubjects);
-  populateSubjects();
+  var mainMenu        = document.getElementById('mainMenu');
+  var partSelectEl    = document.getElementById('partSelect');
+  var subjectSelectEl = document.getElementById('subjectSelect');
+  var quizScreen      = document.getElementById('quizScreen');
+  var resultScreen    = document.getElementById('resultScreen');
+  var summaryScreen   = document.getElementById('summaryScreen');
+  var subjectListEl   = document.getElementById('subjectList');
 
   /* =====================================================
-   *  JSON 読み込み & フィルタリング
+   *  ユーティリティ
    * ===================================================== */
-  function loadQuestions(callback) {
-    var round   = roundSelect.value;
-    var files   = [];
-    if (round === 'all') {
-      Object.keys(roundFiles).forEach(function (k) { files.push(roundFiles[k]); });
-    } else if (roundFiles[round]) {
-      files.push(roundFiles[round]);
-    }
-    var allData = [];
-    var loaded  = 0;
-    files.forEach(function (file) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', file, true);
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          try {
-            var data = JSON.parse(xhr.responseText);
-            allData = allData.concat(data);
-          } catch (e) {
-            console.error('JSON parse error in ' + file, e);
-          }
-        }
-        loaded++;
-        if (loaded === files.length) {
-          callback(allData);
-        }
-      };
-      xhr.onerror = function () {
-        loaded++;
-        if (loaded === files.length) {
-          callback(allData);
-        }
-      };
-      xhr.send();
-    });
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  function filterQuestions(data) {
-    var part    = partSelect.value;
-    var subject = subjectSelect.value;
-    return data.filter(function (q) {
-      if (part !== 'all' && q.part !== part) return false;
-      if (subject !== 'all' && q.subject !== subject) return false;
-      return true;
+  function showScreen(screen) {
+    [mainMenu, partSelectEl, subjectSelectEl, quizScreen, resultScreen, summaryScreen].forEach(function (el) {
+      if (el) el.classList.add('hidden');
     });
+    if (screen) screen.classList.remove('hidden');
+  }
+
+  function shuffleArray(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  /* =====================================================
+   *  JSON 読み込み
+   * ===================================================== */
+  function loadRound(kai, callback) {
+    if (allData[kai]) {
+      callback(allData[kai]);
+      return;
+    }
+    var file = roundFiles[kai];
+    if (!file) { callback([]); return; }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', file, true);
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        try {
+          allData[kai] = JSON.parse(xhr.responseText);
+        } catch (e) {
+          console.error('JSON parse error: ' + file, e);
+          allData[kai] = [];
+        }
+      } else {
+        allData[kai] = [];
+      }
+      callback(allData[kai]);
+    };
+    xhr.onerror = function () {
+      allData[kai] = [];
+      callback([]);
+    };
+    xhr.send();
   }
 
   /* =====================================================
    *  事例と問題文の分割
    * ===================================================== */
   function splitCaseAndQuestion(qText) {
-    // ★最優先：JSONで明示的に入れた \n\n で分割
+    // 最優先：JSONで明示的に入れた \n\n で分割
     var nlSplit = qText.indexOf('\n\n');
     if (nlSplit !== -1) {
       var casePart = qText.substring(0, nlSplit).trim();
@@ -193,69 +166,227 @@ var roundFiles = {
   }
 
   /* =====================================================
-   *  画像モーダルを開く
+   *  ふりがな処理
    * ===================================================== */
-  function openImageModal(src) {
-    var modal   = document.getElementById('image-modal');
-    var modalImg = document.getElementById('modal-img');
-    if (modal && modalImg) {
-      modalImg.src = src;
-      modal.style.display = 'flex';
-    }
+  function removeFurigana(text) {
+    // （ひらがな） や (ひらがな) を除去
+    return text
+      .replace(/（[ぁ-ん、\s]+）/g, '')
+      .replace(/\([ぁ-ん、\s]+\)/g, '');
+  }
+
+  function applyFuriganaToText(text) {
+    if (furiganaOn) return text;
+    return removeFurigana(text);
   }
 
   /* =====================================================
-   *  問題表示
+   *  画像モーダル
    * ===================================================== */
-  function showQuestion() {
+  var imageModal, modalImg;
+
+  function createImageModal() {
+    imageModal = document.createElement('div');
+    imageModal.id = 'image-modal';
+    imageModal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;'
+      + 'background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;cursor:pointer;';
+    modalImg = document.createElement('img');
+    modalImg.id = 'modal-img';
+    modalImg.style.cssText = 'max-width:92%;max-height:92%;border-radius:8px;';
+    imageModal.appendChild(modalImg);
+    imageModal.addEventListener('click', function () {
+      imageModal.style.display = 'none';
+    });
+    document.body.appendChild(imageModal);
+  }
+
+  function openImageModal(src) {
+    if (!imageModal) createImageModal();
+    modalImg.src = src;
+    imageModal.style.display = 'flex';
+  }
+
+  /* =====================================================
+   *  回ごとに挑戦 — startExamByKai
+   * ===================================================== */
+  window.startExamByKai = function (kai) {
+    loadRound(kai, function (data) {
+      if (!data || data.length === 0) {
+        alert('データの読み込みに失敗しました。');
+        return;
+      }
+      questions    = data.slice(); // 順番通り
+      currentIndex = 0;
+      score        = 0;
+      userAnswers  = [];
+      quizMode     = 'kai';
+      showScreen(quizScreen);
+      renderQuestion();
+    });
+  };
+
+  /* =====================================================
+   *  モード別 — 回の切り替え
+   * ===================================================== */
+  window.switchKai = function (kai) {
+    currentKai = kai;
+    ['38', '37', '36'].forEach(function (k) {
+      var btn = document.getElementById('kaiBtn' + k);
+      if (btn) {
+        btn.classList.toggle('active', k === kai);
+      }
+    });
+  };
+
+  /* =====================================================
+   *  パート選択
+   * ===================================================== */
+  window.showPartSelect = function () {
+    var title = document.getElementById('partSelectTitle');
+    if (title) title.textContent = '第' + currentKai + '回 — パートを選んでください';
+    showScreen(partSelectEl);
+  };
+
+  window.startByPart = function (part) {
+    loadRound(currentKai, function (data) {
+      var filtered = data.filter(function (q) { return q.part === part; });
+      if (filtered.length === 0) {
+        alert('該当する問題がありません。');
+        return;
+      }
+      questions    = shuffleArray(filtered);
+      currentIndex = 0;
+      score        = 0;
+      userAnswers  = [];
+      quizMode     = 'part';
+      showScreen(quizScreen);
+      renderQuestion();
+    });
+  };
+
+  /* =====================================================
+   *  科目選択
+   * ===================================================== */
+  window.showSubjectSelect = function () {
+    var title = document.getElementById('subjectSelectTitle');
+    if (title) title.textContent = '第' + currentKai + '回 — 科目を選んでください';
+
+    subjectListEl.innerHTML = '';
+
+    // 全科目をフラットに列挙
+    var allSubjects = [];
+    Object.keys(partSubjects).forEach(function (p) {
+      partSubjects[p].forEach(function (s) {
+        allSubjects.push(s);
+      });
+    });
+
+    allSubjects.forEach(function (subj) {
+      var li  = document.createElement('li');
+      var btn = document.createElement('button');
+      btn.className   = 'menu-item';
+      btn.textContent = subj;
+      btn.addEventListener('click', function () {
+        startBySubject(subj);
+      });
+      li.appendChild(btn);
+      subjectListEl.appendChild(li);
+    });
+
+    showScreen(subjectSelectEl);
+  };
+
+  function startBySubject(subject) {
+    loadRound(currentKai, function (data) {
+      var filtered = data.filter(function (q) { return q.subject === subject; });
+      if (filtered.length === 0) {
+        alert('該当する問題がありません。');
+        return;
+      }
+      questions    = shuffleArray(filtered);
+      currentIndex = 0;
+      score        = 0;
+      userAnswers  = [];
+      quizMode     = 'subject';
+      showScreen(quizScreen);
+      renderQuestion();
+    });
+  }
+
+  /* =====================================================
+   *  戻る系
+   * ===================================================== */
+  window.backToMain = function () {
+    showScreen(mainMenu);
+  };
+
+  window.backToMainFromSummary = function () {
+    showScreen(mainMenu);
+  };
+
+  window.quitQuiz = function () {
+    if (confirm('メニューに戻りますか？')) {
+      showScreen(mainMenu);
+    }
+  };
+
+  /* =====================================================
+   *  問題描画
+   * ===================================================== */
+  function renderQuestion() {
     var q = questions[currentIndex];
-    feedbackEl.textContent = '';
-    feedbackEl.className   = 'feedback';
-    nextBtn.style.display  = 'none';
-    prevBtn.style.display  = currentIndex > 0 ? 'inline-block' : 'none';
-    answered = false;
 
-    progressEl.textContent    = 'Q' + (currentIndex + 1) + ' / ' + questions.length;
-    questionCounter.textContent = '問 ' + (currentIndex + 1) + ' / ' + questions.length;
+    // プログレス
+    var progressText = document.getElementById('quizProgressText');
+    var progressFill = document.getElementById('quizProgressFill');
+    var quizNumber   = document.getElementById('quizNumber');
+    var quizSubject  = document.getElementById('quizSubject');
+    var questionEl   = document.getElementById('quizQuestion');
+    var choicesEl    = document.getElementById('choicesList');
 
-    /* ---------- 問題文の組み立て ---------- */
+    if (progressText) progressText.textContent = (currentIndex + 1) + ' / ' + questions.length;
+    if (progressFill) progressFill.style.width = ((currentIndex + 1) / questions.length * 100) + '%';
+    if (quizNumber)   quizNumber.textContent   = '問' + (q.id || (currentIndex + 1));
+    if (quizSubject)  quizSubject.textContent  = applyFuriganaToText(q.subject || '');
+
+    /* ---------- 問題文 ---------- */
     var qText  = q.question || '';
-    var result = splitCaseAndQuestion(qText);
+    var displayText = applyFuriganaToText(qText);
+    var result = splitCaseAndQuestion(displayText);
 
     var html = '';
     if (result) {
       html += '<div class="case-box">' + escapeHTML(result.casePart) + '</div>';
       html += '<div class="question-text">' + escapeHTML(result.askPart) + '</div>';
     } else {
-      html += '<div class="question-text">' + escapeHTML(qText) + '</div>';
+      html += '<div class="question-text">' + escapeHTML(displayText) + '</div>';
     }
 
-    /* 問題画像（question_image） */
+    /* 問題画像 */
     if (q.question_image) {
-      html += '<div class="question-image-wrap">';
-      html += '<img src="' + escapeHTML(q.question_image) + '" alt="問題画像" class="question-image" style="cursor:pointer;" />';
-      html += '</div>';
+      html += '<div class="question-image-wrap">'
+            + '<img src="' + escapeHTML(q.question_image) + '" alt="問題画像" class="question-image" style="cursor:pointer;" />'
+            + '</div>';
     }
 
     questionEl.innerHTML = html;
 
-    /* 問題画像にクリックイベントを付与 */
+    /* 問題画像クリック */
     var qImg = questionEl.querySelector('.question-image');
     if (qImg) {
-      qImg.addEventListener('click', function () {
-        openImageModal(this.src);
-      });
+      qImg.addEventListener('click', function () { openImageModal(this.src); });
     }
 
-    /* ---------- 選択肢の組み立て ---------- */
+    /* ---------- 選択肢 ---------- */
     choicesEl.innerHTML = '';
     var choices = q.choices || [];
 
     choices.forEach(function (choiceData, i) {
+      var li  = document.createElement('li');
       var btn = document.createElement('button');
       btn.className = 'choice-btn';
 
-      /* --- パターン1: 文字列 --- */
+      /* パターン1: 文字列 */
       if (typeof choiceData === 'string') {
         var label = document.createElement('span');
         label.className   = 'choice-number';
@@ -263,11 +394,11 @@ var roundFiles = {
         btn.appendChild(label);
 
         var text = document.createElement('span');
-        text.textContent = choiceData;
+        text.textContent = applyFuriganaToText(choiceData);
         btn.appendChild(text);
       }
 
-      /* --- パターン2: { type: "image", src, alt } --- */
+      /* パターン2: { type: "image", src, alt } */
       else if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
         btn.classList.add('image-choice');
 
@@ -277,9 +408,9 @@ var roundFiles = {
         btn.appendChild(label2);
 
         var img2 = document.createElement('img');
-        img2.src            = choiceData.src;
-        img2.alt            = choiceData.alt || '選択肢' + (i + 1);
-        img2.style.cssText  = 'max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;';
+        img2.src           = choiceData.src;
+        img2.alt           = choiceData.alt || '選択肢' + (i + 1);
+        img2.style.cssText = 'max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;';
         img2.addEventListener('click', function (e) {
           e.stopPropagation();
           openImageModal(this.src);
@@ -287,7 +418,7 @@ var roundFiles = {
         btn.appendChild(img2);
       }
 
-      /* --- パターン3: { text, image } --- */
+      /* パターン3: { text, image } */
       else if (typeof choiceData === 'object' && choiceData !== null) {
         var label3 = document.createElement('span');
         label3.className   = 'choice-number';
@@ -296,7 +427,7 @@ var roundFiles = {
 
         if (choiceData.text) {
           var text3 = document.createElement('span');
-          text3.textContent = choiceData.text;
+          text3.textContent = applyFuriganaToText(choiceData.text);
           btn.appendChild(text3);
         }
         if (choiceData.image) {
@@ -312,229 +443,142 @@ var roundFiles = {
         }
       }
 
-      /* クリック処理 */
+      /* 選択肢クリック → 正誤判定 */
       btn.addEventListener('click', function () {
-        if (answered) return;
-        answered = true;
         userAnswers[currentIndex] = i;
-
         var correct = q.answer;
         if (i === correct) {
           score++;
-          btn.classList.add('correct');
-          feedbackEl.textContent = '⭕ 正解！';
-          feedbackEl.className   = 'feedback correct';
-        } else {
-          btn.classList.add('wrong');
-          feedbackEl.textContent = '❌ 不正解… 正解は ' + (correct + 1);
-          feedbackEl.className   = 'feedback wrong';
-          var allBtns = choicesEl.querySelectorAll('.choice-btn');
-          if (allBtns[correct]) allBtns[correct].classList.add('correct');
         }
-
-        /* 全ボタンを無効化 */
-        var allBtns2 = choicesEl.querySelectorAll('.choice-btn');
-        allBtns2.forEach(function (b) { b.disabled = true; });
-
-        nextBtn.style.display = 'inline-block';
+        showResult(q, i);
       });
 
-      choicesEl.appendChild(btn);
+      li.appendChild(btn);
+      choicesEl.appendChild(li);
     });
   }
 
   /* =====================================================
-   *  HTMLエスケープ
+   *  正誤画面
    * ===================================================== */
-  function escapeHTML(str) {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
+  function showResult(q, selected) {
+    var correct = q.answer;
+    var isCorrect = selected === correct;
 
-  /* =====================================================
-   *  結果画面
-   * ===================================================== */
-  function showResult() {
-    quizScreen.style.display   = 'none';
-    resultScreen.style.display = 'block';
-    scoreEl.textContent = questions.length + '問中 ' + score + '問正解（' + Math.round(score / questions.length * 100) + '%）';
-  }
+    var resultIcon = document.getElementById('resultIcon');
+    var resultText = document.getElementById('resultText');
+    var resultAnswer = document.getElementById('resultAnswer');
+    var resultExplanation = document.getElementById('resultExplanation');
+    var nextButton = document.getElementById('nextButton');
 
-  /* =====================================================
-   *  復習画面
-   * ===================================================== */
-  function showReview() {
-    resultScreen.style.display = 'none';
-    reviewScreen.style.display = 'block';
-    reviewListEl.innerHTML     = '';
+    if (resultIcon) resultIcon.textContent = isCorrect ? '⭕' : '❌';
+    if (resultText) resultText.textContent = isCorrect ? '正解！' : '不正解…';
 
-    questions.forEach(function (q, idx) {
-      var div  = document.createElement('div');
-      div.className = 'review-item';
+    if (resultAnswer) resultAnswer.textContent = (correct + 1);
 
-      var ua   = userAnswers[idx];
-      var isOk = ua === q.answer;
-
-      /* 問題文（事例分割対応） */
-      var qText  = q.question || '';
-      var result = splitCaseAndQuestion(qText);
-      var qHTML  = '';
-      if (result) {
-        qHTML = '<div class="case-box">' + escapeHTML(result.casePart) + '</div>'
-              + '<div class="question-text">' + escapeHTML(result.askPart) + '</div>';
+    /* 解説 */
+    if (resultExplanation) {
+      if (q.explanation) {
+        resultExplanation.textContent = applyFuriganaToText(q.explanation);
       } else {
-        qHTML = '<div class="question-text">' + escapeHTML(qText) + '</div>';
+        resultExplanation.textContent = '解説はありません。';
       }
+    }
 
-      /* 問題画像 */
-      if (q.question_image) {
-        qHTML += '<div class="question-image-wrap">'
-              +  '<img src="' + escapeHTML(q.question_image) + '" alt="問題画像" class="question-image review-clickable-img" style="cursor:pointer;" />'
-              +  '</div>';
+    /* 最後の問題なら「結果を見る」に変更 */
+    if (nextButton) {
+      if (currentIndex >= questions.length - 1) {
+        nextButton.textContent = '結果を見る 📊';
+      } else {
+        nextButton.textContent = '次へ ▶';
       }
+    }
 
-      var header = '<div class="review-header ' + (isOk ? 'review-correct' : 'review-wrong') + '">'
-                 + (isOk ? '⭕' : '❌') + ' Q' + (idx + 1)
-                 + '</div>';
-
-      /* 選択肢一覧 */
-      var choicesHTML = '<ul class="review-choices">';
-      (q.choices || []).forEach(function (c, ci) {
-        var cls = '';
-        if (ci === q.answer) cls += ' review-choice-correct';
-        if (ci === ua && ua !== q.answer) cls += ' review-choice-wrong';
-
-        var choiceContent = '';
-        if (typeof c === 'string') {
-          choiceContent = escapeHTML(c);
-        } else if (typeof c === 'object' && c !== null && c.type === 'image') {
-          choiceContent = '<img src="' + escapeHTML(c.src) + '" alt="' + escapeHTML(c.alt || '') + '" class="review-clickable-img" style="max-width:100%;border-radius:6px;cursor:pointer;" />';
-        } else if (typeof c === 'object' && c !== null) {
-          choiceContent = escapeHTML(c.text || '');
-          if (c.image) {
-            choiceContent += '<br><img src="' + escapeHTML(c.image) + '" alt="" class="review-clickable-img" style="max-width:100%;border-radius:6px;cursor:pointer;" />';
-          }
-        }
-
-        choicesHTML += '<li class="' + cls.trim() + '">' + (ci + 1) + '. ' + choiceContent + '</li>';
-      });
-      choicesHTML += '</ul>';
-
-      div.innerHTML = header + qHTML + choicesHTML;
-      reviewListEl.appendChild(div);
-    });
-
-    /* 復習画面の画像にクリックイベントを付与 */
-    var reviewImgs = reviewListEl.querySelectorAll('.review-clickable-img');
-    reviewImgs.forEach(function (img) {
-      img.addEventListener('click', function () {
-        openImageModal(this.src);
-      });
-    });
+    showScreen(resultScreen);
   }
 
   /* =====================================================
-   *  イベントリスナー
+   *  次の問題 / 結果サマリー
    * ===================================================== */
-  startBtn.addEventListener('click', function () {
-    loadQuestions(function (data) {
-      var filtered = filterQuestions(data);
-      if (filtered.length === 0) {
-        alert('該当する問題がありません。条件を変更してください。');
-        return;
-      }
-      questions    = filtered;
-      currentIndex = 0;
-      score        = 0;
-      userAnswers  = [];
-      startScreen.style.display = 'none';
-      quizScreen.style.display  = 'block';
-      showQuestion();
-    });
-  });
-
-  nextBtn.addEventListener('click', function () {
+  window.nextQuestion = function () {
     currentIndex++;
     if (currentIndex >= questions.length) {
-      showResult();
+      showSummary();
     } else {
-      showQuestion();
+      showScreen(quizScreen);
+      renderQuestion();
     }
-  });
-
-  prevBtn.addEventListener('click', function () {
-    if (currentIndex > 0) {
-      currentIndex--;
-      showQuestion();
-      /* 既に回答済みなら再表示 */
-      if (userAnswers[currentIndex] !== undefined) {
-        answered = true;
-        var ua      = userAnswers[currentIndex];
-        var correct = questions[currentIndex].answer;
-        var allBtns = choicesEl.querySelectorAll('.choice-btn');
-        allBtns.forEach(function (b, bi) {
-          b.disabled = true;
-          if (bi === correct) b.classList.add('correct');
-          if (bi === ua && ua !== correct) b.classList.add('wrong');
-        });
-        if (ua === correct) {
-          feedbackEl.textContent = '⭕ 正解！';
-          feedbackEl.className   = 'feedback correct';
-        } else {
-          feedbackEl.textContent = '❌ 不正解… 正解は ' + (correct + 1);
-          feedbackEl.className   = 'feedback wrong';
-        }
-        nextBtn.style.display = 'inline-block';
-      }
-    }
-  });
-
-  retryBtn.addEventListener('click', function () {
-    resultScreen.style.display = 'none';
-    startScreen.style.display  = 'block';
-  });
-
-  backBtn.addEventListener('click', function () {
-    resultScreen.style.display = 'none';
-    startScreen.style.display  = 'block';
-  });
-
-  showReviewBtn.addEventListener('click', function () {
-    showReview();
-  });
-
-  reviewRetryBtn.addEventListener('click', function () {
-    reviewScreen.style.display = 'none';
-    startScreen.style.display  = 'block';
-  });
-
-  reviewBackBtn.addEventListener('click', function () {
-    reviewScreen.style.display = 'none';
-    resultScreen.style.display = 'block';
-  });
+  };
 
   /* =====================================================
-   *  画像モーダル（DOM生成）
+   *  結果サマリー画面
    * ===================================================== */
-  (function () {
-    var overlay = document.createElement('div');
-    overlay.id  = 'image-modal';
-    overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;'
-                          + 'background:rgba(0,0,0,0.8);z-index:9999;justify-content:center;align-items:center;cursor:pointer;';
+  function showSummary() {
+    var summaryEmoji   = document.getElementById('summaryEmoji');
+    var summaryScore   = document.getElementById('summaryScore');
+    var summaryTotal   = document.getElementById('summaryTotal');
+    var summaryBarFill = document.getElementById('summaryBarFill');
+    var summaryMessage = document.getElementById('summaryMessage');
 
-    var img = document.createElement('img');
-    img.id  = 'modal-img';
-    img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px;';
+    var pct = Math.round(score / questions.length * 100);
 
-    overlay.appendChild(img);
-    overlay.addEventListener('click', function () {
-      overlay.style.display = 'none';
-    });
-    document.body.appendChild(overlay);
-  })();
+    if (summaryScore) summaryScore.textContent = score;
+    if (summaryTotal) summaryTotal.textContent = '/ ' + questions.length + '問中';
+    if (summaryBarFill) summaryBarFill.style.width = pct + '%';
 
-}); // end DOMContentLoaded
+    var emoji = '🎉';
+    var msg   = 'お疲れさまでした！';
+    if (pct >= 90) {
+      emoji = '🏆'; msg = '素晴らしい！合格レベルです！';
+    } else if (pct >= 70) {
+      emoji = '🎉'; msg = 'よくできました！';
+    } else if (pct >= 50) {
+      emoji = '💪'; msg = 'もう少し頑張りましょう！';
+    } else {
+      emoji = '📖'; msg = '復習して再挑戦しましょう！';
+    }
+
+    if (summaryEmoji)   summaryEmoji.textContent   = emoji;
+    if (summaryMessage) summaryMessage.textContent  = msg;
+
+    showScreen(summaryScreen);
+  }
+
+  /* =====================================================
+   *  リトライ
+   * ===================================================== */
+  window.retryQuiz = function () {
+    currentIndex = 0;
+    score        = 0;
+    userAnswers  = [];
+    if (quizMode === 'kai') {
+      // 同じ順番で再出題
+    } else {
+      questions = shuffleArray(questions);
+    }
+    showScreen(quizScreen);
+    renderQuestion();
+  };
+
+  /* =====================================================
+   *  ふりがな切り替え
+   * ===================================================== */
+  window.toggleFurigana = function () {
+    furiganaOn = !furiganaOn;
+    var status = document.getElementById('furiganaStatus');
+    var track  = document.getElementById('furiganaTrack');
+    if (status) status.textContent = furiganaOn ? 'ON' : 'OFF';
+    if (track)  track.classList.toggle('on', furiganaOn);
+
+    // 出題中なら再描画
+    if (!quizScreen.classList.contains('hidden') && questions.length > 0) {
+      renderQuestion();
+    }
+  };
+
+  /* =====================================================
+   *  初期化 — 画像モーダル生成
+   * ===================================================== */
+  createImageModal();
+
+})();
