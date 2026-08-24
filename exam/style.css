@@ -215,12 +215,33 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   cursor:pointer;
   transition:transform .15s, background .2s, color .2s;
 }
-.theme-btn{
-  padding:9px 15px;
+
+/* テーマ（ライト／ダークを並べて、現在のほうに印を付ける） */
+.theme-group{
+  display:inline-flex;
+  align-items:center;
   border:1.5px solid var(--line);
   border-radius:999px;
+  overflow:hidden;
 }
+.theme-btn{
+  padding:9px 13px;
+  border:0;
+  border-left:1.5px solid var(--line-soft);
+}
+.theme-btn:first-child{ border-left:0; }
 .theme-btn:hover{ background:var(--hover); color:var(--ink); }
+/* 選択中：色・太字・下線の3点で示す */
+.theme-btn.selected{
+  background:var(--pick-bg);
+  color:var(--pick-ink);
+  font-weight:900;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:2px;
+}
+
+/* 文字サイズ */
 .fs-group{
   display:inline-flex;
   align-items:center;
@@ -240,7 +261,6 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   border-left:1.5px solid var(--line-soft);
 }
 .fs-btn:hover{ background:var(--hover); color:var(--ink); }
-/* 選択中：色・太字・下線の3点で示す */
 .fs-btn.selected{
   background:var(--pick-bg);
   color:var(--pick-ink);
@@ -891,7 +911,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   .menu-item{ padding:16px 20px; }
   .question-case,.question-ask{ padding:14px 14px; }
   .display-settings{ gap:8px; }
-  .theme-btn{ padding:8px 13px; }
+  .theme-btn{ padding:8px 11px; }
   .fs-btn{ padding:8px 11px; }
 }
 
