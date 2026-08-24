@@ -103,39 +103,43 @@ body > *{ position:relative; z-index:1; }
 /* ふりがなは親文字の58% */
 ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
 
-/* ---------- ヘッダー ---------- */
+/* ---------- Header（トップページと同一サイズ） ---------- */
 .exam-header{
   width:100%;
   max-width:600px;
   text-align:center;
-  padding:24px 16px 12px;
+  padding:32px 20px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
 }
 .exam-header-logo{
-  width:clamp(80px,20vw,120px);
+  width:clamp(100px,25vw,160px);
   height:auto;
-  border-radius:16px;
-  filter:drop-shadow(0 4px 16px var(--shadow));
+  border-radius:20px;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 20px var(--shadow));
   animation:float 3s ease-in-out infinite;
 }
 @keyframes float{
   0%,100%{ transform:translateY(0); }
-  50%{ transform:translateY(-6px); }
+  50%{ transform:translateY(-8px); }
 }
 .exam-header-title{
   font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(1.2rem,4vw,1.6rem);
+  font-size:clamp(1.4rem,4.5vw,2.2rem);
   font-weight:800;
-  margin-top:8px;
+  letter-spacing:-.02em;
   background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
 }
 .exam-header-sub{
-  font-size:clamp(.8rem,2.2vw,.9rem);
+  font-size:clamp(.8rem,2.2vw,.95rem);
+  font-weight:300;
   color:var(--ink-faint);
-  font-weight:400;
-  margin-top:2px;
 }
 
 /* ---------- ふりがなトグル ---------- */
