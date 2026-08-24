@@ -1,674 +1,540 @@
-/* ===================================
-   過去問アプリ - メインロジック
-   manabi-フラッシュカード-kaigo-
-   Created by Mitsuhide Muneishi
-   =================================== */
+// app.js – 介護福祉士国家試験 過去問アプリ（修正版）
 
-/* ========== グローバル変数 ========== */
-var examData = {};        // { '38': [...], '37': [...], '36': [...] }
-var allQuestions = [];     // 現在選択中の回のデータ
-var quizQuestions = [];
-var currentIndex = 0;
-var correctCount = 0;
-var furiganaOn = false;
-var lastSelected = null;
-var currentKai = '38';    // 現在選択中の回
+document.addEventListener('DOMContentLoaded', function () {
 
-/* ========== 画面の要素を取得 ========== */
-var screens = {};
+  /* =====================================================
+   *  要素取得
+   * ===================================================== */
+  var startScreen      = document.getElementById('start-screen');
+  var quizScreen       = document.getElementById('quiz-screen');
+  var resultScreen     = document.getElementById('result-screen');
+  var reviewScreen     = document.getElementById('review-screen');
+  var startBtn         = document.getElementById('start-btn');
+  var nextBtn          = document.getElementById('next-btn');
+  var prevBtn          = document.getElementById('prev-btn');
+  var retryBtn         = document.getElementById('retry-btn');
+  var backBtn          = document.getElementById('back-btn');
+  var reviewRetryBtn   = document.getElementById('review-retry-btn');
+  var reviewBackBtn    = document.getElementById('review-back-btn');
+  var questionEl       = document.getElementById('question');
+  var choicesEl        = document.getElementById('choices');
+  var feedbackEl       = document.getElementById('feedback');
+  var progressEl       = document.getElementById('progress');
+  var scoreEl          = document.getElementById('score');
+  var reviewListEl     = document.getElementById('review-list');
+  var showReviewBtn    = document.getElementById('show-review-btn');
+  var roundSelect      = document.getElementById('round-select');
+  var partSelect       = document.getElementById('part-select');
+  var subjectSelect    = document.getElementById('subject-select');
+  var questionCounter  = document.getElementById('question-counter');
 
-function initScreens() {
-  screens = {
-    mainMenu:      document.getElementById('mainMenu'),
-    partSelect:    document.getElementById('partSelect'),
-    subjectSelect: document.getElementById('subjectSelect'),
-    quizScreen:    document.getElementById('quizScreen'),
-    resultScreen:  document.getElementById('resultScreen'),
-    summaryScreen: document.getElementById('summaryScreen')
+  /* =====================================================
+   *  状態変数
+   * ===================================================== */
+  var questions        = [];
+  var currentIndex     = 0;
+  var score            = 0;
+  var userAnswers      = [];
+  var answered         = false;
+
+  /* =====================================================
+   *  試験回データ定義
+   * ===================================================== */
+  var roundFiles = {
+    '36': 'past_exam_36.json',
+    '37': 'past_exam_37.json',
+    '38': 'past_exam_38.json'
   };
-}
 
-/* ========== ふりがな変換関数 ========== */
-function removeRuby(text) {
-  if (!text) return '';
-  var result = text.replace(/（[^）]*）/g, '');
-  result = result.replace(/\([^)]*\)/g, '');
-  return result;
-}
+  /* =====================================================
+   *  パート定義
+   * ===================================================== */
+  var partSubjects = {
+    'パートA': [
+      '人間の尊厳と自立(にんげんのそんげんとじりつ)',
+      '人間関係とコミュニケーション(にんげんかんけいとこみゅにけーしょん)',
+      '社会の理解(しゃかいのりかい)',
+      'こころとからだのしくみ',
+      '発達と老化の理解(はったつとろうかのりかい)',
+      '認知症の理解(にんちしょうのりかい)',
+      '障害の理解(しょうがいのりかい)',
+      '医療的ケア(いりょうてきけあ)'
+    ],
+    'パートB': [
+      '介護の基本(かいごのきほん)',
+      'コミュニケーション技術(こみゅにけーしょんぎじゅつ)',
+      '生活支援技術(せいかつしえんぎじゅつ)'
+    ],
+    'パートC': [
+      '介護過程(かいごかてい)',
+      '総合問題(そうごうもんだい)'
+    ]
+  };
 
-function toHiragana(text) {
-  if (!text) return '';
-  return text;
-}
-
-/* ========== テキスト取得（ふりがなON/OFF対応） ========== */
-function getText(item, field) {
-  var raw = item[field] || '';
-  if (furiganaOn) {
-    return toHiragana(raw);
-  }
-  return removeRuby(raw);
-}
-
-function getChoiceText(item, index) {
-  if (!item.choices || !item.choices[index]) return '';
-  var raw = item.choices[index];
-  // 画像オブジェクトの場合はそのまま返す
-  if (typeof raw === 'object' && raw !== null) {
-    // ふりがなOFF時はtextからルビを除去
-    if (!furiganaOn && raw.text) {
-      return { image: raw.image, text: removeRuby(raw.text), src: raw.src, alt: raw.alt, type: raw.type };
+  /* =====================================================
+   *  科目プルダウン生成
+   * ===================================================== */
+  function populateSubjects() {
+    var part = partSelect.value;
+    subjectSelect.innerHTML = '<option value="all">すべて</option>';
+    if (part === 'all') {
+      Object.keys(partSubjects).forEach(function (p) {
+        partSubjects[p].forEach(function (s) {
+          var opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s;
+          subjectSelect.appendChild(opt);
+        });
+      });
+    } else if (partSubjects[part]) {
+      partSubjects[part].forEach(function (s) {
+        var opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        subjectSelect.appendChild(opt);
+      });
     }
-    return raw;
   }
-  if (furiganaOn) {
-    return toHiragana(raw);
-  }
-  return removeRuby(raw);
-}
+  partSelect.addEventListener('change', populateSubjects);
+  populateSubjects();
 
-/* ========== 初期化：JSONデータ読み込み（3回分読む） ========== */
-window.addEventListener('DOMContentLoaded', function() {
-  initScreens();
-
-  // 第38回・第37回・第36回を同時に読み込む
-  Promise.all([
-    fetch('data/past_exam_38.json').then(function(r) {
-      if (!r.ok) throw new Error('38回: HTTP ' + r.status);
-      return r.json();
-    }),
-    fetch('data/past_exam_37.json').then(function(r) {
-      if (!r.ok) throw new Error('37回: HTTP ' + r.status);
-      return r.json();
-    }),
-    fetch('data/past_exam_36.json').then(function(r) {
-      if (!r.ok) throw new Error('36回: HTTP ' + r.status);
-      return r.json();
-    })
-  ])
-  .then(function(results) {
-    examData['38'] = results[0];
-    examData['37'] = results[1];
-    examData['36'] = results[2];
-    console.log('第38回：' + results[0].length + '問 読み込み完了');
-    console.log('第37回：' + results[1].length + '問 読み込み完了');
-    console.log('第36回：' + results[2].length + '問 読み込み完了');
-
-    // デフォルトは第38回
-    allQuestions = examData['38'];
-    buildSubjectList();
-  })
-  .catch(function(error) {
-    console.error('データ読み込みエラー：', error);
-    alert('問題データの読み込みに失敗しました。\ndata/ フォルダ内の JSON を確認してください。\n\nエラー: ' + error.message);
-  });
-
-  // ふりがな設定を復元
-  var saved = localStorage.getItem('kaigo-exam-furigana');
-  if (saved === 'on') {
-    furiganaOn = true;
-    updateFuriganaUI();
-  }
-});
-
-/* ========== 回の切り替え（モード別用） ========== */
-function switchKai(kai) {
-  if (!examData[kai]) {
-    alert('第' + kai + '回のデータはまだ準備中です。');
-    return;
-  }
-  currentKai = kai;
-  allQuestions = examData[kai];
-
-  // ボタンのアクティブ状態を更新
-  var btns = document.querySelectorAll('.menu-kai-btn');
-  btns.forEach(function(btn) {
-    btn.classList.remove('active');
-  });
-  var activeBtn = document.getElementById('kaiBtn' + kai);
-  if (activeBtn) activeBtn.classList.add('active');
-
-  // 科目リストが表示中なら更新
-  if (!screens.subjectSelect.classList.contains('hidden')) {
-    buildSubjectList();
-  }
-
-  console.log('第' + kai + '回に切り替え：' + allQuestions.length + '問');
-}
-
-/* ========== 回ごとに挑戦（順番通り） ========== */
-function startExamByKai(kai) {
-  if (!examData[kai]) {
-    alert('第' + kai + '回のデータはまだ準備中です。');
-    return;
-  }
-  currentKai = kai;
-  allQuestions = examData[kai];
-  quizQuestions = allQuestions.slice();
-  currentIndex = 0;
-  correctCount = 0;
-  lastSelected = null;
-  showScreen('quizScreen');
-  displayQuestion();
-}
-
-/* ========== 画面切り替え ========== */
-function showScreen(screenId) {
-  Object.keys(screens).forEach(function(key) {
-    if (screens[key]) {
-      screens[key].classList.add('hidden');
+  /* =====================================================
+   *  JSON 読み込み & フィルタリング
+   * ===================================================== */
+  function loadQuestions(callback) {
+    var round   = roundSelect.value;
+    var files   = [];
+    if (round === 'all') {
+      Object.keys(roundFiles).forEach(function (k) { files.push(roundFiles[k]); });
+    } else if (roundFiles[round]) {
+      files.push(roundFiles[round]);
     }
-  });
-  if (screens[screenId]) {
-    screens[screenId].classList.remove('hidden');
-  }
-  window.scrollTo(0, 0);
-}
-
-function backToMain() {
-  showScreen('mainMenu');
-}
-
-function quitQuiz() {
-  if (confirm('問題をやめてメニューに戻りますか？')) {
-    showScreen('mainMenu');
-  }
-}
-
-/* ========== ふりがな切り替え ========== */
-function toggleFurigana() {
-  furiganaOn = !furiganaOn;
-  updateFuriganaUI();
-  localStorage.setItem('kaigo-exam-furigana', furiganaOn ? 'on' : 'off');
-
-  if (!screens.quizScreen.classList.contains('hidden')) {
-    displayQuestion();
-  }
-  if (!screens.resultScreen.classList.contains('hidden')) {
-    displayResult(currentIndex, null);
-  }
-  if (!screens.subjectSelect.classList.contains('hidden')) {
-    buildSubjectList();
-  }
-}
-
-function updateFuriganaUI() {
-  var track = document.getElementById('furiganaTrack');
-  var status = document.getElementById('furiganaStatus');
-  if (!track || !status) return;
-  if (furiganaOn) {
-    track.classList.add('active');
-    status.classList.add('active');
-    status.textContent = 'ON';
-  } else {
-    track.classList.remove('active');
-    status.classList.remove('active');
-    status.textContent = 'OFF';
-  }
-}
-
-/* ========== 科目リスト生成 ========== */
-function buildSubjectList() {
-  var subjectMap = {};
-  var subjectOrder = [];
-
-  allQuestions.forEach(function(q) {
-    var subj = removeRuby(q.subject);
-    if (!subjectMap[subj]) {
-      subjectMap[subj] = { count: 0, raw: q.subject };
-      subjectOrder.push(subj);
-    }
-    subjectMap[subj].count++;
-  });
-
-  var listEl = document.getElementById('subjectList');
-  if (!listEl) return;
-  listEl.innerHTML = '';
-
-  // タイトルに回を表示
-  var titleEl = document.getElementById('subjectSelectTitle');
-  if (titleEl) titleEl.textContent = '第' + currentKai + '回 ─ 科目を選んでください';
-
-  subjectOrder.forEach(function(subj, i) {
-    var info = subjectMap[subj];
-    var displayName = furiganaOn ? toHiragana(info.raw) : subj;
-    var li = document.createElement('li');
-    var div = document.createElement('div');
-    div.className = 'subject-item';
-    div.innerHTML =
-      '<div class="subject-badge">' + (i + 1) + '</div>' +
-      '<div class="subject-name">' + displayName + '</div>' +
-      '<div class="subject-count">' + info.count + '問</div>';
-    div.addEventListener('click', (function(rawSubject) {
-      return function() {
-        startBySubject(rawSubject);
+    var allData = [];
+    var loaded  = 0;
+    files.forEach(function (file) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', file, true);
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            allData = allData.concat(data);
+          } catch (e) {
+            console.error('JSON parse error in ' + file, e);
+          }
+        }
+        loaded++;
+        if (loaded === files.length) {
+          callback(allData);
+        }
       };
-    })(info.raw));
-    li.appendChild(div);
-    listEl.appendChild(li);
-  });
-}
-
-/* ========== 出題モード：全問（順番通り）※旧互換 ========== */
-function startExam() {
-  startExamByKai(currentKai);
-}
-
-/* ========== 出題モード：パート別（ランダム） ========== */
-function showPartSelect() {
-  var titleEl = document.getElementById('partSelectTitle');
-  if (titleEl) titleEl.textContent = '第' + currentKai + '回 ─ パートを選んでください';
-  showScreen('partSelect');
-}
-
-function startByPart(partName) {
-  quizQuestions = allQuestions.filter(function(q) {
-    return q.part === partName;
-  });
-  if (quizQuestions.length === 0) {
-    alert('該当する問題がありません。');
-    return;
+      xhr.onerror = function () {
+        loaded++;
+        if (loaded === files.length) {
+          callback(allData);
+        }
+      };
+      xhr.send();
+    });
   }
-  shuffleArray(quizQuestions);
-  currentIndex = 0;
-  correctCount = 0;
-  lastSelected = null;
-  showScreen('quizScreen');
-  displayQuestion();
-}
 
-/* ========== 出題モード：科目別（ランダム） ========== */
-function showSubjectSelect() {
-  buildSubjectList();
-  showScreen('subjectSelect');
-}
-
-function startBySubject(subjectRaw) {
-  quizQuestions = allQuestions.filter(function(q) {
-    return q.subject === subjectRaw;
-  });
-  if (quizQuestions.length === 0) {
-    alert('該当する問題がありません。');
-    return;
+  function filterQuestions(data) {
+    var part    = partSelect.value;
+    var subject = subjectSelect.value;
+    return data.filter(function (q) {
+      if (part !== 'all' && q.part !== part) return false;
+      if (subject !== 'all' && q.subject !== subject) return false;
+      return true;
+    });
   }
-  shuffleArray(quizQuestions);
-  currentIndex = 0;
-  correctCount = 0;
-  lastSelected = null;
-  showScreen('quizScreen');
-  displayQuestion();
-}
 
-/* ========== シャッフル ========== */
-function shuffleArray(arr) {
-  for (var i = arr.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = temp;
-  }
-}
-
-/* ========== 事例と問題文の自動分割 ========== */
-function splitCaseAndQuestion(qText) {
-  // 〔事例〕を含まない場合は分割しない
-if (qText.indexOf('〔事例') === -1 && qText.indexOf('（事例）') === -1 && qText.indexOf('【事例】') === -1 && qText.indexOf('【事例') === -1) {
-    return null;
-}
-  // 末尾の問いかけ文を検出するパターン（優先順）
-  var splitPatterns = [
-    /([。」])\s*(最も適切なものを.*)$/,
-    /([。」])\s*(最も適切な対応を.*)$/,
-    /([。」])\s*(最も優先すべき.*)$/,
-    /([。」])\s*(適切なものを.*)$/,
-    /([。」])\s*(次のうち.*)$/,
-    /([。」])\s*(今後、引き起こされる.*)$/,
-    /([。」])\s*(この場面で.*)$/,
-    /([。」])\s*(このときの.*)$/,
-    /([。」])\s*(その後.*)$/,
-    /([。」])\s*(Aさん|Bさん|Cさん|Dさん|Eさん|Fさん|Gさん|Hさん|Jさん|Kさん|Lさん|Mさん)(の食事|の入浴|の状態|の様子|の行動|の気持ち|の二次障害|に対する|に起こり|について|が利用|への)(.*)$/
-  ];
-
-  for (var p = 0; p < splitPatterns.length; p++) {
-    var m = qText.match(splitPatterns[p]);
-    if (m) {
-      var idx = qText.lastIndexOf(m[0]);
-      var casePart = qText.substring(0, idx + m[1].length).trim();
-      var askPart = qText.substring(idx + m[1].length).trim();
+  /* =====================================================
+   *  事例と問題文の分割
+   * ===================================================== */
+  function splitCaseAndQuestion(qText) {
+    // ★最優先：JSONで明示的に入れた \n\n で分割
+    var nlSplit = qText.indexOf('\n\n');
+    if (nlSplit !== -1) {
+      var casePart = qText.substring(0, nlSplit).trim();
+      var askPart  = qText.substring(nlSplit + 2).trim();
       if (casePart && askPart) {
         return { casePart: casePart, askPart: askPart };
       }
     }
+
+    // 〔事例〕を含まない場合は分割しない
+    if (
+      qText.indexOf('〔事例') === -1 &&
+      qText.indexOf('（事例）') === -1 &&
+      qText.indexOf('【事例】') === -1 &&
+      qText.indexOf('【事例')  === -1
+    ) {
+      return null;
+    }
+
+    // 末尾の問いかけ文を検出するパターン
+    var splitPatterns = [
+      /(.+?)(\n\n.+)$/s,
+      /(.+(?:である|った|ている|いる|した|ない|ある|れた|てい?た)。\s*)((?:この|その|Ａさん|Ｂさん|Ｃさん|Ｄさん|Ｅさん|Ｆさん|Ｇさん|Ｈさん|Ｊさん|Ｋさん|Ｌさん|Ｍさん|入所|利用|介護|日常|次回).+)$/s,
+      /(.+(?:である|った|ている|いる|した|ない|ある|れた|てい?た)。\s*)((?:問題\s*\d+|次の|以下の).+)$/s
+    ];
+
+    for (var i = 0; i < splitPatterns.length; i++) {
+      var m = qText.match(splitPatterns[i]);
+      if (m) {
+        var c = m[1].trim();
+        var a = m[2].trim();
+        if (c.length > 30 && a.length > 5) {
+          return { casePart: c, askPart: a };
+        }
+      }
+    }
+    return null;
   }
 
-  // パターンにマッチしない場合、最後の「。」から後ろを問題文とする
-  var lastPeriod = qText.lastIndexOf('。', qText.length - 2);
-  if (lastPeriod > qText.length * 0.3) {
-    var casePart2 = qText.substring(0, lastPeriod + 1).trim();
-    var askPart2 = qText.substring(lastPeriod + 1).trim();
-    if (casePart2 && askPart2 && askPart2.length > 10) {
-      return { casePart: casePart2, askPart: askPart2 };
+  /* =====================================================
+   *  画像モーダルを開く
+   * ===================================================== */
+  function openImageModal(src) {
+    var modal   = document.getElementById('image-modal');
+    var modalImg = document.getElementById('modal-img');
+    if (modal && modalImg) {
+      modalImg.src = src;
+      modal.style.display = 'flex';
     }
   }
 
-  return null;
-}
+  /* =====================================================
+   *  問題表示
+   * ===================================================== */
+  function showQuestion() {
+    var q = questions[currentIndex];
+    feedbackEl.textContent = '';
+    feedbackEl.className   = 'feedback';
+    nextBtn.style.display  = 'none';
+    prevBtn.style.display  = currentIndex > 0 ? 'inline-block' : 'none';
+    answered = false;
 
-/* ========== 問題表示 ========== */
-function displayQuestion() {
-  var q = quizQuestions[currentIndex];
-  var total = quizQuestions.length;
+    progressEl.textContent    = 'Q' + (currentIndex + 1) + ' / ' + questions.length;
+    questionCounter.textContent = '問 ' + (currentIndex + 1) + ' / ' + questions.length;
 
-  var progressText = document.getElementById('quizProgressText');
-  var progressFill = document.getElementById('quizProgressFill');
-  if (progressText) {
-    progressText.textContent = (currentIndex + 1) + ' / ' + total;
-  }
-  if (progressFill) {
-    var pct = Math.round(((currentIndex + 1) / total) * 100);
-    progressFill.style.width = pct + '%';
-  }
+    /* ---------- 問題文の組み立て ---------- */
+    var qText  = q.question || '';
+    var result = splitCaseAndQuestion(qText);
 
-  var numEl = document.getElementById('quizNumber');
-  var subjEl = document.getElementById('quizSubject');
-  if (numEl) numEl.textContent = '問' + q.id;
-  if (subjEl) subjEl.textContent = getText(q, 'subject');
-
-  /* --- 事例と問題文の分割表示 --- */
-  var qEl = document.getElementById('quizQuestion');
-  if (qEl) {
-    var qText = getText(q, 'question');
-    var split = splitCaseAndQuestion(qText);
-
-    if (split) {
-      qEl.innerHTML =
-        '<div class="question-case">' + escapeHtml(split.casePart) + '</div>' +
-        '<div class="question-ask">' + escapeHtml(split.askPart) + '</div>';
+    var html = '';
+    if (result) {
+      html += '<div class="case-box">' + escapeHTML(result.casePart) + '</div>';
+      html += '<div class="question-text">' + escapeHTML(result.askPart) + '</div>';
     } else {
-      qEl.textContent = qText;
+      html += '<div class="question-text">' + escapeHTML(qText) + '</div>';
     }
-  }
 
-  /* --- 選択肢リスト --- */
-  var listEl = document.getElementById('choicesList');
-  if (!listEl) return;
-  listEl.innerHTML = '';
+    /* 問題画像（question_image） */
+    if (q.question_image) {
+      html += '<div class="question-image-wrap">';
+      html += '<img src="' + escapeHTML(q.question_image) + '" alt="問題画像" class="question-image" style="cursor:pointer;" />';
+      html += '</div>';
+    }
 
-  /* 問題画像（questionImage） */
-  if (q.questionImage) {
-    var qImg = document.createElement('img');
-    qImg.src = q.questionImage;
-    qImg.alt = '設問画像';
-    qImg.style.cssText =
-      'display:block;max-width:90%;margin:12px auto;border:1px solid #ccc;border-radius:8px;cursor:pointer;';
-    qImg.addEventListener('click', function() {
-      openImageModal(this.src);
-    });
-    listEl.appendChild(qImg);
-  }
+    questionEl.innerHTML = html;
 
-  /* 各選択肢 */
-  q.choices.forEach(function(choice, i) {
-    var li = document.createElement('li');
-    var btn = document.createElement('button');
-    btn.className = 'choice-button';
-
-    var choiceData = getChoiceText(q, i);
-
-    /* --- パターン1: { image: "...", text: "..." } --- */
-    if (typeof choiceData === 'object' && choiceData !== null && choiceData.image) {
-      btn.classList.add('image-choice');
-
-      var label = document.createElement('span');
-      label.className = 'choice-number';
-      label.textContent = (i + 1);
-      btn.appendChild(label);
-
-      var img = document.createElement('img');
-      img.src = choiceData.image;
-      img.alt = choiceData.text || ('選択肢' + (i + 1));
-      img.style.cssText = 'max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;';
-      img.addEventListener('click', function(e) {
-        e.stopPropagation();
+    /* 問題画像にクリックイベントを付与 */
+    var qImg = questionEl.querySelector('.question-image');
+    if (qImg) {
+      qImg.addEventListener('click', function () {
         openImageModal(this.src);
       });
-      btn.appendChild(img);
+    }
 
-      if (choiceData.text) {
-        var textSpan = document.createElement('span');
-        textSpan.className = 'choice-text';
-        textSpan.textContent = choiceData.text;
-        textSpan.style.cssText = 'display:block;margin-top:4px;font-weight:600;';
-        btn.appendChild(textSpan);
+    /* ---------- 選択肢の組み立て ---------- */
+    choicesEl.innerHTML = '';
+    var choices = q.choices || [];
+
+    choices.forEach(function (choiceData, i) {
+      var btn = document.createElement('button');
+      btn.className = 'choice-btn';
+
+      /* --- パターン1: 文字列 --- */
+      if (typeof choiceData === 'string') {
+        var label = document.createElement('span');
+        label.className   = 'choice-number';
+        label.textContent = (i + 1);
+        btn.appendChild(label);
+
+        var text = document.createElement('span');
+        text.textContent = choiceData;
+        btn.appendChild(text);
       }
 
-    /* --- パターン2: { type: "image", src: "...", alt: "..." } --- */
-    } else if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
-      btn.classList.add('image-choice');
-      btn.innerHTML =
-        '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<img src="' + escapeHtml(choiceData.src) + '" alt="' + escapeHtml(choiceData.alt || '選択肢' + (i + 1)) + '" style="max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;">';
+      /* --- パターン2: { type: "image", src, alt } --- */
+      else if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
+        btn.classList.add('image-choice');
 
-    /* --- パターン3: 通常テキスト --- */
-    } else {
-      var displayText = (typeof choiceData === 'object' && choiceData !== null) ? (choiceData.text || '') : (choiceData || '');
-      btn.innerHTML =
-        '<span class="choice-number">' + (i + 1) + '</span>' +
-        '<span class="choice-text">' + escapeHtml(displayText) + '</span>';
-    }
+        var label2 = document.createElement('span');
+        label2.className   = 'choice-number';
+        label2.textContent = (i + 1);
+        btn.appendChild(label2);
 
-    btn.addEventListener('click', (function(answerNum) {
-      return function() {
-        selectAnswer(answerNum);
-      };
-    })(i + 1));
+        var img2 = document.createElement('img');
+        img2.src            = choiceData.src;
+        img2.alt            = choiceData.alt || '選択肢' + (i + 1);
+        img2.style.cssText  = 'max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;';
+        img2.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openImageModal(this.src);
+        });
+        btn.appendChild(img2);
+      }
 
-    li.appendChild(btn);
-    listEl.appendChild(li);
+      /* --- パターン3: { text, image } --- */
+      else if (typeof choiceData === 'object' && choiceData !== null) {
+        var label3 = document.createElement('span');
+        label3.className   = 'choice-number';
+        label3.textContent = (i + 1);
+        btn.appendChild(label3);
+
+        if (choiceData.text) {
+          var text3 = document.createElement('span');
+          text3.textContent = choiceData.text;
+          btn.appendChild(text3);
+        }
+        if (choiceData.image) {
+          var img3 = document.createElement('img');
+          img3.src           = choiceData.image;
+          img3.alt           = choiceData.text || '選択肢' + (i + 1);
+          img3.style.cssText = 'max-width:100%;border-radius:6px;margin-top:4px;cursor:pointer;';
+          img3.addEventListener('click', function (e) {
+            e.stopPropagation();
+            openImageModal(this.src);
+          });
+          btn.appendChild(img3);
+        }
+      }
+
+      /* クリック処理 */
+      btn.addEventListener('click', function () {
+        if (answered) return;
+        answered = true;
+        userAnswers[currentIndex] = i;
+
+        var correct = q.answer;
+        if (i === correct) {
+          score++;
+          btn.classList.add('correct');
+          feedbackEl.textContent = '⭕ 正解！';
+          feedbackEl.className   = 'feedback correct';
+        } else {
+          btn.classList.add('wrong');
+          feedbackEl.textContent = '❌ 不正解… 正解は ' + (correct + 1);
+          feedbackEl.className   = 'feedback wrong';
+          var allBtns = choicesEl.querySelectorAll('.choice-btn');
+          if (allBtns[correct]) allBtns[correct].classList.add('correct');
+        }
+
+        /* 全ボタンを無効化 */
+        var allBtns2 = choicesEl.querySelectorAll('.choice-btn');
+        allBtns2.forEach(function (b) { b.disabled = true; });
+
+        nextBtn.style.display = 'inline-block';
+      });
+
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  /* =====================================================
+   *  HTMLエスケープ
+   * ===================================================== */
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  /* =====================================================
+   *  結果画面
+   * ===================================================== */
+  function showResult() {
+    quizScreen.style.display   = 'none';
+    resultScreen.style.display = 'block';
+    scoreEl.textContent = questions.length + '問中 ' + score + '問正解（' + Math.round(score / questions.length * 100) + '%）';
+  }
+
+  /* =====================================================
+   *  復習画面
+   * ===================================================== */
+  function showReview() {
+    resultScreen.style.display = 'none';
+    reviewScreen.style.display = 'block';
+    reviewListEl.innerHTML     = '';
+
+    questions.forEach(function (q, idx) {
+      var div  = document.createElement('div');
+      div.className = 'review-item';
+
+      var ua   = userAnswers[idx];
+      var isOk = ua === q.answer;
+
+      /* 問題文（事例分割対応） */
+      var qText  = q.question || '';
+      var result = splitCaseAndQuestion(qText);
+      var qHTML  = '';
+      if (result) {
+        qHTML = '<div class="case-box">' + escapeHTML(result.casePart) + '</div>'
+              + '<div class="question-text">' + escapeHTML(result.askPart) + '</div>';
+      } else {
+        qHTML = '<div class="question-text">' + escapeHTML(qText) + '</div>';
+      }
+
+      /* 問題画像 */
+      if (q.question_image) {
+        qHTML += '<div class="question-image-wrap">'
+              +  '<img src="' + escapeHTML(q.question_image) + '" alt="問題画像" class="question-image review-clickable-img" style="cursor:pointer;" />'
+              +  '</div>';
+      }
+
+      var header = '<div class="review-header ' + (isOk ? 'review-correct' : 'review-wrong') + '">'
+                 + (isOk ? '⭕' : '❌') + ' Q' + (idx + 1)
+                 + '</div>';
+
+      /* 選択肢一覧 */
+      var choicesHTML = '<ul class="review-choices">';
+      (q.choices || []).forEach(function (c, ci) {
+        var cls = '';
+        if (ci === q.answer) cls += ' review-choice-correct';
+        if (ci === ua && ua !== q.answer) cls += ' review-choice-wrong';
+
+        var choiceContent = '';
+        if (typeof c === 'string') {
+          choiceContent = escapeHTML(c);
+        } else if (typeof c === 'object' && c !== null && c.type === 'image') {
+          choiceContent = '<img src="' + escapeHTML(c.src) + '" alt="' + escapeHTML(c.alt || '') + '" class="review-clickable-img" style="max-width:100%;border-radius:6px;cursor:pointer;" />';
+        } else if (typeof c === 'object' && c !== null) {
+          choiceContent = escapeHTML(c.text || '');
+          if (c.image) {
+            choiceContent += '<br><img src="' + escapeHTML(c.image) + '" alt="" class="review-clickable-img" style="max-width:100%;border-radius:6px;cursor:pointer;" />';
+          }
+        }
+
+        choicesHTML += '<li class="' + cls.trim() + '">' + (ci + 1) + '. ' + choiceContent + '</li>';
+      });
+      choicesHTML += '</ul>';
+
+      div.innerHTML = header + qHTML + choicesHTML;
+      reviewListEl.appendChild(div);
+    });
+
+    /* 復習画面の画像にクリックイベントを付与 */
+    var reviewImgs = reviewListEl.querySelectorAll('.review-clickable-img');
+    reviewImgs.forEach(function (img) {
+      img.addEventListener('click', function () {
+        openImageModal(this.src);
+      });
+    });
+  }
+
+  /* =====================================================
+   *  イベントリスナー
+   * ===================================================== */
+  startBtn.addEventListener('click', function () {
+    loadQuestions(function (data) {
+      var filtered = filterQuestions(data);
+      if (filtered.length === 0) {
+        alert('該当する問題がありません。条件を変更してください。');
+        return;
+      }
+      questions    = filtered;
+      currentIndex = 0;
+      score        = 0;
+      userAnswers  = [];
+      startScreen.style.display = 'none';
+      quizScreen.style.display  = 'block';
+      showQuestion();
+    });
   });
 
-  /* --- ナビゲーションボタン --- */
-  var oldNav = listEl.parentNode.querySelector('.quiz-nav-buttons');
-  if (oldNav) oldNav.remove();
-
-  var navDiv = document.createElement('div');
-  navDiv.className = 'quiz-nav-buttons';
-  navDiv.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:24px;';
-
-  var prevBtn = document.createElement('button');
-  prevBtn.textContent = '◀ 戻る';
-  prevBtn.style.cssText = 'flex:1;max-width:180px;padding:14px 0;font-size:1.1rem;font-weight:700;border:none;border-radius:50px;letter-spacing:0.05em;';
-  if (currentIndex > 0) {
-    prevBtn.style.cssText += 'cursor:pointer;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,0.4);';
-    prevBtn.addEventListener('click', function() { goToPrevQuestion(); });
-  } else {
-    prevBtn.style.cssText += 'background:#555;color:#888;opacity:0.5;';
-    prevBtn.disabled = true;
-  }
-
-  var nextBtn = document.createElement('button');
-  nextBtn.textContent = '次へ ▶';
-  nextBtn.style.cssText = 'flex:1;max-width:180px;padding:14px 0;font-size:1.1rem;font-weight:700;border:none;border-radius:50px;letter-spacing:0.05em;';
-  if (currentIndex < total - 1) {
-    nextBtn.style.cssText += 'cursor:pointer;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,0.4);';
-    nextBtn.addEventListener('click', function() { goToNextQuestion(); });
-  } else {
-    nextBtn.style.cssText += 'background:#555;color:#888;opacity:0.5;';
-    nextBtn.disabled = true;
-  }
-
-  navDiv.appendChild(prevBtn);
-  navDiv.appendChild(nextBtn);
-  listEl.parentNode.appendChild(navDiv);
-}
-
-/* ========== HTMLエスケープ ========== */
-function escapeHtml(str) {
-  var div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-/* ========== 問題ナビゲーション ========== */
-function goToPrevQuestion() {
-  if (currentIndex > 0) {
-    currentIndex--;
-    displayQuestion();
-  }
-}
-
-function goToNextQuestion() {
-  if (currentIndex < quizQuestions.length - 1) {
+  nextBtn.addEventListener('click', function () {
     currentIndex++;
-    displayQuestion();
-  }
-}
-
-/* ========== 回答選択 ========== */
-function selectAnswer(selected) {
-  var q = quizQuestions[currentIndex];
-  var isCorrect = (selected === q.answer);
-  lastSelected = selected;
-
-  if (isCorrect) {
-    correctCount++;
-  }
-
-  displayResult(currentIndex, isCorrect);
-  showScreen('resultScreen');
-}
-
-/* ========== 正誤画面表示 ========== */
-function displayResult(qIndex, isCorrect) {
-  var q = quizQuestions[qIndex];
-
-  var iconEl = document.getElementById('resultIcon');
-  var textEl = document.getElementById('resultText');
-
-  if (isCorrect !== null && iconEl && textEl) {
-    if (isCorrect) {
-      iconEl.textContent = '⭕';
-      textEl.textContent = '正解！';
-      textEl.className = 'result-text correct';
+    if (currentIndex >= questions.length) {
+      showResult();
     } else {
-      iconEl.textContent = '❌';
-      textEl.textContent = '不正解…';
-      textEl.className = 'result-text incorrect';
+      showQuestion();
     }
-  }
-
-  var ansEl = document.getElementById('resultAnswer');
-  if (ansEl) ansEl.textContent = q.answer;
-
-  var expEl = document.getElementById('resultExplanation');
-  if (expEl) expEl.textContent = getText(q, 'explanation');
-
-  var nextBtn = document.getElementById('nextButton');
-  if (nextBtn) {
-    if (currentIndex >= quizQuestions.length - 1) {
-      nextBtn.textContent = '結果を見る 🏆';
-    } else {
-      nextBtn.textContent = '次へ ▶';
-    }
-  }
-}
-
-/* ========== 次の問題へ ========== */
-function nextQuestion() {
-  currentIndex++;
-
-  if (currentIndex >= quizQuestions.length) {
-    showSummary();
-    return;
-  }
-
-  showScreen('quizScreen');
-  displayQuestion();
-}
-
-/* ========== 結果サマリー ========== */
-function showSummary() {
-  var total = quizQuestions.length;
-  var pct = Math.round((correctCount / total) * 100);
-
-  var scoreEl = document.getElementById('summaryScore');
-  var totalEl = document.getElementById('summaryTotal');
-  var barEl = document.getElementById('summaryBarFill');
-  var emojiEl = document.getElementById('summaryEmoji');
-  var msgEl = document.getElementById('summaryMessage');
-
-  if (scoreEl) scoreEl.textContent = correctCount;
-  if (totalEl) totalEl.textContent = '/ ' + total + '問中';
-  if (barEl) barEl.style.width = pct + '%';
-
-  var emoji, message;
-  if (pct === 100) {
-    emoji = '👑';
-    message = 'パーフェクト！素晴らしい！';
-  } else if (pct >= 80) {
-    emoji = '🎉';
-    message = '合格ライン！よく頑張りました！';
-  } else if (pct >= 60) {
-    emoji = '💪';
-    message = 'あと少し！もう一度挑戦しよう！';
-  } else if (pct >= 40) {
-    emoji = '📖';
-    message = '復習して再チャレンジ！';
-  } else {
-    emoji = '🔥';
-    message = 'ここからスタート！繰り返しが大事！';
-  }
-
-  if (emojiEl) emojiEl.textContent = emoji;
-  if (msgEl) msgEl.textContent = message + '（正答率 ' + pct + '%）';
-
-  showScreen('summaryScreen');
-}
-
-/* ========== メニューに戻る（結果画面から） ========== */
-function backToMainFromSummary() {
-  showScreen('mainMenu');
-}
-
-/* ========== もう一度挑戦 ========== */
-function retryQuiz() {
-  shuffleArray(quizQuestions);
-  currentIndex = 0;
-  correctCount = 0;
-  lastSelected = null;
-  showScreen('quizScreen');
-  displayQuestion();
-}
-
-/* ========== 画像拡大モーダル ========== */
-(function() {
-  var overlay = document.createElement('div');
-  overlay.id = 'imgModal';
-  overlay.style.cssText =
-    'display:none;position:fixed;top:0;left:0;width:100%;height:100%;' +
-    'background:rgba(0,0,0,.85);z-index:9999;justify-content:center;' +
-    'align-items:center;cursor:pointer;';
-
-  var modalImg = document.createElement('img');
-  modalImg.style.cssText =
-    'max-width:92%;max-height:92%;border-radius:8px;box-shadow:0 0 20px #000;';
-  overlay.appendChild(modalImg);
-
-  var closeBtn = document.createElement('span');
-  closeBtn.textContent = '✕';
-  closeBtn.style.cssText =
-    'position:absolute;top:16px;right:24px;color:#fff;font-size:32px;' +
-    'font-weight:bold;cursor:pointer;';
-  overlay.appendChild(closeBtn);
-
-  document.body.appendChild(overlay);
-
-  window.openImageModal = function(src) {
-    modalImg.src = src;
-    overlay.style.display = 'flex';
-  };
-
-  overlay.addEventListener('click', function() {
-    overlay.style.display = 'none';
   });
-})();
+
+  prevBtn.addEventListener('click', function () {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showQuestion();
+      /* 既に回答済みなら再表示 */
+      if (userAnswers[currentIndex] !== undefined) {
+        answered = true;
+        var ua      = userAnswers[currentIndex];
+        var correct = questions[currentIndex].answer;
+        var allBtns = choicesEl.querySelectorAll('.choice-btn');
+        allBtns.forEach(function (b, bi) {
+          b.disabled = true;
+          if (bi === correct) b.classList.add('correct');
+          if (bi === ua && ua !== correct) b.classList.add('wrong');
+        });
+        if (ua === correct) {
+          feedbackEl.textContent = '⭕ 正解！';
+          feedbackEl.className   = 'feedback correct';
+        } else {
+          feedbackEl.textContent = '❌ 不正解… 正解は ' + (correct + 1);
+          feedbackEl.className   = 'feedback wrong';
+        }
+        nextBtn.style.display = 'inline-block';
+      }
+    }
+  });
+
+  retryBtn.addEventListener('click', function () {
+    resultScreen.style.display = 'none';
+    startScreen.style.display  = 'block';
+  });
+
+  backBtn.addEventListener('click', function () {
+    resultScreen.style.display = 'none';
+    startScreen.style.display  = 'block';
+  });
+
+  showReviewBtn.addEventListener('click', function () {
+    showReview();
+  });
+
+  reviewRetryBtn.addEventListener('click', function () {
+    reviewScreen.style.display = 'none';
+    startScreen.style.display  = 'block';
+  });
+
+  reviewBackBtn.addEventListener('click', function () {
+    reviewScreen.style.display = 'none';
+    resultScreen.style.display = 'block';
+  });
+
+  /* =====================================================
+   *  画像モーダル（DOM生成）
+   * ===================================================== */
+  (function () {
+    var overlay = document.createElement('div');
+    overlay.id  = 'image-modal';
+    overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;'
+                          + 'background:rgba(0,0,0,0.8);z-index:9999;justify-content:center;align-items:center;cursor:pointer;';
+
+    var img = document.createElement('img');
+    img.id  = 'modal-img';
+    img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px;';
+
+    overlay.appendChild(img);
+    overlay.addEventListener('click', function () {
+      overlay.style.display = 'none';
+    });
+    document.body.appendChild(overlay);
+  })();
+
+}); // end DOMContentLoaded
