@@ -4,6 +4,8 @@
 (function () {
   'use strict';
 
+  var Store = window.KaigoStore || null;
+
   /* =====================================================
    *  設定
    * ===================================================== */
@@ -18,18 +20,23 @@
   /* =====================================================
    *  状態変数
    * ===================================================== */
-  var allData      = {};    // { '38': [...], '37': [...], '36': [...] }
-  var mergedData   = null;  // 3回分を結合した配列
+  var allData      = {};
+  var mergedData   = null;
   var questions    = [];
   var currentIndex = 0;
   var score        = 0;
   var userAnswers  = [];
-  var quizMode     = '';    // 'kai' | 'part' | 'subject'
+  var quizMode     = '';
   var furiganaOn   = false;
 
-  // 解説画面に表示中の内容を記憶する（ふりがな切り替えで描き直すため）
+  // 解説画面に表示中の内容
   var lastResultQ        = null;
   var lastResultSelected = null;
+  var lastResultSeconds  = 0;
+  var lastAnswerKey      = '';
+
+  // 所要時間の計測
+  var questionStartTime = 0;
 
   /* =====================================================
    *  画面要素
@@ -70,12 +77,17 @@
     return a;
   }
 
-  /* 正解番号：JSONは1始まり。0始まりが混ざっても壊れないようにする */
   function getCorrectIndex(q) {
     var a   = Number(q.answer);
     var len = (q.choices || []).length;
     if (a >= 1 && a <= len) return a - 1;
     return a;
+  }
+
+  function formatSeconds(sec) {
+    var s = Math.max(0, Math.round(sec));
+    if (s < 60) return s + '秒';
+    return Math.floor(s / 60) + '分' + (s % 60) + '秒';
   }
 
   /* =====================================================
@@ -116,7 +128,6 @@
           list = [];
         }
       }
-      // どの回の問題かを各問題に記録する
       list.forEach(function (q) { q._kai = kai; });
       allData[kai] = list;
       callback(list);
@@ -128,7 +139,6 @@
     xhr.send();
   }
 
-  /* 3回分すべてを読み込んで1つに結合する */
   function loadAllRounds(callback) {
     if (mergedData) { callback(mergedData); return; }
 
@@ -145,15 +155,6 @@
           mergedData = mergedData.concat(allData[kk] || []);
         });
         showLoading(false);
-
-        // 振り分け確認用（F12のConsoleに表示されます）
-        var pc = {};
-        mergedData.forEach(function (q) {
-          var key = (q._kai || '?') + '-' + (q.part || '未設定');
-          pc[key] = (pc[key] || 0) + 1;
-        });
-        console.log('パート別問題数', pc, '合計', mergedData.length);
-
         callback(mergedData);
       });
     });
@@ -213,7 +214,6 @@
     return null;
   }
 
-  /* 「〔事例は問題114と同じ〕」の場合、同じ回の問114から事例本文を取ってくる */
   function findReferencedCase(q) {
     var stripped = removeFurigana(q.question || '');
     var m = stripped.match(/問題\s*(\d+)\s*と同/);
@@ -257,7 +257,7 @@
   }
 
   /* =====================================================
-   *  出題開始の共通処理
+   *  出題開始
    * ===================================================== */
   function startQuiz(list, mode) {
     questions    = list;
@@ -267,13 +267,11 @@
     quizMode     = mode;
     lastResultQ        = null;
     lastResultSelected = null;
+    lastAnswerKey      = '';
     showScreen(quizScreen);
     renderQuestion();
   }
 
-  /* =====================================================
-   *  回ごとに挑戦（当時の順番のまま）
-   * ===================================================== */
   window.startExamByKai = function (kai) {
     showLoading(true);
     loadRound(kai, function (data) {
@@ -287,7 +285,7 @@
   };
 
   /* =====================================================
-   *  パート別（3回分を合算してランダム）
+   *  パート別
    * ===================================================== */
   window.showPartSelect = function () {
     showScreen(partSelectEl);
@@ -316,7 +314,7 @@
   };
 
   /* =====================================================
-   *  科目別（3回分を合算してランダム）
+   *  科目別
    * ===================================================== */
   window.showSubjectSelect = function () {
     showScreen(subjectSelectEl);
@@ -335,7 +333,6 @@
         return;
       }
 
-      // ふりがなの表記ゆれを吸収して集計する
       var order = [];
       var info  = {};
       data.forEach(function (q) {
@@ -347,11 +344,9 @@
         }
         info[key].count++;
         if (info[key].names.indexOf(raw) === -1) info[key].names.push(raw);
-        // ふりがな付きの長い表記を見出しに採用する
         if (raw.length > info[key].label.length) info[key].label = raw;
       });
 
-      // パートA → B → C の順に並べ替える
       var rank = { 'パートA': 1, 'パートB': 2, 'パートC': 3 };
       order.sort(function (x, y) {
         return (rank[info[x].part] || 9) - (rank[info[y].part] || 9);
@@ -401,7 +396,6 @@
     });
   }
 
-  /* 旧HTMLの回切り替えボタンが残っていてもエラーにならないようにする */
   window.switchKai = function (kai) {
     ['38', '37', '36'].forEach(function (k) {
       var btn = document.getElementById('kaiBtn' + k);
@@ -437,7 +431,6 @@
     if (progressText) progressText.textContent = (currentIndex + 1) + ' / ' + questions.length;
     if (progressFill) progressFill.style.width = ((currentIndex + 1) / questions.length * 100) + '%';
 
-    // 混ざって出題されるので、どの回の何問目かを表示する
     if (quizNumber) {
       var label = '問' + (q.id || (currentIndex + 1));
       if (q._kai) label = '第' + q._kai + '回 ' + label;
@@ -450,7 +443,6 @@
     var displayText = applyFuriganaToText(q.question || '');
     var result = splitCaseAndQuestion(displayText);
 
-    // 「事例は問題◯◯と同じ」なら、その事例本文を補って表示する
     var refCase = findReferencedCase(q);
     if (refCase) {
       var askText = result ? result.askPart : displayText;
@@ -487,7 +479,6 @@
       var btn = document.createElement('button');
       btn.className = 'choice-button';
 
-      /* パターン1: 文字列 */
       if (typeof choiceData === 'string') {
         var label1 = document.createElement('span');
         label1.className   = 'choice-number';
@@ -500,7 +491,6 @@
         btn.appendChild(text1);
       }
 
-      /* パターン2: { type: "image", src, alt } */
       else if (typeof choiceData === 'object' && choiceData !== null && choiceData.type === 'image') {
         btn.classList.add('image-choice');
 
@@ -520,7 +510,6 @@
         btn.appendChild(img2);
       }
 
-      /* パターン3: { text, image } */
       else if (typeof choiceData === 'object' && choiceData !== null) {
         var label3 = document.createElement('span');
         label3.className   = 'choice-number';
@@ -547,20 +536,71 @@
       }
 
       btn.addEventListener('click', function () {
-        userAnswers[currentIndex] = i;
-        if (i === getCorrectIndex(q)) score++;
-        showResult(q, i);
+        handleAnswer(q, i);
       });
 
       li.appendChild(btn);
       choicesEl.appendChild(li);
     });
+
+    // 所要時間の計測を開始
+    questionStartTime = Date.now();
+  }
+
+  /* =====================================================
+   *  解答したとき
+   * ===================================================== */
+  function handleAnswer(q, i) {
+    var sec = questionStartTime ? (Date.now() - questionStartTime) / 1000 : 0;
+    var isCorrect = (i === getCorrectIndex(q));
+
+    userAnswers[currentIndex] = i;
+    if (isCorrect) score++;
+
+    lastResultSeconds = Math.round(sec);
+    lastAnswerKey     = '';
+
+    if (Store) {
+      lastAnswerKey = Store.recordAnswer({
+        key:      Store.keyOf(q),
+        selected: i,
+        correct:  isCorrect,
+        seconds:  sec,
+        subject:  removeFurigana(q.subject || ''),
+        part:     q.part || ''
+      });
+    }
+
+    showResult(q, i);
+  }
+
+  /* =====================================================
+   *  自信度ボタン
+   * ===================================================== */
+  var confidenceBox = document.getElementById('confidenceBox');
+
+  function setupConfidenceButtons() {
+    if (!confidenceBox) return;
+    var btns = confidenceBox.querySelectorAll('.confidence-btn');
+    Array.prototype.forEach.call(btns, function (b) {
+      b.addEventListener('click', function () {
+        var level = b.getAttribute('data-level');
+        if (Store && lastAnswerKey) Store.setConfidence(lastAnswerKey, level);
+        paintConfidence(level);
+      });
+    });
+  }
+
+  function paintConfidence(level) {
+    if (!confidenceBox) return;
+    var btns = confidenceBox.querySelectorAll('.confidence-btn');
+    Array.prototype.forEach.call(btns, function (b) {
+      b.classList.toggle('selected', b.getAttribute('data-level') === level);
+    });
   }
 
   /* =====================================================
    *  正誤画面
-   *  paintResult … 中身を描くだけ（画面は切り替えない）
-   *  showResult  … 中身を描いて画面を切り替える
    * ===================================================== */
   function paintResult(q, selected) {
     if (!q) return;
@@ -573,6 +613,7 @@
 
     var resultIcon        = document.getElementById('resultIcon');
     var resultText        = document.getElementById('resultText');
+    var resultTime        = document.getElementById('resultTime');
     var resultAnswer      = document.getElementById('resultAnswer');
     var resultExplanation = document.getElementById('resultExplanation');
     var nextButton        = document.getElementById('nextButton');
@@ -583,6 +624,17 @@
       resultText.textContent = isCorrect ? '正解！' : '不正解…';
       resultText.classList.remove('correct', 'incorrect');
       resultText.classList.add(isCorrect ? 'correct' : 'incorrect');
+    }
+
+    if (resultTime) {
+      var msg = 'かかった時間　' + formatSeconds(lastResultSeconds);
+      if (Store && lastAnswerKey) {
+        var st = Store.getState(lastAnswerKey);
+        if (st && st.n > 1) {
+          msg += '　／　この問題は' + st.n + '回目（正解' + st.o + '回）';
+        }
+      }
+      resultTime.textContent = msg;
     }
 
     if (resultAnswer) resultAnswer.textContent = (correct + 1);
@@ -602,6 +654,7 @@
 
   function showResult(q, selected) {
     paintResult(q, selected);
+    paintConfidence('');   // 前の問題の選択を消す
     showScreen(resultScreen);
   }
 
@@ -615,6 +668,7 @@
     } else {
       lastResultQ        = null;
       lastResultSelected = null;
+      lastAnswerKey      = '';
       showScreen(quizScreen);
       renderQuestion();
     }
@@ -652,6 +706,7 @@
     userAnswers  = [];
     lastResultQ        = null;
     lastResultSelected = null;
+    lastAnswerKey      = '';
     if (quizMode !== 'kai') questions = shuffleArray(questions);
     showScreen(quizScreen);
     renderQuestion();
@@ -659,11 +714,8 @@
 
   /* =====================================================
    *  ふりがな切り替え
-   *  条件判定をやめ、描画済みの画面すべてを描き直す
    * ===================================================== */
-  window.toggleFurigana = function () {
-    furiganaOn = !furiganaOn;
-
+  function paintFuriganaSwitch() {
     var status = document.getElementById('furiganaStatus');
     var track  = document.getElementById('furiganaTrack');
 
@@ -672,14 +724,16 @@
       status.classList.toggle('active', furiganaOn);
     }
     if (track) track.classList.toggle('active', furiganaOn);
+  }
 
-    // 出題画面（表示中でなくても描き直しておく）
+  window.toggleFurigana = function () {
+    furiganaOn = !furiganaOn;
+    paintFuriganaSwitch();
+    if (Store) Store.setPref('furigana', furiganaOn);
+
     if (questions.length > 0) renderQuestion();
-
-    // 解説画面（画面切り替えを伴わないので、見ている場所は動かない）
     if (lastResultQ) paintResult(lastResultQ, lastResultSelected);
 
-    // 科目選択画面（表示中のときだけ作り直す）
     if (subjectSelectEl && !subjectSelectEl.classList.contains('hidden')) {
       window.showSubjectSelect();
     }
@@ -689,5 +743,14 @@
    *  初期化
    * ===================================================== */
   createImageModal();
+  setupConfidenceButtons();
+
+  if (Store) {
+    furiganaOn = !!Store.getPref('furigana', false);
+    paintFuriganaSwitch();
+    if (!Store.usable) {
+      console.warn('この環境では学習記録を保存できません（プライベートモードの可能性）');
+    }
+  }
 
 })();
