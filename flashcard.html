@@ -281,7 +281,16 @@ body.lang-th{
   font-family:'Noto Sans JP',sans-serif;transition:all .2s;
 }
 .start-weak-btn:hover{background:var(--accent);color:#fff}
-
+.start-review-btn{
+  margin-top:8px;padding:13px 34px;border-radius:22px;border:none;
+  background:var(--btn-ok);color:#fff;font-size:1.02rem;font-weight:800;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+  box-shadow:0 4px 16px rgba(var(--accent-rgb),.32);
+  transition:transform .2s,box-shadow .2s;display:none;
+}
+.start-review-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(var(--accent-rgb),.45)}
+.start-review-btn:active{transform:scale(.95)}
+  
 /* ===== Header ===== */
 header{
   display:flex;align-items:center;justify-content:space-between;
@@ -584,6 +593,8 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
     <div class="start-lets-try" id="startLetsTry"></div>
   </div>
   <button class="start-btn" onclick="startQuiz(false)">▶ START</button>
+  <button class="start-review-btn" id="startReviewBtn" onclick="startQuiz('due')">⏰ 今日の復習</button>
+
   <button class="start-weak-btn" id="startWeakBtn" onclick="startQuiz(true)">🔄 にがてだけ特訓</button>
   <button class="start-back" id="startBackBtn" onclick="backToLanding()">← 言語選択に戻る</button>
 </div>
@@ -698,6 +709,49 @@ function jumpToPendingWord(){
 }
 
 let masteredSet=new Set();
+/* ===== 復習の間隔（レベルごとの日数） ===== */
+let srsData={};
+const SRS_INTERVALS={1:1,2:3,3:7,4:14,5:30};
+const REVIEW_LABEL={
+  ja:'今日の復習', en:"Today's review", id:'Ulangan hari ini',
+  vi:'Ôn tập hôm nay', th:'ทบทวนวันนี้'
+};
+
+function srsKey(){return 'kaigo-srs-'+currentLang;}
+
+function loadSrs(){
+  try{
+    const s=localStorage.getItem(srsKey());
+    srsData=s?JSON.parse(s):{};
+  }catch(e){srsData={};}
+  if(!srsData||typeof srsData!=='object')srsData={};
+}
+
+function saveSrs(){
+  try{localStorage.setItem(srsKey(),JSON.stringify(srsData));}catch(e){}
+}
+
+function updateSrs(no,ok){
+  const key=String(no);
+  const rec=srsData[key]||{box:0};
+  if(ok){
+    rec.box=Math.min((rec.box||0)+1,5);
+    rec.next=Date.now()+SRS_INTERVALS[rec.box]*86400000;
+  }else{
+    rec.box=1;
+    rec.next=Date.now();
+  }
+  srsData[key]=rec;
+}
+
+function getDueCards(){
+  const now=Date.now();
+  return allData.filter(function(d){
+    const rec=srsData[String(d.no)];
+    return rec && rec.next<=now;
+  });
+}
+
 let lastMilestone=0;
 
 /* ========== PWA: Service Worker登録 ========== */
@@ -864,6 +918,7 @@ function chooseLang(lang){
   try{localStorage.setItem('kaigo-last-lang',lang);}catch(e){}
   document.body.className='lang-'+lang;
   loadMastered();
+  loadSrs();
   document.getElementById('landing').style.display='none';
   document.getElementById('startScreen').style.display='flex';
   loadDataForStart();
@@ -903,14 +958,25 @@ function updateStartScreen(){
   document.getElementById('startWeakBtn').style.display=(weakCount>0&&weakCount<total)?'inline-block':'none';
   document.getElementById('startWeakBtn').textContent='🔄 '+meta.weakBtn+'（'+weakCount+'）';
   document.getElementById('startBackBtn').textContent=meta.backBtn;
+
+  const dueCount=getDueCards().length;
+  const rbtn=document.getElementById('startReviewBtn');
+  const rlabel=REVIEW_LABEL[currentLang]||REVIEW_LABEL.ja;
+  rbtn.style.display=dueCount>0?'inline-block':'none';
+  rbtn.textContent='⏰ '+rlabel+'（'+dueCount+'）';
 }
 
-function startQuiz(weak){
-  weakMode=weak;
-  if(weak){
+function startQuiz(mode){
+  if(mode==='due'){
+    weakMode=false;
+    displayData=getDueCards();
+    if(!displayData.length)displayData=[...allData];
+  }else if(mode===true){
+    weakMode=true;
     displayData=allData.filter(d=>!masteredSet.has(d.no));
     if(!displayData.length){displayData=[...allData];weakMode=false;}
   }else{
+    weakMode=false;
     displayData=[...allData];
   }
   idx=0;
@@ -984,8 +1050,16 @@ function showCard(){
   document.getElementById('cardNumBack').textContent='No.'+d.no;
 
   const badge=document.getElementById('masteredBadge');
-  if(masteredSet.has(d.no)){badge.style.display='inline-block';badge.textContent='✓ '+meta.masteredLabel;}
-  else{badge.style.display='none';}
+  const srsRec=srsData[String(d.no)];
+  if(masteredSet.has(d.no)){
+    badge.style.display='inline-block';
+    badge.textContent='✓ '+meta.masteredLabel+(srsRec&&srsRec.box?' Lv.'+srsRec.box:'');
+  }else if(srsRec&&srsRec.box){
+    badge.style.display='inline-block';
+    badge.textContent='Lv.'+srsRec.box;
+  }else{
+    badge.style.display='none';
+  }
 
   if(currentLang==='ja'){
     document.getElementById('frontMain').textContent=mainText;
@@ -1045,13 +1119,16 @@ function judgeCard(mastered){
   const d=displayData[idx];
   if(mastered){
     masteredSet.add(d.no);
+    updateSrs(d.no,true);
     playOk();
     confetti({particleCount:30,spread:50,origin:{y:.7},colors:['#4caf50','#81c784','#fff']});
   }else{
     masteredSet.delete(d.no);
+    updateSrs(d.no,false);
     playAgain();
   }
   saveMastered();
+  saveSrs();
   checkMilestone();
   nextCard();
 }
