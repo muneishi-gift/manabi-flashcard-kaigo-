@@ -246,7 +246,18 @@
          + '受験の年の最新情報は試験センターで確認してください。'
          + '</div>';
 
+    /* ★追加1：いちばん下に「記録のバックアップ」の枠をくっつける */
+    if (window.KaigoBackup && window.KaigoBackup.html) {
+      html += window.KaigoBackup.html();
+    }
+
     body.innerHTML = html;
+
+    /* ★追加2：保存・読みこみボタンを動くようにする */
+    if (window.KaigoBackup && window.KaigoBackup.bind) {
+      window.KaigoBackup.bind();
+    }
+
     box.style.display = 'flex';
   }
 
