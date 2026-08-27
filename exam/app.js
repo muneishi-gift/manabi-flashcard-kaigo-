@@ -28,6 +28,8 @@
   var userAnswers  = [];
   var quizMode     = '';
   var furiganaOn   = false;
+  var quizLabel    = '';   // 第38回 などの表示名
+  var quizSlot     = '';   // 中断セーブの保存先
 
   // 解説画面に表示中の内容
   var lastResultQ        = null;
@@ -311,22 +313,118 @@
   }
 
   /* =====================================================
+   *  中断セーブ
+   * ===================================================== */
+  function allProgress() {
+    if (!Store) return {};
+    var s = Store.loadSession();
+    return (s && typeof s === 'object') ? s : {};
+  }
+
+  function saveProgress() {
+    if (!Store || !quizSlot || questions.length === 0) return;
+    var ids = [];
+    for (var i = 0; i < questions.length; i++) ids.push(Store.keyOf(questions[i]));
+    var all = allProgress();
+    all[quizSlot] = {
+      ids: ids, i: currentIndex, score: score,
+      mode: quizMode, label: quizLabel, d: Date.now()
+    };
+    Store.saveSession(all);
+  }
+
+  function loadProgress(slot) {
+    var p = allProgress()[slot];
+    if (!p || !p.ids || !p.ids.length) return null;
+    if (p.i <= 0 || p.i >= p.ids.length) return null;
+    return p;
+  }
+
+  function clearProgress(slot) {
+    if (!Store || !slot) return;
+    var all = allProgress();
+    if (all[slot]) { delete all[slot]; Store.saveSession(all); }
+  }
+
+  // 保存した並び順から問題を復元する（データが変わっていたら null）
+  function questionsFromIds(ids, pool) {
+    var map = {};
+    for (var i = 0; i < pool.length; i++) map[Store.keyOf(pool[i])] = pool[i];
+    var out = [];
+    for (var j = 0; j < ids.length; j++) {
+      if (!map[ids[j]]) return null;
+      out.push(map[ids[j]]);
+    }
+    return out;
+  }
+
+  // 「続きから / 最初から」を選ぶ画面
+  function askResume(info, onResume, onRestart) {
+    var pct = info.i ? Math.round(info.score / info.i * 100) : 0;
+    var dt  = new Date(info.d);
+    var when = (dt.getMonth() + 1) + '月' + dt.getDate() + '日';
+
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9997;background:rgba(15,12,41,.88);'
+      + 'display:flex;justify-content:center;align-items:center;padding:20px;';
+
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#fff;color:#222;border-radius:20px;padding:24px 20px;'
+      + 'max-width:360px;width:100%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);';
+    box.innerHTML =
+      '<div style="font-size:1.05rem;font-weight:800;margin-bottom:12px;">'
+        + escapeHTML(info.label) + ' の続きがあります</div>'
+      + '<div style="font-size:.92rem;line-height:1.8;margin-bottom:6px;">'
+        + info.i + ' / ' + info.ids.length + '問まで進んでいます<br>'
+        + 'ここまでの正解 ' + info.score + '問（' + pct + '％）</div>'
+      + '<div style="font-size:.75rem;opacity:.55;margin-bottom:18px;">' + when + 'に中断</div>';
+
+    var b1 = document.createElement('button');
+    b1.textContent = '▶ ' + (info.i + 1) + '問目から続ける';
+    b1.style.cssText = 'width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;'
+      + 'font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;'
+      + 'background:linear-gradient(135deg,#00b894,#0984e3);color:#fff;';
+
+    var b2 = document.createElement('button');
+    b2.textContent = '🔄 最初からやり直す';
+    b2.style.cssText = 'width:100%;padding:12px;border:2px solid #ddd;border-radius:14px;'
+      + 'font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;background:#fff;color:#666;';
+
+    box.appendChild(b1);
+    box.appendChild(b2);
+    ov.appendChild(box);
+    document.body.appendChild(ov);
+
+    function close() { if (ov.parentNode) document.body.removeChild(ov); }
+    b1.addEventListener('click', function () { close(); onResume(); });
+    b2.addEventListener('click', function () {
+      if (!confirm('ここまでの続き（' + info.i + '問目まで）は消えます。よろしいですか？')) return;
+      close(); onRestart();
+    });
+  }
+
+  /* =====================================================
    *  出題開始
    * ===================================================== */
-  function startQuiz(list, mode) {
+  function startQuiz(list, mode, label, slot, resume) {
     questions    = list;
-    currentIndex = 0;
-    score        = 0;
+    currentIndex = resume ? resume.i : 0;
+    score        = resume ? resume.score : 0;
     userAnswers  = [];
     quizMode     = mode;
+    quizLabel    = label || '';
+    quizSlot     = slot || '';
     lastResultQ        = null;
     lastResultSelected = null;
     lastAnswerKey      = '';
+    saveProgress();
     showScreen(quizScreen);
     renderQuestion();
   }
 
   window.startExamByKai = function (kai) {
+    var slot  = 'kai' + kai;
+    var label = '第' + kai + '回';
     showLoading(true);
     loadRound(kai, function (data) {
       showLoading(false);
@@ -334,7 +432,17 @@
         alert('データの読み込みに失敗しました。');
         return;
       }
-      startQuiz(data.slice(), 'kai');
+      var saved   = loadProgress(slot);
+      var revived = saved ? questionsFromIds(saved.ids, data) : null;
+
+      if (saved && revived) {
+        askResume(saved,
+          function () { startQuiz(revived, 'kai', label, slot, saved); },
+          function () { clearProgress(slot); startQuiz(data.slice(), 'kai', label, slot, null); });
+      } else {
+        clearProgress(slot);
+        startQuiz(data.slice(), 'kai', label, slot, null);
+      }
     });
   };
 
@@ -363,7 +471,7 @@
         alert('該当する問題がありません。');
         return;
       }
-      startQuiz(shuffleArray(filtered), 'part');
+      startQuiz(shuffleArray(filtered), 'part', part, '', null);
     });
   };
 
@@ -428,7 +536,7 @@
         btn.appendChild(count);
 
         btn.addEventListener('click', function () {
-          startBySubjectNames(item.names);
+          startBySubjectNames(item.names, removeFurigana(item.label));
         });
 
         li.appendChild(btn);
@@ -437,7 +545,7 @@
     });
   };
 
-  function startBySubjectNames(names) {
+  function startBySubjectNames(names, label) {
     loadAllRounds(function (data) {
       var filtered = data.filter(function (q) {
         return names.indexOf(q.subject) !== -1;
@@ -446,7 +554,7 @@
         alert('該当する問題がありません。');
         return;
       }
-      startQuiz(shuffleArray(filtered), 'subject');
+      startQuiz(shuffleArray(filtered), 'subject', label || '', '', null);
     });
   }
 
@@ -464,8 +572,30 @@
 
   window.backToMainFromSummary = function () { showScreen(mainMenu); };
 
+  function showInterimSummary(done) {
+    var pct = done ? Math.round(score / done * 100) : 0;
+    var e = document.getElementById('summaryEmoji');
+    var s = document.getElementById('summaryScore');
+    var t = document.getElementById('summaryTotal');
+    var b = document.getElementById('summaryBarFill');
+    var m = document.getElementById('summaryMessage');
+    if (e) e.textContent = '💾';
+    if (s) s.textContent = score;
+    if (t) t.textContent = '/ ' + done + '問中（正答率 ' + pct + '％）';
+    if (b) b.style.width = pct + '%';
+    if (m) {
+      m.textContent = quizSlot
+        ? 'ここまでの記録を保存しました。次は' + (done + 1) + '問目から続けられます。'
+        : 'ここまでの結果です。おつかれさまでした。';
+    }
+    showScreen(summaryScreen);
+  }
+
   window.quitQuiz = function () {
-    if (confirm('メニューに戻りますか？')) showScreen(mainMenu);
+    var done = currentIndex;
+    if (done === 0) { clearProgress(quizSlot); showScreen(mainMenu); return; }
+    saveProgress();
+    showInterimSummary(done);
   };
 
   /* =====================================================
@@ -706,11 +836,13 @@
   window.nextQuestion = function () {
     currentIndex++;
     if (currentIndex >= questions.length) {
+      clearProgress(quizSlot);
       showSummary();
     } else {
       lastResultQ        = null;
       lastResultSelected = null;
       lastAnswerKey      = '';
+      saveProgress();
       showScreen(quizScreen);
       renderQuestion();
     }
@@ -750,6 +882,7 @@
     lastResultSelected = null;
     lastAnswerKey      = '';
     if (quizMode !== 'kai') questions = shuffleArray(questions);
+    saveProgress();
     showScreen(quizScreen);
     renderQuestion();
   };
