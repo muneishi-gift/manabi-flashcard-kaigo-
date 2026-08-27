@@ -1168,3 +1168,10 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   font-weight:600;
   margin-top:18px;
 }
+.rep-open-btn{
+  background:#c2700f;
+  color:#fff;
+  border:2px solid #fff3;
+  font-weight:700;
+  margin-top:18px;
+}
