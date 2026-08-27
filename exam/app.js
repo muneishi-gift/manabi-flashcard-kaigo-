@@ -402,6 +402,7 @@
       close(); onRestart();
     });
   }
+
   // 「何問やりますか？」を選ぶ画面
   function askCount(label, total, onPick) {
     var opts = [];
@@ -468,7 +469,65 @@
       startQuiz(shuffleArray(pool).slice(0, n), mode, label, slot, null);
     });
   }
-  
+
+  /* =====================================================
+   *  復習モード
+   * ===================================================== */
+  function updateReviewMenu() {
+    var sub = document.getElementById('reviewMenuSub');
+    if (!sub || !Store) return;
+    var n = Store.getReviewKeys(0).length;
+    sub.textContent = n === 0
+      ? 'まだ復習する問題はありません（問題を解くとたまります）'
+      : '復習したい問題が ' + n + '問 たまっています';
+  }
+
+  window.startReview = function () {
+    if (!Store) { alert('この環境では学習記録を使えません。'); return; }
+
+    var keys = Store.getReviewKeys(0);
+    if (keys.length === 0) {
+      alert('まだ復習する問題がありません。\n\nまず過去問を解いてみてください。まちがえた問題や、自信がなかった問題がここにたまります。');
+      return;
+    }
+
+    loadAllRounds(function (data) {
+      var map = {};
+      for (var i = 0; i < data.length; i++) map[Store.keyOf(data[i])] = data[i];
+
+      var pool = [];
+      for (var j = 0; j < keys.length; j++) {
+        if (map[keys[j]]) pool.push(map[keys[j]]);   // 優先度の高い順のまま
+      }
+      if (pool.length === 0) {
+        alert('復習する問題を見つけられませんでした。');
+        return;
+      }
+
+      var slot  = 'review';
+      var label = '復習モード';
+      var saved   = loadProgress(slot);
+      var revived = saved ? questionsFromIds(saved.ids, data) : null;
+
+      if (saved && revived) {
+        askResume(saved,
+          function () { startQuiz(revived, 'review', label, slot, saved); },
+          function () {
+            clearProgress(slot);
+            askCount(label, pool.length, function (n) {
+              startQuiz(pool.slice(0, n), 'review', label, slot, null);
+            });
+          });
+        return;
+      }
+
+      clearProgress(slot);
+      askCount(label, pool.length, function (n) {
+        startQuiz(pool.slice(0, n), 'review', label, slot, null);   // 苦手な順に出す
+      });
+    });
+  };
+
   /* =====================================================
    *  出題開始
    * ===================================================== */
@@ -530,7 +589,7 @@
     });
   };
 
-    window.startByPart = function (part) {
+  window.startByPart = function (part) {
     loadAllRounds(function (data) {
       var filtered = data.filter(function (q) { return q.part === part; });
       if (filtered.length === 0) {
@@ -611,7 +670,7 @@
     });
   };
 
-   function startBySubjectNames(names, label) {
+  function startBySubjectNames(names, label) {
     loadAllRounds(function (data) {
       var filtered = data.filter(function (q) {
         return names.indexOf(q.subject) !== -1;
@@ -635,9 +694,9 @@
   /* =====================================================
    *  戻る系
    * ===================================================== */
-  window.backToMain = function () { showScreen(mainMenu); };
+  window.backToMain = function () { updateReviewMenu(); showScreen(mainMenu); };
 
-  window.backToMainFromSummary = function () { showScreen(mainMenu); };
+  window.backToMainFromSummary = function () { updateReviewMenu(); showScreen(mainMenu); };
 
   function showInterimSummary(done) {
     var pct = done ? Math.round(score / done * 100) : 0;
@@ -660,7 +719,7 @@
 
   window.quitQuiz = function () {
     var done = currentIndex;
-    if (done === 0) { clearProgress(quizSlot); showScreen(mainMenu); return; }
+    if (done === 0) { clearProgress(quizSlot); updateReviewMenu(); showScreen(mainMenu); return; }
     saveProgress();
     showInterimSummary(done);
   };
@@ -1060,6 +1119,7 @@
    * ===================================================== */
   createImageModal();
   setupConfidenceButtons();
+  updateReviewMenu();
 
   if (Store) {
     furiganaOn = !!Store.getPref('furigana', false);
