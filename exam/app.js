@@ -402,7 +402,73 @@
       close(); onRestart();
     });
   }
+  // 「何問やりますか？」を選ぶ画面
+  function askCount(label, total, onPick) {
+    var opts = [];
+    if (total > 10) opts.push({ n: 10, t: '☕ 10問（約5分）',  s: '5分だけならやれる' });
+    if (total > 20) opts.push({ n: 20, t: '📖 20問（約15分）', s: 'ちょっと今日はやるか' });
+    opts.push({ n: total, t: '🌙 全' + total + '問', s: '今日はとことんやる！' });
 
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9997;background:rgba(15,12,41,.88);'
+      + 'display:flex;justify-content:center;align-items:center;padding:20px;';
+
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#fff;color:#222;border-radius:20px;padding:24px 20px;'
+      + 'max-width:360px;width:100%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);';
+    box.innerHTML =
+      '<div style="font-size:1.05rem;font-weight:800;margin-bottom:4px;">'
+        + escapeHTML(label) + '</div>'
+      + '<div style="font-size:.85rem;opacity:.6;margin-bottom:18px;">'
+        + '何問やりますか？（全' + total + '問からランダム）</div>';
+
+    function close() { if (ov.parentNode) document.body.removeChild(ov); }
+
+    opts.forEach(function (o) {
+      var b = document.createElement('button');
+      b.style.cssText = 'width:100%;padding:13px;border:none;border-radius:14px;'
+        + 'font-family:inherit;cursor:pointer;margin-bottom:10px;color:#fff;'
+        + 'background:linear-gradient(135deg,#00b894,#0984e3);';
+      b.innerHTML = '<div style="font-size:1rem;font-weight:700;">' + o.t + '</div>'
+        + '<div style="font-size:.72rem;opacity:.85;margin-top:2px;">' + o.s + '</div>';
+      b.addEventListener('click', function () { close(); onPick(o.n); });
+      box.appendChild(b);
+    });
+
+    var back = document.createElement('button');
+    back.textContent = '← 選びなおす';
+    back.style.cssText = 'width:100%;padding:11px;border:2px solid #ddd;border-radius:14px;'
+      + 'font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;background:#fff;color:#666;';
+    back.addEventListener('click', close);
+    box.appendChild(back);
+
+    ov.appendChild(box);
+    document.body.appendChild(ov);
+  }
+
+  // ランダム出題の共通の入り口（中断の続き → 問数選択）
+  function beginRandom(pool, mode, label, slot) {
+    var saved   = loadProgress(slot);
+    var revived = saved ? questionsFromIds(saved.ids, pool) : null;
+
+    if (saved && revived) {
+      askResume(saved,
+        function () { startQuiz(revived, mode, label, slot, saved); },
+        function () {
+          clearProgress(slot);
+          askCount(label, pool.length, function (n) {
+            startQuiz(shuffleArray(pool).slice(0, n), mode, label, slot, null);
+          });
+        });
+      return;
+    }
+
+    clearProgress(slot);
+    askCount(label, pool.length, function (n) {
+      startQuiz(shuffleArray(pool).slice(0, n), mode, label, slot, null);
+    });
+  }
+  
   /* =====================================================
    *  出題開始
    * ===================================================== */
@@ -464,14 +530,14 @@
     });
   };
 
-  window.startByPart = function (part) {
+    window.startByPart = function (part) {
     loadAllRounds(function (data) {
       var filtered = data.filter(function (q) { return q.part === part; });
       if (filtered.length === 0) {
         alert('該当する問題がありません。');
         return;
       }
-      startQuiz(shuffleArray(filtered), 'part', part, '', null);
+      beginRandom(filtered, 'part', part, 'part-' + part);
     });
   };
 
@@ -545,7 +611,7 @@
     });
   };
 
-  function startBySubjectNames(names, label) {
+   function startBySubjectNames(names, label) {
     loadAllRounds(function (data) {
       var filtered = data.filter(function (q) {
         return names.indexOf(q.subject) !== -1;
@@ -554,7 +620,8 @@
         alert('該当する問題がありません。');
         return;
       }
-      startQuiz(shuffleArray(filtered), 'subject', label || '', '', null);
+      var nm = label || names[0] || '';
+      beginRandom(filtered, 'subject', nm, 'subject-' + nm);
     });
   }
 
