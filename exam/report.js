@@ -1,364 +1,274 @@
-// trend.js – 学習の推移（日別サマリー）
-// storage.js より後に読み込むこと。storage.js / app.js は変更不要。
+// report.js – 科目群べつの成績（0点科目群をなくすための画面）
+// storage.js より後に読み込むこと
 
 (function () {
   'use strict';
 
-  var DAY_KEY = 'kaigo_daily_v1';
-  var BF_KEY  = 'kaigo_daily_bf_v1';
-  var KEEP_DAYS = 400;
-  var SHOW_DAYS = 10;   // グラフに出す「学習した日」の数
+  /* =====================================================
+   *  11試験科目群（第39回以降の合格基準にもとづく）
+   *  keys = 問題データの科目名。振り分けに使う
+   * ===================================================== */
+  var GROUPS = [
+    { no:1,  part:'A', name:'人間の尊厳と自立、介護の基本',
+      kana:'にんげんのそんげんとじりつ、かいごのきほん',
+      keys:['人間の尊厳と自立','介護の基本'] },
+    { no:2,  part:'A', name:'社会の理解',
+      kana:'しゃかいのりかい',
+      keys:['社会の理解'] },
+    { no:3,  part:'A', name:'人間関係とコミュニケーション、コミュニケーション技術',
+      kana:'にんげんかんけいとコミュニケーション、コミュニケーションぎじゅつ',
+      keys:['人間関係とコミュニケーション','コミュニケーション技術'] },
+    { no:4,  part:'A', name:'生活支援技術',
+      kana:'せいかつしえんぎじゅつ',
+      keys:['生活支援技術'] },
+    { no:5,  part:'B', name:'こころとからだのしくみ',
+      kana:'',
+      keys:['こころとからだのしくみ'] },
+    { no:6,  part:'B', name:'発達と老化の理解',
+      kana:'はったつとろうかのりかい',
+      keys:['発達と老化の理解'] },
+    { no:7,  part:'B', name:'認知症の理解',
+      kana:'にんちしょうのりかい',
+      keys:['認知症の理解'] },
+    { no:8,  part:'B', name:'障害の理解',
+      kana:'しょうがいのりかい',
+      keys:['障害の理解'] },
+    { no:9,  part:'B', name:'医療的ケア',
+      kana:'いりょうてきケア',
+      keys:['医療的ケア'] },
+    { no:10, part:'C', name:'介護過程',
+      kana:'かいごかてい',
+      keys:['介護過程'] },
+    { no:11, part:'C', name:'総合問題',
+      kana:'そうごうもんだい',
+      keys:['総合問題'] }
+  ];
 
-  /* ===== 保存の土台（localStorage が使えない環境ではメモリに退避） ===== */
-  var mem = {};
-  function ls() { try { return window.localStorage; } catch (e) { return null; } }
-  function readRaw(k) {
-    var s = ls();
-    try { if (s) return s.getItem(k); } catch (e) {}
-    return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null;
-  }
-  function writeRaw(k, v) {
-    var s = ls();
-    try { if (s) { s.setItem(k, v); return; } } catch (e) {}
-    mem[k] = v;
+  var PART_POINTS = { A:60, B:45, C:20 };
+
+  /* ---------- 照合用に文字をそろえる ---------- */
+  function norm(s) {
+    return String(s || '')
+      .replace(/（[^）]*）/g, '')
+      .replace(/\([^)]*\)/g, '')
+      .replace(/[\s\u3000・･、。，．,.]/g, '');
   }
 
-  function readDaily() {
-    try {
-      var o = JSON.parse(readRaw(DAY_KEY) || '{}');
-      return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {};
-    } catch (e) { return {}; }
-  }
-  function writeDaily(o) {
-    var keys = Object.keys(o).sort();
-    if (keys.length > KEEP_DAYS) {
-      keys.slice(0, keys.length - KEEP_DAYS).forEach(function (k) { delete o[k]; });
+  var LOOKUP = [];
+  GROUPS.forEach(function (g) {
+    g.keys.forEach(function (k) { LOOKUP.push({ k: norm(k), g: g }); });
+  });
+  LOOKUP.sort(function (a, b) { return b.k.length - a.k.length; });
+
+  function groupOf(subject) {
+    var n = norm(subject);
+    if (!n) return null;
+    var i;
+    for (i = 0; i < LOOKUP.length; i++) {
+      if (n === LOOKUP[i].k) return LOOKUP[i].g;
     }
-    try { writeRaw(DAY_KEY, JSON.stringify(o)); } catch (e) {}
-  }
-
-  function dkey(d) {
-    var y = d.getFullYear(), m = d.getMonth() + 1, dd = d.getDate();
-    return y + '-' + (m < 10 ? '0' : '') + m + '-' + (dd < 10 ? '0' : '') + dd;
-  }
-  function shiftKey(days) {
-    var d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + days);
-    return dkey(d);
-  }
-  function mdLabel(k) {
-    var p = k.split('-');
-    return Number(p[1]) + '/' + Number(p[2]);
-  }
-
-  /* ===== 1問ぶんの記録 ===== */
-  function bump(correct) {
-    var o = readDaily(), k = dkey(new Date());
-    if (!o[k]) o[k] = { n: 0, c: 0 };
-    o[k].n++;
-    if (correct) o[k].c++;
-    writeDaily(o);
-  }
-
-  /* ===== 正解数の合計（正誤判定に使う） ===== */
-  function sumCorrect() {
-    var S = window.KaigoStore, t = 0, k, st, all;
-    if (!S || typeof S.getAllStates !== 'function') return null;
-    try {
-      all = S.getAllStates() || {};
-      for (k in all) {
-        if (!Object.prototype.hasOwnProperty.call(all, k)) continue;
-        st = all[k];
-        if (st && typeof st.o === 'number') t += st.o;
-      }
-    } catch (e) { return null; }
-    return t;
-  }
-
-  /* ===== recordAnswer を包む ===== */
-  function hook() {
-    var S = window.KaigoStore;
-    if (!S || typeof S.recordAnswer !== 'function' || S.__trendHooked) return;
-    var orig = S.recordAnswer;
-    S.recordAnswer = function () {
-      var before = sumCorrect();
-      var r = orig.apply(this, arguments);
-      try {
-        var after = sumCorrect(), ok = false, i;
-        if (before !== null && after !== null) {
-          ok = (after > before);
-        } else {
-          for (i = 0; i < arguments.length; i++) {
-            if (typeof arguments[i] === 'boolean') { ok = arguments[i]; break; }
-          }
-        }
-        bump(ok);
-      } catch (e) {}
-      return r;
-    };
-    S.__trendHooked = true;
-  }
-
-  /* ===== 過去ログからの取り込み（初回だけ） ===== */
-  var TIME_FIELDS = ['t', 'ts', 'd', 'time', 'date', 'at'];
-  var OK_FIELDS   = ['o', 'ok', 'c', 'correct', 'r', 'res'];
-
-  function plausibleTime(v) {
-    return typeof v === 'number' && v > 1300000000000 && v < Date.now() + 86400000;
-  }
-  function findTimeField(sample) {
-    var i, k;
-    for (i = 0; i < TIME_FIELDS.length; i++) {
-      k = TIME_FIELDS[i];
-      if (plausibleTime(sample[k])) return k;
-    }
-    for (k in sample) {
-      if (Object.prototype.hasOwnProperty.call(sample, k) && plausibleTime(sample[k])) return k;
-    }
-    return null;
-  }
-  function findOkField(arr) {
-    var i, k, j, v, onlyBin;
-    for (i = 0; i < OK_FIELDS.length; i++) {
-      k = OK_FIELDS[i];
-      if (typeof arr[0][k] === 'boolean') return k;
-    }
-    for (k in arr[0]) {
-      if (!Object.prototype.hasOwnProperty.call(arr[0], k)) continue;
-      if (typeof arr[0][k] === 'boolean') return k;
-    }
-    for (i = 0; i < OK_FIELDS.length; i++) {
-      k = OK_FIELDS[i];
-      if (!(k in arr[0])) continue;
-      onlyBin = true;
-      for (j = 0; j < Math.min(arr.length, 40); j++) {
-        v = arr[j][k];
-        if (v !== 0 && v !== 1) { onlyBin = false; break; }
-      }
-      if (onlyBin) return k;
+    for (i = 0; i < LOOKUP.length; i++) {
+      if (n.indexOf(LOOKUP[i].k) !== -1) return LOOKUP[i].g;
+      if (n.length >= 4 && LOOKUP[i].k.indexOf(n) !== -1) return LOOKUP[i].g;
     }
     return null;
   }
 
-  function backfill() {
-    if (readRaw(BF_KEY)) return;
-    var s = ls(), best = null, i, k, v, tf;
-    if (s) {
-      for (i = 0; i < s.length; i++) {
-        k = s.key(i);
-        if (!k || k === DAY_KEY) continue;
-        try { v = JSON.parse(s.getItem(k)); } catch (e) { continue; }
-        if (!Array.isArray(v) || v.length === 0) continue;
-        if (!v[0] || typeof v[0] !== 'object') continue;
-        tf = findTimeField(v[0]);
-        if (!tf) continue;
-        if (!best || v.length > best.arr.length) {
-          best = { arr: v, tf: tf, of: findOkField(v), key: k };
-        }
+  /* ---------- 集計 ---------- */
+  function compute() {
+    var states = (window.KaigoStore && window.KaigoStore.getAllStates)
+      ? window.KaigoStore.getAllStates() : {};
+
+    var rows = {}, unmatched = {}, k, s, g, r;
+    GROUPS.forEach(function (gg) {
+      rows[gg.no] = { g: gg, tried: 0, attempts: 0, correct: 0, lastOk: 0 };
+    });
+
+    for (k in states) {
+      if (!states.hasOwnProperty(k)) continue;
+      s = states[k];
+      g = groupOf(s.sub);
+      if (!g) {
+        var nm = s.sub || '（科目未設定）';
+        unmatched[nm] = (unmatched[nm] || 0) + 1;
+        continue;
       }
+      r = rows[g.no];
+      r.tried++;
+      r.attempts += (s.n || 0);
+      r.correct  += (s.o || 0);
+      if (s.l) r.lastOk++;
     }
-    if (best) {
-      var o = readDaily(), added = 0;
-      best.arr.forEach(function (e) {
-        if (!e || !plausibleTime(e[best.tf])) return;
-        var d = dkey(new Date(e[best.tf]));
-        if (!o[d]) o[d] = { n: 0, c: 0 };
-        o[d].n++;
-        if (best.of && (e[best.of] === true || e[best.of] === 1)) o[d].c++;
-        added++;
-      });
-      writeDaily(o);
-      try {
-        console.log('[trend] 過去ログを取り込みました: key=' + best.key
-          + ' 件数=' + added + ' 時刻項目=' + best.tf + ' 正誤項目=' + best.of);
-      } catch (e2) {}
-    }
-    writeRaw(BF_KEY, '1');
-  }
 
-  /* ===== 集計 ===== */
-  function series() {
-    var o = readDaily();
-    return Object.keys(o)
-      .filter(function (k) { return o[k] && o[k].n > 0; })
-      .sort()
-      .map(function (k) { return { d: k, n: o[k].n, c: o[k].c }; });
-  }
-  function totals() {
-    var t = { n: 0, c: 0 };
-    series().forEach(function (p) { t.n += p.n; t.c += p.c; });
-    return t;
-  }
-  function streak() {
-    var o = readDaily(), d = new Date(), n = 0;
-    d.setHours(0, 0, 0, 0);
-    if (!(o[dkey(d)] && o[dkey(d)].n > 0)) d.setDate(d.getDate() - 1);
-    while (o[dkey(d)] && o[dkey(d)].n > 0) { n++; d.setDate(d.getDate() - 1); }
-    return n;
-  }
-  function windowSum(fromDays, toDays) {
-    var o = readDaily(), a = shiftKey(fromDays), b = shiftKey(toDays);
-    var t = { n: 0, c: 0 };
-    Object.keys(o).forEach(function (k) {
-      if (k >= a && k <= b) { t.n += o[k].n; t.c += o[k].c; }
-    });
-    return t;
-  }
-  function rate(t) { return t.n ? Math.round(t.c / t.n * 100) : 0; }
-
-  /* ===== グラフ ===== */
-  function chartSVG(pts) {
-    if (!pts.length) return '';
-    var W = 320, H = 128, L = 26, R = 12, T = 18, B = 26;
-    var iw = W - L - R, ih = H - T - B, n = pts.length;
-    function X(i) { return n === 1 ? (L + iw / 2) : (L + iw * i / (n - 1)); }
-    function Y(v) { return T + ih * (1 - v / 100); }
-
-    var s = '<svg class="trd-svg" viewBox="0 0 ' + W + ' ' + H
-          + '" role="img" aria-label="正答率のうつりかわり">';
-
-    [0, 60, 100].forEach(function (v) {
-      var y = Y(v), dash = (v === 60) ? ' stroke-dasharray="3 3"' : '';
-      var col = (v === 60) ? '#f0a020' : '#e2e2e2';
-      s += '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y
-        + '" stroke="' + col + '" stroke-width="1"' + dash + '/>';
-      s += '<text x="' + (L - 4) + '" y="' + (y + 3)
-        + '" font-size="8" fill="#999" text-anchor="end">' + v + '</text>';
+    GROUPS.forEach(function (gg) {
+      r = rows[gg.no];
+      r.rate = r.tried ? Math.round(r.lastOk / r.tried * 100) : 0;
+      if (r.tried === 0)      r.status = 'none';
+      else if (r.lastOk === 0) r.status = 'zero';
+      else if (r.rate >= 60)   r.status = 'good';
+      else                     r.status = 'weak';
     });
 
-    var poly = pts.map(function (p, i) {
-      return X(i).toFixed(1) + ',' + Y(rate(p)).toFixed(1);
-    }).join(' ');
-    if (n > 1) {
-      s += '<polyline points="' + poly + '" fill="none" stroke="#2f8f5b" stroke-width="2" '
-        + 'stroke-linejoin="round" stroke-linecap="round"/>';
-    }
-    pts.forEach(function (p, i) {
-      var last = (i === n - 1);
-      s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(rate(p)).toFixed(1)
-        + '" r="' + (last ? 3.6 : 2.4) + '" fill="' + (last ? '#1f6f45' : '#2f8f5b') + '"/>';
+    return { rows: rows, unmatched: unmatched };
+  }
+
+  /* ---------- 表示 ---------- */
+  var overlay = null;
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function furiganaOn() {
+    try {
+      return !!(window.KaigoStore && window.KaigoStore.getPref('furigana', false));
+    } catch (e) { return false; }
+  }
+
+  function close() { if (overlay) overlay.style.display = 'none'; }
+
+  function ensureOverlay() {
+    if (overlay) return overlay;
+    overlay = document.createElement('div');
+    overlay.className = 'rep-overlay';
+    overlay.innerHTML = '<div class="rep-box" role="dialog" aria-modal="true">'
+      + '<div class="rep-head">📊 科目群べつの成績</div>'
+      + '<div class="rep-body"></div>'
+      + '<button type="button" class="rep-close">閉じる</button>'
+      + '</div>';
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay || e.target.className === 'rep-close') close();
     });
-
-    var lastP = pts[n - 1], lr = rate(lastP);
-    var ly = Y(lr), below = (ly - T) < 13;
-    s += '<text x="' + X(n - 1).toFixed(1) + '" y="' + (below ? (ly + 14) : (ly - 8)).toFixed(1)
-      + '" font-size="9" fill="#1f6f45" text-anchor="' + (n === 1 ? 'middle' : 'end')
-      + '" font-weight="bold" paint-order="stroke" stroke="#fff" stroke-width="3"'
-      + ' stroke-linejoin="round">' + lr + '％</text>';
-
-    s += '<text x="' + X(0) + '" y="' + (H - 8)
-      + '" font-size="8" fill="#999" text-anchor="' + (n === 1 ? 'middle' : 'start')
-      + '">' + mdLabel(pts[0].d) + '</text>';
-    if (n > 1) {
-      s += '<text x="' + X(n - 1) + '" y="' + (H - 8)
-        + '" font-size="8" fill="#999" text-anchor="end">' + mdLabel(lastP.d) + '</text>';
-    }
-    s += '</svg>';
-    return s;
+    document.body.appendChild(overlay);
+    return overlay;
   }
 
-  /* ===== 表示用 HTML ===== */
-  function html() {
-    var all = series();
-    var pts = all.slice(-SHOW_DAYS);
-    var tot = totals();
-    var st  = streak();
-    var w0  = windowSum(-6, 0);
-    var w1  = windowSum(-13, -7);
-
-    var msg;
-    if (tot.n === 0) {
-      msg = 'まだ記録がありません。1問でも解くと、ここに積み上がっていきます。';
-    } else if (st >= 2) {
-      msg = st + '日つづけています。この積み上げがいちばん効きます。';
-    } else if (w0.n > 0) {
-      msg = 'この7日で' + w0.n + '問。ペースは作れています。';
-    } else {
-      msg = 'ひさしぶりですね。10問（約5分）から戻れます。';
-    }
-
-    var h = '<div class="trd">';
-    h += '<div class="trd-head">📈 学習のうつりかわり</div>';
-
-    h += '<div class="trd-cards">'
-      +  '<div class="trd-card"><b>' + st + '</b><span>連続日数</span></div>'
-      +  '<div class="trd-card"><b>' + tot.n + '</b><span>解いた数</span></div>'
-      +  '<div class="trd-card"><b>' + rate(tot) + '％</b><span>通算の正答率</span></div>'
-      +  '</div>';
-
-    if (pts.length) {
-      h += '<div class="trd-chart">' + chartSVG(pts) + '</div>';
-      h += '<div class="trd-cap">学習した日ごとの正答率（直近' + pts.length + '日ぶん）'
-        +  '／オレンジの線は6割の目安</div>';
-    } else {
-      h += '<div class="trd-cap">問題を解くと、ここに折れ線が出ます。</div>';
-    }
-
-    if (w0.n > 0 || w1.n > 0) {
-      h += '<div class="trd-cmp">'
-        +  '<div><span>この7日</span><b>' + w0.n + '問</b>'
-        +  (w0.n ? '（' + rate(w0) + '％）' : '') + '</div>'
-        +  '<div><span>前の7日</span><b>' + w1.n + '問</b>'
-        +  (w1.n ? '（' + rate(w1) + '％）' : '') + '</div>'
-        +  '</div>';
-    }
-
-    h += '<div class="trd-msg">' + msg + '</div>';
-    h += '<div class="trd-note">この折れ線は「その日に解いた分」の正答率です。'
-      +  '下の科目群の数字は「問題ごとの最新の解答」で計算しているため、基準がちがいます。</div>';
-    h += '</div>';
-    return h;
-  }
-
-  /* ===== スタイル ===== */
-  function injectCSS() {
-    if (document.getElementById('trdStyle')) return;
-    var st = document.createElement('style');
-    st.id = 'trdStyle';
-    st.textContent =
-      '.trd{background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:14px;margin-bottom:16px}'
-    + '.trd-head{font-weight:bold;font-size:15px;margin-bottom:10px}'
-    + '.trd-cards{display:flex;gap:8px;margin-bottom:12px}'
-    + '.trd-card{flex:1;background:#f6f8f7;border-radius:10px;padding:8px 4px;text-align:center}'
-    + '.trd-card b{display:block;font-size:19px;color:#1f6f45;line-height:1.2}'
-    + '.trd-card span{font-size:10px;color:#777}'
-    + '.trd-chart{margin:4px 0}'
-    + '.trd-svg{width:100%;height:auto;display:block}'
-    + '.trd-cap{font-size:10px;color:#999;text-align:center;margin-top:2px}'
-    + '.trd-cmp{display:flex;gap:8px;margin-top:10px;font-size:12px}'
-    + '.trd-cmp>div{flex:1;background:#f6f8f7;border-radius:8px;padding:6px 8px}'
-    + '.trd-cmp span{color:#777;margin-right:6px}'
-    + '.trd-cmp b{color:#333}'
-    + '.trd-msg{margin-top:10px;font-size:13px;background:#eef6f1;border-radius:8px;padding:8px 10px;color:#1f6f45}'
-    + '.trd-note{margin-top:8px;font-size:10px;color:#aaa;line-height:1.5}';
-    document.head.appendChild(st);
-  }
-
-  /* ===== 起動 ===== */
-  hook();
-  backfill();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectCSS);
-  } else {
-    injectCSS();
-  }
-
-  window.KaigoTrend = {
-    html: html,
-    record: bump,
-    data: readDaily,
-    rebuild: function () {
-      writeRaw(DAY_KEY, '{}');
-      writeRaw(BF_KEY, '');
-      backfill();
-      return readDaily();
-    },
-    debug: function () {
-      var o = readDaily();
-      console.log('今日:', o[dkey(new Date())], '／ 通算:', totals(), '／ 連続:', streak());
-      return o;
-    }
+  var STATUS_LABEL = {
+    none: '未着手',
+    zero: '正解ゼロ',
+    good: '順調',
+    weak: 'もう少し'
   };
+
+  function rowHTML(r) {
+    var g = r.g;
+    var head = esc(g.name);
+    if (g.kana && furiganaOn()) {
+      head += '<span class="rep-kana">' + esc(g.kana) + '</span>';
+    }
+    var bar = (r.status === 'none')
+      ? '<div class="rep-bar"><i style="width:0%"></i></div>'
+      : '<div class="rep-bar"><i class="' + r.status + '" style="width:' + r.rate + '%"></i></div>';
+
+    var meta = (r.tried === 0)
+      ? 'まだ解いていません'
+      : r.tried + '問を学習　正解 ' + r.lastOk + '問　' + r.rate + '％';
+
+    return '<div class="rep-row ' + r.status + '">'
+      + '<div class="rep-row-top">'
+      +   '<span class="rep-no">' + g.no + '</span>'
+      +   '<span class="rep-name">' + head + '</span>'
+      +   '<span class="rep-status ' + r.status + '">' + STATUS_LABEL[r.status] + '</span>'
+      + '</div>'
+      + bar
+      + '<div class="rep-meta">' + esc(meta) + '</div>'
+      + '</div>';
+  }
+
+  function partHTML(part, rows) {
+    var tried = 0, ok = 0, risk = 0;
+    GROUPS.forEach(function (g) {
+      if (g.part !== part) return;
+      var r = rows[g.no];
+      tried += r.tried;
+      ok    += r.lastOk;
+      if (r.status === 'none' || r.status === 'zero') risk++;
+    });
+    var rate = tried ? Math.round(ok / tried * 100) : 0;
+    return '<div class="rep-part' + (risk ? ' risk' : '') + '">'
+      + '<div class="rep-part-name">' + part + 'パート</div>'
+      + '<div class="rep-part-num">' + rate + '％</div>'
+      + '<div class="rep-part-sub">' + tried + '問／' + PART_POINTS[part] + '点満点'
+      + (risk ? '<br>⚠ 危険な科目群 ' + risk : '') + '</div>'
+      + '</div>';
+  }
+
+  function show() {
+    var box  = ensureOverlay();
+    var body = box.querySelector('.rep-body');
+    var data = compute();
+    var rows = data.rows;
+
+    var danger = [];
+    GROUPS.forEach(function (g) {
+      var r = rows[g.no];
+      if (r.status === 'none' || r.status === 'zero') danger.push(g);
+    });
+
+    var html = (window.KaigoTrend && window.KaigoTrend.html) ? window.KaigoTrend.html() : '';
+
+    if (danger.length) {
+      html += '<div class="rep-alert">'
+        + '<div class="rep-alert-title">⚠ 0点になるおそれのある科目群</div>'
+        + '<div class="rep-alert-text">試験では、11の科目群のすべてで1点以上とることが必要です。'
+        + 'この科目群を先に手当てしましょう。</div><ul class="rep-alert-list">';
+      danger.forEach(function (g) {
+        html += '<li>' + g.no + '　' + esc(g.name)
+             + (rows[g.no].tried === 0 ? '（未着手）' : '（正解ゼロ）') + '</li>';
+      });
+      html += '</ul></div>';
+    } else {
+      html += '<div class="rep-alert ok">'
+        + '<div class="rep-alert-title">✅ すべての科目群で正解があります</div>'
+        + '<div class="rep-alert-text">0点科目群による不合格の心配はいまのところありません。'
+        + 'このまま正答率を上げていきましょう。</div></div>';
+    }
+
+    html += '<div class="rep-parts">'
+         + partHTML('A', rows) + partHTML('B', rows) + partHTML('C', rows)
+         + '</div>';
+
+    html += '<div class="rep-list">';
+    GROUPS.forEach(function (g) { html += rowHTML(rows[g.no]); });
+    html += '</div>';
+
+    var un = Object.keys(data.unmatched);
+    if (un.length) {
+      html += '<div class="rep-note">振り分けできなかった科目：'
+           + esc(un.join('、')) + '</div>';
+    }
+
+    html += '<div class="rep-note">'
+         + '正答率は、問題ごとの「いちばん新しい解答」で計算しています。'
+         + '同じ問題を解き直すと最新の結果に置きかわります。<br>'
+         + '合格基準は第39回試験の公表内容にもとづいています。'
+         + '受験の年の最新情報は試験センターで確認してください。'
+         + '</div>';
+
+    body.innerHTML = html;
+    box.style.display = 'flex';
+  }
+
+  /* ---------- メニューにボタンを足す ---------- */
+  function injectButton() {
+    var menu = document.getElementById('mainMenu');
+    if (!menu || document.getElementById('reportOpenBtn')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id   = 'reportOpenBtn';
+    btn.className = 'rep-open-btn';
+    btn.textContent = '📊 科目群べつの成績を見る';
+    btn.addEventListener('click', show);
+    menu.appendChild(btn);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectButton);
+  } else {
+    injectButton();
+  }
+
+  window.KaigoReport = { show: show, compute: compute, groupOf: groupOf };
 
 })();
