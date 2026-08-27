@@ -190,7 +190,7 @@
   /* ===== グラフ ===== */
   function chartSVG(pts) {
     if (!pts.length) return '';
-    var W = 320, H = 128, L = 26, R = 12, T = 12, B = 26;
+    var W = 320, H = 128, L = 26, R = 12, T = 18, B = 26;
     var iw = W - L - R, ih = H - T - B, n = pts.length;
     function X(i) { return n === 1 ? (L + iw / 2) : (L + iw * i / (n - 1)); }
     function Y(v) { return T + ih * (1 - v / 100); }
@@ -220,10 +220,12 @@
         + '" r="' + (last ? 3.6 : 2.4) + '" fill="' + (last ? '#1f6f45' : '#2f8f5b') + '"/>';
     });
 
-    var lastP = pts[n - 1];
-    s += '<text x="' + X(n - 1).toFixed(1) + '" y="' + (Y(rate(lastP)) - 7).toFixed(1)
+    var lastP = pts[n - 1], lr = rate(lastP);
+    var ly = Y(lr), below = (ly - T) < 13;
+    s += '<text x="' + X(n - 1).toFixed(1) + '" y="' + (below ? (ly + 14) : (ly - 8)).toFixed(1)
       + '" font-size="9" fill="#1f6f45" text-anchor="' + (n === 1 ? 'middle' : 'end')
-      + '" font-weight="bold">' + rate(lastP) + '％</text>';
+      + '" font-weight="bold" paint-order="stroke" stroke="#fff" stroke-width="3"'
+      + ' stroke-linejoin="round">' + lr + '％</text>';
 
     s += '<text x="' + X(0) + '" y="' + (H - 8)
       + '" font-size="8" fill="#999" text-anchor="' + (n === 1 ? 'middle' : 'start')
