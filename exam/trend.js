@@ -5,7 +5,6 @@
   'use strict';
 
   var DAY_KEY = 'kaigo_daily_v1';
-  var BF_KEY  = 'kaigo_daily_bf_v1';
   var KEEP_DAYS = 400;
   var SHOW_DAYS = 10;   // グラフに出す「学習した日」の数
 
@@ -52,7 +51,7 @@
     return Number(p[1]) + '/' + Number(p[2]);
   }
 
-  /* ===== 1問ぶんの記録 ===== */
+  /* ===== 1問ぶんの記録（解答のたびに呼ばれる） ===== */
   function bump(correct) {
     var o = readDaily(), k = dkey(new Date());
     if (!o[k]) o[k] = { n: 0, c: 0 };
@@ -61,100 +60,52 @@
     writeDaily(o);
   }
 
+  /* ===== 解答履歴から日別データを作り直す（自己修復） =====
+   * storage.js の LOG（直近1000件）が正しい記録なので、そこから集計し直す。
+   * LOG から消えた古い日は、すでに保存してある日別データを残す。
+   */
+  function syncFromLog() {
+    var S = window.KaigoStore, log;
+    try {
+      if (!S || typeof S.exportAll !== 'function') return;
+      log = S.exportAll().log;
+    } catch (e) { return; }
+    if (!log || !log.length) return;
+
+    var byDay = {}, i, e, d;
+    for (i = 0; i < log.length; i++) {
+      e = log[i];
+      if (!e || typeof e.d !== 'number') continue;
+      d = dkey(new Date(e.d));
+      if (!byDay[d]) byDay[d] = { n: 0, c: 0 };
+      byDay[d].n++;
+      if (e.o === 1 || e.o === true) byDay[d].c++;
+    }
+
+    var days = Object.keys(byDay).sort();
+    if (!days.length) return;
+    var oldest = days[0];
+    var daily = readDaily();
+
+    days.forEach(function (k) {
+      // いちばん古い日は履歴が途中で切れている可能性があるので、多いほうを残す
+      if (k === oldest && daily[k] && daily[k].n > byDay[k].n) return;
+      daily[k] = byDay[k];
+    });
+    writeDaily(daily);
+  }
+
   /* ===== recordAnswer を包む ===== */
   function hook() {
     var S = window.KaigoStore;
     if (!S || typeof S.recordAnswer !== 'function' || S.__trendHooked) return;
     var orig = S.recordAnswer;
-    S.recordAnswer = function () {
+    S.recordAnswer = function (info) {
       var r = orig.apply(this, arguments);
-      try {
-        var ok = null, i;
-        for (i = 0; i < arguments.length; i++) {
-          if (typeof arguments[i] === 'boolean') { ok = arguments[i]; break; }
-        }
-        bump(ok === true);
-      } catch (e) {}
+      try { bump(!!(info && info.correct)); } catch (e) {}
       return r;
     };
     S.__trendHooked = true;
-  }
-
-  /* ===== 過去ログからの取り込み（初回だけ） ===== */
-  var TIME_FIELDS = ['t', 'ts', 'd', 'time', 'date', 'at'];
-  var OK_FIELDS   = ['o', 'ok', 'c', 'correct', 'r', 'res'];
-
-  function plausibleTime(v) {
-    return typeof v === 'number' && v > 1300000000000 && v < Date.now() + 86400000;
-  }
-  function findTimeField(sample) {
-    var i, k;
-    for (i = 0; i < TIME_FIELDS.length; i++) {
-      k = TIME_FIELDS[i];
-      if (plausibleTime(sample[k])) return k;
-    }
-    for (k in sample) {
-      if (Object.prototype.hasOwnProperty.call(sample, k) && plausibleTime(sample[k])) return k;
-    }
-    return null;
-  }
-  function findOkField(arr) {
-    var i, k, j, v, onlyBin;
-    for (i = 0; i < OK_FIELDS.length; i++) {
-      k = OK_FIELDS[i];
-      if (typeof arr[0][k] === 'boolean') return k;
-    }
-    for (k in arr[0]) {
-      if (!Object.prototype.hasOwnProperty.call(arr[0], k)) continue;
-      if (typeof arr[0][k] === 'boolean') return k;
-    }
-    for (i = 0; i < OK_FIELDS.length; i++) {
-      k = OK_FIELDS[i];
-      if (!(k in arr[0])) continue;
-      onlyBin = true;
-      for (j = 0; j < Math.min(arr.length, 40); j++) {
-        v = arr[j][k];
-        if (v !== 0 && v !== 1) { onlyBin = false; break; }
-      }
-      if (onlyBin) return k;
-    }
-    return null;
-  }
-
-  function backfill() {
-    if (readRaw(BF_KEY)) return;
-    var s = ls(), best = null, i, k, v, tf;
-    if (s) {
-      for (i = 0; i < s.length; i++) {
-        k = s.key(i);
-        if (!k || k === DAY_KEY) continue;
-        try { v = JSON.parse(s.getItem(k)); } catch (e) { continue; }
-        if (!Array.isArray(v) || v.length === 0) continue;
-        if (!v[0] || typeof v[0] !== 'object') continue;
-        tf = findTimeField(v[0]);
-        if (!tf) continue;
-        if (!best || v.length > best.arr.length) {
-          best = { arr: v, tf: tf, of: findOkField(v), key: k };
-        }
-      }
-    }
-    if (best) {
-      var o = readDaily(), added = 0;
-      best.arr.forEach(function (e) {
-        if (!e || !plausibleTime(e[best.tf])) return;
-        var d = dkey(new Date(e[best.tf]));
-        if (!o[d]) o[d] = { n: 0, c: 0 };
-        o[d].n++;
-        if (best.of && (e[best.of] === true || e[best.of] === 1)) o[d].c++;
-        added++;
-      });
-      writeDaily(o);
-      try {
-        console.log('[trend] 過去ログを取り込みました: key=' + best.key
-          + ' 件数=' + added + ' 時刻項目=' + best.tf + ' 正誤項目=' + best.of);
-      } catch (e2) {}
-    }
-    writeRaw(BF_KEY, '1');
   }
 
   /* ===== 集計 ===== */
@@ -240,6 +191,8 @@
 
   /* ===== 表示用 HTML ===== */
   function html() {
+    syncFromLog();   // 開くたびに履歴と突き合わせる
+
     var all = series();
     var pts = all.slice(-SHOW_DAYS);
     var tot = totals();
@@ -317,7 +270,7 @@
 
   /* ===== 起動 ===== */
   hook();
-  backfill();
+  syncFromLog();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', injectCSS);
   } else {
@@ -328,7 +281,14 @@
     html: html,
     record: bump,
     data: readDaily,
+    sync: syncFromLog,
+    rebuild: function () {
+      writeRaw(DAY_KEY, '{}');
+      syncFromLog();
+      return readDaily();
+    },
     debug: function () {
+      syncFromLog();
       var o = readDaily();
       console.log('今日:', o[dkey(new Date())], '／ 通算:', totals(), '／ 連続:', streak());
       return o;
