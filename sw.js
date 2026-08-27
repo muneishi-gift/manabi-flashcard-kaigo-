@@ -19,7 +19,7 @@ const ASSETS = [
   './exam/glossary.js',
   './exam/report.js',
   './exam/trend.js',
-
+  './exam/backup.js',
 
   'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js',
