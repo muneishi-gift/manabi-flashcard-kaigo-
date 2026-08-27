@@ -1161,3 +1161,10 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   background:rgba(120,120,160,.2);color:var(--text,#222);
   font-size:.95rem;font-weight:800;font-family:'Noto Sans JP',sans-serif;
 }
+.rep-open-btn{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.35);
+  color:#e8e8f5;
+  font-weight:600;
+  margin-top:18px;
+}
