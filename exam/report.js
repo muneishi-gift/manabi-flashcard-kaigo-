@@ -206,7 +206,8 @@
       if (r.status === 'none' || r.status === 'zero') danger.push(g);
     });
 
-    var html = '';
+    var html = (window.KaigoTrend && window.KaigoTrend.html) ? window.KaigoTrend.html() : '';
+
 
     if (danger.length) {
       html += '<div class="rep-alert">'
