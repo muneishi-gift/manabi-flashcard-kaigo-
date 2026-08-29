@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法改正まるわかりノート｜介護福祉士国家試験対策</title>
+  <meta name="description" content="第39回介護福祉士国家試験 法改正対策 - 一般社団法人GIFT協会">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="houkaisei.css">
+  <!-- 表示設定（ライト/ダーク・文字サイズ）は過去問アプリと共通のものを流用 -->
+  <script src="../exam/theme.js"></script>
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <div class="hk-header">
+    <a href="../index.html">
+      <img src="../gift-logo.png" alt="GIFT協会ロゴ" class="hk-header-logo">
+    </a>
+    <div class="hk-header-title">法改正まるわかりノート</div>
+    <div class="hk-header-sub">第39回 介護福祉士国家試験対策</div>
+  </div>
+
+  <!-- ===== ふりがな切り替え ===== -->
+  <div class="hk-furigana-toggle">
+    <span class="hk-furigana-label">ふりがな</span>
+    <div class="hk-furigana-switch" id="hkFuriganaSwitch" role="switch"
+         tabindex="0" aria-checked="false" aria-label="ふりがなの表示">
+      <div class="hk-furigana-track" id="hkFuriganaTrack">
+        <div class="hk-furigana-thumb"></div>
+      </div>
+      <span class="hk-furigana-status" id="hkFuriganaStatus">OFF</span>
+    </div>
+  </div>
+
+  <!-- ===== 表示設定（theme.js が制御） ===== -->
+  <div class="hk-display-settings">
+    <div class="hk-theme-group theme-group" role="group" aria-label="表示モード">
+      <button type="button" class="theme-btn" data-theme-set="light">☀️ ライト</button>
+      <button type="button" class="theme-btn" data-theme-set="dark">🌙 ダーク</button>
+    </div>
+    <div class="hk-fs-group fs-group" role="group" aria-label="文字サイズ">
+      <span class="hk-fs-label">文字</span>
+      <button type="button" class="fs-btn" data-fs="normal">標準</button>
+      <button type="button" class="fs-btn" data-fs="large">大</button>
+      <button type="button" class="fs-btn" data-fs="xlarge">特大</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       画面1　メインメニュー
+       ============================================================ -->
+  <div class="hk-container" id="hkMenu">
+    <a href="../index.html" class="hk-back">← トップに戻る</a>
+
+    <!-- 学習状況ダッシュボード（houkaisei.js が中身を描画） -->
+    <div class="hk-dash" id="hkDash">
+      <div class="hk-dash-row">
+        <div class="hk-dash-cell">
+          <div class="hk-dash-num" id="hkDashRead">0<span>/9</span></div>
+          <div class="hk-dash-cap">読んだ章</div>
+        </div>
+        <div class="hk-dash-cell">
+          <div class="hk-dash-num" id="hkDashSolved">0<span>/29</span></div>
+          <div class="hk-dash-cap">解いた問題</div>
+        </div>
+        <div class="hk-dash-cell">
+          <div class="hk-dash-num" id="hkDashRate">–<span>%</span></div>
+          <div class="hk-dash-cap">正解率</div>
+        </div>
+      </div>
+      <div class="hk-dash-bar"><div class="hk-dash-fill" id="hkDashFill" style="width:0%"></div></div>
+      <div class="hk-dash-msg" id="hkDashMsg">まずはノートを1章だけ読んでみましょう。</div>
+    </div>
+
+    <div class="hk-section-title">まず読む</div>
+    <ul class="hk-menu-list">
+      <li>
+        <button class="hk-menu-item hk-highlight" data-hk-action="openNote">
+          <span class="hk-menu-icon">📖</span>まるわかりノートを読む
+          <span class="hk-menu-sub">～法律アレルギーの人のための、やさしい言いかえ版～<br>全9章｜章ごとに開いて読めます</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="hk-section-title">つぎに解く</div>
+    <div class="hk-note-caution">
+      ここに出てくる問題は、出題傾向をもとに作成した<strong>予想問題</strong>です。<br>
+      公式の過去問ではありません。記録も過去問とは<strong>別に保存</strong>されます。<br>
+      ※ 第9章「これは出ません」は読むだけの章なので、問題はありません。
+    </div>
+    <ul class="hk-menu-list">
+      <li>
+        <button class="hk-menu-item hk-highlight" data-hk-action="startAll">
+          <span class="hk-menu-icon">📝</span>予想問題に挑戦（全29問）
+          <span class="hk-menu-sub">第1章から順番に出題</span>
+        </button>
+      </li>
+      <li>
+        <button class="hk-menu-item" data-hk-action="openChapter">
+          <span class="hk-menu-icon">📂</span>章ごとに挑戦
+          <span class="hk-menu-sub">読んだ章だけをすぐ確認できます</span>
+        </button>
+      </li>
+      <li>
+        <button class="hk-menu-item" id="hkResumeBtn" data-hk-action="resume" hidden>
+          <span class="hk-menu-icon">⏳</span>続きから再開
+          <span class="hk-menu-sub" id="hkResumeSub"></span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="hk-section-title">くり返す</div>
+    <ul class="hk-menu-list">
+      <li>
+        <button class="hk-menu-item" id="hkReviewBtn" data-hk-action="startReview">
+          <span class="hk-menu-icon">🎯</span>復習モード
+          <span class="hk-menu-sub" id="hkReviewSub">まちがえた問題・手ごたえが不安だった問題から出題</span>
+        </button>
+      </li>
+      <li>
+        <button class="hk-menu-item" id="hkDangerBtn" data-hk-action="startDanger">
+          <span class="hk-menu-icon">⚠️</span>危険ゾーンだけ
+          <span class="hk-menu-sub" id="hkDangerSub">「自信あり」なのにまちがえた問題。ここが一番点を落とします</span>
+        </button>
+      </li>
+      <li>
+        <button class="hk-menu-item" data-hk-action="openStats">
+          <span class="hk-menu-icon">📊</span>じぶんの記録を見る
+          <span class="hk-menu-sub">章ごとの正解率・かかった時間・記録の消去</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ============================================================
+       画面2　まるわかりノート（開閉式）
+       ============================================================ -->
+  <div class="hk-container hidden" id="hkNote">
+    <button class="hk-back" data-hk-action="backToMenu">← メニューに戻る</button>
+
+    <div class="hk-note-head">
+      <div class="hk-note-title">法改正まるわかりノート</div>
+      <div class="hk-note-lead">～法律アレルギーの人のための、やさしい言いかえ版～</div>
+      <div class="hk-note-base">
+        法改正の問題で聞かれることは、だいたいこの3つだけです。<br>
+        <strong>① だれが　② 義務か、努力義務か　③ いつから</strong><br>
+        <span class="hk-note-base-sub">
+          この3つを言えるようになれば、その改正は「覚えた」と思ってOKです。
+        </span>
+      </div>
+      <div class="hk-star-legend">
+        <span class="hk-star hk-star3">★★★ 必ず覚える</span>
+        <span class="hk-star hk-star2">★★ 要チェック</span>
+        <span class="hk-star hk-star1">★ 知っておくだけ</span>
+      </div>
+    </div>
+
+    <div class="hk-note-tools">
+      <button type="button" class="hk-tool-btn" data-hk-action="openAll">すべて開く</button>
+      <button type="button" class="hk-tool-btn" data-hk-action="closeAll">すべて閉じる</button>
+      <button type="button" class="hk-tool-btn hk-tool-star" data-hk-action="onlyStar3">★★★だけ表示</button>
+    </div>
+
+    <!-- 章のアコーディオンは houkaisei.js が data/note.js から生成 -->
+    <div class="hk-accordion" id="hkAccordion"></div>
+
+    <div class="hk-note-foot">
+      <div class="hk-note-foot-msg" id="hkNoteFootMsg">読み終わったら、覚えたか確かめてみましょう。</div>
+      <button class="hk-next-btn" data-hk-action="startAll">予想問題に挑戦する ▶</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       画面3　章えらび
+       ============================================================ -->
+  <div class="hk-container hidden" id="hkChapterSelect">
+    <button class="hk-back" data-hk-action="backToMenu">← 戻る</button>
+    <div class="hk-section-title">章を選んでください</div>
+    <ul class="hk-chapter-list" id="hkChapterList"></ul>
+  </div>
+
+  <!-- ============================================================
+       画面4　出題
+       ============================================================ -->
+  <div class="hk-container hidden" id="hkQuiz">
+    <button class="hk-back" data-hk-action="quitQuiz">← やめる</button>
+
+    <div class="hk-progress-text" id="hkProgressText">1 / 29</div>
+    <div class="hk-progress-bar"><div class="hk-progress-fill" id="hkProgressFill" style="width:0%"></div></div>
+
+    <div class="hk-quiz-meta">
+      <span class="hk-quiz-no" id="hkQuizNo">予想問題 1-1</span>
+      <span class="hk-quiz-tag" id="hkQuizTag">第1章</span>
+      <span class="hk-quiz-star" id="hkQuizStar">★★★</span>
+    </div>
+
+    <div class="hk-quiz-streak" id="hkQuizStreak" hidden></div>
+
+    <div class="hk-quiz-question" id="hkQuizQuestion"></div>
+
+    <ul class="hk-choices" id="hkChoices"></ul>
+  </div>
+
+  <!-- ============================================================
+       画面5　解答・解説
+       ============================================================ -->
+  <div class="hk-container hidden" id="hkResult">
+    <div class="hk-result-icon" id="hkResultIcon">⭕</div>
+    <div class="hk-result-text" id="hkResultText">正解！</div>
+    <div class="hk-result-time" id="hkResultTime"></div>
+
+    <div class="hk-result-answer">
+      <div class="hk-result-answer-label">正解</div>
+      <div class="hk-result-answer-no" id="hkResultAnswer">3</div>
+    </div>
+
+    <div class="hk-result-block">
+      <div class="hk-result-block-title">🔍 選択肢をふりかえる</div>
+      <ul class="hk-review-list" id="hkReviewChoices"></ul>
+    </div>
+
+    <div class="hk-result-block">
+      <div class="hk-result-block-title">📖 解説</div>
+      <div id="hkResultExplanation"></div>
+    </div>
+
+    <!-- ここが出る（一行キーワード） -->
+    <div class="hk-result-block hk-result-point hidden" id="hkResultPointBox">
+      <div class="hk-result-block-title">🎯 ここが出る</div>
+      <div id="hkResultPoint"></div>
+    </div>
+
+    <!-- 該当章へ戻れる導線 -->
+    <button class="hk-jump-btn" id="hkJumpBtn" data-hk-action="jumpToNote">
+      📖 ノートの該当ページを開く
+    </button>
+
+    <div class="hk-confidence" id="hkConfidence">
+      <div class="hk-confidence-title">いまの手ごたえは？（任意）</div>
+      <div class="hk-confidence-buttons">
+        <button type="button" class="hk-confidence-btn" data-level="sure">
+          <span class="hk-confidence-icon">◎</span><span class="hk-confidence-label">自信あり</span>
+        </button>
+        <button type="button" class="hk-confidence-btn" data-level="maybe">
+          <span class="hk-confidence-icon">△</span><span class="hk-confidence-label">たぶん</span>
+        </button>
+        <button type="button" class="hk-confidence-btn" data-level="guess">
+          <span class="hk-confidence-icon">？</span><span class="hk-confidence-label">勘</span>
+        </button>
+      </div>
+      <div class="hk-confidence-hint" id="hkConfidenceHint"></div>
+    </div>
+
+    <button class="hk-next-btn" data-hk-action="nextQuestion">次へ ▶</button>
+  </div>
+
+  <!-- ============================================================
+       画面6　結果まとめ
+       ============================================================ -->
+  <div class="hk-container hidden" id="hkSummary">
+    <div class="hk-summary-card">
+      <div class="hk-summary-emoji" id="hkSummaryEmoji">🎉</div>
+      <div class="hk-summary-score" id="hkSummaryScore">0</div>
+      <div class="hk-summary-total" id="hkSummaryTotal">/ 29問中</div>
+      <div class="hk-summary-bar"><div class="hk-summary-fill" id="hkSummaryFill" style="width:0%"></div></div>
+      <div class="hk-summary-time" id="hkSummaryTime"></div>
+      <div class="hk-summary-msg" id="hkSummaryMsg">お疲れさまでした！</div>
+    </div>
+
+    <div class="hk-summary-block">
+      <div class="hk-result-block-title">📌 つぎにやるといいこと</div>
+      <ul class="hk-todo-list" id="hkTodoList"></ul>
+    </div>
+
+    <div class="hk-summary-buttons">
+      <button class="hk-next-btn" data-hk-action="retryWrong" id="hkRetryWrongBtn">
+        🎯 まちがえた問題だけもう一度
+      </button>
+      <button class="hk-next-btn hk-next-sub" data-hk-action="retryQuiz">🔄 同じ範囲をもう一度</button>
+      <button class="hk-back" data-hk-action="backToMenu">← メニューに戻る</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       画面7　じぶんの記録
+       ============================================================ -->
+  <div class="hk-container hidden" id="hkStats">
+    <button class="hk-back" data-hk-action="backToMenu">← メニューに戻る</button>
+    <div class="hk-section-title">じぶんの記録</div>
+    <div class="hk-stats-note">
+      この記録は、この端末のブラウザの中だけに保存されます。<br>
+      <strong>過去問の記録とは完全に別</strong>なので、混ざることはありません。
+    </div>
+    <div id="hkStatsBody"></div>
+    <button class="hk-danger-btn" data-hk-action="clearStats">
+      🗑 法改正編の記録だけを消す
+    </button>
+  </div>
+
+  <!-- ===== フッター ===== -->
+  <div class="hk-footer">
+    <div class="hk-footer-org">一般社団法人 GIFT協会</div>
+    <div class="hk-footer-name">宗石 光英</div>
+    <div class="hk-footer-credit">Created by Mitsuhide Muneishi</div>
+  </div>
+
+  <script src="data/note.js"></script>
+  <script src="data/quiz.js"></script>
+  <script src="houkaisei.js"></script>
+</body>
+</html>
