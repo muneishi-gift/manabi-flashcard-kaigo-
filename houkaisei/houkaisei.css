@@ -1,0 +1,1257 @@
+/* ===================================================================
+   法改正まるわかりノート - スタイル
+   manabi-flashcard-kaigo- / houkaisei
+   ※ 過去問アプリ(exam/style.css)とは独立。色の値だけ揃えています。
+   ※ class名はすべて hk- で始まり、過去問側とぶつかりません。
+   Created by Mitsuhide Muneishi
+   =================================================================== */
+
+/* ---------- 文字サイズ（exam/style.css と同じ値） ---------- */
+:root{
+  --fs-body: 16px;
+  --fs-sub:  13.5px;
+  --lh-body: 1.90;
+  --ruby-scale: 58%;
+}
+:root[data-fs="large"]{  --fs-body:18px; --fs-sub:14.5px; --lh-body:1.95; }
+:root[data-fs="xlarge"]{ --fs-body:20px; --fs-sub:15.5px; --lh-body:2.00; }
+
+/* ---------- 配色（exam/style.css と同じ値） ----------
+   正解=青緑 / まちがい=オレンジ / 選んだ選択肢=アンバー
+   赤×緑の組み合わせは使いません（色覚配慮）        */
+:root[data-theme="dark"]{
+  --bg-grad: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  --glow-a: rgba(120,100,255,.15);
+  --glow-b: rgba(255,120,200,.10);
+  --ink:       #EDEFF4;
+  --ink-sub:   rgba(237,239,244,.78);
+  --ink-faint: rgba(237,239,244,.60);
+  --card:      rgba(255,255,255,.08);
+  --card-soft: rgba(255,255,255,.05);
+  --line:      rgba(255,255,255,.16);
+  --line-soft: rgba(255,255,255,.10);
+  --hover:     rgba(255,255,255,.15);
+  --accent:    #a78bfa;
+  --accent-2:  #60a5fa;
+  --btn-grad:  linear-gradient(135deg, #a78bfa, #60a5fa);
+  --ok:   #3ECFC0;
+  --ng:   #FFA45C;
+  --pick: #F2B705;
+  --pick-bg: rgba(242,183,5,.16);
+  --pick-ink: #FFF3CC;
+  --shadow: rgba(0,0,0,.30);
+}
+:root[data-theme="light"]{
+  --bg-grad: linear-gradient(135deg, #E8E3DA 0%, #EDE9E2 50%, #E4E7EC 100%);
+  --glow-a: rgba(120,100,255,.06);
+  --glow-b: rgba(255,120,200,.04);
+  --ink:       #1F2328;
+  --ink-sub:   #4A5158;
+  --ink-faint: #626A72;
+  --card:      #FAF8F5;
+  --card-soft: #F4F1EC;
+  --line:      rgba(31,35,40,.20);
+  --line-soft: rgba(31,35,40,.12);
+  --hover:     #FFFFFF;
+  --accent:    #6D28D9;
+  --accent-2:  #1D4ED8;
+  --btn-grad:  linear-gradient(135deg, #6D28D9, #1D4ED8);
+  --ok:   #0E7C86;
+  --ng:   #C2410C;
+  --pick: #9A6700;
+  --pick-bg: rgba(154,103,0,.12);
+  --pick-ink: #6B4700;
+  --shadow: rgba(31,35,40,.14);
+}
+
+/* ---------- リセット ---------- */
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  font-family:'Noto Sans JP','Noto Sans',sans-serif;
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:var(--bg-grad);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  position:relative;
+}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--glow-a) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, var(--glow-b) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+body > *{ position:relative; z-index:1; }
+
+/* 読む部分だけは指でなぞって選べるように（質問しやすくするため） */
+.hk-quiz-question, .hk-choice-text, .hk-review-item,
+#hkResultExplanation, .hk-chap-body{
+  user-select:text;
+  -webkit-user-select:text;
+}
+
+/* ふりがなは親文字の58% */
+ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight:400; }
+
+/* 表示・非表示 */
+.hidden{ display:none !important; }
+[hidden]{ display:none !important; }
+
+/* ===================================================================
+   ヘッダー
+   =================================================================== */
+.hk-header{
+  width:100%;
+  max-width:600px;
+  text-align:center;
+  padding:32px 20px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+.hk-header-logo{
+  width:clamp(100px,25vw,160px);
+  height:auto;
+  border-radius:20px;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 20px var(--shadow));
+  animation:hkFloat 3s ease-in-out infinite;
+}
+@keyframes hkFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-8px); }
+}
+.hk-header-title{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(1.4rem,4.5vw,2.2rem);
+  font-weight:800;
+  letter-spacing:-.02em;
+  background:linear-gradient(90deg,#f5576c,#a78bfa,#60a5fa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.4;
+}
+.hk-header-sub{
+  font-size:var(--fs-sub);
+  color:var(--ink-faint);
+  font-weight:500;
+}
+
+/* ===================================================================
+   ふりがなスイッチ
+   =================================================================== */
+.hk-furigana-toggle{
+  width:100%;
+  max-width:600px;
+  padding:6px 20px 0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+}
+.hk-furigana-label{
+  font-size:var(--fs-sub);
+  color:var(--ink-sub);
+  font-weight:500;
+}
+.hk-furigana-switch{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  padding:4px;
+}
+.hk-furigana-track{
+  width:48px;
+  height:26px;
+  border-radius:13px;
+  background:var(--card);
+  border:1.5px solid var(--line);
+  position:relative;
+  transition:background .25s, border-color .25s;
+}
+.hk-furigana-thumb{
+  position:absolute;
+  top:2px; left:2px;
+  width:18px; height:18px;
+  border-radius:50%;
+  background:var(--ink-faint);
+  transition:transform .25s, background .25s;
+}
+.hk-furigana-switch.on .hk-furigana-track{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+.hk-furigana-switch.on .hk-furigana-thumb{
+  transform:translateX(22px);
+  background:#fff;
+}
+.hk-furigana-status{
+  font-size:.72rem;
+  font-weight:700;
+  color:var(--ink-faint);
+  min-width:2.4em;
+}
+.hk-furigana-switch.on .hk-furigana-status{ color:var(--accent); }
+.hk-furigana-switch:focus-visible{ outline:2px solid var(--accent); border-radius:8px; }
+
+/* ===================================================================
+   表示設定（テーマ・文字サイズ）※ exam/theme.js が制御
+   =================================================================== */
+.hk-display-settings{
+  width:100%;
+  max-width:600px;
+  padding:8px 20px 0;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.hk-theme-group, .hk-fs-group{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.hk-fs-label{
+  font-size:.72rem;
+  color:var(--ink-faint);
+  margin-right:2px;
+}
+.theme-btn, .fs-btn{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:.74rem;
+  font-weight:600;
+  color:var(--ink-sub);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:999px;
+  padding:6px 12px;
+  cursor:pointer;
+  transition:background .2s, border-color .2s, color .2s;
+}
+.theme-btn:hover, .fs-btn:hover{ background:var(--hover); }
+.theme-btn.selected, .fs-btn.selected{
+  background:var(--btn-grad);
+  border-color:transparent;
+  color:#fff;
+}
+
+/* ===================================================================
+   共通コンテナ・戻るボタン・見出し
+   =================================================================== */
+.hk-container{
+  width:100%;
+  max-width:600px;
+  padding:16px 20px 40px;
+  animation:hkFadeIn .35s ease;
+}
+@keyframes hkFadeIn{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.hk-back{
+  display:inline-block;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-sub);
+  font-weight:600;
+  color:var(--ink-sub);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:999px;
+  padding:8px 16px;
+  margin-bottom:16px;
+  text-decoration:none;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.hk-back:hover{ background:var(--hover); }
+.hk-back:active{ transform:scale(.96); }
+
+.hk-section-title{
+  font-size:.82rem;
+  font-weight:700;
+  color:var(--ink-faint);
+  letter-spacing:.08em;
+  margin:22px 0 10px;
+  padding-left:2px;
+}
+
+/* ===================================================================
+   学習ダッシュボード
+   =================================================================== */
+.hk-dash{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:18px;
+  padding:18px 18px 16px;
+  box-shadow:0 8px 24px var(--shadow);
+}
+.hk-dash-row{
+  display:flex;
+  justify-content:space-around;
+  align-items:flex-end;
+  gap:8px;
+}
+.hk-dash-cell{ text-align:center; flex:1; }
+.hk-dash-num{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(1.3rem,5vw,1.7rem);
+  font-weight:800;
+  color:var(--accent);
+  line-height:1.2;
+}
+.hk-dash-num span{
+  font-size:.62em;
+  font-weight:600;
+  color:var(--ink-faint);
+  margin-left:1px;
+}
+.hk-dash-cap{
+  font-size:.7rem;
+  color:var(--ink-faint);
+  margin-top:2px;
+}
+.hk-dash-bar{
+  height:8px;
+  border-radius:4px;
+  background:var(--card-soft);
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+  margin:14px 0 10px;
+}
+.hk-dash-fill{
+  height:100%;
+  background:linear-gradient(90deg,#f5576c,#a78bfa,#60a5fa);
+  border-radius:4px;
+  transition:width .6s ease;
+}
+.hk-dash-msg{
+  font-size:var(--fs-sub);
+  color:var(--ink-sub);
+  text-align:center;
+  line-height:1.7;
+}
+
+/* ===================================================================
+   メニュー項目
+   =================================================================== */
+.hk-menu-list{ list-style:none; display:flex; flex-direction:column; gap:12px; }
+
+.hk-menu-item{
+  display:block;
+  width:100%;
+  text-align:left;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:var(--ink);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:18px;
+  padding:18px 20px;
+  cursor:pointer;
+  transition:transform .2s, background .2s, border-color .2s, box-shadow .2s;
+  line-height:1.6;
+}
+.hk-menu-item:hover{
+  transform:translateY(-2px);
+  background:var(--hover);
+  border-color:var(--accent);
+}
+.hk-menu-item:active{ transform:scale(.98); }
+.hk-menu-item.hk-disabled{
+  opacity:.35;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+.hk-menu-item.hk-highlight{
+  background:linear-gradient(135deg,#8e2de2 0%,#c2266b 55%,#f5576c 100%);
+  border-color:transparent;
+  color:#fff;
+}
+.hk-menu-item.hk-highlight:hover{
+  box-shadow:0 12px 32px rgba(142,45,226,.40);
+  background:linear-gradient(135deg,#7a22c4 0%,#a81f5c 55%,#dc4459 100%);
+}
+.hk-menu-item.hk-highlight .hk-menu-sub{ color:rgba(255,255,255,.85); }
+.hk-menu-icon{ font-size:1.3rem; margin-right:8px; }
+.hk-menu-sub{
+  display:block;
+  font-size:.76rem;
+  font-weight:400;
+  color:var(--ink-faint);
+  margin-top:5px;
+  line-height:1.7;
+}
+
+/* 予想問題であることの注意書き */
+.hk-note-caution{
+  font-size:.76rem;
+  line-height:1.85;
+  color:var(--ink-sub);
+  background:var(--card-soft);
+  border:1.5px dashed var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+  margin-bottom:12px;
+}
+.hk-note-caution strong{ color:var(--accent); font-weight:700; }
+
+/* ===================================================================
+   ノート見出し
+   =================================================================== */
+.hk-note-head{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:18px;
+  padding:20px 18px;
+  margin-bottom:14px;
+  text-align:center;
+  box-shadow:0 8px 24px var(--shadow);
+}
+.hk-note-title{
+  font-size:clamp(1.15rem,4.2vw,1.5rem);
+  font-weight:800;
+  line-height:1.5;
+}
+.hk-note-lead{
+  font-size:.78rem;
+  color:var(--ink-faint);
+  margin-top:4px;
+}
+.hk-note-base{
+  font-size:var(--fs-sub);
+  line-height:1.9;
+  color:var(--ink-sub);
+  background:var(--card-soft);
+  border-radius:12px;
+  padding:12px 14px;
+  margin-top:14px;
+  text-align:left;
+}
+.hk-note-base strong{ color:var(--accent); font-weight:700; }
+.hk-note-base-sub{
+  display:block;
+  font-size:.74rem;
+  color:var(--ink-faint);
+  margin-top:6px;
+}
+.hk-star-legend{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px;
+  margin-top:12px;
+}
+.hk-star{
+  font-size:.68rem;
+  font-weight:700;
+  border-radius:999px;
+  padding:4px 10px;
+  border:1.5px solid var(--line-soft);
+  background:var(--card-soft);
+  color:var(--ink-faint);
+  white-space:nowrap;
+}
+.hk-star.hk-star3{ color:var(--ng); border-color:var(--ng); }
+.hk-star.hk-star2{ color:var(--accent-2); border-color:var(--accent-2); }
+.hk-star.hk-star1{ color:var(--ink-faint); }
+
+/* ノートの操作ボタン */
+.hk-note-tools{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:14px;
+}
+.hk-tool-btn{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:.74rem;
+  font-weight:600;
+  color:var(--ink-sub);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:999px;
+  padding:7px 14px;
+  cursor:pointer;
+  transition:background .2s, color .2s, border-color .2s;
+}
+.hk-tool-btn:hover{ background:var(--hover); }
+.hk-tool-btn.hk-on{
+  background:var(--btn-grad);
+  border-color:transparent;
+  color:#fff;
+}
+
+/* ===================================================================
+   ノート本体（開閉式アコーディオン）
+   ※ 中身は houkaisei.js が data/note.js から作ります
+   =================================================================== */
+.hk-accordion{ display:flex; flex-direction:column; gap:10px; }
+
+.hk-chap{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:16px;
+  overflow:hidden;
+  transition:border-color .2s;
+}
+.hk-chap.hk-open{ border-color:var(--accent); }
+
+/* 章の見出し（押すと開く） */
+.hk-chap-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  text-align:left;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:var(--ink);
+  background:transparent;
+  border:none;
+  padding:16px 16px;
+  cursor:pointer;
+  line-height:1.5;
+  transition:background .2s;
+}
+.hk-chap-head:hover{ background:var(--hover); }
+.hk-chap-num{
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px; height:34px;
+  border-radius:10px;
+  background:var(--btn-grad);
+  color:#fff;
+  font-family:'Poppins',sans-serif;
+  font-size:.9rem;
+  font-weight:800;
+}
+.hk-chap-title{ flex:1; }
+.hk-chap-meta{
+  display:block;
+  font-size:.7rem;
+  font-weight:400;
+  color:var(--ink-faint);
+  margin-top:3px;
+}
+.hk-chap-badge{
+  flex:none;
+  font-size:.66rem;
+  font-weight:700;
+  color:var(--ok);
+  border:1.5px solid var(--ok);
+  border-radius:999px;
+  padding:2px 8px;
+}
+.hk-chap-arrow{
+  flex:none;
+  font-size:.8rem;
+  color:var(--ink-faint);
+  transition:transform .3s;
+}
+.hk-chap.hk-open .hk-chap-arrow{ transform:rotate(180deg); }
+
+/* 章の中身 */
+.hk-chap-body{
+  padding:0 16px 16px;
+  border-top:1.5px solid var(--line-soft);
+  animation:hkFadeIn .3s ease;
+}
+
+/* 中の項目（1-1 事業所の収支報告 など） */
+.hk-item{
+  background:var(--card-soft);
+  border:1.5px solid var(--line-soft);
+  border-radius:14px;
+  padding:14px 14px 12px;
+  margin-top:14px;
+}
+.hk-item-head{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:var(--fs-body);
+  font-weight:700;
+  line-height:1.6;
+  margin-bottom:10px;
+}
+.hk-item-title{ flex:1; }
+.hk-item-star{
+  flex:none;
+  font-size:.7rem;
+  font-weight:700;
+  color:var(--ng);
+  white-space:nowrap;
+  padding-top:3px;
+}
+.hk-item-star.hk-s2{ color:var(--accent-2); }
+.hk-item-star.hk-s1{ color:var(--ink-faint); }
+
+/* ひとことで言うと */
+.hk-hitokoto{
+  font-size:var(--fs-sub);
+  line-height:1.9;
+  color:var(--ink);
+  background:var(--pick-bg);
+  border-left:4px solid var(--pick);
+  border-radius:0 10px 10px 0;
+  padding:10px 12px;
+  margin-bottom:10px;
+}
+
+/* だれが／義務か／いつから の3点セット */
+.hk-kv{
+  display:flex;
+  gap:10px;
+  font-size:var(--fs-sub);
+  line-height:1.85;
+  padding:6px 0;
+  border-bottom:1px dashed var(--line-soft);
+}
+.hk-kv:last-child{ border-bottom:none; }
+.hk-kv-key{
+  flex:none;
+  width:5.2em;
+  font-weight:700;
+  color:var(--ink-faint);
+  font-size:.76rem;
+  padding-top:.15em;
+}
+.hk-kv-val{ flex:1; color:var(--ink); }
+.hk-kv-val strong{ color:var(--accent); font-weight:700; }
+
+/* ここが出る */
+.hk-point{
+  font-size:var(--fs-sub);
+  line-height:1.9;
+  color:var(--ink);
+  background:var(--card);
+  border:1.5px solid var(--ng);
+  border-radius:12px;
+  padding:10px 12px;
+  margin-top:10px;
+}
+.hk-point::before{
+  content:'🎯 ここが出る';
+  display:block;
+  font-size:.7rem;
+  font-weight:700;
+  color:var(--ng);
+  margin-bottom:4px;
+}
+
+/* 「読んだ」ボタン */
+.hk-chap-done{
+  display:block;
+  width:100%;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-sub);
+  font-weight:700;
+  color:var(--ink-sub);
+  background:var(--card);
+  border:1.5px solid var(--line);
+  border-radius:999px;
+  padding:11px 16px;
+  margin-top:16px;
+  cursor:pointer;
+  transition:background .2s, color .2s, border-color .2s;
+}
+.hk-chap-done:hover{ background:var(--hover); }
+.hk-chap-done.hk-done{
+  background:var(--ok);
+  border-color:var(--ok);
+  color:#fff;
+}
+
+/* ノートの下 */
+.hk-note-foot{
+  margin-top:22px;
+  text-align:center;
+}
+.hk-note-foot-msg{
+  font-size:var(--fs-sub);
+  color:var(--ink-sub);
+  margin-bottom:12px;
+  line-height:1.8;
+}
+
+/* ===================================================================
+   章えらび
+   =================================================================== */
+.hk-chapter-list{ list-style:none; display:flex; flex-direction:column; gap:10px; }
+.hk-chapter-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  text-align:left;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-body);
+  font-weight:600;
+  color:var(--ink);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:16px;
+  padding:16px 18px;
+  cursor:pointer;
+  transition:transform .2s, background .2s, border-color .2s;
+}
+.hk-chapter-item:hover{
+  transform:translateY(-2px);
+  background:var(--hover);
+  border-color:var(--accent);
+}
+.hk-chapter-item:active{ transform:scale(.98); }
+.hk-chapter-badge{
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px; height:36px;
+  border-radius:50%;
+  background:var(--btn-grad);
+  color:#fff;
+  font-family:'Poppins',sans-serif;
+  font-weight:800;
+  font-size:.9rem;
+}
+.hk-chapter-info{ flex:1; line-height:1.55; }
+.hk-chapter-sub{
+  display:block;
+  font-size:.72rem;
+  font-weight:400;
+  color:var(--ink-faint);
+  margin-top:3px;
+}
+.hk-chapter-rate{
+  flex:none;
+  font-family:'Poppins',sans-serif;
+  font-size:.85rem;
+  font-weight:800;
+  color:var(--ok);
+}
+.hk-chapter-rate.hk-low{ color:var(--ng); }
+.hk-chapter-rate.hk-none{ color:var(--ink-faint); font-weight:600; }
+
+/* ===================================================================
+   出題画面
+   =================================================================== */
+.hk-progress-text{
+  font-family:'Poppins',sans-serif;
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--ink-faint);
+  text-align:right;
+  margin-bottom:6px;
+}
+.hk-progress-bar{
+  height:6px;
+  border-radius:3px;
+  background:var(--card-soft);
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.hk-progress-fill{
+  height:100%;
+  background:var(--btn-grad);
+  border-radius:3px;
+  transition:width .4s ease;
+}
+.hk-quiz-meta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+  margin-bottom:10px;
+}
+.hk-quiz-no{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:.76rem;
+  font-weight:800;
+  color:#fff;
+  background:var(--btn-grad);
+  border-radius:999px;
+  padding:4px 12px;
+}
+.hk-quiz-tag{
+  font-size:.7rem;
+  font-weight:600;
+  color:var(--ink-sub);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:999px;
+  padding:3px 10px;
+}
+.hk-quiz-star{
+  font-size:.7rem;
+  font-weight:700;
+  color:var(--ng);
+}
+.hk-quiz-streak{
+  font-size:.76rem;
+  font-weight:700;
+  color:var(--ok);
+  background:var(--card-soft);
+  border:1.5px solid var(--ok);
+  border-radius:999px;
+  padding:5px 12px;
+  display:inline-block;
+  margin-bottom:10px;
+  animation:hkFadeIn .3s ease;
+}
+.hk-quiz-question{
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  font-weight:500;
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:16px;
+  padding:18px 18px;
+  margin-bottom:16px;
+  box-shadow:0 6px 20px var(--shadow);
+}
+
+/* 選択肢 */
+.hk-choices{ list-style:none; display:flex; flex-direction:column; gap:10px; }
+.hk-choice{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  width:100%;
+  text-align:left;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-body);
+  line-height:1.8;
+  color:var(--ink);
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:14px;
+  padding:14px 16px;
+  cursor:pointer;
+  transition:transform .15s, background .2s, border-color .2s;
+}
+.hk-choice:hover{ background:var(--hover); border-color:var(--accent); }
+.hk-choice:active{ transform:scale(.98); }
+.hk-choice-num{
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:26px; height:26px;
+  border-radius:50%;
+  background:var(--card-soft);
+  border:1.5px solid var(--line);
+  color:var(--ink-sub);
+  font-family:'Poppins',sans-serif;
+  font-size:.8rem;
+  font-weight:700;
+  margin-top:.15em;
+}
+.hk-choice-text{ flex:1; }
+
+/* ===================================================================
+   解答・解説画面
+   =================================================================== */
+.hk-result-icon{
+  font-size:2.6rem;
+  text-align:center;
+  line-height:1.2;
+  animation:hkPop .35s ease;
+}
+@keyframes hkPop{
+  0%{ transform:scale(.5); opacity:0; }
+  70%{ transform:scale(1.12); }
+  100%{ transform:scale(1); opacity:1; }
+}
+.hk-result-text{
+  text-align:center;
+  font-size:1.25rem;
+  font-weight:800;
+  margin-top:4px;
+}
+.hk-result-text.hk-ok{ color:var(--ok); }
+.hk-result-text.hk-ng{ color:var(--ng); }
+.hk-result-time{
+  text-align:center;
+  font-size:.74rem;
+  color:var(--ink-faint);
+  margin-top:4px;
+}
+.hk-result-answer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin:16px 0;
+}
+.hk-result-answer-label{
+  font-size:.76rem;
+  font-weight:700;
+  color:var(--ink-faint);
+}
+.hk-result-answer-no{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:40px; height:40px;
+  border-radius:50%;
+  background:var(--ok);
+  color:#fff;
+  font-family:'Poppins',sans-serif;
+  font-size:1.1rem;
+  font-weight:800;
+}
+.hk-result-block{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:16px;
+  padding:16px 16px;
+  margin-bottom:12px;
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+}
+.hk-result-block-title{
+  font-size:.8rem;
+  font-weight:700;
+  color:var(--ink-faint);
+  margin-bottom:10px;
+  letter-spacing:.04em;
+}
+.hk-result-block.hk-result-point{
+  border-color:var(--ng);
+  background:var(--card-soft);
+}
+.hk-result-block.hk-result-point .hk-result-block-title{ color:var(--ng); }
+
+/* 選択肢のふりかえり */
+.hk-review-list{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+.hk-review-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font-size:var(--fs-sub);
+  line-height:1.85;
+  border-radius:12px;
+  padding:10px 12px;
+  background:var(--card-soft);
+  border:1.5px solid var(--line-soft);
+}
+.hk-review-item.hk-is-correct{
+  border-color:var(--ok);
+  background:rgba(62,207,192,.10);
+}
+.hk-review-item.hk-is-picked{
+  border-color:var(--pick);
+  background:var(--pick-bg);
+}
+.hk-review-mark{
+  flex:none;
+  font-size:.9rem;
+  font-weight:800;
+  width:1.4em;
+  text-align:center;
+}
+.hk-review-item.hk-is-correct .hk-review-mark{ color:var(--ok); }
+.hk-review-item.hk-is-picked  .hk-review-mark{ color:var(--pick); }
+.hk-review-body{ flex:1; }
+.hk-review-why{
+  display:block;
+  font-size:.72rem;
+  color:var(--ink-faint);
+  margin-top:3px;
+}
+
+/* ノートへ飛ぶボタン */
+.hk-jump-btn{
+  display:block;
+  width:100%;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-sub);
+  font-weight:700;
+  color:var(--accent);
+  background:var(--card);
+  border:1.5px solid var(--accent);
+  border-radius:999px;
+  padding:12px 16px;
+  margin-bottom:14px;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.hk-jump-btn:hover{ background:var(--hover); }
+.hk-jump-btn:active{ transform:scale(.98); }
+
+/* 手ごたえ */
+.hk-confidence{
+  background:var(--card-soft);
+  border:1.5px solid var(--line-soft);
+  border-radius:16px;
+  padding:14px 14px 12px;
+  margin-bottom:16px;
+  text-align:center;
+}
+.hk-confidence-title{
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--ink-faint);
+  margin-bottom:10px;
+}
+.hk-confidence-buttons{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+}
+.hk-confidence-btn{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  font-family:'Noto Sans JP',sans-serif;
+  color:var(--ink-sub);
+  background:var(--card);
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  padding:10px 6px;
+  cursor:pointer;
+  transition:background .2s, border-color .2s, color .2s, transform .15s;
+}
+.hk-confidence-btn:hover{ background:var(--hover); }
+.hk-confidence-btn:active{ transform:scale(.96); }
+.hk-confidence-btn.hk-selected{
+  background:var(--btn-grad);
+  border-color:transparent;
+  color:#fff;
+}
+.hk-confidence-icon{ font-size:1.15rem; font-weight:800; line-height:1.2; }
+.hk-confidence-label{ font-size:.7rem; font-weight:600; }
+.hk-confidence-hint{
+  font-size:.72rem;
+  line-height:1.75;
+  color:var(--ink-faint);
+  margin-top:10px;
+  min-height:1.2em;
+}
+
+/* 次へボタン */
+.hk-next-btn{
+  display:block;
+  width:100%;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:#fff;
+  background:var(--btn-grad);
+  border:none;
+  border-radius:999px;
+  padding:15px 20px;
+  cursor:pointer;
+  box-shadow:0 8px 24px var(--shadow);
+  transition:transform .15s, box-shadow .2s, opacity .2s;
+}
+.hk-next-btn:hover{ transform:translateY(-2px); box-shadow:0 12px 30px var(--shadow); }
+.hk-next-btn:active{ transform:scale(.98); }
+.hk-next-btn.hk-next-sub{
+  background:var(--card);
+  color:var(--ink-sub);
+  border:1.5px solid var(--line);
+  box-shadow:none;
+}
+.hk-next-btn.hk-next-sub:hover{ background:var(--hover); }
+
+/* ===================================================================
+   結果まとめ
+   =================================================================== */
+.hk-summary-card{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:22px;
+  padding:28px 20px 22px;
+  text-align:center;
+  box-shadow:0 10px 30px var(--shadow);
+  margin-bottom:16px;
+}
+.hk-summary-emoji{ font-size:2.8rem; line-height:1.2; }
+.hk-summary-score{
+  font-family:'Poppins',sans-serif;
+  font-size:3rem;
+  font-weight:800;
+  line-height:1.1;
+  background:linear-gradient(90deg,#f5576c,#a78bfa,#60a5fa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hk-summary-total{
+  font-size:.82rem;
+  color:var(--ink-faint);
+  margin-top:2px;
+}
+.hk-summary-bar{
+  height:10px;
+  border-radius:5px;
+  background:var(--card-soft);
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+  margin:16px 0 10px;
+}
+.hk-summary-fill{
+  height:100%;
+  background:var(--ok);
+  border-radius:5px;
+  transition:width .8s ease;
+}
+.hk-summary-time{
+  font-size:.74rem;
+  color:var(--ink-faint);
+}
+.hk-summary-msg{
+  font-size:var(--fs-body);
+  font-weight:700;
+  line-height:1.8;
+  margin-top:10px;
+}
+.hk-summary-block{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.hk-todo-list{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+.hk-todo-item{
+  display:flex;
+  gap:8px;
+  font-size:var(--fs-sub);
+  line-height:1.85;
+  color:var(--ink-sub);
+}
+.hk-todo-item::before{
+  content:'▸';
+  color:var(--accent);
+  font-weight:800;
+  flex:none;
+}
+.hk-summary-buttons{ display:flex; flex-direction:column; gap:10px; align-items:center; }
+.hk-summary-buttons .hk-next-btn{ width:100%; }
+
+/* ===================================================================
+   じぶんの記録
+   =================================================================== */
+.hk-stats-note{
+  font-size:.76rem;
+  line-height:1.85;
+  color:var(--ink-sub);
+  background:var(--card-soft);
+  border:1.5px dashed var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+  margin-bottom:16px;
+}
+.hk-stats-note strong{ color:var(--ok); font-weight:700; }
+.hk-stats-row{
+  background:var(--card);
+  border:1.5px solid var(--line-soft);
+  border-radius:14px;
+  padding:12px 14px;
+  margin-bottom:10px;
+}
+.hk-stats-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  font-size:var(--fs-sub);
+  font-weight:700;
+  margin-bottom:8px;
+}
+.hk-stats-num{
+  font-family:'Poppins',sans-serif;
+  font-size:.85rem;
+  font-weight:800;
+  color:var(--ok);
+  flex:none;
+}
+.hk-stats-num.hk-low{ color:var(--ng); }
+.hk-stats-num.hk-none{ color:var(--ink-faint); }
+.hk-stats-bar{
+  height:8px;
+  border-radius:4px;
+  background:var(--card-soft);
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+}
+.hk-stats-fill{
+  height:100%;
+  background:var(--ok);
+  border-radius:4px;
+  transition:width .6s ease;
+}
+.hk-stats-fill.hk-low{ background:var(--ng); }
+.hk-stats-sub{
+  font-size:.7rem;
+  color:var(--ink-faint);
+  margin-top:6px;
+}
+.hk-danger-btn{
+  display:block;
+  width:100%;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:var(--fs-sub);
+  font-weight:700;
+  color:var(--ng);
+  background:var(--card);
+  border:1.5px solid var(--ng);
+  border-radius:999px;
+  padding:13px 16px;
+  margin-top:20px;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.hk-danger-btn:hover{ background:var(--hover); }
+.hk-danger-btn:active{ transform:scale(.98); }
+
+/* ===================================================================
+   フッター
+   =================================================================== */
+.hk-footer{
+  width:100%;
+  max-width:600px;
+  margin-top:auto;
+  padding:28px 20px 34px;
+  text-align:center;
+  border-top:1.5px solid var(--line-soft);
+}
+.hk-footer-org{ font-size:.78rem; font-weight:700; color:var(--ink-sub); }
+.hk-footer-name{ font-size:.9rem; font-weight:800; margin-top:2px; }
+.hk-footer-credit{ font-size:.68rem; color:var(--ink-faint); margin-top:6px; }
+
+/* ===================================================================
+   動きを減らす設定の人への配慮
+   =================================================================== */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+}
