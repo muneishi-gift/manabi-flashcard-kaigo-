@@ -57,7 +57,7 @@
   + '}'
   + '.hkg-chip:active{ transform:scale(.96); }'
 
-  /* ふきだし本体 */
+  /* ふきだし本体（glossary.js が作る要素の見た目） */
   + '.gloss-overlay{'
   +   'display:none; position:fixed; inset:0; z-index:10000;'
   +   'background:rgba(0,0,0,.55);'
@@ -221,9 +221,9 @@
     var quiz = document.getElementById('hkQuiz');
     var no   = document.getElementById('hkQuizNo');
     if (quiz && !quiz.classList.contains('hidden') && no && no.textContent) {
-      return '法改正 ' + no.textContent.trim();
+      return '法改正ノート ' + no.textContent.trim();
     }
-    return '法改正まるわかりノート';
+    return '法改正ノート（本文）';
   }
 
   function ask(word) {
@@ -235,7 +235,11 @@
     } catch (e) {}
 
     if (typeof window.KaigoAskWord === 'function') {
-      window.KaigoAskWord(word, { id: contextLabel() });
+      window.KaigoAskWord(word, {
+        label: contextLabel(),   // glossary.js を新版にすると、これがそのまま記録されます
+        id:    contextLabel(),   // 旧版のままでも記録が空にならないための保険
+        from:  'houkaisei'
+      });
     } else {
       alert('用語集を読みこめませんでした。通信できる場所でもう一度お試しください。');
     }
