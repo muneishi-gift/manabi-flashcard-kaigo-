@@ -88,8 +88,18 @@ body>*{position:relative;z-index:1}
 .menu-card.exam::before{
   background:linear-gradient(135deg,#00b894 0%,#00cec9 50%,#0984e3 100%);
 }
+.menu-card.houkaisei::before{
+  background:linear-gradient(135deg,#8e2de2 0%,#c2266b 55%,#f5576c 100%);
+}
 .menu-card.request::before{
   background:linear-gradient(135deg,#e17055 0%,#fdcb6e 100%);
+}
+
+.menu-badge{
+  position:absolute;top:10px;right:12px;z-index:2;
+  font-size:.62rem;font-weight:800;letter-spacing:.06em;
+  background:rgba(255,255,255,.92);color:#c2266b;
+  border-radius:999px;padding:3px 9px;
 }
 
 .menu-icon{
@@ -200,6 +210,16 @@ body>*{position:relative;z-index:1}
         <div class="menu-info">
           <div class="menu-title">過去問（かこもん）に挑戦（ちょうせん）</div>
           <div class="menu-desc">介護福祉士国家試験の過去問を解こう<br>科目別・パート別で学習できます</div>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="houkaisei/index.html" class="menu-card houkaisei">
+        <div class="menu-badge">NEW</div>
+        <div class="menu-icon">⚖️</div>
+        <div class="menu-info">
+          <div class="menu-title">法改正（ほうかいせい）まるわかりノート</div>
+          <div class="menu-desc">新（あたら）しい制度（せいど）を9章（しょう）でまとめて確認（かくにん）<br>予想問題（よそうもんだい）29問（もん）つき・ふりがな切（き）りかえOK</div>
         </div>
       </a>
     </li>
