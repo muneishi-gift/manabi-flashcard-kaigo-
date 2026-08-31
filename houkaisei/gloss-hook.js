@@ -196,17 +196,14 @@
     current = word;
     c.style.display = 'inline-block';
 
+    /* iPhone標準の「コピー／調べる／翻訳」は、なぞった場所のすぐ上か下に出る。
+       ぶつからないように、このボタンは画面の下・中央に固定して出す。 */
     var w = c.offsetWidth || 150;
-    var h = c.offsetHeight || 44;
-    var left = rect.left + (rect.width / 2) - (w / 2);
-    var top  = rect.top - h - 10;
-
-    if (top < 8) top = rect.bottom + 10;   // 上が狭いときは下に出す
+    var left = (window.innerWidth - w) / 2;
     if (left < 8) left = 8;
-    if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
-
-    c.style.left = Math.round(left) + 'px';
-    c.style.top  = Math.round(top) + 'px';
+    c.style.left   = Math.round(left) + 'px';
+    c.style.top    = 'auto';
+    c.style.bottom = 'calc(24px + env(safe-area-inset-bottom))';
   }
 
   function hideChip() {
