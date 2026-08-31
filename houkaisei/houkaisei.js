@@ -67,12 +67,19 @@
   /* =================================================================
      2. ふりがな
      データ側は「介護（かいご）」の形で書きます。
-       ON  … <ruby>介護<rt>かいご</rt></ruby>
-       OFF … 介護（カッコごと消す）
-     一度どこかに書いた読みは辞書に覚えて、画面に出ている
-     同じ言葉すべてに自動でふりがなを付けます。
+     カッコの読みは「辞書を作るため」だけに使い、
+     画面に出す文字からは ON でも OFF でもカッコを消します。
+     ふりがなは辞書から画面ぜんたいに付けるので、
+     読みが1回しか書かれていない言葉にも自動で付きます。
      ================================================================= */
-  var RE_RUBY     = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)（([\u3041-\u309F\u30FC]+)）/g;
+
+  /* ---- 学習用：漢字（かな）。読みに空白や中点がまざっていてもOK ---- */
+  var RE_RUBY = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)（([\u3041-\u309F\u30FC\u3000\s・･]+)）/g;
+
+  /* ---- 表示用：数字やカタカナがまざった言葉でもカッコを消せる形 ----
+     例）第39回試験（かい しけん） → 第39回試験                     */
+  var RE_RUBY_ANY = /([\u4E00-\u9FFF\u3005\u3006\u3007\u30A1-\u30FA\u30FC0-9０-９]+)（([\u3041-\u309F\u30FC\u3000\s・･]+)）/g;
+
   var RE_KANJI    = /[\u4E00-\u9FFF\u3005\u3006\u3007]+/g;
   var RE_HASKANJI = /[\u4E00-\u9FFF\u3005\u3006\u3007]/;
 
@@ -101,7 +108,14 @@
     '合格':'ごうかく', '一歩':'いっぽ', '届':'とど', '伸':'の', '拾':'ひろ',
     '記憶':'きおく', '定着':'ていちゃく', '最高':'さいこう', '分':'ふん',
     '一般社団法人':'いっぱんしゃだんほうじん', '協会':'きょうかい',
-    '宗石':'むねいし', '光英':'みつひで'
+    '宗石':'むねいし', '光英':'みつひで',
+
+    /* ---- ここから追加（読みのずれを防ぐために固定） ---- */
+    '試験':'しけん', '施行':'しこう', '改正':'かいせい',
+    '社会福祉法':'しゃかいふくしほう', '社会福祉':'しゃかいふくし',
+    '内容':'ないよう', '現場':'げんば', '関係':'かんけい',
+    '深':'ふか', '後':'あと', '大丈夫':'だいじょうぶ', '事業所':'じぎょうしょ',
+    '報告':'ほうこく', '収支':'しゅうし', '制度':'せいど', '改定':'かいてい'
   };
 
   var FG_DICT = {};   // 漢字 → よみ
@@ -109,11 +123,21 @@
 
   var furiOn = (load(K.furi, 'off') === 'on');
 
+  // 読みから空白や中点を取りのぞく
+  function fgKana(s) {
+    return String(s).replace(/[\s\u3000・･]/g, '');
+  }
+
   // データの中から「漢字（かな）」を拾って辞書に覚える
   function fgLearn(text) {
     if (!text) return;
-    String(text).replace(RE_RUBY, function (m, kanji, kana) {
-      if (!FG_DICT[kanji]) FG_DICT[kanji] = kana;
+    String(text).replace(RE_RUBY, function (m, kanji, kana, off, whole) {
+      // 「第39回試験（かい しけん）」のように数字のうしろだと
+      // 読みがずれるので、そういう形は覚えません。
+      var prev = (off > 0) ? String(whole).charAt(off - 1) : '';
+      if (/[0-9０-９]/.test(prev)) return m;
+      var k = fgKana(kana);
+      if (k && !FG_DICT[kanji]) FG_DICT[kanji] = k;
       return m;
     });
   }
@@ -135,110 +159,18 @@
     }
   }
 
-  // データの文字列を画面用に変える（明示的に書いた読みだけ）
+  // データの文字列を画面用に変える
+  // 読みのカッコは ON / OFF どちらでも消します。
+  // ふりがなは refreshFurigana() が辞書から付けます。
   function fg(text) {
     if (text === undefined || text === null) return '';
-    var s = String(text);
-    return furiOn
-      ? s.replace(RE_RUBY, '<ruby>$1<rt>$2</rt></ruby>')
-      : s.replace(RE_RUBY, '$1');
+    return String(text).replace(RE_RUBY_ANY, '$1');
   }
 
   // ふりがなカッコを取りのぞいた、ただの文字列にする（判定用）
   function plain(text) {
     if (text === undefined || text === null) return '';
-    return String(text).replace(RE_RUBY, '$1');
-  }
-
-  /* ---- 画面ぜんたいに辞書のふりがなを付ける ---- */
-  function fgEsc(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-  // 漢字のかたまりを、長い言葉から順にあてはめる
-  function fgRubyRun(run) {
-    var out = '', i = 0;
-    while (i < run.length) {
-      var hit = null;
-      var max = Math.min(FG_MAX, run.length - i);
-      for (var L = max; L >= 1; L--) {
-        var sub = run.substr(i, L);
-        if (FG_DICT[sub]) { hit = sub; break; }
-      }
-      if (hit) {
-        out += '<ruby>' + fgEsc(hit) + '<rt>' + fgEsc(FG_DICT[hit]) + '</rt></ruby>';
-        i += hit.length;
-      } else {
-        out += fgEsc(run.charAt(i));
-        i += 1;
-      }
-    }
-    return out;
-  }
-  function fgTextHtml(t) {
-    var out = '', last = 0, m;
-    RE_KANJI.lastIndex = 0;
-    while ((m = RE_KANJI.exec(t)) !== null) {
-      out += fgEsc(t.slice(last, m.index));
-      out += fgRubyRun(m[0]);
-      last = m.index + m[0].length;
-    }
-    out += fgEsc(t.slice(last));
-    return out;
-  }
-
-  var FG_SKIP = { RUBY:1, RT:1, RP:1, SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1 };
-
-  function fgWalk(node) {
-    if (!node) return;
-    if (node.nodeType === 3) {                 // 文字そのもの
-      var t = node.nodeValue;
-      if (!t || !RE_HASKANJI.test(t)) return;
-      var html = fgTextHtml(t);
-      if (html === fgEsc(t)) return;           // 変わらないなら触らない
-      var sp = document.createElement('span');
-      sp.className = 'hk-fg';
-      sp.setAttribute('data-fg-src', t);       // 元の文字を覚えておく
-      sp.innerHTML = html;
-      if (node.parentNode) node.parentNode.replaceChild(sp, node);
-      return;
-    }
-    if (node.nodeType !== 1) return;
-    if (FG_SKIP[node.tagName]) return;
-    if (node.getAttribute && node.getAttribute('data-fg-off') !== null) return;
-    var kids = [], j;
-    for (j = 0; j < node.childNodes.length; j++) kids.push(node.childNodes[j]);
-    for (j = 0; j < kids.length; j++) fgWalk(kids[j]);
-  }
-  // 付けたふりがなを元の文字にもどす
-  function fgUnwrap() {
-    var spans = document.querySelectorAll('span.hk-fg');
-    for (var j = 0; j < spans.length; j++) {
-      var sp = spans[j];
-      var src = sp.getAttribute('data-fg-src');
-      if (src === null || !sp.parentNode) continue;
-      sp.parentNode.replaceChild(document.createTextNode(src), sp);
-    }
-  }
-  function refreshFurigana() {
-    fgUnwrap();
-    if (furiOn) fgWalk(document.body);
-  }
-
-  function paintFurigana() {
-    var sw = $('hkFuriganaSwitch');
-    var st = $('hkFuriganaStatus');
-    if (!sw || !st) return;
-    if (furiOn) { sw.classList.add('on'); } else { sw.classList.remove('on'); }
-    sw.setAttribute('aria-checked', furiOn ? 'true' : 'false');
-    st.textContent = furiOn ? 'ON' : 'OFF';
-  }
-
-  function toggleFurigana() {
-    furiOn = !furiOn;
-    save(K.furi, furiOn ? 'on' : 'off');
-    paintFurigana();
-    renderCurrent();       // 今出ている画面を作り直す
-    refreshFurigana();     // 静的な文字にも付ける
+    return String(text).replace(RE_RUBY_ANY, '$1');
   }
 
   /* =================================================================
