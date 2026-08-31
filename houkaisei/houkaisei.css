@@ -4,6 +4,15 @@
    ※ 過去問アプリ(exam/style.css)とは独立。色の値だけ揃えています。
    ※ class名はすべて hk- で始まり、過去問側とぶつかりません。
    Created by Mitsuhide Muneishi
+
+   --- 今回の追記（学習効果・読みやすさ・操作しやすさ） ---
+   (1) ふりがな（ruby / rt / span.hk-fg）の見え方を全画面で安定させた
+   (2) グラデーション文字の中でもふりがなが消えないようにした
+   (3) キーボード操作・タップ範囲（44px）を確保
+   (4) ノートへ飛んだとき見出しが画面上に隠れないよう scroll-margin
+   (5) 長い法令用語で横にはみ出さないよう折り返し指定
+   (6) 文字を選んで質問しやすいよう ::selection と rt のコピー除外
+   (7) 印刷（紙で復習）用スタイル
    =================================================================== */
 
 /* ---------- 文字サイズ（exam/style.css と同じ値） ---------- */
@@ -40,6 +49,7 @@
   --pick-bg: rgba(242,183,5,.16);
   --pick-ink: #FFF3CC;
   --shadow: rgba(0,0,0,.30);
+  --ruby-ink: rgba(237,239,244,.86);   /* ← 追加：ふりがなの色 */
 }
 :root[data-theme="light"]{
   --bg-grad: linear-gradient(135deg, #E8E3DA 0%, #EDE9E2 50%, #E4E7EC 100%);
@@ -62,6 +72,7 @@
   --pick-bg: rgba(154,103,0,.12);
   --pick-ink: #6B4700;
   --shadow: rgba(31,35,40,.14);
+  --ruby-ink: #3D444B;                 /* ← 追加：ふりがなの色 */
 }
 
 /* ---------- リセット ---------- */
@@ -102,12 +113,68 @@ body > *{ position:relative; z-index:1; }
   -webkit-user-select:text;
 }
 
+/* 長い法令用語・カタカナ語が横にはみ出さないように ← 追加 */
+.hk-quiz-question, .hk-choice-text, .hk-review-body,
+.hk-chap-body, .hk-hitokoto, .hk-kv-val, .hk-point,
+.hk-result-block, .hk-menu-item, .hk-note-base{
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-break:strict;
+}
+
+/* なぞったときの色（質問用にコピーしやすく） ← 追加 */
+::selection{ background:var(--pick-bg); color:var(--ink); }
+
+/* ===================================================================
+   ふりがな（ruby）の共通指定
+   JSは「漢字（かな）」を <ruby>漢字<rt>かな</rt></ruby> に変換し、
+   静的な文字は <span class="hk-fg"> で包みます。
+   =================================================================== */
+ruby{
+  ruby-position:over;              /* ← 追加：iOS Safariで下に出るのを防ぐ */
+  -webkit-ruby-position:before;    /* ← 追加：古いWebKit用 */
+  ruby-align:center;
+}
 /* ふりがなは親文字の58% */
-ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight:400; }
+ruby rt{
+  font-size:var(--ruby-scale);
+  letter-spacing:0;
+  opacity:.92;
+  font-weight:400;
+  color:var(--ruby-ink);           /* ← 追加：テーマごとに見やすい色 */
+  line-height:1.1;                 /* ← 追加：行間がふくらみすぎないように */
+  text-align:center;
+}
+/* ふりがなはコピーに混ざらないように ← 追加 */
+ruby rt, ruby rp{ user-select:none; -webkit-user-select:none; }
+
+/* JSが静的な文字を包むための入れ物（見た目は親と同じ） ← 追加 */
+span.hk-fg{
+  display:inline;
+  font:inherit;
+  color:inherit;
+  letter-spacing:inherit;
+  background:none;
+}
+
+/* ふりがなが入った行だけ、少し行間を広げる（:has非対応でも無害） ← 追加 */
+.hk-header-title:has(ruby),
+.hk-note-title:has(ruby),
+.hk-item-head:has(ruby),
+.hk-chap-head:has(ruby),
+.hk-summary-msg:has(ruby),
+.hk-menu-item:has(ruby){ line-height:2.0; }
 
 /* 表示・非表示 */
 .hidden{ display:none !important; }
 [hidden]{ display:none !important; }
+
+/* キーボードで操作する人のための枠 ← 追加 */
+:focus-visible{
+  outline:2.5px solid var(--accent);
+  outline-offset:2px;
+  border-radius:10px;
+}
 
 /* ===================================================================
    ヘッダー
@@ -145,6 +212,12 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   background-clip:text;
   line-height:1.4;
 }
+/* グラデーション文字の中でもふりがなを見えるようにする ← 追加 */
+.hk-header-title ruby rt{
+  -webkit-text-fill-color:var(--ink-sub);
+  color:var(--ink-sub);
+  background:none;
+}
 .hk-header-sub{
   font-size:var(--fs-sub);
   color:var(--ink-faint);
@@ -174,6 +247,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   gap:8px;
   cursor:pointer;
   padding:4px;
+  min-height:44px;              /* ← 追加：指でタップしやすい高さ */
+  touch-action:manipulation;    /* ← 追加：iOSのダブルタップ拡大待ちを防ぐ */
 }
 .hk-furigana-track{
   width:48px;
@@ -208,6 +283,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
 }
 .hk-furigana-switch.on .hk-furigana-status{ color:var(--accent); }
 .hk-furigana-switch:focus-visible{ outline:2px solid var(--accent); border-radius:8px; }
+/* スイッチ内の文字にはふりがなを付けない（JS側の data-fg-off と対） */
+.hk-furigana-switch ruby rt{ display:none; }   /* ← 追加：ON/OFF表示の崩れ防止 */
 
 /* ===================================================================
    表示設定（テーマ・文字サイズ）※ exam/theme.js が制御
@@ -243,6 +320,11 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   padding:6px 12px;
   cursor:pointer;
   transition:background .2s, border-color .2s, color .2s;
+  display:inline-flex;          /* ← 追加 */
+  align-items:center;           /* ← 追加 */
+  justify-content:center;       /* ← 追加 */
+  min-height:40px;              /* ← 追加：押しまちがい防止 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .theme-btn:hover, .fs-btn:hover{ background:var(--hover); }
 .theme-btn.selected, .fs-btn.selected{
@@ -265,7 +347,10 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   to{ opacity:1; transform:translateY(0); }
 }
 .hk-back{
-  display:inline-block;
+  display:inline-flex;          /* ← 変更：inline-block → inline-flex */
+  align-items:center;           /* ← 追加 */
+  justify-content:center;       /* ← 追加 */
+  min-height:44px;              /* ← 追加 */
   font-family:'Noto Sans JP',sans-serif;
   font-size:var(--fs-sub);
   font-weight:600;
@@ -278,6 +363,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   text-decoration:none;
   cursor:pointer;
   transition:background .2s, transform .15s;
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-back:hover{ background:var(--hover); }
 .hk-back:active{ transform:scale(.96); }
@@ -321,6 +407,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   color:var(--ink-faint);
   margin-left:1px;
 }
+/* 数字にはふりがなを付けない（表示崩れ防止） ← 追加 */
+.hk-dash-num ruby rt{ display:none; }
 .hk-dash-cap{
   font-size:.7rem;
   color:var(--ink-faint);
@@ -367,6 +455,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   cursor:pointer;
   transition:transform .2s, background .2s, border-color .2s, box-shadow .2s;
   line-height:1.6;
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-menu-item:hover{
   transform:translateY(-2px);
@@ -389,6 +478,11 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   background:linear-gradient(135deg,#7a22c4 0%,#a81f5c 55%,#dc4459 100%);
 }
 .hk-menu-item.hk-highlight .hk-menu-sub{ color:rgba(255,255,255,.85); }
+/* 濃い背景の上のふりがなは白系で ← 追加 */
+.hk-menu-item.hk-highlight ruby rt{
+  color:rgba(255,255,255,.90);
+  -webkit-text-fill-color:rgba(255,255,255,.90);
+}
 .hk-menu-icon{ font-size:1.3rem; margin-right:8px; }
 .hk-menu-sub{
   display:block;
@@ -490,12 +584,21 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   padding:7px 14px;
   cursor:pointer;
   transition:background .2s, color .2s, border-color .2s;
+  display:inline-flex;          /* ← 追加 */
+  align-items:center;           /* ← 追加 */
+  justify-content:center;       /* ← 追加 */
+  min-height:40px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-tool-btn:hover{ background:var(--hover); }
 .hk-tool-btn.hk-on{
   background:var(--btn-grad);
   border-color:transparent;
   color:#fff;
+}
+.hk-tool-btn.hk-on ruby rt{                      /* ← 追加 */
+  color:rgba(255,255,255,.90);
+  -webkit-text-fill-color:rgba(255,255,255,.90);
 }
 
 /* ===================================================================
@@ -510,6 +613,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   border-radius:16px;
   overflow:hidden;
   transition:border-color .2s;
+  scroll-margin-top:16px;       /* ← 追加：飛んだとき上に隠れない */
 }
 .hk-chap.hk-open{ border-color:var(--accent); }
 
@@ -530,6 +634,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   cursor:pointer;
   line-height:1.5;
   transition:background .2s;
+  min-height:56px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-chap-head:hover{ background:var(--hover); }
 .hk-chap-num{
@@ -545,6 +651,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   font-size:.9rem;
   font-weight:800;
 }
+.hk-chap-num ruby rt{ display:none; }   /* ← 追加：番号は素のまま */
 .hk-chap-title{ flex:1; }
 .hk-chap-meta{
   display:block;
@@ -584,6 +691,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   border-radius:14px;
   padding:14px 14px 12px;
   margin-top:14px;
+  scroll-margin-top:16px;       /* ← 追加：解説からノートへ飛んだとき用 */
 }
 .hk-item-head{
   display:flex;
@@ -636,7 +744,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   font-size:.76rem;
   padding-top:.15em;
 }
-.hk-kv-val{ flex:1; color:var(--ink); }
+.hk-kv-val{ flex:1; color:var(--ink); min-width:0; }   /* ← 追加：min-width:0 */
 .hk-kv-val strong{ color:var(--accent); font-weight:700; }
 
 /* ここが出る */
@@ -674,12 +782,18 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   margin-top:16px;
   cursor:pointer;
   transition:background .2s, color .2s, border-color .2s;
+  min-height:44px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-chap-done:hover{ background:var(--hover); }
 .hk-chap-done.hk-done{
   background:var(--ok);
   border-color:var(--ok);
   color:#fff;
+}
+.hk-chap-done.hk-done ruby rt{                   /* ← 追加 */
+  color:rgba(255,255,255,.90);
+  -webkit-text-fill-color:rgba(255,255,255,.90);
 }
 
 /* ノートの下 */
@@ -714,6 +828,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   padding:16px 18px;
   cursor:pointer;
   transition:transform .2s, background .2s, border-color .2s;
+  min-height:64px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-chapter-item:hover{
   transform:translateY(-2px);
@@ -734,7 +850,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   font-weight:800;
   font-size:.9rem;
 }
-.hk-chapter-info{ flex:1; line-height:1.55; }
+.hk-chapter-badge ruby rt{ display:none; }   /* ← 追加 */
+.hk-chapter-info{ flex:1; line-height:1.55; min-width:0; }  /* ← 追加：min-width:0 */
 .hk-chapter-sub{
   display:block;
   font-size:.72rem;
@@ -763,6 +880,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   text-align:right;
   margin-bottom:6px;
 }
+.hk-progress-text ruby rt{ display:none; }   /* ← 追加：「3 / 10」の崩れ防止 */
 .hk-progress-bar{
   height:6px;
   border-radius:3px;
@@ -793,6 +911,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   border-radius:999px;
   padding:4px 12px;
 }
+.hk-quiz-no ruby rt{ display:none; }   /* ← 追加 */
 .hk-quiz-tag{
   font-size:.7rem;
   font-weight:600;
@@ -849,6 +968,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   padding:14px 16px;
   cursor:pointer;
   transition:transform .15s, background .2s, border-color .2s;
+  min-height:56px;              /* ← 追加：押しまちがい防止 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-choice:hover{ background:var(--hover); border-color:var(--accent); }
 .hk-choice:active{ transform:scale(.98); }
@@ -867,7 +988,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   font-weight:700;
   margin-top:.15em;
 }
-.hk-choice-text{ flex:1; }
+.hk-choice-num ruby rt{ display:none; }   /* ← 追加 */
+.hk-choice-text{ flex:1; min-width:0; }   /* ← 追加：min-width:0 */
 
 /* ===================================================================
    解答・解説画面
@@ -921,6 +1043,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   font-size:1.1rem;
   font-weight:800;
 }
+.hk-result-answer-no ruby rt{ display:none; }   /* ← 追加 */
 .hk-result-block{
   background:var(--card);
   border:1.5px solid var(--line-soft);
@@ -973,7 +1096,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
 }
 .hk-review-item.hk-is-correct .hk-review-mark{ color:var(--ok); }
 .hk-review-item.hk-is-picked  .hk-review-mark{ color:var(--pick); }
-.hk-review-body{ flex:1; }
+.hk-review-body{ flex:1; min-width:0; }   /* ← 追加：min-width:0 */
 .hk-review-why{
   display:block;
   font-size:.72rem;
@@ -996,6 +1119,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   margin-bottom:14px;
   cursor:pointer;
   transition:background .2s, transform .15s;
+  min-height:44px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-jump-btn:hover{ background:var(--hover); }
 .hk-jump-btn:active{ transform:scale(.98); }
@@ -1034,6 +1159,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   padding:10px 6px;
   cursor:pointer;
   transition:background .2s, border-color .2s, color .2s, transform .15s;
+  min-height:64px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-confidence-btn:hover{ background:var(--hover); }
 .hk-confidence-btn:active{ transform:scale(.96); }
@@ -1041,6 +1168,10 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   background:var(--btn-grad);
   border-color:transparent;
   color:#fff;
+}
+.hk-confidence-btn.hk-selected ruby rt{          /* ← 追加 */
+  color:rgba(255,255,255,.90);
+  -webkit-text-fill-color:rgba(255,255,255,.90);
 }
 .hk-confidence-icon{ font-size:1.15rem; font-weight:800; line-height:1.2; }
 .hk-confidence-label{ font-size:.7rem; font-weight:600; }
@@ -1067,9 +1198,15 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   cursor:pointer;
   box-shadow:0 8px 24px var(--shadow);
   transition:transform .15s, box-shadow .2s, opacity .2s;
+  min-height:52px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-next-btn:hover{ transform:translateY(-2px); box-shadow:0 12px 30px var(--shadow); }
 .hk-next-btn:active{ transform:scale(.98); }
+.hk-next-btn ruby rt{                            /* ← 追加 */
+  color:rgba(255,255,255,.90);
+  -webkit-text-fill-color:rgba(255,255,255,.90);
+}
 .hk-next-btn.hk-next-sub{
   background:var(--card);
   color:var(--ink-sub);
@@ -1077,6 +1214,10 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   box-shadow:none;
 }
 .hk-next-btn.hk-next-sub:hover{ background:var(--hover); }
+.hk-next-btn.hk-next-sub ruby rt{                /* ← 追加 */
+  color:var(--ruby-ink);
+  -webkit-text-fill-color:var(--ruby-ink);
+}
 
 /* ===================================================================
    結果まとめ
@@ -1101,6 +1242,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   -webkit-text-fill-color:transparent;
   background-clip:text;
 }
+.hk-summary-score ruby rt{ display:none; }   /* ← 追加：点数は素のまま */
 .hk-summary-total{
   font-size:.82rem;
   color:var(--ink-faint);
@@ -1191,6 +1333,7 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   color:var(--ok);
   flex:none;
 }
+.hk-stats-num ruby rt{ display:none; }   /* ← 追加 */
 .hk-stats-num.hk-low{ color:var(--ng); }
 .hk-stats-num.hk-none{ color:var(--ink-faint); }
 .hk-stats-bar{
@@ -1226,6 +1369,8 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
   margin-top:20px;
   cursor:pointer;
   transition:background .2s, transform .15s;
+  min-height:44px;              /* ← 追加 */
+  touch-action:manipulation;    /* ← 追加 */
 }
 .hk-danger-btn:hover{ background:var(--hover); }
 .hk-danger-btn:active{ transform:scale(.98); }
@@ -1246,6 +1391,49 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
 .hk-footer-credit{ font-size:.68rem; color:var(--ink-faint); margin-top:6px; }
 
 /* ===================================================================
+   小さい画面（iPhone SE など）での詰め ← 追加
+   =================================================================== */
+@media (max-width: 360px){
+  .hk-container{ padding:14px 14px 36px; }
+  .hk-menu-item{ padding:16px 14px; }
+  .hk-chap-head{ padding:14px 12px; gap:8px; }
+  .hk-chap-body{ padding:0 12px 14px; }
+  .hk-choice{ padding:13px 13px; gap:10px; }
+  .hk-kv-key{ width:4.6em; }
+}
+
+/* ===================================================================
+   紙に印刷して復習するとき ← 追加
+   =================================================================== */
+@media print{
+  body{
+    background:#fff;
+    color:#000;
+    display:block;
+    user-select:auto;
+  }
+  body::before{ display:none; }
+  .hk-furigana-toggle, .hk-display-settings, .hk-note-tools,
+  .hk-back, .hk-next-btn, .hk-jump-btn, .hk-danger-btn,
+  .hk-chap-done, .hk-chap-arrow{ display:none !important; }
+  .hk-container, .hk-header, .hk-footer{ max-width:100%; padding:0; }
+  .hk-chap, .hk-item, .hk-note-head, .hk-result-block{
+    box-shadow:none;
+    border-color:#999;
+    background:#fff;
+    break-inside:avoid;
+  }
+  .hk-chap-body{ display:block !important; }
+  .hk-header-title, .hk-summary-score{
+    -webkit-text-fill-color:#000;
+    background:none;
+    color:#000;
+  }
+  ruby rt{ color:#333; opacity:1; }
+  a::after{ content:''; }
+}
+
+/* ===================================================================
    動きを減らす設定の人への配慮
    =================================================================== */
 @media (prefers-reduced-motion: reduce){
@@ -1254,4 +1442,5 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; font-weight
     animation-iteration-count:1 !important;
     transition-duration:.01ms !important;
   }
+  html{ scroll-behavior:auto; }   /* ← 追加 */
 }
