@@ -1095,18 +1095,21 @@
     if (text.length < 1 || text.length > 30) { hideAskChip(); return; }
     if (!isInsideAskable(sel.anchorNode))    { hideAskChip(); return; }
 
-    var rect = sel.getRangeAt(0).getBoundingClientRect();
     var chip = ensureAskChip();
     askWord = text;
     chip.textContent = '「' + (text.length > 10 ? text.slice(0, 10) + '…' : text) + '」を質問';
     chip.style.display = 'block';
 
-    var top = rect.top + window.pageYOffset - 46;
-    if (top < window.pageYOffset + 4) top = rect.bottom + window.pageYOffset + 10;
-    var left = rect.left + window.pageXOffset;
-    if (left + 200 > window.innerWidth) left = window.innerWidth - 208;
-    chip.style.top  = top + 'px';
-    chip.style.left = Math.max(8, left) + 'px';
+    /* iPhone標準の「コピー／調べる／翻訳」は、なぞった場所のすぐ上か下に出る。
+       ぶつからないように、このボタンは画面の下・中央に固定して出す。 */
+    chip.style.position = 'fixed';
+    var w = chip.offsetWidth || 180;
+    var left = (window.innerWidth - w) / 2;
+    if (left < 8) left = 8;
+    chip.style.left   = Math.round(left) + 'px';
+    chip.style.top    = 'auto';
+    chip.style.bottom = 'calc(24px + env(safe-area-inset-bottom))';
+    chip.style.zIndex = '9996';
   }
 
   document.addEventListener('selectionchange', function () {
