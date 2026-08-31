@@ -110,12 +110,17 @@
     '一般社団法人':'いっぱんしゃだんほうじん', '協会':'きょうかい',
     '宗石':'むねいし', '光英':'みつひで',
 
-    /* ---- ここから追加（読みのずれを防ぐために固定） ---- */
+    /* ---- 読みのずれを防ぐために固定 ---- */
     '試験':'しけん', '施行':'しこう', '改正':'かいせい',
     '社会福祉法':'しゃかいふくしほう', '社会福祉':'しゃかいふくし',
     '内容':'ないよう', '現場':'げんば', '関係':'かんけい',
     '深':'ふか', '後':'あと', '大丈夫':'だいじょうぶ', '事業所':'じぎょうしょ',
-    '報告':'ほうこく', '収支':'しゅうし', '制度':'せいど', '改定':'かいてい'
+    '報告':'ほうこく', '収支':'しゅうし', '制度':'せいど', '改定':'かいてい',
+    '今回':'こんかい', '軽':'かる', '優先':'ゆうせん',
+    '可能性':'かのうせい', '低':'ひく', '役立':'やくだ',
+    '気楽':'きらく', '眺':'なが', '公布':'こうふ',
+    '原則':'げんそく', '令和':'れいわ', '以内':'いない',
+    '基本':'きほん', '年度改定':'ねんどかいてい'
   };
 
   var FG_DICT = {};   // 漢字 → よみ
@@ -171,6 +176,101 @@
   function plain(text) {
     if (text === undefined || text === null) return '';
     return String(text).replace(RE_RUBY_ANY, '$1');
+  }
+
+  /* ---- 画面ぜんたいに辞書のふりがなを付ける ---- */
+  function fgEsc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // 漢字のかたまりを、長い言葉から順にあてはめる
+  function fgRubyRun(run) {
+    var out = '', i2 = 0;
+    while (i2 < run.length) {
+      var hit = null;
+      var max = Math.min(FG_MAX, run.length - i2);
+      for (var L = max; L >= 1; L--) {
+        var sub = run.substr(i2, L);
+        if (FG_DICT[sub]) { hit = sub; break; }
+      }
+      if (hit) {
+        out += '<ruby>' + fgEsc(hit) + '<rt>' + fgEsc(FG_DICT[hit]) + '</rt></ruby>';
+        i2 += hit.length;
+      } else {
+        out += fgEsc(run.charAt(i2));
+        i2 += 1;
+      }
+    }
+    return out;
+  }
+
+  function fgTextHtml(t) {
+    var out = '', last = 0, m;
+    RE_KANJI.lastIndex = 0;
+    while ((m = RE_KANJI.exec(t)) !== null) {
+      out += fgEsc(t.slice(last, m.index));
+      out += fgRubyRun(m[0]);
+      last = m.index + m[0].length;
+    }
+    out += fgEsc(t.slice(last));
+    return out;
+  }
+
+  var FG_SKIP = { RUBY:1, RT:1, RP:1, SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1 };
+
+  function fgWalk(node) {
+    if (!node) return;
+    if (node.nodeType === 3) {                 // 文字そのもの
+      var t = node.nodeValue;
+      if (!t || !RE_HASKANJI.test(t)) return;
+      var html = fgTextHtml(t);
+      if (html === fgEsc(t)) return;           // 変わらないなら触らない
+      var sp = document.createElement('span');
+      sp.className = 'hk-fg';
+      sp.setAttribute('data-fg-src', t);       // 元の文字を覚えておく
+      sp.innerHTML = html;
+      if (node.parentNode) node.parentNode.replaceChild(sp, node);
+      return;
+    }
+    if (node.nodeType !== 1) return;
+    if (FG_SKIP[node.tagName]) return;
+    if (node.getAttribute && node.getAttribute('data-fg-off') !== null) return;
+    var kids = [], j;
+    for (j = 0; j < node.childNodes.length; j++) kids.push(node.childNodes[j]);
+    for (j = 0; j < kids.length; j++) fgWalk(kids[j]);
+  }
+
+  // 付けたふりがなを元の文字にもどす
+  function fgUnwrap() {
+    var spans = document.querySelectorAll('span.hk-fg');
+    for (var j = 0; j < spans.length; j++) {
+      var sp = spans[j];
+      var src = sp.getAttribute('data-fg-src');
+      if (src === null || !sp.parentNode) continue;
+      sp.parentNode.replaceChild(document.createTextNode(src), sp);
+    }
+  }
+
+  function refreshFurigana() {
+    fgUnwrap();
+    if (furiOn) fgWalk(document.body);
+  }
+
+  function paintFurigana() {
+    var sw = $('hkFuriganaSwitch');
+    var st = $('hkFuriganaStatus');
+    if (!sw || !st) return;
+    if (furiOn) { sw.classList.add('on'); } else { sw.classList.remove('on'); }
+    sw.setAttribute('aria-checked', furiOn ? 'true' : 'false');
+    st.textContent = furiOn ? 'ON' : 'OFF';
+  }
+
+  function toggleFurigana() {
+    furiOn = !furiOn;
+    save(K.furi, furiOn ? 'on' : 'off');
+    paintFurigana();
+    renderCurrent();       // 今出ている画面を作り直す
+    refreshFurigana();     // 静的な文字にも付ける
   }
 
   /* =================================================================
@@ -571,6 +671,7 @@
   function toggleChap(no) {
     if (openSet[no]) { delete openSet[no]; } else { openSet[no] = true; }
     renderNote();
+    refreshFurigana();
     // 開いた章が画面から消えないように位置を合わせる
     var el = document.querySelector('#hkAccordion .hk-chap[data-chap="' + no + '"]');
     if (el && openSet[no]) {
@@ -880,6 +981,7 @@
     star3Only = false;
     show('hkNote');
     renderNote();
+    refreshFurigana();
     var el = $('hkItem_' + ref);
     if (el) {
       var y = el.getBoundingClientRect().top + window.pageYOffset - 16;
@@ -967,6 +1069,7 @@
     }
 
     show('hkSummary');
+    refreshFurigana();
   }
 
   /* =================================================================
@@ -1130,6 +1233,7 @@
         var cn = parseInt(t.getAttribute('data-chap'), 10);
         openSet[cn] = true;
         show('hkNote'); renderNote();
+        refreshFurigana();
         var el2 = document.querySelector('#hkAccordion .hk-chap[data-chap="' + cn + '"]');
         if (el2) window.scrollTo(0, el2.getBoundingClientRect().top + window.pageYOffset - 12);
         break;
@@ -1198,6 +1302,7 @@
 
     fgBuildDict();
     paintFurigana();
+
     var sw = $('hkFuriganaSwitch');
     if (sw) {
       sw.addEventListener('click', toggleFurigana);
