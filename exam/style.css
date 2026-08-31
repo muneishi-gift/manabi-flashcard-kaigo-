@@ -1175,3 +1175,62 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
   font-weight:700;
   margin-top:18px;
 }
+/* ===================================================================
+   用語の小窓（.gloss-*）ダークモード対応　追記
+   原因：.gloss-box が background:var(--paper,#fff) を使っているが
+         --paper がどこにも定義されていないため、ダークでも白背景になり、
+         文字色 var(--ink)（ほぼ白）と重なって読めなくなっていた。
+   ここで --paper を両テーマに用意し、枠内の文字色も揃える。
+   =================================================================== */
+:root[data-theme="dark"]{
+  --paper:      #221F3F;
+  --paper-line: rgba(255,255,255,.18);
+  --paper-soft: rgba(255,255,255,.10);
+}
+:root[data-theme="light"]{
+  --paper:      #FFFFFF;
+  --paper-line: rgba(31,35,40,.20);
+  --paper-soft: rgba(31,35,40,.07);
+}
+
+.gloss-box{
+  background:var(--paper);
+  color:var(--ink);
+  border:1.5px solid var(--paper-line);
+}
+.gloss-item{ border-bottom:1px solid var(--paper-line); }
+.gloss-item:last-of-type{ border-bottom:none; }
+
+.gloss-word{ color:var(--ink); }
+.gloss-kana{ color:var(--ink-sub); opacity:1; }
+.gloss-meaning{ color:var(--ink); }
+.gloss-note{ color:var(--ink-sub); opacity:1; }
+
+.gloss-link{
+  background:var(--paper-soft);
+  border:1.5px solid var(--paper-line);
+  color:var(--ink);
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  touch-action:manipulation;
+}
+.gloss-link:hover{ background:var(--hover); }
+
+.gloss-close{
+  background:transparent;
+  border:2px solid var(--paper-line);
+  color:var(--ink);
+  min-height:48px;
+  touch-action:manipulation;
+}
+.gloss-close:hover{ background:var(--paper-soft); }
+
+.gloss-send{ min-height:52px; touch-action:manipulation; }
+
+.gloss-feedback.ok{ color:var(--ok); }
+.gloss-feedback.ng{ color:var(--ng); }
+
+/* 小窓の中のふりがなも読める色に */
+.gloss-box ruby rt{ color:var(--ink-sub); opacity:1; }
