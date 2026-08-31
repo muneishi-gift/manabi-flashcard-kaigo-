@@ -1095,21 +1095,38 @@
     if (text.length < 1 || text.length > 30) { hideAskChip(); return; }
     if (!isInsideAskable(sel.anchorNode))    { hideAskChip(); return; }
 
+    var rect = sel.getRangeAt(0).getBoundingClientRect();
     var chip = ensureAskChip();
     askWord = text;
     chip.textContent = '「' + (text.length > 10 ? text.slice(0, 10) + '…' : text) + '」を質問';
-    chip.style.display = 'block';
 
-    /* iPhone標準の「コピー／調べる／翻訳」は、なぞった場所のすぐ上か下に出る。
-       ぶつからないように、このボタンは画面の下・中央に固定して出す。 */
-    chip.style.position = 'fixed';
-    var w = chip.offsetWidth || 180;
+    /* 大きく、はっきり出す */
+    chip.style.display      = 'block';
+    chip.style.position     = 'fixed';
+    chip.style.zIndex       = '9996';
+    chip.style.fontSize     = '1.08rem';
+    chip.style.fontWeight   = '800';
+    chip.style.padding      = '15px 26px';
+    chip.style.borderRadius = '26px';
+    chip.style.boxShadow    = '0 8px 28px rgba(0,0,0,.45)';
+
+    /* iPhone標準の「コピー／調べる／翻訳」は、なぞった場所のすぐ近くに出る。
+       なぞった場所が画面の下半分なら上へ、上半分なら下へ逃がす。
+       100vh ではなく実際の表示の高さから計算する（iOSでずれるため）。 */
+    var vh = window.innerHeight;
+    var selMiddle = (rect.top + rect.bottom) / 2;
+    if (selMiddle > vh / 2) {
+      chip.style.bottom = 'auto';
+      chip.style.top    = Math.round(vh * 0.20) + 'px';
+    } else {
+      chip.style.top    = 'auto';
+      chip.style.bottom = Math.round(vh * 0.26) + 'px';
+    }
+
+    var w = chip.offsetWidth || 200;
     var left = (window.innerWidth - w) / 2;
     if (left < 8) left = 8;
-    chip.style.left   = Math.round(left) + 'px';
-    chip.style.top    = 'auto';
-    chip.style.bottom = 'calc(24px + env(safe-area-inset-bottom))';
-    chip.style.zIndex = '9996';
+    chip.style.left = Math.round(left) + 'px';
   }
 
   document.addEventListener('selectionchange', function () {
