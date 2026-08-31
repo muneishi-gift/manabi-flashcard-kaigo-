@@ -6,6 +6,8 @@
    ※ 読み込むデータ … data/note.js (window.HK_NOTE)
                        data/quiz.js (window.HK_QUIZ)
    ※ 選択肢シャッフル機能つき（ON/OFF切り替え・既定ON）
+   ※ ふりがなは、データに一度書いた読みを辞書に覚えて
+     画面ぜんたいの同じ言葉に自動で付けます。
    Created by Mitsuhide Muneishi
    =================================================================== */
 (function () {
@@ -67,11 +69,73 @@
      データ側は「介護（かいご）」の形で書きます。
        ON  … <ruby>介護<rt>かいご</rt></ruby>
        OFF … 介護（カッコごと消す）
+     一度どこかに書いた読みは辞書に覚えて、画面に出ている
+     同じ言葉すべてに自動でふりがなを付けます。
      ================================================================= */
-  var RE_RUBY = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)（([\u3041-\u309F\u30FC]+)）/g;
+  var RE_RUBY     = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)（([\u3041-\u309F\u30FC]+)）/g;
+  var RE_KANJI    = /[\u4E00-\u9FFF\u3005\u3006\u3007]+/g;
+  var RE_HASKANJI = /[\u4E00-\u9FFF\u3005\u3006\u3007]/;
+
+  // 画面のボタンや見出しなど、データに読みを書いていない言葉。
+  // 読みがまちがっていたときも、ここに足せば最優先で直ります。
+  var FG_FIX = {
+    '法改正':'ほうかいせい', '介護':'かいご', '福祉':'ふくし',
+    '介護福祉士':'かいごふくしし', '国家試験':'こっかしけん', '対策':'たいさく',
+    '第':'だい', '回':'かい', '章':'しょう', '問題':'もんだい',
+    '文字':'もじ', '標準':'ひょうじゅん', '大':'だい', '特大':'とくだい',
+    '表示':'ひょうじ', '設定':'せってい', '戻':'もど', '選':'えら', '次':'つぎ',
+    '読':'よ', '解':'と', '解説':'かいせつ', '解答':'かいとう',
+    '正解':'せいかい', '正解率':'せいかいりつ', '選択肢':'せんたくし',
+    '予想問題':'よそうもんだい', '挑戦':'ちょうせん', '全':'ぜん',
+    '順番':'じゅんばん', '出題':'しゅつだい', '出題傾向':'しゅつだいけいこう',
+    '確認':'かくにん', '復習':'ふくしゅう', '不安':'ふあん', '手':'て',
+    '自信':'じしん', '点':'てん', '落':'お', '危険':'きけん',
+    '記録':'きろく', '見':'み', '時間':'じかん', '消去':'しょうきょ', '消':'け',
+    '作成':'さくせい', '公式':'こうしき', '過去問':'かこもん',
+    '別':'べつ', '保存':'ほぞん', '出':'で', '法律':'ほうりつ',
+    '言':'い', '版':'ばん', '開':'ひら', '義務':'ぎむ', '努力義務':'どりょくぎむ',
+    '覚':'おぼ', '必':'かなら', '要':'よう', '知':'し',
+    '学習':'がくしゅう', '学習中':'がくしゅうちゅう', '連続':'れんぞく',
+    '状況':'じょうきょう', '続':'つづ', '再開':'さいかい', '範囲':'はんい',
+    '同':'おな', '端末':'たんまつ', '完全':'かんぜん', '混':'ま', '中':'なか',
+    '合格':'ごうかく', '一歩':'いっぽ', '届':'とど', '伸':'の', '拾':'ひろ',
+    '記憶':'きおく', '定着':'ていちゃく', '最高':'さいこう', '分':'ふん',
+    '一般社団法人':'いっぱんしゃだんほうじん', '協会':'きょうかい',
+    '宗石':'むねいし', '光英':'みつひで'
+  };
+
+  var FG_DICT = {};   // 漢字 → よみ
+  var FG_MAX  = 1;    // 辞書のいちばん長いキーの文字数
 
   var furiOn = (load(K.furi, 'off') === 'on');
 
+  // データの中から「漢字（かな）」を拾って辞書に覚える
+  function fgLearn(text) {
+    if (!text) return;
+    String(text).replace(RE_RUBY, function (m, kanji, kana) {
+      if (!FG_DICT[kanji]) FG_DICT[kanji] = kana;
+      return m;
+    });
+  }
+  function fgScan(v, depth) {
+    if (v === null || v === undefined) return;
+    if (typeof v === 'string') { fgLearn(v); return; }
+    if (typeof v === 'object' && (depth || 0) < 8) {
+      for (var k in v) { if (v.hasOwnProperty(k)) fgScan(v[k], (depth || 0) + 1); }
+    }
+  }
+  function fgBuildDict() {
+    FG_DICT = {};
+    fgScan(window.HK_NOTE, 0);
+    fgScan(window.HK_QUIZ, 0);
+    for (var k in FG_FIX) { if (FG_FIX.hasOwnProperty(k)) FG_DICT[k] = FG_FIX[k]; }
+    FG_MAX = 1;
+    for (var k2 in FG_DICT) {
+      if (FG_DICT.hasOwnProperty(k2) && k2.length > FG_MAX) FG_MAX = k2.length;
+    }
+  }
+
+  // データの文字列を画面用に変える（明示的に書いた読みだけ）
   function fg(text) {
     if (text === undefined || text === null) return '';
     var s = String(text);
@@ -84,6 +148,80 @@
   function plain(text) {
     if (text === undefined || text === null) return '';
     return String(text).replace(RE_RUBY, '$1');
+  }
+
+  /* ---- 画面ぜんたいに辞書のふりがなを付ける ---- */
+  function fgEsc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  // 漢字のかたまりを、長い言葉から順にあてはめる
+  function fgRubyRun(run) {
+    var out = '', i = 0;
+    while (i < run.length) {
+      var hit = null;
+      var max = Math.min(FG_MAX, run.length - i);
+      for (var L = max; L >= 1; L--) {
+        var sub = run.substr(i, L);
+        if (FG_DICT[sub]) { hit = sub; break; }
+      }
+      if (hit) {
+        out += '<ruby>' + fgEsc(hit) + '<rt>' + fgEsc(FG_DICT[hit]) + '</rt></ruby>';
+        i += hit.length;
+      } else {
+        out += fgEsc(run.charAt(i));
+        i += 1;
+      }
+    }
+    return out;
+  }
+  function fgTextHtml(t) {
+    var out = '', last = 0, m;
+    RE_KANJI.lastIndex = 0;
+    while ((m = RE_KANJI.exec(t)) !== null) {
+      out += fgEsc(t.slice(last, m.index));
+      out += fgRubyRun(m[0]);
+      last = m.index + m[0].length;
+    }
+    out += fgEsc(t.slice(last));
+    return out;
+  }
+
+  var FG_SKIP = { RUBY:1, RT:1, RP:1, SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1 };
+
+  function fgWalk(node) {
+    if (!node) return;
+    if (node.nodeType === 3) {                 // 文字そのもの
+      var t = node.nodeValue;
+      if (!t || !RE_HASKANJI.test(t)) return;
+      var html = fgTextHtml(t);
+      if (html === fgEsc(t)) return;           // 変わらないなら触らない
+      var sp = document.createElement('span');
+      sp.className = 'hk-fg';
+      sp.setAttribute('data-fg-src', t);       // 元の文字を覚えておく
+      sp.innerHTML = html;
+      if (node.parentNode) node.parentNode.replaceChild(sp, node);
+      return;
+    }
+    if (node.nodeType !== 1) return;
+    if (FG_SKIP[node.tagName]) return;
+    if (node.getAttribute && node.getAttribute('data-fg-off') !== null) return;
+    var kids = [], j;
+    for (j = 0; j < node.childNodes.length; j++) kids.push(node.childNodes[j]);
+    for (j = 0; j < kids.length; j++) fgWalk(kids[j]);
+  }
+  // 付けたふりがなを元の文字にもどす
+  function fgUnwrap() {
+    var spans = document.querySelectorAll('span.hk-fg');
+    for (var j = 0; j < spans.length; j++) {
+      var sp = spans[j];
+      var src = sp.getAttribute('data-fg-src');
+      if (src === null || !sp.parentNode) continue;
+      sp.parentNode.replaceChild(document.createTextNode(src), sp);
+    }
+  }
+  function refreshFurigana() {
+    fgUnwrap();
+    if (furiOn) fgWalk(document.body);
   }
 
   function paintFurigana() {
@@ -99,7 +237,8 @@
     furiOn = !furiOn;
     save(K.furi, furiOn ? 'on' : 'off');
     paintFurigana();
-    renderCurrent();   // 今出ている画面を作り直す
+    renderCurrent();       // 今出ている画面を作り直す
+    refreshFurigana();     // 静的な文字にも付ける
   }
 
   /* =================================================================
@@ -140,7 +279,7 @@
   var shuffleOn = (load(K.shuffle, 'on') === 'on');
 
   // 順番が変わるとおかしくなる言い方
-　var RE_FIXED = /(上記|前記|以上のすべて|すべて正しい|すべて誤り|すべてまちがい|いずれも|両方|正しいものはない|誤っているものはない|１と２|1と2|２と３|2と3|①|②|③|④)/;
+  var RE_FIXED = /(上記|前記|以上のすべて|すべて正しい|すべて誤り|すべてまちがい|いずれも|両方|正しいものはない|誤っているものはない|１と２|1と2|２と３|2と3|①|②|③|④)/;
 
   function isFixedOrder(q) {
     if (!q || !q.choices) return true;
@@ -1004,7 +1143,7 @@
   /* =================================================================
      14. クリックのふりわけ
      ================================================================= */
-  function onClick(e) {
+  function onClickCore(e) {
     // data-hk-action を持つ親をさがす
     var t = e.target;
     while (t && t !== document.body) {
@@ -1098,7 +1237,7 @@
   /* =================================================================
      15. キーボード（パソコンで解く人むけ）
      ================================================================= */
-  function onKey(e) {
+  function onKeyCore(e) {
     if (current === 'hkQuiz') {
       var n = parseInt(e.key, 10);
       var q = currentQ();
@@ -1107,6 +1246,10 @@
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nextQuestion(); }
     }
   }
+
+  // 画面が変わったあとに、ふりがなを付け直します
+  function onClick(e) { onClickCore(e); refreshFurigana(); }
+  function onKey(e)   { onKeyCore(e);   refreshFurigana(); }
 
   /* =================================================================
      16. 起動
@@ -1121,6 +1264,7 @@
       }
     }
 
+    fgBuildDict();
     paintFurigana();
     var sw = $('hkFuriganaSwitch');
     if (sw) {
@@ -1142,6 +1286,7 @@
 
     show('hkMenu');
     renderMenu();
+    refreshFurigana();
   }
 
   if (document.readyState === 'loading') {
