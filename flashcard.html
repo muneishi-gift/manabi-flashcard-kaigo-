@@ -703,9 +703,23 @@ function jumpToPendingWord(){
   if(!pendingWord)return;
   const word=pendingWord;
   pendingWord='';
+
+  /* リロードで毎回飛ばないようにURLから word を消す */
+  try{
+    const u=new URL(location.href);
+    u.searchParams.delete('word');
+    history.replaceState(null,'',u.pathname+(u.search?u.search:'')+u.hash);
+  }catch(e){}
+
   const i=findCardIndex(word);
   startQuiz(false);
-  if(i>=0){idx=i;showCard();}
+  if(i>=0){
+    idx=i;
+    showCard();
+  }else{
+    /* カードが無いときは黙って1枚目を出さず、理由を伝える */
+    showCheer('🔍','「'+word+'」のカードはまだありません。\nリクエストいただければ追加します！');
+  }
 }
 
 let masteredSet=new Set();
