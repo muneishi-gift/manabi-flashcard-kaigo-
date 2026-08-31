@@ -199,7 +199,8 @@
     box.style.display = 'flex';
   }
 
-  function showNotFound(word, source) {
+  /* ★変更：どの画面から送られたか（from）も受け取るようにした */
+  function showNotFound(word, source, from) {
     var box = ensureModal();
     var body = box.querySelector('.gloss-body');
     body.innerHTML =
@@ -215,7 +216,7 @@
     btn.addEventListener('click', function () {
       btn.disabled = true;
       btn.textContent = '送信中…';
-      sendRequest(word, source, function (ok) {
+      sendRequest(word, source, from, function (ok) {
         if (ok) {
           btn.style.display = 'none';
           fb.className = 'gloss-feedback ok';
@@ -230,8 +231,13 @@
     });
   }
 
-  function sendRequest(word, source, done) {
-    var payload = JSON.stringify({ word: word, source: source || '', from: 'exam' });
+  /* ★変更：from を受け取り、無ければ従来どおり 'exam' で送る */
+  function sendRequest(word, source, from, done) {
+    var payload = JSON.stringify({
+      word:   word,
+      source: source || '',
+      from:   from || 'exam'
+    });
     if (window.fetch) {
       fetch(GAS_URL, {
         method: 'POST',
@@ -249,26 +255,35 @@
     xhr.send(payload);
   }
 
-  /* ---------- app.js から呼ばれる入口 ---------- */
+  /* ---------- app.js / gloss-hook.js から呼ばれる入口 ---------- */
   window.KaigoAskWord = function (word, q) {
     var source = '';
+    var from   = 'exam';
+
     if (q) {
-      if (q._kai) source += '第' + q._kai + '回 ';
-      if (q.id)   source += '問' + q.id;
+      /* ★変更：label があればそれをそのまま記録に使う（法改正ノート用）。
+         無いときは従来どおり「第○回 問△」を組み立てる（過去問はこちら）。 */
+      if (q.label) {
+        source = String(q.label);
+      } else {
+        if (q._kai) source += '第' + q._kai + '回 ';
+        if (q.id)   source += '問' + q.id;
+      }
       source = source.trim();
+      if (q.from) from = String(q.from);
     }
 
     if (dict.length === 0) {
       fetchDict(function () {
         var r = lookup(word);
-        if (r) showFound(word, r); else showNotFound(word, source);
+        if (r) showFound(word, r); else showNotFound(word, source, from);
       });
       return;
     }
 
     var res = lookup(word);
     if (res) showFound(word, res);
-    else     showNotFound(word, source);
+    else     showNotFound(word, source, from);
   };
 
   window.KaigoGlossary = {
