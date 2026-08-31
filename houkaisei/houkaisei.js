@@ -5,6 +5,7 @@
    ※ 保存キーはすべて hk_ で始まり、過去問の記録とは混ざりません。
    ※ 読み込むデータ … data/note.js (window.HK_NOTE)
                        data/quiz.js (window.HK_QUIZ)
+   ※ 選択肢シャッフル機能つき（ON/OFF切り替え・既定ON）
    Created by Mitsuhide Muneishi
    =================================================================== */
 (function () {
@@ -15,11 +16,12 @@
      ================================================================= */
   var V = '_v1';
   var K = {
-    read:   'hk_read'   + V,   // 読み終わった章
-    stats:  'hk_stats'  + V,   // 問題ごとの成績
-    resume: 'hk_resume' + V,   // 途中でやめたときの続き
-    furi:   'hk_furi'   + V,   // ふりがな ON/OFF
-    days:   'hk_days'   + V    // 連続学習日数
+    read:    'hk_read'    + V,   // 読み終わった章
+    stats:   'hk_stats'   + V,   // 問題ごとの成績
+    resume:  'hk_resume'  + V,   // 途中でやめたときの続き
+    furi:    'hk_furi'    + V,   // ふりがな ON/OFF
+    days:    'hk_days'    + V,   // 連続学習日数
+    shuffle: 'hk_shuffle' + V    // 選択肢シャッフル ON/OFF
   };
 
   /* =================================================================
@@ -78,6 +80,12 @@
       : s.replace(RE_RUBY, '$1');
   }
 
+  // ふりがなカッコを取りのぞいた、ただの文字列にする（判定用）
+  function plain(text) {
+    if (text === undefined || text === null) return '';
+    return String(text).replace(RE_RUBY, '$1');
+  }
+
   function paintFurigana() {
     var sw = $('hkFuriganaSwitch');
     var st = $('hkFuriganaStatus');
@@ -120,6 +128,84 @@
     var out = [];
     for (var j = 0; j < QUIZ.length; j++) out.push(QUIZ[j].id);
     return out;
+  }
+
+  /* =================================================================
+     3-B. 選択肢シャッフル
+     ・既定はON。localStorage に覚えます。
+     ・「上記すべて」など、順番が変わると意味がこわれる選択肢を
+       ふくむ問題は、自動でシャッフルを止めます。
+     ・data/quiz.js に noShuffle: true と書いた問題も止まります。
+     ================================================================= */
+  var shuffleOn = (load(K.shuffle, 'on') === 'on');
+
+  // 順番が変わるとおかしくなる言い方
+  var RE_FIXED = /(上記|前記|以上のすべて|すべて正しい|すべて誤り|すべてまちがい|いずれも|両方|正しいものはない|誤っているものはない|１と２|1と2|２と３|2と3|①|②|③|④/;
+
+  function isFixedOrder(q) {
+    if (!q || !q.choices) return true;
+    if (q.noShuffle) return true;
+    for (var j = 0; j < q.choices.length; j++) {
+      if (RE_FIXED.test(plain(q.choices[j]))) return true;
+    }
+    return false;
+  }
+
+  // 0,1,2,... の並び
+  function seqIdx(n) {
+    var a = [];
+    for (var j = 0; j < n; j++) a.push(j);
+    return a;
+  }
+  // かきまぜた並び（フィッシャー・イェーツ）
+  function shuffledIdx(n) {
+    var a = seqIdx(n);
+    for (var j = a.length - 1; j > 0; j--) {
+      var r = Math.floor(Math.random() * (j + 1));
+      var t = a[j]; a[j] = a[r]; a[r] = t;
+    }
+    return a;
+  }
+
+  function paintShuffle() {
+    var btn = $('hkShuffleBtn');
+    if (!btn) return;
+    if (shuffleOn) { btn.classList.add('hk-on'); } else { btn.classList.remove('hk-on'); }
+    btn.setAttribute('aria-pressed', shuffleOn ? 'true' : 'false');
+    btn.textContent = shuffleOn ? '🔀 選択肢シャッフル ON' : '🔀 選択肢シャッフル OFF';
+  }
+
+  function toggleShuffle() {
+    shuffleOn = !shuffleOn;
+    save(K.shuffle, shuffleOn ? 'on' : 'off');
+    paintShuffle();
+    // まだ答えていない問題なら、その場で並べかえ直す
+    if (current === 'hkQuiz' && S.picked === null) {
+      S.orderFor = null;
+      renderQuestion();
+    }
+  }
+
+  // 出題画面に切り替えボタンを差し込む（index.html は変えません）
+  function mountShuffleToggle() {
+    if ($('hkShuffleBtn')) { paintShuffle(); return; }
+    var qEl = $('hkQuizQuestion');
+    if (!qEl || !qEl.parentNode) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'hk-note-tools';
+    wrap.style.marginBottom = '10px';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'hkShuffleBtn';
+    btn.className = 'hk-tool-btn';
+    btn.setAttribute('data-hk-action', 'toggleShuffle');
+    btn.setAttribute('aria-pressed', 'false');
+
+    wrap.appendChild(btn);
+    qEl.parentNode.insertBefore(wrap, qEl);
+    paintShuffle();
   }
 
   /* =================================================================
@@ -475,7 +561,10 @@
     mode: 'all',
     queue: [],
     idx: 0,
-    picked: null,
+    picked: null,       // 画面に出ていた番号（1から）
+    pickedOrig: null,   // データ上の本来の番号（1から）
+    order: null,        // 画面の並び順（中身はデータ上の添字0から）
+    orderFor: null,     // その並び順がどの問題のものか
     correctCount: 0,
     wrongIds: [],
     streak: 0,
@@ -497,6 +586,8 @@
     S.streak = 0;
     S.bestStreak = 0;
     S.baseMs = 0;
+    S.order = null;
+    S.orderFor = null;
 
     if (resumeData) {
       S.idx = resumeData.idx || 0;
@@ -512,13 +603,26 @@
 
   function currentQ() { return QMAP[S.queue[S.idx]]; }
 
+  // 並び順を用意する。すでに同じ問題の並びがあれば、そのまま使います。
+  // （ふりがなを切り替えても並びが変わらないようにするため）
+  function buildOrder(q) {
+    var n = q.choices ? q.choices.length : 0;
+    if (S.orderFor === q.id && S.order && S.order.length === n) return;
+    var doShuffle = shuffleOn && !isFixedOrder(q);
+    S.order = doShuffle ? shuffledIdx(n) : seqIdx(n);
+    S.orderFor = q.id;
+  }
+
   function renderQuestion() {
     var q = currentQ();
     if (!q) { finishQuiz(); return; }
 
     S.picked = null;
+    S.pickedOrig = null;
     S.confPicked = null;
     S.qStartAt = Date.now();
+
+    buildOrder(q);
 
     if ($('hkProgressText')) $('hkProgressText').textContent = (S.idx + 1) + ' / ' + S.queue.length;
     if ($('hkProgressFill')) $('hkProgressFill').style.width = Math.round(S.idx / S.queue.length * 100) + '%';
@@ -538,13 +642,16 @@
 
     if ($('hkQuizQuestion')) $('hkQuizQuestion').innerHTML = fg(q.question);
 
+    paintShuffle();
+
     var ul = $('hkChoices');
     if (ul) {
       var html = '';
-      for (var j = 0; j < q.choices.length; j++) {
+      for (var j = 0; j < S.order.length; j++) {
+        var oi = S.order[j];
         html += '<li><button type="button" class="hk-choice" data-hk-action="pick" data-pick="' + (j + 1) + '">';
         html +=   '<span class="hk-choice-num">' + (j + 1) + '</span>';
-        html +=   '<span class="hk-choice-text">' + fg(q.choices[j]) + '</span>';
+        html +=   '<span class="hk-choice-text">' + fg(q.choices[oi]) + '</span>';
         html += '</button></li>';
       }
       ul.innerHTML = html;
@@ -554,11 +661,14 @@
 
   function pick(n) {
     if (S.picked !== null) return;
-    S.picked = n;
+    var q = currentQ();
+    if (!q || !S.order || n < 1 || n > S.order.length) return;
+
+    S.picked = n;                       // 画面に出ていた番号
+    S.pickedOrig = S.order[n - 1] + 1;  // データ上の番号
     S.lastMs = Date.now() - S.qStartAt;
 
-    var q = currentQ();
-    var ok = (n === q.answer);
+    var ok = (S.pickedOrig === q.answer);
     var r = qrec(q.id);
     r.n += 1;
     if (ok) r.ok += 1;
@@ -586,7 +696,15 @@
   function renderResult() {
     var q = currentQ();
     if (!q) return;
-    var ok = (S.picked === q.answer);
+    if (!S.order || S.orderFor !== q.id) buildOrder(q);
+
+    var ok = (S.pickedOrig === q.answer);
+
+    // 正解が画面では何番だったか
+    var ansPos = 0;
+    for (var a = 0; a < S.order.length; a++) {
+      if (S.order[a] + 1 === q.answer) { ansPos = a + 1; break; }
+    }
 
     if ($('hkResultIcon')) $('hkResultIcon').textContent = ok ? '⭕' : '✕';
     var rt = $('hkResultText');
@@ -595,22 +713,23 @@
       rt.className = 'hk-result-text ' + (ok ? 'hk-ok' : 'hk-ng');
     }
     if ($('hkResultTime')) $('hkResultTime').textContent = 'かかった時間 ' + fmtTime(S.lastMs);
-    if ($('hkResultAnswer')) $('hkResultAnswer').textContent = q.answer;
+    if ($('hkResultAnswer')) $('hkResultAnswer').textContent = ansPos;
 
-    // 選択肢のふりかえり
+    // 選択肢のふりかえり（画面に出ていた並びのまま見せます）
     var ul = $('hkReviewChoices');
     if (ul) {
       var html = '';
-      for (var j = 0; j < q.choices.length; j++) {
+      for (var j = 0; j < S.order.length; j++) {
+        var oi = S.order[j];
         var n = j + 1;
-        var isC = (n === q.answer);
+        var isC = (oi + 1 === q.answer);
         var isP = (n === S.picked);
         var cls = 'hk-review-item' + (isC ? ' hk-is-correct' : '') + ((isP && !isC) ? ' hk-is-picked' : '');
         var mark = isC ? '○' : (isP ? '✓' : '×');
         html += '<li class="' + cls + '">';
         html +=   '<span class="hk-review-mark">' + mark + '</span>';
-        html +=   '<span class="hk-review-body">' + n + '　' + fg(q.choices[j]);
-        if (q.why && q.why[j]) html += '<span class="hk-review-why">' + fg(q.why[j]) + '</span>';
+        html +=   '<span class="hk-review-body">' + n + '　' + fg(q.choices[oi]);
+        if (q.why && q.why[oi]) html += '<span class="hk-review-why">' + fg(q.why[oi]) + '</span>';
         html +=   '</span>';
         html += '</li>';
       }
@@ -660,7 +779,7 @@
     for (var m = 0; m < cbs.length; m++) cbs[m].classList.remove('hk-selected');
     if (btn) btn.classList.add('hk-selected');
 
-    var ok = (S.picked === q.answer);
+    var ok = (S.pickedOrig === q.answer);
     var hint;
     if (ok && level === 'sure') {
       hint = 'その調子です。理由まで言えたら完ぺき。';
@@ -676,6 +795,8 @@
 
   function nextQuestion() {
     S.idx += 1;
+    S.order = null;
+    S.orderFor = null;
     if (S.idx >= S.queue.length) { finishQuiz(); return; }
     show('hkQuiz');
     renderQuestion();
@@ -884,9 +1005,6 @@
      14. クリックのふりわけ
      ================================================================= */
   function onClick(e) {
-    var el = e.target;
-    while (el && el !== document.body && !el.getAttribute) el = el.parentNode;
-
     // data-hk-action を持つ親をさがす
     var t = e.target;
     while (t && t !== document.body) {
@@ -926,6 +1044,8 @@
 
       case 'toggleChap': toggleChap(parseInt(t.getAttribute('data-chap'), 10)); break;
       case 'markRead':   markRead(parseInt(t.getAttribute('data-chap'), 10)); break;
+
+      case 'toggleShuffle': toggleShuffle(); break;
 
       case 'startAll':
         startQuiz('all', allIds()); break;
@@ -1009,6 +1129,8 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFurigana(); }
       });
     }
+
+    mountShuffleToggle();
 
     document.addEventListener('click', onClick);
     document.addEventListener('keydown', onKey);
