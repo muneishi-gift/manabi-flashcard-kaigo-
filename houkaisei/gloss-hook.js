@@ -194,16 +194,39 @@
   function showChip(word, rect) {
     var c = ensureChip();
     current = word;
-    c.style.display = 'inline-block';
+
+    /* 見やすいように少し大きめにする（CSSは触らず、ここだけで指定） */
+    c.style.fontSize = '1rem';
+    c.style.padding  = '13px 20px';
+    c.style.display  = 'inline-block';
+
+    /* iPhoneは 100vh が実際に見えている高さより大きいので、
+       vh ではなく window.innerHeight を使って計算する */
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    /* 横は中央ぞろえ */
+    var w = c.offsetWidth || 170;
+    var left = (vw - w) / 2;
+    if (left < 8) left = 8;
+    if (left + w > vw - 8) left = vw - w - 8;
+    c.style.left = Math.round(left) + 'px';
 
     /* iPhone標準の「コピー／調べる／翻訳」は、なぞった場所のすぐ上か下に出る。
-       ぶつからないように、このボタンは画面の下・中央に固定して出す。 */
-    var w = c.offsetWidth || 150;
-    var left = (window.innerWidth - w) / 2;
-    if (left < 8) left = 8;
-    c.style.left   = Math.round(left) + 'px';
-    c.style.top    = 'auto';
-    c.style.bottom = 'calc(24px + env(safe-area-inset-bottom))';
+       だから、なぞった場所と反対側にこのボタンを置いてぶつからないようにする。 */
+    var selMiddle = (rect && rect.top != null)
+      ? (rect.top + rect.bottom) / 2
+      : vh / 2;
+
+    if (selMiddle > vh / 2) {
+      /* なぞった場所が画面の下半分 → ボタンは上寄り（上から約20%） */
+      c.style.top    = Math.round(vh * 0.20) + 'px';
+      c.style.bottom = 'auto';
+    } else {
+      /* なぞった場所が画面の上半分 → ボタンは下寄り（下から約26%） */
+      c.style.top    = 'auto';
+      c.style.bottom = Math.round(vh * 0.26) + 'px';
+    }
   }
 
   function hideChip() {
