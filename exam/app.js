@@ -175,6 +175,41 @@
     if (furiganaOn) return String(text);
     return removeFurigana(text);
   }
+  /* ふりがなの例外リスト。
+     データに読みが書かれていない漢字があると、ルビが手前の漢字まで
+     巻き込んで乗ってしまうことがあります。そのときだけここに足します。
+     例）「3か月以内（いない）」で 月以内 が拾われてしまう場合
+         '月以内': '以内'    ← うしろの「以内」だけにルビを乗せる     */
+  var FURI_TAIL = {
+  };
+
+  /* 「漢字（かな）」を <ruby> に変える。ふりがなOFFならカッコごと消す。
+     ※ 戻り値はHTML。textContent ではなく innerHTML に入れること。
+     ※ 使う側で escapeHTML をかけないこと（この中で済ませています）。 */
+  function furiganaHTML(text) {
+    var s = String(text == null ? '' : text);
+    var re = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)[（(]([\u3041-\u309F\u30FC\u3000\s、・･]+)[）)]/g;
+    var out = '', last = 0, m;
+
+    while ((m = re.exec(s)) !== null) {
+      out += escapeHTML(s.slice(last, m.index));
+
+      var run  = m[1];
+      var kana = m[2].replace(/[\s\u3000、・･]/g, '');
+      var tail = FURI_TAIL[run] || run;
+      var head = run.slice(0, run.length - tail.length);
+
+      if (furiganaOn && kana) {
+        out += escapeHTML(head)
+             + '<ruby>' + escapeHTML(tail) + '<rt>' + escapeHTML(kana) + '</rt></ruby>';
+      } else {
+        out += escapeHTML(run);
+      }
+      last = m.index + m[0].length;
+    }
+    out += escapeHTML(s.slice(last));
+    return out.replace(/\n/g, '<br>');
+  }
 
   /* =====================================================
    *  事例と問題文の分割
@@ -270,7 +305,7 @@
     if (typeof choiceData === 'string') {
       var t = document.createElement('span');
       t.className   = 'choice-text';
-      t.textContent = applyFuriganaToText(choiceData);
+      t.innerHTML = furiganaHTML(choiceData);
       el.appendChild(t);
       return;
     }
@@ -296,7 +331,7 @@
     if (choiceData.text) {
       var t2 = document.createElement('span');
       t2.className   = 'choice-text';
-      t2.textContent = applyFuriganaToText(choiceData.text);
+      t2.innerHTML = furiganaHTML(choiceData.text);
       el.appendChild(t2);
     }
     if (choiceData.image || choiceData.src) {
@@ -652,7 +687,7 @@
 
         var name = document.createElement('span');
         name.className   = 'subject-name';
-        name.textContent = applyFuriganaToText(item.label);
+        name.innerHTML = furiganaHTML(item.label);
         btn.appendChild(name);
 
         var count = document.createElement('span');
@@ -747,24 +782,27 @@
       quizNumber.textContent = label;
     }
 
-    if (quizSubject) quizSubject.textContent = applyFuriganaToText(q.subject || '');
+    if (quizSubject) quizSubject.innerHTML = furiganaHTML(q.subject || '');
 
     /* ---------- 問題文 ---------- */
-    var displayText = applyFuriganaToText(q.question || '');
-    var result = splitCaseAndQuestion(displayText);
+    /* 事例の切り分けは、ふりがなカッコが付いたままの文で行います。
+       ルビのHTMLを作ってから切ると、正規表現がタグでこわれるためです。
+       切り分けたあとで、それぞれをルビに変えます。 */
+    var rawText = String(q.question || '');
+    var result  = splitCaseAndQuestion(rawText);
 
     var refCase = findReferencedCase(q);
     if (refCase) {
-      var askText = result ? result.askPart : displayText;
-      result = { casePart: applyFuriganaToText(refCase), askPart: askText };
+      var askRaw = result ? result.askPart : rawText;
+      result = { casePart: refCase, askPart: askRaw };
     }
 
     var html = '';
     if (result) {
-      html += '<div class="question-case">' + escapeHTML(result.casePart) + '</div>';
-      html += '<div class="question-ask">'  + escapeHTML(result.askPart)  + '</div>';
+      html += '<div class="question-case">' + furiganaHTML(result.casePart) + '</div>';
+      html += '<div class="question-ask">'  + furiganaHTML(result.askPart)  + '</div>';
     } else {
-      html += '<div>' + escapeHTML(displayText) + '</div>';
+      html += '<div>' + furiganaHTML(rawText) + '</div>';
     }
 
     if (q.question_image) {
@@ -936,9 +974,11 @@
     if (resultAnswer) resultAnswer.textContent = (correct + 1);
 
     if (resultExplanation) {
-      resultExplanation.textContent = q.explanation
-        ? applyFuriganaToText(q.explanation)
-        : '解説はありません。';
+      if (q.explanation) {
+        resultExplanation.innerHTML = furiganaHTML(q.explanation);
+      } else {
+        resultExplanation.textContent = '解説はありません。';
+      }
     }
 
     if (nextButton) {
