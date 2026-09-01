@@ -184,11 +184,12 @@
   };
 
   /* 「漢字（かな）」を <ruby> に変える。ふりがなOFFならカッコごと消す。
-     ※ 戻り値はHTML。textContent ではなく innerHTML に入れること。
-     ※ 使う側で escapeHTML をかけないこと（この中で済ませています）。 */
+     「漢字（かな／別名）」は、かなをルビにして「（別名）」を残す。
+     ※ 戻り値はHTML。textContent ではなく innerHTML に入れること。 */
   function furiganaHTML(text) {
     var s = String(text == null ? '' : text);
-    var re = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)[（(]([\u3041-\u309F\u30FC\u3000\s、・･]+)[）)]/g;
+    /* 1つ目=漢字のかたまり / 2つ目=ひらがなの読み / 3つ目=「／ALS」などの補足（無くてもよい） */
+    var re = /([\u4E00-\u9FFF\u3005\u3006\u3007]+)[（(]([\u3041-\u309F\u30FC\u3000\s、・･]+)((?:[／\/][^）)]*)?)[）)]/g;
     var out = '', last = 0, m;
 
     while ((m = re.exec(s)) !== null) {
@@ -196,6 +197,8 @@
 
       var run  = m[1];
       var kana = m[2].replace(/[\s\u3000、・･]/g, '');
+      var note = m[3] ? m[3].replace(/^[／\/]+/, '').trim() : '';
+
       var tail = FURI_TAIL[run] || run;
       var head = run.slice(0, run.length - tail.length);
 
@@ -205,6 +208,10 @@
       } else {
         out += escapeHTML(run);
       }
+
+      /* 「／ALS」「／QOL」「／機能訓練」などは読みではないので、そのまま見せる */
+      if (note) out += '（' + escapeHTML(note) + '）';
+
       last = m.index + m[0].length;
     }
     out += escapeHTML(s.slice(last));
