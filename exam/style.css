@@ -1247,3 +1247,6 @@ ruby rt {
   letter-spacing: 0;
 }
 .quiz-question, .choices-list li, #resultExplanation { line-height: 2.15; }
+/* ふりがなを漢字の上に。なぞる機能のため、読みは選択対象から外す */
+ruby{ ruby-position:over; -webkit-ruby-position:before; }
+rt{ -webkit-user-select:none; user-select:none; }
