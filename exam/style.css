@@ -1239,3 +1239,11 @@ ruby rt{ font-size:var(--ruby-scale); letter-spacing:0; opacity:.92; }
 
 /* 小窓の中のふりがなも読める色に */
 .gloss-box ruby rt{ color:var(--ink-sub); opacity:1; }
+ruby { ruby-position: over; }
+ruby rt {
+  font-size: .55em;
+  font-weight: 500;
+  opacity: .8;
+  letter-spacing: 0;
+}
+.quiz-question, .choices-list li, #resultExplanation { line-height: 2.15; }
