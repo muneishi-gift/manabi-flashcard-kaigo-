@@ -1257,38 +1257,35 @@ function shuffleCards(){
 /* ================= 🔊 読み上げボタン（この塊だけ貼り付け） ================= */
 (function(){
   if(document.getElementById('speakBtn'))return;          /* 二重追加の保険 */
-  var main=document.getElementById('frontMain');
-  if(!main)return;
+  var front=document.getElementById('cardFront');
+  if(!front)return;
 
   /* ---- CSS を追加 ---- */
   var css=
-   '.front-main-row{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}'+
-   '.front-main-row>.card-front-main{min-width:0}'+
-   '.speak-btn{flex-shrink:0;width:44px;height:44px;padding:0;border-radius:50%;'+
+   '.speak-btn{position:absolute;top:12px;right:12px;z-index:3;'+
+   'width:44px;height:44px;padding:0;border-radius:50%;'+
    'border:2px solid var(--accent-light);background:var(--card-bg);color:var(--accent);'+
-   'font-size:1.25rem;line-height:1;cursor:pointer;display:flex;align-items:center;'+
+   'font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;'+
    'justify-content:center;box-shadow:0 2px 8px rgba(var(--accent-rgb),.18);'+
    'transition:transform .15s,background .2s,color .2s;-webkit-appearance:none;appearance:none}'+
    '.speak-btn:active{transform:scale(.9)}'+
    '.speak-btn.speaking{background:var(--accent);color:#fff}'+
-   '.speak-btn[hidden]{display:none}';
+   '.speak-btn[hidden]{display:none}'+
+   '.card-mastered-badge{right:66px}'+                    /* 「✓覚えた」と重ならないよう左へ */
+   '#cardFront{padding-top:62px}'+                        /* 文字がボタンの下に来ないよう余白 */
+   '#frontMain{word-break:normal;overflow-wrap:anywhere}';/* 長い文が枠から出ないよう折り返す */
   var st=document.createElement('style');
   st.appendChild(document.createTextNode(css));
   document.head.appendChild(st);
 
-  /* ---- 単語の横にボタンを置く ---- */
-  var row=document.createElement('div');
-  row.className='front-main-row';
-  main.parentNode.insertBefore(row,main);
-  row.appendChild(main);
-
+  /* ---- カード右上にボタンを置く ---- */
   var btn=document.createElement('button');
   btn.id='speakBtn';
   btn.className='speak-btn';
   btn.type='button';
   btn.setAttribute('aria-label','読み上げ');
   btn.textContent='🔊';
-  row.appendChild(btn);
+  front.appendChild(btn);
 
   /* ---- 読み上げ非対応ブラウザではボタンを隠す ---- */
   var TTS_OK=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
