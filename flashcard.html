@@ -1352,6 +1352,15 @@ function shuffleCards(){
     speakJa(getSpeakText());
   });
 })();
+/* ====== 🔊 裏返したらスピーカーを隠す（この塊だけ追加） ====== */
+(function(){
+  var css=
+   '.speak-btn{-webkit-backface-visibility:hidden;backface-visibility:hidden}'+
+   '.flip-container.flipped .speak-btn{opacity:0;visibility:hidden;pointer-events:none}';
+  var st=document.createElement('style');
+  st.appendChild(document.createTextNode(css));
+  document.head.appendChild(st);
+})();
 
 </script>
 </body>
