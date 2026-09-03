@@ -1254,6 +1254,108 @@ function shuffleCards(){
   chooseLang(lang);
 })();
 
+/* ================= 🔊 読み上げボタン（この塊だけ貼り付け） ================= */
+(function(){
+  if(document.getElementById('speakBtn'))return;          /* 二重追加の保険 */
+  var main=document.getElementById('frontMain');
+  if(!main)return;
+
+  /* ---- CSS を追加 ---- */
+  var css=
+   '.front-main-row{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}'+
+   '.front-main-row>.card-front-main{min-width:0}'+
+   '.speak-btn{flex-shrink:0;width:44px;height:44px;padding:0;border-radius:50%;'+
+   'border:2px solid var(--accent-light);background:var(--card-bg);color:var(--accent);'+
+   'font-size:1.25rem;line-height:1;cursor:pointer;display:flex;align-items:center;'+
+   'justify-content:center;box-shadow:0 2px 8px rgba(var(--accent-rgb),.18);'+
+   'transition:transform .15s,background .2s,color .2s;-webkit-appearance:none;appearance:none}'+
+   '.speak-btn:active{transform:scale(.9)}'+
+   '.speak-btn.speaking{background:var(--accent);color:#fff}'+
+   '.speak-btn[hidden]{display:none}';
+  var st=document.createElement('style');
+  st.appendChild(document.createTextNode(css));
+  document.head.appendChild(st);
+
+  /* ---- 単語の横にボタンを置く ---- */
+  var row=document.createElement('div');
+  row.className='front-main-row';
+  main.parentNode.insertBefore(row,main);
+  row.appendChild(main);
+
+  var btn=document.createElement('button');
+  btn.id='speakBtn';
+  btn.className='speak-btn';
+  btn.type='button';
+  btn.setAttribute('aria-label','読み上げ');
+  btn.textContent='🔊';
+  row.appendChild(btn);
+
+  /* ---- 読み上げ非対応ブラウザではボタンを隠す ---- */
+  var TTS_OK=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+  if(!TTS_OK){btn.hidden=true;return;}
+
+  /* ---- 日本語の声を選ぶ ---- */
+  var jaVoice=null;
+  function pickJaVoice(){
+    var list=window.speechSynthesis.getVoices()||[];
+    var ja=list.filter(function(v){return /^ja([-_]|$)/i.test(v.lang||'');});
+    if(!ja.length)return null;
+    var prefer=['Kyoko','Otoya','O-Ren','Hattori','Google 日本語','Google Japanese','Nanami','Ayumi','Haruka'];
+    for(var i=0;i<prefer.length;i++){
+      for(var j=0;j<ja.length;j++){
+        if((ja[j].name||'').indexOf(prefer[i])!==-1)return ja[j];
+      }
+    }
+    for(var k=0;k<ja.length;k++){if(ja[k].localService)return ja[k];}
+    return ja[0];
+  }
+  jaVoice=pickJaVoice();
+  window.speechSynthesis.onvoiceschanged=function(){jaVoice=pickJaVoice();};
+
+  /* ---- 今のカードから読み上げる文字列を作る ---- */
+  function getSpeakText(){
+    if(!displayData.length)return '';
+    var d=displayData[idx];
+    if(!d||!d.word)return '';
+    var raw=String(d.word).trim();
+    var m=raw.match(/^(.+?)（(.+?)）$/);
+    if(!m)return raw;
+    var base=m[1].trim();
+    var inner=m[2].replace(/[／\/].*$/,'').trim();
+    if(inner&&/^[\u3041-\u309F\u30A0-\u30FF\u30FC\u3000\s、，,・･ー]+$/.test(inner))return inner;
+    return base;
+  }
+
+  /* ---- 読み上げ実行 ---- */
+  function speakJa(text){
+    if(!text)return;
+    var synth=window.speechSynthesis;
+    if(synth.speaking||synth.pending){
+      synth.cancel();
+      btn.classList.remove('speaking');
+    }
+    if(!jaVoice)jaVoice=pickJaVoice();
+    var u=new SpeechSynthesisUtterance(String(text));
+    u.lang='ja-JP';
+    if(jaVoice)u.voice=jaVoice;
+    u.rate=0.85;   /* 速度：1が標準。ゆっくりにしたいなら 0.75 など */
+    u.pitch=1.05;  /* 高さ：1が標準 */
+    u.volume=1;
+    u.onstart=function(){btn.classList.add('speaking');};
+    u.onend=function(){btn.classList.remove('speaking');};
+    u.onerror=function(){btn.classList.remove('speaking');};
+    synth.speak(u);
+  }
+
+  /* ---- カードのめくり／スワイプと競合させない ---- */
+  btn.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    e.preventDefault();
+    speakJa(getSpeakText());
+  });
+})();
+
 </script>
 </body>
 </html>
