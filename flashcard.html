@@ -533,6 +533,78 @@ body.theme-dark .nav-btn{color:var(--ink)}
   background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;
   font-size:calc(.9rem * var(--fscale));font-weight:800;
 }
+
+/* ===== 「覚えた！」マイクロインタラクション ===== */
+.haptic-hidden{
+  position:absolute;width:1px;height:1px;opacity:0;
+  pointer-events:none;appearance:none;-webkit-appearance:none;border:0;
+}
+
+/* 星が舞うレイヤー */
+.fx-layer{position:fixed;inset:0;z-index:9500;pointer-events:none;overflow:hidden}
+
+.fx-star{
+  position:absolute;left:0;top:0;
+  font-size:var(--sz,18px);line-height:1;
+  transform:translate(-50%,-50%) scale(.2);
+  opacity:0;will-change:transform,opacity;
+  animation:fxStar var(--dur,820ms) cubic-bezier(.2,.75,.3,1) forwards;
+  animation-delay:var(--dl,0ms);
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
+}
+@keyframes fxStar{
+  0%  {opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0deg)}
+  18% {opacity:1;transform:translate(calc(-50% + var(--dx) * .34),calc(-50% + var(--dy) * .34)) scale(1.15) rotate(calc(var(--rot) * .3))}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 26px)) scale(.55) rotate(var(--rot))}
+}
+
+/* 中央からふわっと広がる光の輪 */
+.fx-ring{
+  position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;
+  transform:translate(-50%,-50%) scale(.3);
+  border:2px solid var(--btn-ok);opacity:.85;
+  animation:fxRing 620ms ease-out forwards;
+}
+@keyframes fxRing{
+  0%  {opacity:.85;transform:translate(-50%,-50%) scale(.3)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(3.4)}
+}
+
+/* 「+1」がふわっと上がる */
+.fx-plus{
+  position:absolute;left:0;top:0;
+  font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:#fff;
+  padding:4px 12px;border-radius:999px;background:var(--btn-ok);
+  transform:translate(-50%,-50%) scale(.6);opacity:0;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,.28);
+  animation:fxPlus 900ms cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes fxPlus{
+  0%  {opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  22% {opacity:1;transform:translate(-50%,calc(-50% - 16px)) scale(1)}
+  70% {opacity:1;transform:translate(-50%,calc(-50% - 34px)) scale(1)}
+  100%{opacity:0;transform:translate(-50%,calc(-50% - 52px)) scale(.9)}
+}
+
+/* ボタン自体がキュッと沈んで弾む */
+.judge-ok.fx-pop{animation:fxPop 420ms cubic-bezier(.34,1.56,.64,1)}
+@keyframes fxPop{
+  0%{transform:scale(1)}28%{transform:scale(.9)}
+  60%{transform:scale(1.06)}100%{transform:scale(1)}
+}
+
+/* 覚えた枚数のカウンタが一瞬光る */
+.fx-flash{animation:fxFlash 700ms ease-out}
+@keyframes fxFlash{
+  0%,100%{color:var(--ink-sub)}
+  25%{color:var(--btn-ok);transform:scale(1.12)}
+}
+
+/* 動きを減らす設定の端末では控えめに */
+@media(prefers-reduced-motion:reduce){
+  .fx-star,.fx-ring,.fx-plus,.judge-ok.fx-pop,.fx-flash{animation:none!important}
+  .fx-plus{opacity:1;animation:fxPlus 400ms linear forwards}
+}
 </style>
 </head>
 <body class="theme-light">
@@ -1727,6 +1799,131 @@ if('serviceWorker' in navigator){
   if(!lang||!LANG_META[lang])lang='ja';
   chooseLang(lang);
 })();
+
+/* =====================================================
+ *  「覚えた！」を押した瞬間の演出
+ *  ・ブルッと震える（Android=Vibration API / iOS=switch入力の回避策）
+ *  ・星がフワッと舞う＋光の輪＋「+1」
+ *  ★演出を止めたいときは FX_ON を false に
+ * ===================================================== */
+var FX_ON = true;
+var FX_STARS = ['⭐','✨','🌟','💫','⭐','✨'];  // 舞う絵文字はここで変更
+var FX_COUNT = 9;                               // 星の数
+
+var fxLayer, fxHapticInput, fxHapticLabel;
+
+function fxSetup(){
+  fxLayer = document.createElement('div');
+  fxLayer.className = 'fx-layer';
+  document.body.appendChild(fxLayer);
+
+  // iOS用：非標準の switch 属性つきチェックボックスを label 経由で叩くと振動する
+  fxHapticInput = document.createElement('input');
+  fxHapticInput.type = 'checkbox';
+  fxHapticInput.setAttribute('switch','');
+  fxHapticInput.id = 'fxHapticSwitch';
+  fxHapticInput.className = 'haptic-hidden';
+  fxHapticInput.setAttribute('aria-hidden','true');
+  fxHapticInput.tabIndex = -1;
+
+  fxHapticLabel = document.createElement('label');
+  fxHapticLabel.setAttribute('for','fxHapticSwitch');
+  fxHapticLabel.className = 'haptic-hidden';
+  fxHapticLabel.setAttribute('aria-hidden','true');
+
+  document.body.appendChild(fxHapticInput);
+  document.body.appendChild(fxHapticLabel);
+}
+
+/* 振動。pattern は Android のみ有効（例: 18 / [12,40,18]） */
+function fxHaptic(pattern){
+  try{
+    if(navigator.vibrate) navigator.vibrate(pattern || 18);
+  }catch(e){}
+  try{
+    if(fxHapticLabel) fxHapticLabel.click();   // iOS向け
+  }catch(e){}
+}
+
+/* 星を舞わせる。x,y は画面上の座標 */
+function fxBurst(x, y, opt){
+  if(!fxLayer) return;
+  opt = opt || {};
+
+  // 光の輪
+  var ring = document.createElement('span');
+  ring.className = 'fx-ring';
+  ring.style.left = x + 'px';
+  ring.style.top  = y + 'px';
+  fxLayer.appendChild(ring);
+  setTimeout(function(){ ring.remove(); }, 700);
+
+  // 星
+  var n = opt.count || FX_COUNT;
+  for(var i = 0; i < n; i++){
+    var s = document.createElement('span');
+    s.className = 'fx-star';
+    s.textContent = FX_STARS[Math.floor(Math.random() * FX_STARS.length)];
+
+    // 上半分に扇状に飛ばす
+    var ang  = (-150 + Math.random() * 120) * Math.PI / 180;
+    var dist = 55 + Math.random() * 75;
+
+    s.style.left = x + 'px';
+    s.style.top  = y + 'px';
+    s.style.setProperty('--dx',  Math.cos(ang) * dist + 'px');
+    s.style.setProperty('--dy',  Math.sin(ang) * dist + 'px');
+    s.style.setProperty('--rot', (Math.random() * 300 - 150) + 'deg');
+    s.style.setProperty('--sz',  (14 + Math.random() * 12) + 'px');
+    s.style.setProperty('--dur', (700 + Math.random() * 320) + 'ms');
+    s.style.setProperty('--dl',  Math.floor(Math.random() * 90) + 'ms');
+
+    fxLayer.appendChild(s);
+    (function(el){ setTimeout(function(){ el.remove(); }, 1300); })(s);
+  }
+
+  // 「+1」
+  if(opt.plus){
+    var p = document.createElement('span');
+    p.className = 'fx-plus';
+    p.textContent = opt.plus;
+    p.style.left = x + 'px';
+    p.style.top  = y + 'px';
+    fxLayer.appendChild(p);
+    setTimeout(function(){ p.remove(); }, 1000);
+  }
+}
+
+/* 「覚えた！」ボタンを後乗りで監視（既存の処理はそのまま動く） */
+function fxBindJudge(){
+  document.addEventListener('click', function(e){
+    if(!FX_ON) return;
+    var btn = e.target && e.target.closest ? e.target.closest('.judge-ok') : null;
+    if(!btn) return;
+
+    fxHaptic([14, 30, 22]);
+
+    var r = btn.getBoundingClientRect();
+    fxBurst(r.left + r.width / 2, r.top + r.height / 2 - 6, { plus: '+1' });
+
+    btn.classList.remove('fx-pop');
+    void btn.offsetWidth;          // アニメを再生し直すためのリセット
+    btn.classList.add('fx-pop');
+    setTimeout(function(){ btn.classList.remove('fx-pop'); }, 440);
+
+    // 「覚えた ○ / ○」の数字を一瞬光らせる
+    var meta = document.querySelector('.p-meta');
+    if(meta){
+      meta.classList.remove('fx-flash');
+      void meta.offsetWidth;
+      meta.classList.add('fx-flash');
+      setTimeout(function(){ meta.classList.remove('fx-flash'); }, 720);
+    }
+  }, true);   // capture＝既存 onclick より先に確実に拾う
+}
+
+fxSetup();
+fxBindJudge();
 </script>
 </body>
 </html>
