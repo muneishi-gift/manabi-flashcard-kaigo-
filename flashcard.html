@@ -348,6 +348,21 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   box-shadow:0 4px 16px rgba(var(--accent-rgb),.42);
 }
 .part-btn.active .part-count{opacity:.85}
+.part-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ===== 学習レベル選択（パート選択と同じ見た目・1行ずつ） ===== */
+.level-box{
+  background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.25);border-radius:22px;
+  padding:16px 18px;max-width:440px;width:100%;
+}
+.level-title{
+  font-size:calc(.82rem * var(--fscale));font-weight:800;color:var(--text);opacity:.75;
+  margin-bottom:10px;letter-spacing:.02em;
+}
+.level-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.level-grid .part-btn{flex:1 1 100%;max-width:none}
+.level-grid .part-btn .part-name{font-size:calc(.84rem * var(--fscale));line-height:1.45}
 
 /* ===== 文字の大きさ 選択 ===== */
 .size-box{
@@ -435,7 +450,7 @@ header{
   box-shadow:0 2px 12px rgba(var(--accent-rgb),.3);
   position:sticky;top:0;z-index:100;
 }
-header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6px}
+header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .header-part{
   font-size:.68rem;font-weight:700;background:rgba(255,255,255,.22);
   padding:2px 9px;border-radius:10px;margin-left:2px;white-space:nowrap;
@@ -518,8 +533,8 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   letter-spacing:.02em;
 }
 .card-level-tag{
-  position:absolute;top:32px;left:16px;
-  font-size:.62rem;font-weight:700;color:var(--accent);opacity:.55;
+  position:absolute;top:32px;left:16px;right:70px;text-align:left;
+  font-size:.62rem;font-weight:700;color:var(--accent);opacity:.55;line-height:1.35;
 }
 .card-mastered-badge{
   position:absolute;top:10px;right:66px;
@@ -795,7 +810,8 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
     <p>
       <span class="icon">👆</span> タップでカードを裏返す<br>
       <span class="icon">👈👉</span> スワイプでカード切り替え<br>
-      <span class="icon">🎚</span> レベル別（日常会話・初任者・実務者）に絞って学習できます<br>
+      <span class="icon">🎚</span> 学習レベル（日常生活・初任者研修・実務者研修）で絞れます<br>
+      <span class="icon">📚</span> Aパート・Bパート・Cパートごとに練習できます<br>
       <span class="icon">🔤</span> カード左下のスイッチでふりがなON/OFF<br>
       <span class="icon">🔍</span> 文字の大きさを 標準・大・特大 から選べます
     </p>
@@ -814,8 +830,16 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 
 <!-- ===== START SCREEN ===== -->
 <div class="start-screen" id="startScreen">
+
+  <!-- ★ 学習レベル（G列） ★ -->
+  <div class="level-box" id="levelBox">
+    <div class="level-title" id="levelTitle">🎚 学習するレベル</div>
+    <div class="level-grid" id="levelGrid"></div>
+  </div>
+
+  <!-- ★ パートごと（B列） ★ -->
   <div class="part-box" id="partBox">
-    <div class="part-title" id="partTitle">🎚 学習するレベルを選ぶ</div>
+    <div class="part-title" id="partTitle">📚 パートごと</div>
     <div class="part-grid" id="partGrid"></div>
   </div>
 
@@ -842,7 +866,7 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 <!-- ===== MAIN APP ===== -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
   <header>
-    <h2 id="headerTitle">📖 学習中<span class="header-part" id="headerPart"></span></h2>
+    <h2 id="headerTitle">📖 学習中<span class="header-part" id="headerLevel"></span><span class="header-part" id="headerPart"></span></h2>
     <div class="header-btns">
       <button class="hbtn" id="btnSize" onclick="cycleFontSize()">🔍A</button>
       <button class="hbtn" id="btnWeak" onclick="toggleWeakMode()">😤</button>
@@ -921,20 +945,43 @@ const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirv
 /* 言語コード → スプレッドシートの列見出しの接頭辞 */
 const LANG_PREFIX={id:'ID',th:'TH',vi:'VI',en:'EN',my:'MY',ne:'NE',mn:'MN'};
 
-/* ===== パート（Part列の値）のラベル =====
-   ここに無い記号がデータに現れた場合は、記号そのままボタンに表示されます。
-   並び順もこの順番が優先されます。 */
-const PART_ORDER=['L','K1','K2','Z'];
-const PART_LABEL={
-  L :{ja:'日常会話',      en:'Daily conversation', short:'日常会話'},
-  K1:{ja:'初任者研修',    en:'Initial training',   short:'初任者'},
-  K2:{ja:'実務者研修',    en:'Practitioner',       short:'実務者'},
-  Z :{ja:'設問共通',      en:'Exam phrases',       short:'設問共通'}
+/* ============================================================
+   B列＝パート（A / B / C / Z）
+   ここに無い記号がデータに現れた場合は、記号がそのまま表示されます。
+   ============================================================ */
+const PART_ORDER=['A','B','C','Z'];
+/* 「{X}」の部分に A / B / C が入ります */
+const PART_WORD={
+  ja:'{X}パート', en:'Part {X}', id:'Bagian {X}', vi:'Phần {X}',
+  th:'ส่วน {X}', my:'အပိုင်း {X}', ne:'भाग {X}', mn:'{X} хэсэг'
+};
+/* Z（設問共通）だけ別の言い方 */
+const PART_Z_TEXT={
+  ja:'設問共通', en:'Common exam phrases', id:'Umum untuk soal', vi:'Dùng chung trong đề thi',
+  th:'คำที่ใช้ร่วมในข้อสอบ', my:'မေးခွန်းများတွင် အသုံးများ', ne:'प्रश्नमा साझा', mn:'Асуултад нийтлэг'
 };
 
+/* ============================================================
+   G列＝学習レベル（L / K1 / K2）
+   訳文を直したいときは、この表の文字だけ書き換えてください。
+   ============================================================ */
+const LEVEL_ORDER=['L','K1','K2'];
+const LEVEL_TEXT={
+  ja:{L:'日常生活レベル',              K1:'介護職員初任者研修レベル',            K2:'介護職員実務者研修レベル'},
+  en:{L:'Daily life level',            K1:'Initial caregiver training',          K2:'Practical caregiver training'},
+  id:{L:'Tingkat kehidupan harian',    K1:'Pelatihan dasar perawat',             K2:'Pelatihan praktisi perawat'},
+  vi:{L:'Trình độ sinh hoạt hằng ngày',K1:'Đào tạo sơ cấp điều dưỡng',           K2:'Đào tạo thực hành điều dưỡng'},
+  th:{L:'ระดับชีวิตประจำวัน',           K1:'อบรมผู้ดูแลระดับต้น',                  K2:'อบรมผู้ดูแลระดับปฏิบัติ'},
+  my:{L:'နေ့စဉ်ဘဝ အဆင့်',             K1:'ပြုစုစောင့်ရှောက်မှု အခြေခံသင်တန်း',   K2:'ပြုစုစောင့်ရှောက်မှု လက်တွေ့သင်တန်း'},
+  ne:{L:'दैनिक जीवन स्तर',              K1:'हेरचाहकर्मी प्रारम्भिक तालिम',          K2:'हेरचाहकर्मी व्यावहारिक तालिम'},
+  mn:{L:'Ахуйн харилцааны түвшин',     K1:'Сувилагчийн анхан шатны сургалт',     K2:'Сувилагчийн дадлагын сургалт'}
+};
+/* ヘッダー・カードの小さなタグ用（日本語画面だけで使用） */
+const LEVEL_SHORT={L:'日常生活',K1:'初任者研修',K2:'実務者研修'};
+
 let allData=[],partData=[],displayData=[],currentLang='',idx=0,weakMode=false;
-let currentPart='ALL';
-let partList=[];
+let currentLevel='ALL',currentPart='ALL';
+let levelList=[],partList=[];
 
 /* ===== 過去問アプリからの単語指定（?word=…） ===== */
 let pendingWord='';
@@ -984,7 +1031,7 @@ function normalizeWord(s){
     .trim();
 }
 
-/* 単語検索は「全パート」から探す（絞り込み中でも見つかるように） */
+/* 単語検索は「全データ」から探す（絞り込み中でも見つかるように） */
 function findCardIndexInAll(word){
   const target=normalizeWord(word);
   if(!target)return -1;
@@ -1019,9 +1066,9 @@ function jumpToPendingWord(){
     showCheer('🔍','「'+word+'」のカードはまだありません。\nリクエストいただければ追加します！');
     return;
   }
-  /* 見つかった単語のパートに自動で切り替える */
+  /* 絞り込みを解除してから、その単語まで移動する */
   const target=allData[i];
-  setPart('ALL',true);
+  resetFilters();
   startQuiz(false);
   for(let k=0;k<displayData.length;k++){
     if(displayData[k].no===target.no){idx=k;break;}
@@ -1067,7 +1114,7 @@ function updateSrs(no,ok){
   srsData[key]=rec;
 }
 
-/* 復習対象は「選択中のパート」の中から探す */
+/* 復習対象は「いま絞り込んでいる範囲」から探す */
 function getDueCards(){
   const now=Date.now();
   return partData.filter(function(d){
@@ -1243,6 +1290,21 @@ const LANG_META={
       backBtn:'← Хэл сонгох руу буцах'}
 };
 
+/* ===== レベル／パートの見出しを LANG_META に追加 ===== */
+const EXTRA_META={
+  ja:{levelTitle:'🎚 学習するレベル',   partTitle:'📚 パートごと',       allLevels:'ぜんぶ'},
+  en:{levelTitle:'🎚 Study level',      partTitle:'📚 By part',          allLevels:'All'},
+  id:{levelTitle:'🎚 Tingkat belajar',  partTitle:'📚 Per bagian',       allLevels:'Semua'},
+  vi:{levelTitle:'🎚 Trình độ học',     partTitle:'📚 Theo phần',        allLevels:'Tất cả'},
+  th:{levelTitle:'🎚 ระดับการเรียน',    partTitle:'📚 แยกตามส่วน',       allLevels:'ทั้งหมด'},
+  my:{levelTitle:'🎚 လေ့လာမည့် အဆင့်', partTitle:'📚 အပိုင်းအလိုက်',    allLevels:'အားလုံး'},
+  ne:{levelTitle:'🎚 अध्ययन स्तर',      partTitle:'📚 भाग अनुसार',       allLevels:'सबै'},
+  mn:{levelTitle:'🎚 Сурах түвшин',     partTitle:'📚 Хэсэг тус бүр',    allLevels:'Бүгд'}
+};
+Object.keys(EXTRA_META).forEach(function(k){
+  if(LANG_META[k])Object.assign(LANG_META[k],EXTRA_META[k]);
+});
+
 const CHEERS=[
   {at:10,emoji:'🌟',msg:'すごい！10問クリア！\nGreat! 10 cards done!'},
   {at:25,emoji:'🔥',msg:'25問突破！調子いいね！\n25 cards! Keep going!'},
@@ -1376,12 +1438,15 @@ function chooseLang(lang){
   loadMastered();
   loadSrs();
   loadFuri();
+  loadLevel();
   loadPart();
   loadFontSize();
   applyFontSize();
   const meta=LANG_META[lang]||LANG_META.ja;
   const ft=document.getElementById('furiText');
   if(ft)ft.textContent=meta.furiLabel;
+  const lt=document.getElementById('levelTitle');
+  if(lt)lt.textContent=meta.levelTitle;
   const pt=document.getElementById('partTitle');
   if(pt)pt.textContent=meta.partTitle;
   document.getElementById('landing').style.display='none';
@@ -1389,90 +1454,178 @@ function chooseLang(lang){
   loadDataForStart(false);
 }
 
-/* ========== パート絞り込み ========== */
-function loadPart(){
-  try{
-    const v=localStorage.getItem('kaigo-part');
-    currentPart=v?v:'ALL';
-  }catch(e){currentPart='ALL';}
-}
-function savePart(){
-  try{localStorage.setItem('kaigo-part',currentPart);}catch(e){}
+/* ============================================================
+   絞り込み（G列＝学習レベル × B列＝パート）
+   ============================================================ */
+/* 全角・小文字・空白のゆらぎをそろえる（ａ→A、"K1 "→"K1"） */
+function normCode(s){
+  if(s==null)return '';
+  return String(s)
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);})
+    .replace(/[\s\u3000]/g,'').toUpperCase().trim();
 }
 
-/* パート記号 → 表示名 */
+function loadLevel(){
+  try{const v=localStorage.getItem('kaigo-level');currentLevel=v?v:'ALL';}catch(e){currentLevel='ALL';}
+}
+function saveLevel(){try{localStorage.setItem('kaigo-level',currentLevel);}catch(e){}}
+function loadPart(){
+  try{const v=localStorage.getItem('kaigo-part');currentPart=v?v:'ALL';}catch(e){currentPart='ALL';}
+}
+function savePart(){try{localStorage.setItem('kaigo-part',currentPart);}catch(e){}}
+
+/* ---- 表示名 ---- */
+function levelLabel(code){
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  if(code==='ALL')return meta.allLevels||meta.allParts;
+  const t=LEVEL_TEXT[currentLang]||LEVEL_TEXT.ja;
+  return t[code]||code;
+}
 function partLabel(code){
   const meta=LANG_META[currentLang]||LANG_META.ja;
   if(code==='ALL')return meta.allParts;
-  const L=PART_LABEL[code];
-  if(!L)return code;
-  return (currentLang==='ja')?L.ja:(L.en+' / '+L.ja);
+  if(code==='Z')return PART_Z_TEXT[currentLang]||PART_Z_TEXT.ja;
+  const tpl=PART_WORD[currentLang]||PART_WORD.ja;
+  return tpl.replace('{X}',code);
 }
-function partShort(code){
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  if(code==='ALL')return meta.allParts;
-  const L=PART_LABEL[code];
-  return L?L.short:code;
-}
+function partShort(code){return partLabel(code);}
 
-/* データに存在するパートを集めて並べる */
-function buildPartList(){
-  const seen={};
-  allData.forEach(function(d){
-    const p=d.part||'';
-    if(p)seen[p]=(seen[p]||0)+1;
-  });
-  const codes=Object.keys(seen);
-  codes.sort(function(a,b){
-    const ia=PART_ORDER.indexOf(a),ib=PART_ORDER.indexOf(b);
+/* ---- データに実在する記号を集めて並べる ---- */
+function sortCodes(codes,order){
+  return codes.slice().sort(function(a,b){
+    const ia=order.indexOf(a),ib=order.indexOf(b);
     if(ia>=0&&ib>=0)return ia-ib;
     if(ia>=0)return -1;
     if(ib>=0)return 1;
     return a.localeCompare(b);
   });
-  partList=codes.map(function(c){return {code:c,count:seen[c]};});
-  /* 保存されていたパートが今のデータに無ければ「ぜんぶ」に戻す */
-  if(currentPart!=='ALL'&&codes.indexOf(currentPart)===-1)currentPart='ALL';
+}
+function buildFilterLists(){
+  const lv={},pt={};
+  allData.forEach(function(d){
+    if(d.level)lv[d.level]=1;
+    if(d.part)pt[d.part]=1;
+  });
+  levelList=sortCodes(Object.keys(lv),LEVEL_ORDER);
+  partList =sortCodes(Object.keys(pt),PART_ORDER);
+  if(currentLevel!=='ALL'&&levelList.indexOf(currentLevel)<0)currentLevel='ALL';
+  if(currentPart !=='ALL'&&partList.indexOf(currentPart) <0)currentPart ='ALL';
+}
+
+function matchLevel(d,code){return code==='ALL'||d.level===code;}
+function matchPart(d,code){return code==='ALL'||d.part===code;}
+
+/* 組み合わせたときの語数（ボタンの「○語」用） */
+function countBy(levelCode,partCode){
+  let n=0;
+  for(let i=0;i<allData.length;i++){
+    if(matchLevel(allData[i],levelCode)&&matchPart(allData[i],partCode))n++;
+  }
+  return n;
+}
+
+/* レベルとパートの両方を適用 */
+function applyFilters(){
+  partData=allData.filter(function(d){
+    return matchLevel(d,currentLevel)&&matchPart(d,currentPart);
+  });
+}
+
+function makeFilterBtn(name,count,active,onClick){
+  const b=document.createElement('button');
+  b.type='button';
+  b.className='part-btn'+(active?' active':'');
+  const n=document.createElement('span');
+  n.className='part-name';n.textContent=name;
+  const c=document.createElement('span');
+  c.className='part-count';c.textContent=count+' 語';
+  b.appendChild(n);b.appendChild(c);
+  if(count===0&&!active)b.disabled=true;
+  b.addEventListener('click',onClick);
+  return b;
+}
+
+function renderLevelButtons(){
+  const grid=document.getElementById('levelGrid');
+  const box=document.getElementById('levelBox');
+  if(!grid||!box)return;
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  const t=document.getElementById('levelTitle');
+  if(t)t.textContent=meta.levelTitle;
+  if(levelList.length<=1){box.style.display='none';return;}
+  box.style.display='block';
+  grid.innerHTML='';
+  grid.appendChild(makeFilterBtn(
+    levelLabel('ALL'),countBy('ALL',currentPart),currentLevel==='ALL',
+    function(){setLevel('ALL');}
+  ));
+  levelList.forEach(function(code){
+    grid.appendChild(makeFilterBtn(
+      code+'：'+levelLabel(code),countBy(code,currentPart),currentLevel===code,
+      function(){setLevel(code);}
+    ));
+  });
 }
 
 function renderPartButtons(){
   const grid=document.getElementById('partGrid');
   const box=document.getElementById('partBox');
   if(!grid||!box)return;
-
-  /* パートが1種類以下なら、選ぶ意味がないので隠す */
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  const t=document.getElementById('partTitle');
+  if(t)t.textContent=meta.partTitle;
   if(partList.length<=1){box.style.display='none';return;}
   box.style.display='block';
-
   grid.innerHTML='';
-  const items=[{code:'ALL',count:allData.length}].concat(partList);
-  items.forEach(function(it){
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='part-btn'+(it.code===currentPart?' active':'');
-    const n=document.createElement('span');
-    n.className='part-name';
-    n.textContent=(it.code==='ALL')?partShort('ALL'):(it.code+'：'+partShort(it.code));
-    const c=document.createElement('span');
-    c.className='part-count';
-    c.textContent=it.count+' 語';
-    b.appendChild(n);b.appendChild(c);
-    b.addEventListener('click',function(){setPart(it.code,false);});
-    grid.appendChild(b);
+  grid.appendChild(makeFilterBtn(
+    partLabel('ALL'),countBy(currentLevel,'ALL'),currentPart==='ALL',
+    function(){setPart('ALL');}
+  ));
+  partList.forEach(function(code){
+    grid.appendChild(makeFilterBtn(
+      partLabel(code),countBy(currentLevel,code),currentPart===code,
+      function(){setPart(code);}
+    ));
   });
 }
 
-function applyPartFilter(){
-  if(currentPart==='ALL'){partData=allData.slice();}
-  else{partData=allData.filter(function(d){return d.part===currentPart;});}
+function setLevel(code,silent){
+  currentLevel=code;saveLevel();applyFilters();
+  renderLevelButtons();renderPartButtons();
+  if(!silent)updateStartScreen();
+}
+function setPart(code,silent){
+  currentPart=code;savePart();applyFilters();
+  renderLevelButtons();renderPartButtons();
+  if(!silent)updateStartScreen();
+}
+function resetFilters(){
+  currentLevel='ALL';currentPart='ALL';
+  saveLevel();savePart();applyFilters();
+  renderLevelButtons();renderPartButtons();
 }
 
-function setPart(code,silent){
-  currentPart=code;
-  savePart();
-  applyPartFilter();
-  renderPartButtons();
-  if(!silent)updateStartScreen();
+/* いまの絞り込みを文字にする */
+function scopeLabel(){
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  const a=[];
+  if(currentLevel!=='ALL')a.push(currentLevel+'：'+levelLabel(currentLevel));
+  if(currentPart !=='ALL')a.push(partLabel(currentPart));
+  return a.length?a.join(' × '):(meta.allParts);
+}
+function updateHeaderBadges(){
+  const hl=document.getElementById('headerLevel');
+  const hp=document.getElementById('headerPart');
+  if(hl){
+    const s=LEVEL_SHORT[currentLevel];
+    const txt=(currentLevel==='ALL')?'':(currentLevel+((currentLang==='ja'&&s)?'：'+s:''));
+    hl.textContent=txt;
+    hl.style.display=txt?'inline-block':'none';
+  }
+  if(hp){
+    hp.textContent=partLabel(currentPart);
+    hp.style.display='inline-block';
+  }
 }
 
 /* ========== CSV 読み込み（列は「見出し名」で探す） ========== */
@@ -1513,12 +1666,12 @@ function loadDataForStart(force){
       head.forEach(function(h,i){if(h!==''&&H[h]===undefined)H[h]=i;});
 
       const cNo   =pickCol(H,head,'行ID','行ID',0);
-      const cPart =(H['Part']!==undefined)?H['Part']:1;
+      const cPart =(H['Part']!==undefined)?H['Part']:1;      /* B列 */
       const cSubj =(H['科目']!==undefined)?H['科目']:2;
       const cType =(H['種類']!==undefined)?H['種類']:3;
       const cWord =pickCol(H,head,'語（ふりがな付き）','語（',4);
       const cMean =pickCol(H,head,'意味（日本語・ふりがな付き）','意味（',5);
-      const cLevel=(H['レベル']!==undefined)?H['レベル']:6;
+      const cLevel=(H['レベル']!==undefined)?H['レベル']:6;  /* G列 */
 
       const LC={};
       Object.keys(LANG_PREFIX).forEach(function(lk){
@@ -1540,10 +1693,10 @@ function loadDataForStart(force){
           no:no,
           word:word,
           meaning:cell(row,cMean),
-          part:cell(row,cPart),
+          part:normCode(cell(row,cPart)),
           subject:cell(row,cSubj),
           type:cell(row,cType),
-          level:cell(row,cLevel),
+          level:normCode(cell(row,cLevel)),
           t:{}
         };
         Object.keys(LANG_PREFIX).forEach(function(lk){
@@ -1552,8 +1705,9 @@ function loadDataForStart(force){
         allData.push(o);
       }
 
-      buildPartList();
-      applyPartFilter();
+      buildFilterLists();
+      applyFilters();
+      renderLevelButtons();
       renderPartButtons();
       renderSizeButtons();
       restoreReloadBtn();
@@ -1594,8 +1748,7 @@ function updateStartScreen(){
   const m=partData.filter(function(d){return masteredSet.has(d.no);}).length;
   const pct=total?Math.round(m/total*100):0;
 
-  document.getElementById('startScope').textContent=
-    (currentPart==='ALL'?'':currentPart+'：')+partLabel(currentPart)+'（'+total+'）';
+  document.getElementById('startScope').textContent=scopeLabel()+'（'+total+'）';
   document.getElementById('startMastered').textContent='🎯 '+meta.masteredLabel+'：'+m+' / '+total;
   document.getElementById('startBarFill').style.width=pct+'%';
   document.getElementById('startLetsTry').textContent=meta.letsTry;
@@ -1639,8 +1792,7 @@ function startQuiz(mode){
   document.getElementById('bottomBar').style.display='flex';
   const meta=LANG_META[currentLang]||LANG_META.ja;
   document.getElementById('headerTitle').firstChild.nodeValue=meta.header;
-  document.getElementById('headerPart').textContent=
-    (currentPart==='ALL')?partShort('ALL'):(currentPart+'：'+partShort(currentPart));
+  updateHeaderBadges();
   document.getElementById('hintBar').innerHTML='<span>'+meta.hintTap+'</span><span>'+meta.hintSwipe+'</span>';
   document.getElementById('judgeOk').textContent=meta.okBtn;
   document.getElementById('judgeAgain').textContent=meta.againBtn;
@@ -1655,6 +1807,7 @@ function backToStart(){
   document.getElementById('bottomBar').style.display='none';
   document.getElementById('startScreen').style.display='flex';
   weakMode=false;
+  renderLevelButtons();
   renderPartButtons();
   renderSizeButtons();
   updateStartScreen();
@@ -1708,7 +1861,7 @@ function showCard(){
   document.getElementById('progressPct').textContent=pct+'%';
   document.getElementById('progressText').textContent=(idx+1)+' / '+total;
 
-  /* 覚えた数は「選択中のパート」の中で数える */
+  /* 覚えた数は「いま絞り込んでいる範囲」の中で数える */
   const scopeTotal=partData.length;
   const mCount=partData.filter(function(x){return masteredSet.has(x.no);}).length;
   const mPct=scopeTotal?Math.round(mCount/scopeTotal*100):0;
@@ -1721,8 +1874,15 @@ function showCard(){
 
   document.getElementById('cardNum').textContent=d.no;
   document.getElementById('cardNumBack').textContent=d.no;
-  document.getElementById('cardLevelTag').textContent=
-    d.level?(d.level+(d.subject?' / '+d.subject:'')):(d.subject||'');
+
+  /* カード左上のタグ：パート／レベル／科目 */
+  (function(){
+    const tag=[];
+    if(d.part)tag.push(partLabel(d.part));
+    if(d.level)tag.push(d.level+((currentLang==='ja'&&LEVEL_SHORT[d.level])?'：'+LEVEL_SHORT[d.level]:''));
+    if(d.subject)tag.push(d.subject);
+    document.getElementById('cardLevelTag').textContent=tag.join(' / ');
+  })();
 
   const badge=document.getElementById('masteredBadge');
   const srsRec=srsData[String(d.no)];
