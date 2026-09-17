@@ -30,71 +30,73 @@ body::before{
 }
 body>*{position:relative;z-index:1}
 
-/* ===== ふりがな（ルビ）===== */
+/* ===== ふりがな（ルビ）=====
+   ルビは行の上に出るので、ルビが載る行は line-height を広めに取る */
 ruby{ruby-position:over;-webkit-ruby-position:before}
 rt{
-  font-size:.52em;font-weight:400;letter-spacing:0;
-  opacity:.85;line-height:1.1;
-  transform:translateY(.12em);
+  font-size:.5em;font-weight:400;letter-spacing:0;
+  line-height:1;opacity:.8;user-select:none;
+  transform:translateY(.1em);
 }
-/* ふりがなを消したいときは、この行のコメントを外す
+/* ふりがなを全部消したいときは下のコメントを外す
 rt{display:none}
 */
 
 .top-container{
   display:flex;flex-direction:column;align-items:center;
-  min-height:100dvh;gap:20px;padding:32px 20px;
-  text-align:center;width:100%;max-width:600px;
+  min-height:100dvh;gap:0;padding:28px 18px 40px;
+  text-align:center;width:100%;max-width:560px;
 }
 
-.brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
-.brand-logo{animation:float 3s ease-in-out infinite}
+/* ===== ブランド ===== */
+.brand{display:flex;flex-direction:column;align-items:center;gap:4px}
+.brand-logo{animation:float 3.4s ease-in-out infinite}
 .brand-logo img{
-  width:clamp(100px,25vw,160px);height:auto;border-radius:20px;
-  filter:drop-shadow(0 6px 20px rgba(255,255,255,.25));object-fit:contain;
+  width:clamp(96px,23vw,150px);height:auto;border-radius:20px;
+  filter:drop-shadow(0 6px 20px rgba(255,255,255,.22));object-fit:contain;
 }
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .brand h1{
   font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(1.4rem,4.5vw,2.2rem);font-weight:800;letter-spacing:-.02em;
+  font-size:clamp(1.4rem,4.6vw,2.1rem);font-weight:800;letter-spacing:-.02em;
   background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.brand-sub{font-size:clamp(.8rem,2.2vw,.95rem);opacity:.6;font-weight:300}
+.brand-sub{font-size:clamp(.78rem,2.2vw,.9rem);opacity:.55;font-weight:400;letter-spacing:.04em}
 
 /* ===== 試験カウントダウン ===== */
 .countdown{
-  width:100%;padding:16px 20px 18px;border-radius:22px;
-  background:rgba(255,255,255,.07);
+  width:100%;margin-top:22px;padding:15px 18px 16px;border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
   border:1px solid rgba(255,255,255,.16);
-  backdrop-filter:blur(8px);
-  display:flex;flex-direction:column;align-items:center;gap:6px;
+  backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;gap:2px;
   position:relative;overflow:hidden;
-  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  box-shadow:0 10px 28px rgba(0,0,0,.22);
   --cd-accent:#60a5fa;--cd-glow:rgba(96,165,250,.45);
 }
 .countdown::after{
   content:'';position:absolute;left:0;right:0;top:0;height:3px;
-  background:var(--cd-accent);
+  background:linear-gradient(90deg,transparent,var(--cd-accent),transparent);
 }
 .cd-title{
-  font-size:.72rem;font-weight:700;letter-spacing:.03em;line-height:2.1;
-  color:rgba(255,255,255,.62);
+  font-size:.68rem;font-weight:700;letter-spacing:.02em;line-height:2.2;
+  color:rgba(255,255,255,.6);
 }
 .cd-main{
-  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
-  justify-content:center;line-height:2;
-  font-size:clamp(.9rem,2.6vw,1.05rem);font-weight:700;
+  display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+  justify-content:center;line-height:1.9;
+  font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
 }
 .cd-num{
   font-family:'Poppins',sans-serif;font-weight:800;
-  font-size:clamp(2.3rem,9vw,3.3rem);line-height:1;
-  color:var(--cd-accent);text-shadow:0 0 18px var(--cd-glow);
+  font-size:clamp(2.4rem,10vw,3.4rem);line-height:1;
+  color:var(--cd-accent);text-shadow:0 0 20px var(--cd-glow);
 }
-.cd-unit{font-size:.9rem;font-weight:700;opacity:.85}
+.cd-unit{font-size:.88rem;font-weight:700;opacity:.85}
 .cd-msg{
-  font-size:.78rem;font-weight:700;line-height:2;text-align:center;
-  color:rgba(255,255,255,.78);
+  font-size:.74rem;font-weight:700;line-height:2.1;text-align:center;
+  color:rgba(255,255,255,.72);margin-top:2px;
 }
 .countdown.calm {--cd-accent:#34d399;--cd-glow:rgba(52,211,153,.45)}
 .countdown.blue {--cd-accent:#60a5fa;--cd-glow:rgba(96,165,250,.45)}
@@ -105,132 +107,149 @@ rt{display:none}
 .countdown.hurry .cd-num{animation:cdPulse 1.6s ease-in-out infinite}
 @keyframes cdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 
+/* ===== セクション見出し ===== */
 .section-title{
-  font-size:.8rem;color:rgba(255,255,255,.45);font-weight:700;
-  margin-top:24px;margin-bottom:10px;letter-spacing:.05em;
-  align-self:flex-start;padding-left:4px;
+  align-self:stretch;display:flex;align-items:center;gap:10px;
+  font-size:clamp(1.02rem,3.2vw,1.2rem);font-weight:800;letter-spacing:.03em;
+  color:rgba(255,255,255,.92);margin:30px 0 14px;text-align:left;
+}
+.section-title::before{
+  content:'';width:4px;height:1.05em;border-radius:99px;flex:none;
+  background:linear-gradient(180deg,#a78bfa,#60a5fa);
+}
+.section-title::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,.18),transparent);
 }
 
-.menu-list{
-  list-style:none;display:flex;flex-direction:column;
-  gap:14px;width:100%;
-}
+/* ===== メニューカード ===== */
+.menu-list{list-style:none;display:flex;flex-direction:column;gap:13px;width:100%}
 
 .menu-card{
-  display:flex;align-items:center;gap:18px;
-  width:100%;padding:24px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.15);
-  cursor:pointer;text-decoration:none;color:#fff;
-  transition:transform .25s,box-shadow .25s,border-color .25s,background .25s;
-  backdrop-filter:blur(8px);position:relative;overflow:hidden;
+  display:grid;grid-template-columns:auto 1fr auto;
+  align-items:center;gap:15px;
+  width:100%;padding:17px 16px;border-radius:22px;
+  border:1px solid rgba(255,255,255,.2);
+  text-decoration:none;color:#fff;
+  position:relative;overflow:hidden;isolation:isolate;
+  box-shadow:0 8px 22px rgba(0,0,0,.24);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
 }
-.menu-card::before{
-  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
-  opacity:.9;transition:opacity .3s;
+/* 上からの光沢。クリック判定を邪魔しないよう pointer-events:none */
+.menu-card::after{
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);
 }
-.menu-card>*{position:relative;z-index:1}
-.menu-card:hover{
-  transform:translateY(-4px) scale(1.02);
-  box-shadow:0 12px 32px rgba(0,0,0,.3);
-  border-color:rgba(255,255,255,.4);
-}
-.menu-card:active{transform:scale(.97)}
-
-.menu-card.flashcard::before{
-  background:linear-gradient(135deg,#7c4dff 0%,#536dfe 50%,#448aff 100%);
-}
-.menu-card.exam::before{
-  background:linear-gradient(135deg,#00b894 0%,#00cec9 50%,#0984e3 100%);
-}
-.menu-card.houkaisei::before{
-  background:linear-gradient(135deg,#8e2de2 0%,#c2266b 55%,#f5576c 100%);
-}
-.menu-card.request::before{
-  background:linear-gradient(135deg,#e17055 0%,#fdcb6e 100%);
+.menu-card:active{transform:scale(.975)}
+@media(hover:hover){
+  .menu-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 14px 30px rgba(0,0,0,.32);
+    border-color:rgba(255,255,255,.45);
+  }
+  .menu-card:hover .menu-arrow{transform:translateX(3px);opacity:1}
 }
 
-.menu-badge{
-  position:absolute;top:10px;right:12px;z-index:2;
-  font-size:.62rem;font-weight:800;letter-spacing:.06em;
-  background:rgba(255,255,255,.92);color:#c2266b;
-  border-radius:999px;padding:3px 9px;
-}
+.menu-card.flashcard{background:linear-gradient(135deg,#7c4dff 0%,#536dfe 55%,#448aff 100%)}
+.menu-card.exam     {background:linear-gradient(135deg,#00b894 0%,#00cec9 55%,#0984e3 100%)}
+.menu-card.houkaisei{background:linear-gradient(135deg,#8e2de2 0%,#c2266b 55%,#f5576c 100%)}
 
+/* アイコン：3枚すべて同じ56px角に固定 */
 .menu-icon{
-  font-size:2.2rem;flex-shrink:0;
-  width:60px;height:60px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.15);border-radius:16px;
+  flex:none;width:56px;height:56px;aspect-ratio:1/1;
+  display:grid;place-items:center;
+  font-size:1.85rem;line-height:1;
+  background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:17px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3);
 }
-.menu-info{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left}
-.menu-title{font-size:1.15rem;font-weight:800;line-height:2.1}
-.menu-desc{font-size:.78rem;opacity:.75;font-weight:400;line-height:2.2}
+
+.menu-info{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;min-width:0}
+.menu-title{font-size:clamp(.98rem,3.4vw,1.12rem);font-weight:800;line-height:1.95}
+.menu-desc{font-size:.76rem;opacity:.88;font-weight:400;line-height:2}
+
+.menu-arrow{
+  flex:none;font-size:1.3rem;font-weight:700;opacity:.55;
+  transition:transform .22s ease,opacity .22s ease;
+}
+
+/* 言語チップ（自動で折り返す） */
+.lang-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.lang-chip{
+  font-size:.66rem;font-weight:700;line-height:1.7;
+  padding:7px 9px 3px;border-radius:999px;
+  background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.24);
+  white-space:nowrap;
+}
+.lang-chip rt{font-size:.55em;opacity:.9}
 
 /* ===== リクエストボックス ===== */
 .request-box{
   width:100%;
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  border-radius:20px;backdrop-filter:blur(8px);
-  padding:20px 20px 18px;margin-top:6px;
+  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:20px;backdrop-filter:blur(10px);
+  padding:20px 18px 18px;
   display:flex;flex-direction:column;align-items:center;gap:12px;
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
 }
 .request-catchcopy{
-  font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
-  line-height:2.2;color:rgba(255,255,255,.9);text-align:center;
+  font-size:clamp(.85rem,2.5vw,.98rem);font-weight:700;
+  line-height:2.2;color:rgba(255,255,255,.92);text-align:center;
 }
 .request-catchcopy .highlight{
   background:linear-gradient(90deg,#ffd54f,#ffb300);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   font-weight:900;
 }
-.request-input-row{
-  display:flex;flex-direction:column;gap:10px;width:100%;
-}
+.request-input-row{display:flex;flex-direction:column;gap:10px;width:100%}
 .request-input{
-  width:100%;padding:12px 16px;border-radius:14px;border:none;
+  width:100%;padding:13px 16px;border-radius:14px;border:none;
   font-size:.95rem;font-family:'Noto Sans JP',sans-serif;
-  background:rgba(255,255,255,.92);color:#333;
+  background:rgba(255,255,255,.94);color:#333;
   outline:none;transition:box-shadow .2s;
 }
-.request-input::placeholder{color:#aaa;font-size:.85rem}
+.request-input::placeholder{color:#aaa;font-size:.84rem}
 .request-input:focus{box-shadow:0 0 0 3px rgba(167,139,250,.5)}
 .request-send{
   width:100%;padding:14px 20px;border-radius:14px;border:none;
   background:linear-gradient(135deg,#a78bfa,#60a5fa);
   color:#fff;font-size:1rem;font-weight:700;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
+  box-shadow:0 6px 18px rgba(167,139,250,.3);
   transition:transform .15s,box-shadow .15s;
 }
-.request-send:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(167,139,250,.4)}
-.request-send:active{transform:scale(.95)}
+.request-send:active{transform:scale(.97)}
 .request-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.request-feedback{font-size:.8rem;min-height:1.2em;transition:opacity .3s}
+.request-feedback{font-size:.78rem;min-height:1.2em;transition:opacity .3s}
 .request-feedback.success{color:#69f0ae}
 .request-feedback.error{color:#ff8a80}
 
 /* ===== クレジット ===== */
 .credit{
-  margin-top:20px;padding:16px 24px;
+  margin-top:26px;padding:15px 20px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
   border-radius:16px;backdrop-filter:blur(8px);
-  display:flex;align-items:center;gap:16px;width:100%;
-  justify-content:center;
+  display:flex;align-items:center;gap:15px;width:100%;justify-content:center;
 }
 .credit-avatar{flex-shrink:0}
-.credit-avatar img{height:80px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));object-fit:contain}
+.credit-avatar img{height:74px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.18));object-fit:contain}
 .credit-info{display:flex;flex-direction:column;gap:2px;text-align:left}
 .credit-org{
   font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(.8rem,2.2vw,.95rem);font-weight:600;
+  font-size:clamp(.78rem,2.2vw,.92rem);font-weight:600;
   background:linear-gradient(90deg,#ffd54f,#ffb300);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff}
-.credit-title{font-size:.75rem;opacity:.5}
+.credit-name{font-size:clamp(.95rem,2.8vw,1.12rem);font-weight:700;color:#fff}
+.credit-title{font-size:.72rem;opacity:.5}
 
-@media(max-width:480px){
-  .menu-card{padding:20px 16px}
-  .menu-icon{width:50px;height:50px;font-size:1.8rem;border-radius:14px}
+@media(max-width:380px){
+  .menu-card{padding:15px 13px;gap:12px}
+  .menu-icon{width:50px;height:50px;font-size:1.6rem;border-radius:15px}
+  .lang-chip{font-size:.62rem;padding:6px 8px 3px}
 }
 </style>
 </head>
@@ -255,52 +274,66 @@ rt{display:none}
   </div>
 
   <!-- ===== メニュー ===== -->
-  <div class="section-title" style="font-size:clamp(1.2rem,3.5vw,1.6rem)">メニュー</div>
+  <div class="section-title">メニュー</div>
   <ul class="menu-list">
+
     <li>
       <a href="flashcard.html" class="menu-card flashcard">
         <div class="menu-icon">📚</div>
         <div class="menu-info">
           <div class="menu-title"><ruby>介護<rt>かいご</rt></ruby><ruby>用語<rt>ようご</rt></ruby>フラッシュカード</div>
-            <div class="menu-desc">
-            <ruby>日本語<rt>にほんご</rt></ruby>・<ruby>英語<rt>えいご</rt></ruby>・インドネシア<ruby>語<rt>ご</rt></ruby>・ベトナム<ruby>語<rt>ご</rt></ruby>・タイ<ruby>語<rt>ご</rt></ruby>・<br>
-            ミャンマー<ruby>語<rt>ご</rt></ruby>・ネパール<ruby>語<rt>ご</rt></ruby>・モンゴル<ruby>語<rt>ご</rt></ruby>の8<ruby>言語<rt>げんご</rt></ruby><ruby>対応<rt>たいおう</rt></ruby><br>
-            <ruby>単語<rt>たんご</rt></ruby>をカードで<ruby>楽<rt>たの</rt></ruby>しく<ruby>覚<rt>おぼ</rt></ruby>えよう
-          </div>
-
+          <div class="menu-desc"><ruby>単語<rt>たんご</rt></ruby>をカードで<ruby>楽<rt>たの</rt></ruby>しく<ruby>覚<rt>おぼ</rt></ruby>えよう</div>
+          <div class="lang-chips">
+            <span class="lang-chip"><ruby>日本語<rt>にほんご</rt></ruby></span>
+            <span class="lang-chip"><ruby>英語<rt>えいご</rt></ruby></span>
+            <span class="lang-chip">インドネシア<ruby>語<rt>ご</rt></ruby></span>
+            <span class="lang-chip">ベトナム<ruby>語<rt>ご</rt></ruby></span>
+            <span class="lang-chip">タイ<ruby>語<rt>ご</rt></ruby></span>
+            <span class="lang-chip">ミャンマー<ruby>語<rt>ご</rt></ruby></span>
+            <span class="lang-chip">ネパール<ruby>語<rt>ご</rt></ruby></span>
+            <span class="lang-chip">モンゴル<ruby>語<rt>ご</rt></ruby></span>
           </div>
         </div>
+        <div class="menu-arrow">›</div>
       </a>
     </li>
+
     <li>
       <a href="exam/index.html" class="menu-card exam">
         <div class="menu-icon">📝</div>
         <div class="menu-info">
           <div class="menu-title"><ruby>過去問<rt>かこもん</rt></ruby>に<ruby>挑戦<rt>ちょうせん</rt></ruby></div>
-          <div class="menu-desc">
-            <ruby>介護<rt>かいご</rt></ruby><ruby>福祉士<rt>ふくしし</rt></ruby><ruby>国家<rt>こっか</rt></ruby><ruby>試験<rt>しけん</rt></ruby>の<ruby>過去問<rt>かこもん</rt></ruby>を<ruby>解<rt>と</rt></ruby>こう<br>
-            <ruby>科目別<rt>かもくべつ</rt></ruby>・パート<ruby>別<rt>べつ</rt></ruby>で<ruby>学習<rt>がくしゅう</rt></ruby>できます
+          <div class="menu-desc"><ruby>介護<rt>かいご</rt></ruby><ruby>福祉士<rt>ふくしし</rt></ruby><ruby>国家<rt>こっか</rt></ruby><ruby>試験<rt>しけん</rt></ruby>の<ruby>過去問<rt>かこもん</rt></ruby>を<ruby>解<rt>と</rt></ruby>こう</div>
+          <div class="lang-chips">
+            <span class="lang-chip"><ruby>科目別<rt>かもくべつ</rt></ruby></span>
+            <span class="lang-chip">パート<ruby>別<rt>べつ</rt></ruby></span>
           </div>
         </div>
+        <div class="menu-arrow">›</div>
       </a>
     </li>
+
     <li>
       <a href="houkaisei/index.html" class="menu-card houkaisei">
-        <div class="menu-badge">NEW</div>
         <div class="menu-icon">⚖️</div>
         <div class="menu-info">
           <div class="menu-title"><ruby>法改正<rt>ほうかいせい</rt></ruby>まるわかりノート</div>
-          <div class="menu-desc">
-            <ruby>新<rt>あたら</rt></ruby>しい<ruby>制度<rt>せいど</rt></ruby>を9<ruby>章<rt>しょう</rt></ruby>でまとめて<ruby>確認<rt>かくにん</rt></ruby><br>
-            <ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby>つき・ふりがな<ruby>切<rt>き</rt></ruby>りかえOK
+          <div class="menu-desc"><ruby>新<rt>あたら</rt></ruby>しい<ruby>制度<rt>せいど</rt></ruby>をまとめて<ruby>確認<rt>かくにん</rt></ruby></div>
+          <div class="lang-chips">
+            <span class="lang-chip">NEW</span>
+            <span class="lang-chip"><ruby>全<rt>ぜん</rt></ruby>9<ruby>章<rt>しょう</rt></ruby></span>
+            <span class="lang-chip"><ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby></span>
+            <span class="lang-chip">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
           </div>
         </div>
+        <div class="menu-arrow">›</div>
       </a>
     </li>
+
   </ul>
 
   <!-- ===== リクエスト ===== -->
-  <div class="section-title" style="font-size:clamp(1.2rem,3.5vw,1.6rem)">リクエスト</div>
+  <div class="section-title">リクエスト</div>
   <div class="request-box">
     <div class="request-catchcopy">
       📝 <span class="highlight">あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</span>
