@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>介護用語フラッシュカード｜一般社団法人GIFT協会</title>
-<meta name="description" content="介護福祉士試験対策 多言語フラッシュカード - 日本語・英語・インドネシア語・ベトナム語・タイ語対応">
+<meta name="description" content="介護福祉士試験対策 多言語フラッシュカード - 日本語・英語・インドネシア語・ベトナム語・タイ語・ミャンマー語・ネパール語・モンゴル語対応">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Kaigo.V.F">
 <link rel="apple-touch-icon" href="gift-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 <style>
@@ -53,6 +54,38 @@ body.lang-th{
   --accent:#1565c0;--accent-rgb:21,101,192;--accent-light:#bbdefb;
   --accent-glow:rgba(21,101,192,.12);--card-bg:#fff;--text:#0d47a1;
   --btn-ok:#1976d2;--btn-again:#c62828;--surface:#e3f2fd;
+}
+body.lang-my{
+  background:linear-gradient(160deg,#e0f2f1 0%,#b2dfdb 40%,#80cbc4 100%);
+  --accent:#00695c;--accent-rgb:0,105,92;--accent-light:#b2dfdb;
+  --accent-glow:rgba(0,105,92,.12);--card-bg:#fff;--text:#004d40;
+  --btn-ok:#00897b;--btn-again:#c62828;--surface:#e0f2f1;
+}
+body.lang-ne{
+  background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 40%,#f06292 100%);
+  --accent:#ad1457;--accent-rgb:173,20,87;--accent-light:#f8bbd0;
+  --accent-glow:rgba(173,20,87,.12);--card-bg:#fff;--text:#880e4f;
+  --btn-ok:#c2185b;--btn-again:#455a64;--surface:#fce4ec;
+}
+body.lang-mn{
+  background:linear-gradient(160deg,#e8eaf6 0%,#c5cae9 40%,#9fa8da 100%);
+  --accent:#283593;--accent-rgb:40,53,147;--accent-light:#c5cae9;
+  --accent-glow:rgba(40,53,147,.12);--card-bg:#fff;--text:#1a237e;
+  --btn-ok:#3949ab;--btn-again:#c62828;--surface:#e8eaf6;
+}
+
+/* ===== 言語別フォント（カード裏の訳文だけに適用） ===== */
+body.lang-th .card-back-word,body.lang-th .card-back-desc{
+  font-family:'Noto Sans Thai','Noto Sans JP',sans-serif;line-height:1.85;
+}
+body.lang-my .card-back-word,body.lang-my .card-back-desc{
+  font-family:'Noto Sans Myanmar','Noto Sans JP',sans-serif;line-height:2.05;
+}
+body.lang-ne .card-back-word,body.lang-ne .card-back-desc{
+  font-family:'Noto Sans Devanagari','Noto Sans JP',sans-serif;line-height:1.9;
+}
+body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
+  font-family:'Noto Sans','Noto Sans JP',sans-serif;line-height:1.7;
 }
 
 /* ===== Landing ===== */
@@ -147,7 +180,7 @@ body.lang-th{
 .lang-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%}
 .lang-btn{
   display:flex;flex-direction:column;align-items:center;gap:8px;
-  flex:1;min-width:140px;max-width:180px;padding:20px 14px;border-radius:24px;
+  flex:1 1 140px;min-width:140px;max-width:180px;padding:20px 14px;border-radius:24px;
   border:2px solid rgba(255,255,255,.15);cursor:pointer;
   font-size:1rem;font-weight:700;color:#fff;
   transition:transform .25s,box-shadow .25s,border-color .25s;
@@ -161,10 +194,16 @@ body.lang-th{
 .lang-btn.id::before{background:linear-gradient(135deg,#43a047,#2e7d32)}
 .lang-btn.vi::before{background:linear-gradient(135deg,#ff8f00,#e65100)}
 .lang-btn.th::before{background:linear-gradient(135deg,#42a5f5,#1565c0)}
+.lang-btn.my::before{background:linear-gradient(135deg,#26a69a,#00695c)}
+.lang-btn.ne::before{background:linear-gradient(135deg,#ec407a,#ad1457)}
+.lang-btn.mn::before{background:linear-gradient(135deg,#5c6bc0,#283593)}
 .lang-btn:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,.4)}
 .lang-btn:active{transform:scale(.96)}
 .lang-btn .lang-name{font-size:.95rem;font-weight:700}
 .lang-btn .lang-label{font-size:.75rem;opacity:.8;font-weight:400}
+.lang-btn.my .lang-name{font-family:'Noto Sans Myanmar','Noto Sans JP',sans-serif}
+.lang-btn.ne .lang-name{font-family:'Noto Sans Devanagari','Noto Sans JP',sans-serif}
+.lang-btn.mn .lang-name{font-family:'Noto Sans','Noto Sans JP',sans-serif}
 
 .flag-img{
   width:72px;height:auto;border-radius:6px;
@@ -274,6 +313,7 @@ body.lang-th{
   font-size:.9rem;cursor:pointer;opacity:.6;font-family:'Noto Sans JP',sans-serif;
 }
 .start-back:hover{opacity:1}
+.start-back:disabled{opacity:.35;cursor:default}
 .start-weak-btn{
   margin-top:8px;padding:10px 28px;border-radius:20px;
   border:2px solid var(--accent);background:transparent;color:var(--accent);
@@ -290,7 +330,7 @@ body.lang-th{
 }
 .start-review-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(var(--accent-rgb),.45)}
 .start-review-btn:active{transform:scale(.95)}
-  
+
 /* ===== Header ===== */
 header{
   display:flex;align-items:center;justify-content:space-between;
@@ -360,7 +400,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   border:2px solid var(--accent-light);overflow:hidden;
   min-height:220px;
 }
-.flip-front{position:relative;}
+.flip-front{position:relative;padding-top:62px;padding-bottom:54px}
 .flip-front::after{
   content:'';position:absolute;top:-30%;right:-30%;width:60%;height:60%;
   background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
@@ -373,35 +413,88 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 }
 .card-num{
   position:absolute;top:12px;left:16px;
-  font-size:.7rem;font-weight:700;color:var(--accent);opacity:.5;
+  font-size:.68rem;font-weight:700;color:var(--accent);opacity:.5;
+  letter-spacing:.02em;
 }
 .card-mastered-badge{
-  position:absolute;top:10px;right:14px;
+  position:absolute;top:10px;right:66px;
   font-size:.7rem;font-weight:700;color:#fff;
   background:var(--btn-ok);padding:2px 10px;border-radius:10px;
   display:none;
 }
 .card-front-main{
-  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--text);
-  text-align:center;line-height:1.4;word-break:keep-all;
+  font-size:clamp(1.3rem,4.6vw,1.9rem);font-weight:900;color:var(--text);
+  text-align:center;line-height:1.95;
+  word-break:normal;overflow-wrap:anywhere;
+}
+.card-front-main ruby{ruby-position:over;-webkit-ruby-position:before}
+.card-front-main rt{
+  font-size:.42em;font-weight:500;opacity:.78;letter-spacing:0;
+  font-family:'Noto Sans JP',sans-serif;
 }
 .card-front-sub{font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400}
 .card-back-word{
   font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
-  text-align:center;line-height:1.3;margin-top:12px;
+  text-align:center;line-height:1.85;margin-top:12px;
+  word-break:normal;overflow-wrap:anywhere;
+}
+.card-back-word ruby{ruby-position:over;-webkit-ruby-position:before}
+.card-back-word rt{
+  font-size:.48em;font-weight:500;opacity:.85;
+  font-family:'Noto Sans JP',sans-serif;
 }
 .card-back-meaning{
   font-size:clamp(.75rem,2.2vw,.85rem);color:#555;
-  text-align:center;line-height:1.5;
+  text-align:center;line-height:1.65;
   padding:6px 12px;margin:4px 0;
   background:rgba(0,0,0,.04);border-radius:10px;
   border-left:3px solid var(--accent);
+  font-family:'Noto Sans JP',sans-serif;
 }
 .card-back-desc{
   font-size:clamp(.75rem,2.2vw,.85rem);color:var(--text);
-  text-align:center;line-height:1.5;opacity:.8;
+  text-align:center;line-height:1.6;opacity:.85;
 }
 .tap-hint{font-size:.65rem;opacity:.35;color:var(--text);margin-top:6px}
+
+/* ===== 🔊 読み上げボタン ===== */
+.speak-btn{
+  position:absolute;top:12px;right:12px;z-index:3;
+  width:44px;height:44px;padding:0;border-radius:50%;
+  border:2px solid var(--accent-light);background:var(--card-bg);color:var(--accent);
+  font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 2px 8px rgba(var(--accent-rgb),.18);
+  transition:transform .15s,background .2s,color .2s;
+  -webkit-appearance:none;appearance:none;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+}
+.speak-btn:active{transform:scale(.9)}
+.speak-btn.speaking{background:var(--accent);color:#fff}
+.speak-btn[hidden]{display:none}
+.flip-container.flipped .speak-btn{opacity:0;visibility:hidden;pointer-events:none}
+
+/* ===== ふりがな ON/OFF スイッチ ===== */
+.furi-switch{
+  position:absolute;left:12px;bottom:10px;z-index:3;
+  display:flex;align-items:center;gap:7px;cursor:pointer;
+  padding:5px 11px 5px 6px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--accent-light);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+}
+.furi-switch input{position:absolute;opacity:0;width:0;height:0}
+.furi-track{
+  width:36px;height:20px;border-radius:999px;background:#cfcfcf;
+  position:relative;transition:background .2s;flex-shrink:0;display:block;
+}
+.furi-thumb{
+  position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s;display:block;
+}
+.furi-switch input:checked + .furi-track{background:var(--accent)}
+.furi-switch input:checked + .furi-track .furi-thumb{transform:translateX(16px)}
+.furi-text{font-size:.68rem;font-weight:700;color:var(--accent);white-space:nowrap}
+.flip-container.flipped .furi-switch{opacity:0;visibility:hidden;pointer-events:none}
 
 /* ===== 画面下部固定バー ===== */
 .bottom-bar{
@@ -551,6 +644,21 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
         <span class="lang-name">ภาษาไทย</span>
         <span class="lang-label">タイ語</span>
       </div>
+      <div class="lang-btn my" onclick="chooseLang('my')">
+        <img class="flag-img" src="https://flagcdn.com/w160/mm.png" alt="Myanmar">
+        <span class="lang-name">မြန်မာ</span>
+        <span class="lang-label">ミャンマー語</span>
+      </div>
+      <div class="lang-btn ne" onclick="chooseLang('ne')">
+        <img class="flag-img" src="https://flagcdn.com/w160/np.png" alt="Nepal">
+        <span class="lang-name">नेपाली</span>
+        <span class="lang-label">ネパール語</span>
+      </div>
+      <div class="lang-btn mn" onclick="chooseLang('mn')">
+        <img class="flag-img" src="https://flagcdn.com/w160/mn.png" alt="Mongolia">
+        <span class="lang-name">Монгол</span>
+        <span class="lang-label">モンゴル語</span>
+      </div>
     </div>
   </div>
 
@@ -570,7 +678,8 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   <div class="how-to">
     <p>
       <span class="icon">👆</span> タップでカードを裏返す<br>
-      <span class="icon">👈👉</span> スワイプでカード切り替え
+      <span class="icon">👈👉</span> スワイプでカード切り替え<br>
+      <span class="icon">🔤</span> カード左下のスイッチでふりがなON/OFF
     </p>
   </div>
   <div class="credit">
@@ -596,6 +705,7 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
   <button class="start-review-btn" id="startReviewBtn" onclick="startQuiz('due')">⏰ 今日の復習</button>
 
   <button class="start-weak-btn" id="startWeakBtn" onclick="startQuiz(true)">🔄 にがてだけ特訓</button>
+  <button class="start-back" id="startReloadBtn" onclick="reloadData()">↻ 最新データを読み込む</button>
   <button class="start-back" id="startBackBtn" onclick="backToLanding()">← 言語選択に戻る</button>
 </div>
 
@@ -627,9 +737,15 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
         <div class="flip-front" id="cardFront">
           <span class="card-num" id="cardNum"></span>
           <span class="card-mastered-badge" id="masteredBadge">✓</span>
+          <button class="speak-btn" id="speakBtn" type="button" aria-label="読み上げ">🔊</button>
           <div class="card-front-main" id="frontMain"></div>
           <div class="card-front-sub" id="frontSub"></div>
           <span class="tap-hint" id="tapHintFront"></span>
+          <label class="furi-switch" id="furiSwitch">
+            <input type="checkbox" id="furiToggle" checked>
+            <span class="furi-track"><span class="furi-thumb"></span></span>
+            <span class="furi-text" id="furiText">ふりがな</span>
+          </label>
         </div>
         <div class="flip-back" id="cardBack">
           <span class="card-num" id="cardNumBack"></span>
@@ -666,13 +782,54 @@ header h2{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:6
 
 <script>
 /* ========== CONFIG ========== */
-const CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=0';
-const CSV_EN='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=519389580';
+/* 新スプレッドシート（A〜AB列・8言語すべて1枚） */
+const CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vSSigciJqcqSYI9Wkwp4-QIvXocFtV9li12It8QvOd4qosRL-gRjeLfciF1CPZQp9EOFxMF2sZHWB4H/pub?gid=0&single=true&output=csv';
 const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
 
+/* 言語コード → スプレッドシートの列見出しの接頭辞 */
+const LANG_PREFIX={id:'ID',th:'TH',vi:'VI',en:'EN',my:'MY',ne:'NE',mn:'MN'};
+
 let allData=[],displayData=[],currentLang='',idx=0,weakMode=false;
+let dataLoaded=false;
+
 /* ===== 過去問アプリからの単語指定（?word=…） ===== */
 let pendingWord='';
+
+/* ========== ふりがな処理 ========== */
+/* 漢字（々〆ヵヶ含む）のかたまり＋（よみ） にだけ反応する */
+const FURI_RE=/([\u4E00-\u9FFF\u3005\u3006\u30F5\u30F6]+)（([^（）]+)）/g;
+
+function escapeHtml(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ふりがなを ruby タグにして返す（HTML） */
+function toRubyHtml(text){
+  if(!text)return '';
+  const src=String(text);
+  let out='',i=0,m;
+  FURI_RE.lastIndex=0;
+  while((m=FURI_RE.exec(src))!==null){
+    out+=escapeHtml(src.slice(i,m.index));
+    out+='<ruby>'+escapeHtml(m[1])+'<rt>'+escapeHtml(m[2])+'</rt></ruby>';
+    i=m.index+m[0].length;
+  }
+  out+=escapeHtml(src.slice(i));
+  return out;
+}
+
+/* ふりがなを取り除いた素の文字列 */
+function stripFurigana(text){
+  if(!text)return '';
+  return String(text).replace(FURI_RE,'$1');
+}
+
+/* 漢字をよみに置き換えた「読み専用」文字列（読み上げ用） */
+function toKanaReading(text){
+  if(!text)return '';
+  return String(text).replace(FURI_RE,function(_,kanji,yomi){return yomi;});
+}
 
 function normalizeWord(s){
   if(!s)return '';
@@ -717,18 +874,19 @@ function jumpToPendingWord(){
     idx=i;
     showCard();
   }else{
-    /* カードが無いときは黙って1枚目を出さず、理由を伝える */
     showCheer('🔍','「'+word+'」のカードはまだありません。\nリクエストいただければ追加します！');
   }
 }
 
 let masteredSet=new Set();
+
 /* ===== 復習の間隔（レベルごとの日数） ===== */
 let srsData={};
 const SRS_INTERVALS={1:1,2:3,3:7,4:14,5:30};
 const REVIEW_LABEL={
   ja:'今日の復習', en:"Today's review", id:'Ulangan hari ini',
-  vi:'Ôn tập hôm nay', th:'ทบทวนวันนี้'
+  vi:'Ôn tập hôm nay', th:'ทบทวนวันนี้',
+  my:'ဒီနေ့ ပြန်လေ့လာရန်', ne:'आजको पुनरावलोकन', mn:'Өнөөдрийн давтлага'
 };
 
 function srsKey(){return 'kaigo-srs-'+currentLang;}
@@ -766,6 +924,20 @@ function getDueCards(){
   });
 }
 
+/* ========== ふりがな表示 ON/OFF ========== */
+let furiOn=true;
+function loadFuri(){
+  try{
+    const v=localStorage.getItem('kaigo-furigana');
+    furiOn=(v===null)?true:(v==='1');
+  }catch(e){furiOn=true;}
+  const cb=document.getElementById('furiToggle');
+  if(cb)cb.checked=furiOn;
+}
+function saveFuri(){
+  try{localStorage.setItem('kaigo-furigana',furiOn?'1':'0');}catch(e){}
+}
+
 let lastMilestone=0;
 
 /* ========== PWA: Service Worker登録 ========== */
@@ -781,27 +953,50 @@ const LANG_META={
       hintTap:'👆 タップ＝裏返す',hintSwipe:'👈👉 スワイプ＝次/前',
       letsTry:'レッツトライ！',okBtn:'✅ 覚えた！',againBtn:'🔄 もう一回',
       weakBtn:'にがてだけ特訓',masteredLabel:'覚えた',
+      furiLabel:'ふりがな',reloadBtn:'↻ 最新データを読み込む',
       backBtn:'← 言語選択に戻る'},
   en:{header:'📖 Learning in English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',
       hintTap:'👆 Tap = flip card',hintSwipe:'👈👉 Swipe = next/prev',
       letsTry:"Let's try!",okBtn:'✅ Got it!',againBtn:'🔄 One more time',
       weakBtn:'Weak cards only',masteredLabel:'Mastered',
+      furiLabel:'Furigana',reloadBtn:'↻ Reload latest data',
       backBtn:'← Back to language select'},
   id:{header:'📖 Belajar Bahasa Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',
       hintTap:'👆 Ketuk = balik kartu',hintSwipe:'👈👉 Geser = kartu berikutnya',
       letsTry:'Ayo coba!',okBtn:'✅ Hafal!',againBtn:'🔄 Sekali lagi',
       weakBtn:'Kartu sulit saja',masteredLabel:'Hafal',
+      furiLabel:'Furigana',reloadBtn:'↻ Muat data terbaru',
       backBtn:'← Kembali ke pilihan bahasa'},
   vi:{header:'📖 Học Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',
       hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ tiếp theo',
       letsTry:'Hãy thử nào!',okBtn:'✅ Thuộc rồi!',againBtn:'🔄 Một lần nữa',
       weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc',
+      furiLabel:'Furigana',reloadBtn:'↻ Tải dữ liệu mới nhất',
       backBtn:'← Quay lại chọn ngôn ngữ'},
   th:{header:'📖 เรียนภาษาไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับด้านหน้า',
       hintTap:'👆 แตะ = พลิกการ์ด',hintSwipe:'👈👉 ปัด = การ์ดถัดไป',
       letsTry:'มาลองกันเลย!',okBtn:'✅ จำได้แล้ว!',againBtn:'🔄 อีกครั้ง',
       weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้',
-      backBtn:'← กลับไปเลือกภาษา'}
+      furiLabel:'ฟุริงานะ',reloadBtn:'↻ โหลดข้อมูลล่าสุด',
+      backBtn:'← กลับไปเลือกภาษา'},
+  my:{header:'📖 မြန်မာဘာသာဖြင့် လေ့လာနေသည်',tapFront:'အဓိပ္ပာယ်ကြည့်ရန် တို့ပါ',tapBack:'အရှေ့ဘက် ပြန်သွားရန် တို့ပါ',
+      hintTap:'👆 တို့ = ကတ်လှန်',hintSwipe:'👈👉 ပွတ်ဆွဲ = နောက်/ရှေ့',
+      letsTry:'စလိုက်ရအောင်!',okBtn:'✅ မှတ်မိပြီ!',againBtn:'🔄 နောက်တစ်ကြိမ်',
+      weakBtn:'ခက်သောကတ်များသာ',masteredLabel:'မှတ်မိပြီ',
+      furiLabel:'ဖူရိဂါနာ',reloadBtn:'↻ နောက်ဆုံးဒေတာ ရယူရန်',
+      backBtn:'← ဘာသာစကား ရွေးချယ်ရန်'},
+  ne:{header:'📖 नेपालीमा सिक्दै',tapFront:'अर्थ हेर्न ट्याप गर्नुहोस्',tapBack:'अगाडि फर्कन ट्याप गर्नुहोस्',
+      hintTap:'👆 ट्याप = कार्ड पल्टाउनुहोस्',hintSwipe:'👈👉 स्वाइप = अर्को/अघिल्लो',
+      letsTry:'सुरु गरौं!',okBtn:'✅ याद भयो!',againBtn:'🔄 फेरि एकपटक',
+      weakBtn:'कमजोर कार्डहरू मात्र',masteredLabel:'याद भयो',
+      furiLabel:'फुरिगाना',reloadBtn:'↻ नयाँ डाटा लोड गर्नुहोस्',
+      backBtn:'← भाषा छनोटमा फर्कनुहोस्'},
+  mn:{header:'📖 Монголоор суралцаж байна',tapFront:'Утгыг харахын тулд товшино уу',tapBack:'Буцахын тулд товшино уу',
+      hintTap:'👆 Товших = хөзрийг эргүүлэх',hintSwipe:'👈👉 Шудрах = дараах/өмнөх',
+      letsTry:'Эхэлцгээе!',okBtn:'✅ Цээжиллээ!',againBtn:'🔄 Дахин нэг удаа',
+      weakBtn:'Зөвхөн хэцүү хөзөр',masteredLabel:'Цээжилсэн',
+      furiLabel:'Фуригана',reloadBtn:'↻ Шинэ өгөгдөл ачаалах',
+      backBtn:'← Хэл сонгох руу буцах'}
 };
 
 const CHEERS=[
@@ -856,18 +1051,21 @@ function sendRequest(){
 
 /* Enterキーでも送信 */
 document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('requestInput').addEventListener('keydown',function(e){
-    if(e.key==='Enter'){e.preventDefault();sendRequest();}
-  });
+  const ri=document.getElementById('requestInput');
+  if(ri){
+    ri.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){e.preventDefault();sendRequest();}
+    });
+  }
 });
 
 /* ========== SOUND (Web Audio API) ========== */
 const AudioCtx=window.AudioContext||window.webkitAudioContext;
 let audioCtx;
-function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx();}
+function ensureAudio(){if(!audioCtx&&AudioCtx)audioCtx=new AudioCtx();}
 
 function playFlip(){
-  ensureAudio();
+  ensureAudio();if(!audioCtx)return;
   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
   o.type='sine';o.frequency.setValueAtTime(800,audioCtx.currentTime);
   o.frequency.exponentialRampToValueAtTime(400,audioCtx.currentTime+.08);
@@ -878,7 +1076,7 @@ function playFlip(){
 }
 
 function playOk(){
-  ensureAudio();
+  ensureAudio();if(!audioCtx)return;
   const t=audioCtx.currentTime;
   [523.25,659.25,783.99].forEach((f,i)=>{
     const o=audioCtx.createOscillator(),g=audioCtx.createGain();
@@ -891,7 +1089,7 @@ function playOk(){
 }
 
 function playAgain(){
-  ensureAudio();
+  ensureAudio();if(!audioCtx)return;
   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
   o.type='triangle';o.frequency.setValueAtTime(300,audioCtx.currentTime);
   o.frequency.exponentialRampToValueAtTime(200,audioCtx.currentTime+.15);
@@ -902,7 +1100,7 @@ function playAgain(){
 }
 
 function playClear(){
-  ensureAudio();
+  ensureAudio();if(!audioCtx)return;
   const t=audioCtx.currentTime;
   [523.25,659.25,783.99,1046.5].forEach((f,i)=>{
     const o=audioCtx.createOscillator(),g=audioCtx.createGain();
@@ -933,45 +1131,140 @@ function chooseLang(lang){
   document.body.className='lang-'+lang;
   loadMastered();
   loadSrs();
+  loadFuri();
+  const meta=LANG_META[lang]||LANG_META.ja;
+  const ft=document.getElementById('furiText');
+  if(ft)ft.textContent=meta.furiLabel;
   document.getElementById('landing').style.display='none';
   document.getElementById('startScreen').style.display='flex';
-  loadDataForStart();
+  loadDataForStart(false);
 }
 
-function loadDataForStart(){
-  const url=(currentLang==='en')?CSV_EN:CSV_MAIN;
-  Papa.parse(url,{
+/* ========== CSV 読み込み（列は「見出し名」で探す） ========== */
+function normHeader(s){
+  return String(s==null?'':s).replace(/^\uFEFF/,'').replace(/[\s\u3000]/g,'').trim();
+}
+
+/* 5分単位のキャッシュ回避キー */
+function cacheBuster(){return Math.floor(Date.now()/300000);}
+
+function csvUrl(force){
+  const cb=force?Date.now():cacheBuster();
+  return CSV_MAIN+(CSV_MAIN.indexOf('?')>=0?'&':'?')+'cb='+cb;
+}
+
+function pickCol(H,head,exactName,prefixName,fallbackIdx){
+  if(H[exactName]!==undefined)return H[exactName];
+  for(let i=0;i<head.length;i++){
+    if(head[i].indexOf(prefixName)===0)return i;
+  }
+  return fallbackIdx;
+}
+
+function cell(row,i){
+  if(i<0||i>=row.length)return '';
+  return String(row[i]==null?'':row[i]).trim();
+}
+
+function loadDataForStart(force){
+  Papa.parse(csvUrl(force),{
     download:true,header:false,skipEmptyLines:true,
-    complete:function(r){
-      const rows=r.data.slice(1);
-      if(currentLang==='en'){
-        allData=rows.filter(r=>r[0]&&r[1]).map(r=>({
-          no:r[0],word:r[1],meaning:r[2]||'',enWord:r[3]||'',enDesc:r[4]||''
-        }));
-      }else{
-        allData=rows.filter(r=>r[0]&&r[1]).map(r=>({
-          no:r[0],word:r[1],idWord:r[2]||'',viWord:r[3]||'',thWord:r[4]||'',
-          meaning:r[5]||'',idDesc:r[6]||'',viDesc:r[7]||'',thDesc:r[8]||''
-        }));
+    complete:function(res){
+      const rows=(res&&res.data)?res.data:[];
+      if(rows.length<2){showLoadError('データが空です');return;}
+
+      const head=rows[0].map(normHeader);
+      const H={};
+      head.forEach(function(h,i){if(h!==''&&H[h]===undefined)H[h]=i;});
+
+      const cNo   =pickCol(H,head,'行ID','行ID',0);
+      const cPart =(H['Part']!==undefined)?H['Part']:1;
+      const cSubj =(H['科目']!==undefined)?H['科目']:2;
+      const cType =(H['種類']!==undefined)?H['種類']:3;
+      const cWord =pickCol(H,head,'語（ふりがな付き）','語（',4);
+      const cMean =pickCol(H,head,'意味（日本語・ふりがな付き）','意味（',5);
+      const cLevel=(H['レベル']!==undefined)?H['レベル']:6;
+
+      const LC={};
+      Object.keys(LANG_PREFIX).forEach(function(lk){
+        const p=LANG_PREFIX[lk];
+        LC[lk]={
+          w:(H[p+'_語']!==undefined)?H[p+'_語']:-1,
+          d:(H[p+'_意味']!==undefined)?H[p+'_意味']:-1
+        };
+      });
+
+      allData=[];
+      for(let r=1;r<rows.length;r++){
+        const row=rows[r];
+        if(!row)continue;
+        const no=cell(row,cNo);
+        const word=cell(row,cWord);
+        if(!no||!word)continue;
+        const o={
+          no:no,
+          word:word,
+          meaning:cell(row,cMean),
+          part:cell(row,cPart),
+          subject:cell(row,cSubj),
+          type:cell(row,cType),
+          level:cell(row,cLevel),
+          t:{}
+        };
+        Object.keys(LANG_PREFIX).forEach(function(lk){
+          o.t[lk]={w:cell(row,LC[lk].w),d:cell(row,LC[lk].d)};
+        });
+        allData.push(o);
       }
+
+      dataLoaded=true;
+      restoreReloadBtn();
       updateStartScreen();
       if(pendingWord)jumpToPendingWord();
+    },
+    error:function(){
+      showLoadError('読み込みに失敗しました');
     }
   });
+}
+
+function showLoadError(msg){
+  dataLoaded=false;
+  restoreReloadBtn();
+  const el=document.getElementById('startMastered');
+  if(el)el.textContent='⚠ '+msg+'（通信環境をご確認ください）';
+}
+
+function restoreReloadBtn(){
+  const btn=document.getElementById('startReloadBtn');
+  if(!btn)return;
+  btn.disabled=false;
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  btn.textContent=meta.reloadBtn;
+}
+
+function reloadData(){
+  const btn=document.getElementById('startReloadBtn');
+  if(btn){btn.disabled=true;btn.textContent='↻ …';}
+  loadDataForStart(true);
 }
 
 function updateStartScreen(){
   const total=allData.length;
   const m=masteredSet.size;
   const pct=total?Math.round(m/total*100):0;
-  const meta=LANG_META[currentLang];
+  const meta=LANG_META[currentLang]||LANG_META.ja;
   document.getElementById('startMastered').textContent='🎯 '+meta.masteredLabel+'：'+m+' / '+total;
   document.getElementById('startBarFill').style.width=pct+'%';
   document.getElementById('startLetsTry').textContent=meta.letsTry;
+
   const weakCount=allData.filter(d=>!masteredSet.has(d.no)).length;
-  document.getElementById('startWeakBtn').style.display=(weakCount>0&&weakCount<total)?'inline-block':'none';
-  document.getElementById('startWeakBtn').textContent='🔄 '+meta.weakBtn+'（'+weakCount+'）';
+  const wbtn=document.getElementById('startWeakBtn');
+  wbtn.style.display=(weakCount>0&&weakCount<total)?'inline-block':'none';
+  wbtn.textContent='🔄 '+meta.weakBtn+'（'+weakCount+'）';
+
   document.getElementById('startBackBtn').textContent=meta.backBtn;
+  restoreReloadBtn();
 
   const dueCount=getDueCards().length;
   const rbtn=document.getElementById('startReviewBtn');
@@ -981,6 +1274,7 @@ function updateStartScreen(){
 }
 
 function startQuiz(mode){
+  if(!allData.length)return;
   if(mode==='due'){
     weakMode=false;
     displayData=getDueCards();
@@ -998,11 +1292,12 @@ function startQuiz(mode){
   document.getElementById('startScreen').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('bottomBar').style.display='flex';
-  const meta=LANG_META[currentLang];
+  const meta=LANG_META[currentLang]||LANG_META.ja;
   document.getElementById('headerTitle').textContent=meta.header;
   document.getElementById('hintBar').innerHTML='<span>'+meta.hintTap+'</span><span>'+meta.hintSwipe+'</span>';
   document.getElementById('judgeOk').textContent=meta.okBtn;
   document.getElementById('judgeAgain').textContent=meta.againBtn;
+  document.getElementById('furiText').textContent=meta.furiLabel;
   document.getElementById('btnWeak').classList.toggle('active',weakMode);
   showCard();
 }
@@ -1050,24 +1345,21 @@ function showCard(){
   const mCount=masteredSet.size;
   const aTotal=allData.length;
   const mPct=aTotal?Math.round(mCount/aTotal*100):0;
-  const meta=LANG_META[currentLang];
+  const meta=LANG_META[currentLang]||LANG_META.ja;
   document.getElementById('masteredText').textContent='🎯 '+meta.masteredLabel+'：'+mCount+' / '+aTotal+'（'+mPct+'%）';
 
   document.getElementById('tapHintFront').textContent=meta.tapFront;
   document.getElementById('tapHintBack').textContent=meta.tapBack;
+  document.getElementById('furiText').textContent=meta.furiLabel;
 
-  let mainText='',subText='';
-  const match=d.word.match(/^(.+?)（(.+?)）$/);
-  if(match){mainText=match[1];subText=match[2];}else{mainText=d.word;subText='';}
-
-  document.getElementById('cardNum').textContent='No.'+d.no;
-  document.getElementById('cardNumBack').textContent='No.'+d.no;
+  document.getElementById('cardNum').textContent=d.no;
+  document.getElementById('cardNumBack').textContent=d.no;
 
   const badge=document.getElementById('masteredBadge');
   const srsRec=srsData[String(d.no)];
   if(masteredSet.has(d.no)){
     badge.style.display='inline-block';
-    badge.textContent='✓ '+meta.masteredLabel+(srsRec&&srsRec.box?' Lv.'+srsRec.box:'');
+    badge.textContent='✓'+(srsRec&&srsRec.box?' Lv.'+srsRec.box:'');
   }else if(srsRec&&srsRec.box){
     badge.style.display='inline-block';
     badge.textContent='Lv.'+srsRec.box;
@@ -1075,34 +1367,33 @@ function showCard(){
     badge.style.display='none';
   }
 
+  /* --- 表：スイッチでふりがな ON/OFF --- */
+  const fm=document.getElementById('frontMain');
+  if(furiOn){fm.innerHTML=toRubyHtml(d.word);}
+  else{fm.textContent=stripFurigana(d.word);}
+  document.getElementById('frontSub').textContent='';
+
+  /* --- 裏：答えなので、ふりがなは常に表示 --- */
+  const bw=document.getElementById('backWord');
+  const bm=document.getElementById('backMeaning');
+  const bd=document.getElementById('backDesc');
+
+  /* 意味（日本語）はスイッチに合わせる */
+  const meaningText=furiOn?d.meaning:stripFurigana(d.meaning);
+
   if(currentLang==='ja'){
-    document.getElementById('frontMain').textContent=mainText;
-    document.getElementById('frontSub').textContent='';
-    document.getElementById('backWord').textContent=subText||mainText;
-    document.getElementById('backMeaning').textContent=d.meaning;
-    document.getElementById('backMeaning').style.display='block';
-    document.getElementById('backDesc').textContent='';
-    document.getElementById('backDesc').style.display='none';
-  }else if(currentLang==='en'){
-    document.getElementById('frontMain').textContent=mainText;
-    document.getElementById('frontSub').textContent=subText;
-    document.getElementById('backWord').textContent=d.enWord;
-    document.getElementById('backMeaning').textContent=d.meaning;
-    document.getElementById('backMeaning').style.display='block';
-    document.getElementById('backDesc').textContent=d.enDesc;
-    document.getElementById('backDesc').style.display=d.enDesc?'block':'none';
+    bw.innerHTML=toRubyHtml(d.word);
+    bm.textContent=meaningText;
+    bm.style.display=meaningText?'block':'none';
+    bd.textContent='';
+    bd.style.display='none';
   }else{
-    document.getElementById('frontMain').textContent=mainText;
-    document.getElementById('frontSub').textContent=subText;
-    let bW='',bD='';
-    if(currentLang==='id'){bW=d.idWord;bD=d.idDesc;}
-    else if(currentLang==='vi'){bW=d.viWord;bD=d.viDesc;}
-    else if(currentLang==='th'){bW=d.thWord;bD=d.thDesc;}
-    document.getElementById('backWord').textContent=bW;
-    document.getElementById('backMeaning').textContent=d.meaning;
-    document.getElementById('backMeaning').style.display='block';
-    document.getElementById('backDesc').textContent=bD;
-    document.getElementById('backDesc').style.display=bD?'block':'none';
+    const tr=(d.t&&d.t[currentLang])?d.t[currentLang]:{w:'',d:''};
+    bw.textContent=tr.w;
+    bm.textContent=meaningText;
+    bm.style.display=meaningText?'block':'none';
+    bd.textContent=tr.d;
+    bd.style.display=tr.d?'block':'none';
   }
 
   requestAnimationFrame(()=>{
@@ -1125,12 +1416,32 @@ function flipCard(){
 }
 document.getElementById('flipContainer').addEventListener('click',function(e){
   if(e.target.closest('.judge-btn'))return;
+  if(e.target.closest('.furi-switch'))return;
+  if(e.target.closest('.speak-btn'))return;
   flipCard();
 });
+
+/* ========== ふりがなスイッチの操作 ========== */
+(function(){
+  const sw=document.getElementById('furiSwitch');
+  const cb=document.getElementById('furiToggle');
+  if(!sw||!cb)return;
+  sw.addEventListener('click',function(e){e.stopPropagation();});
+  sw.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
+  cb.addEventListener('change',function(e){
+    furiOn=e.target.checked;
+    saveFuri();
+    const fc=document.getElementById('flipContainer');
+    const wasFlipped=fc.classList.contains('flipped');
+    showCard();
+    if(wasFlipped)fc.classList.add('flipped');
+  });
+})();
 
 /* ========== JUDGE ========== */
 function judgeCard(mastered){
   const d=displayData[idx];
+  if(!d)return;
   if(mastered){
     masteredSet.add(d.no);
     updateSrs(d.no,true);
@@ -1240,6 +1551,69 @@ function shuffleCards(){
     }
   },{passive:true});
 })();
+
+/* ========== 🔊 読み上げ ========== */
+(function(){
+  const btn=document.getElementById('speakBtn');
+  if(!btn)return;
+
+  const TTS_OK=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+  if(!TTS_OK){btn.hidden=true;return;}
+
+  let jaVoice=null;
+  function pickJaVoice(){
+    const list=window.speechSynthesis.getVoices()||[];
+    const ja=list.filter(function(v){return /^ja([-_]|$)/i.test(v.lang||'');});
+    if(!ja.length)return null;
+    const prefer=['Kyoko','Otoya','O-Ren','Hattori','Google 日本語','Google Japanese','Nanami','Ayumi','Haruka'];
+    for(let i=0;i<prefer.length;i++){
+      for(let j=0;j<ja.length;j++){
+        if((ja[j].name||'').indexOf(prefer[i])!==-1)return ja[j];
+      }
+    }
+    for(let k=0;k<ja.length;k++){if(ja[k].localService)return ja[k];}
+    return ja[0];
+  }
+  jaVoice=pickJaVoice();
+  window.speechSynthesis.onvoiceschanged=function(){jaVoice=pickJaVoice();};
+
+  /* ふりがなを使って「読み」で読み上げる */
+  function getSpeakText(){
+    if(!displayData.length)return '';
+    const d=displayData[idx];
+    if(!d||!d.word)return '';
+    const kana=toKanaReading(d.word).trim();
+    return kana||stripFurigana(d.word).trim();
+  }
+
+  function speakJa(text){
+    if(!text)return;
+    const synth=window.speechSynthesis;
+    if(synth.speaking||synth.pending){
+      synth.cancel();
+      btn.classList.remove('speaking');
+    }
+    if(!jaVoice)jaVoice=pickJaVoice();
+    const u=new SpeechSynthesisUtterance(String(text));
+    u.lang='ja-JP';
+    if(jaVoice)u.voice=jaVoice;
+    u.rate=0.85;   /* 速度：1が標準。ゆっくりにしたいなら 0.75 など */
+    u.pitch=1.05;  /* 高さ：1が標準 */
+    u.volume=1;
+    u.onstart=function(){btn.classList.add('speaking');};
+    u.onend=function(){btn.classList.remove('speaking');};
+    u.onerror=function(){btn.classList.remove('speaking');};
+    synth.speak(u);
+  }
+
+  btn.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    e.preventDefault();
+    speakJa(getSpeakText());
+  });
+})();
+
 /* ===== URLで単語が指定されていたら自動で開く ===== */
 (function(){
   const params=new URLSearchParams(location.search);
@@ -1253,115 +1627,6 @@ function shuffleCards(){
   if(!lang||!LANG_META[lang])lang='ja';
   chooseLang(lang);
 })();
-
-/* ================= 🔊 読み上げボタン（この塊だけ貼り付け） ================= */
-(function(){
-  if(document.getElementById('speakBtn'))return;          /* 二重追加の保険 */
-  var front=document.getElementById('cardFront');
-  if(!front)return;
-
-  /* ---- CSS を追加 ---- */
-  var css=
-   '.speak-btn{position:absolute;top:12px;right:12px;z-index:3;'+
-   'width:44px;height:44px;padding:0;border-radius:50%;'+
-   'border:2px solid var(--accent-light);background:var(--card-bg);color:var(--accent);'+
-   'font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;'+
-   'justify-content:center;box-shadow:0 2px 8px rgba(var(--accent-rgb),.18);'+
-   'transition:transform .15s,background .2s,color .2s;-webkit-appearance:none;appearance:none}'+
-   '.speak-btn:active{transform:scale(.9)}'+
-   '.speak-btn.speaking{background:var(--accent);color:#fff}'+
-   '.speak-btn[hidden]{display:none}'+
-   '.card-mastered-badge{right:66px}'+                    /* 「✓覚えた」と重ならないよう左へ */
-   '#cardFront{padding-top:62px}'+                        /* 文字がボタンの下に来ないよう余白 */
-   '#frontMain{word-break:normal;overflow-wrap:anywhere}';/* 長い文が枠から出ないよう折り返す */
-  var st=document.createElement('style');
-  st.appendChild(document.createTextNode(css));
-  document.head.appendChild(st);
-
-  /* ---- カード右上にボタンを置く ---- */
-  var btn=document.createElement('button');
-  btn.id='speakBtn';
-  btn.className='speak-btn';
-  btn.type='button';
-  btn.setAttribute('aria-label','読み上げ');
-  btn.textContent='🔊';
-  front.appendChild(btn);
-
-  /* ---- 読み上げ非対応ブラウザではボタンを隠す ---- */
-  var TTS_OK=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
-  if(!TTS_OK){btn.hidden=true;return;}
-
-  /* ---- 日本語の声を選ぶ ---- */
-  var jaVoice=null;
-  function pickJaVoice(){
-    var list=window.speechSynthesis.getVoices()||[];
-    var ja=list.filter(function(v){return /^ja([-_]|$)/i.test(v.lang||'');});
-    if(!ja.length)return null;
-    var prefer=['Kyoko','Otoya','O-Ren','Hattori','Google 日本語','Google Japanese','Nanami','Ayumi','Haruka'];
-    for(var i=0;i<prefer.length;i++){
-      for(var j=0;j<ja.length;j++){
-        if((ja[j].name||'').indexOf(prefer[i])!==-1)return ja[j];
-      }
-    }
-    for(var k=0;k<ja.length;k++){if(ja[k].localService)return ja[k];}
-    return ja[0];
-  }
-  jaVoice=pickJaVoice();
-  window.speechSynthesis.onvoiceschanged=function(){jaVoice=pickJaVoice();};
-
-  /* ---- 今のカードから読み上げる文字列を作る ---- */
-  function getSpeakText(){
-    if(!displayData.length)return '';
-    var d=displayData[idx];
-    if(!d||!d.word)return '';
-    var raw=String(d.word).trim();
-    var m=raw.match(/^(.+?)（(.+?)）$/);
-    if(!m)return raw;
-    var base=m[1].trim();
-    var inner=m[2].replace(/[／\/].*$/,'').trim();
-    if(inner&&/^[\u3041-\u309F\u30A0-\u30FF\u30FC\u3000\s、，,・･ー]+$/.test(inner))return inner;
-    return base;
-  }
-
-  /* ---- 読み上げ実行 ---- */
-  function speakJa(text){
-    if(!text)return;
-    var synth=window.speechSynthesis;
-    if(synth.speaking||synth.pending){
-      synth.cancel();
-      btn.classList.remove('speaking');
-    }
-    if(!jaVoice)jaVoice=pickJaVoice();
-    var u=new SpeechSynthesisUtterance(String(text));
-    u.lang='ja-JP';
-    if(jaVoice)u.voice=jaVoice;
-    u.rate=0.85;   /* 速度：1が標準。ゆっくりにしたいなら 0.75 など */
-    u.pitch=1.05;  /* 高さ：1が標準 */
-    u.volume=1;
-    u.onstart=function(){btn.classList.add('speaking');};
-    u.onend=function(){btn.classList.remove('speaking');};
-    u.onerror=function(){btn.classList.remove('speaking');};
-    synth.speak(u);
-  }
-
-  /* ---- カードのめくり／スワイプと競合させない ---- */
-  btn.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
-  btn.addEventListener('click',function(e){
-    e.stopPropagation();
-    e.preventDefault();
-    speakJa(getSpeakText());
-  });
-})();
-/* ====== 🔊 裏返したらスピーカーを隠す（この塊だけ追加） ====== */
-(function(){
-  var css=
-   '.speak-btn{-webkit-backface-visibility:hidden;backface-visibility:hidden}'+
-   '.flip-container.flipped .speak-btn{opacity:0;visibility:hidden;pointer-events:none}';
-  var st=document.createElement('style');
-  st.appendChild(document.createTextNode(css));
-  document.head.appendChild(st);
-})();
-
 </script>
 </body>
 </html>
