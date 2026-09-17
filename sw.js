@@ -1,7 +1,7 @@
 // sw.js – 介護福祉士国家試験対策アプリ
 // 方式：ネットワーク優先（オンラインなら常に最新版を取得し、失敗時のみキャッシュを使用）
 
-const CACHE_NAME = 'kaigo-vf-v40';
+const CACHE_NAME = 'kaigo-vf-v41';
 
 // 最初から保存しておくファイル
 const ASSETS = [
@@ -27,9 +27,16 @@ const ASSETS = [
   './houkaisei/data/note.js',
   './houkaisei/data/quiz.js',
 
-  'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap',
+  'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js',
-  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js'
+  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js',
+
+  'https://flagcdn.com/w160/id.png',
+  'https://flagcdn.com/w160/vn.png',
+  'https://flagcdn.com/w160/th.png',
+  'https://flagcdn.com/w160/mm.png',
+  'https://flagcdn.com/w160/np.png',
+  'https://flagcdn.com/w160/mn.png'
 ];
 
 /* =====================================================
@@ -75,8 +82,39 @@ self.addEventListener('fetch', event => {
   // Google Apps Script への送信はキャッシュしない
   if (req.url.indexOf('script.google.com') !== -1) return;
 
-  // 別タブへの遷移など、通常のページ遷移以外は扱わない
+  // 拡張機能などの特殊なURLは扱わない
   if (req.url.startsWith('chrome-extension://')) return;
+
+  // -------------------------------------------------
+  // スプレッドシートのCSV
+  // cb=（キャッシュ回避用の数字）を取り除いたURLを保存キーにする
+  // こうしないと読み込むたびに別々のデータとして溜まってしまう
+  // -------------------------------------------------
+  if (req.url.indexOf('docs.google.com') !== -1) {
+    const keyUrl = req.url
+      .replace(/([?&])cb=\d+&?/, '$1')
+      .replace(/[?&]$/, '');
+
+    event.respondWith(
+      fetch(req)
+        .then(response => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(keyUrl, clone).catch(() => {});
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(keyUrl).then(cached => {
+            if (cached) return cached;
+            return new Response('', { status: 503, statusText: 'Offline' });
+          });
+        })
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(req)
