@@ -19,663 +19,492 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 
-/* ===== 文字の大きさ（標準／大／特大） =====
-   html要素に fs-s / fs-l / fs-xl が付きます。
-   倍率を変えたいときは、この数字だけ書き換えてください。 */
+/* ===== 文字の大きさ（標準／大／特大）＝倍率はここだけ直せばOK ===== */
 :root{--fscale:1}
 html.fs-s{--fscale:1}
 html.fs-l{--fscale:1.25}
 html.fs-xl{--fscale:1.55}
 
+/* ===== 既定の色（言語未選択のとき） ===== */
+:root{
+  --accent:#5b4bd6;--accent-rgb:91,75,214;--accent2:#22b8a6;
+  --tint-a:#f4f6ff;--tint-b:#e7ebfb;--tint-c:#dbe1f7;
+  --btn-ok:#2f9e6b;--btn-again:#64748b;
+}
+
+/* ===== 言語ごとのアクセント（国旗の色に合わせています） ===== */
+body.lang-ja{--accent:#c62828;--accent-rgb:198,40,40;--accent2:#ff7a7a;
+  --tint-a:#fff5f7;--tint-b:#fde3ea;--tint-c:#f8c9d6;--btn-ok:#c62828;--btn-again:#546e7a}
+body.lang-en{--accent:#4c3bd6;--accent-rgb:76,59,214;--accent2:#5aa9ff;
+  --tint-a:#f5f3ff;--tint-b:#e6e1fb;--tint-c:#d3caf7;--btn-ok:#5e35b1;--btn-again:#c62828}
+body.lang-id{--accent:#2e7d32;--accent-rgb:46,125,50;--accent2:#8bd18f;
+  --tint-a:#f3fbf4;--tint-b:#e0f3e2;--tint-c:#c9e9cd;--btn-ok:#43a047;--btn-again:#e53935}
+body.lang-vi{--accent:#e0620d;--accent-rgb:224,98,13;--accent2:#ffd166;
+  --tint-a:#fff8f0;--tint-b:#ffecd6;--tint-c:#ffdcb0;--btn-ok:#f57c00;--btn-again:#c62828}
+body.lang-th{--accent:#1565c0;--accent-rgb:21,101,192;--accent2:#7fc4ff;
+  --tint-a:#f2f8ff;--tint-b:#e0eefc;--tint-c:#c9e2f8;--btn-ok:#1976d2;--btn-again:#c62828}
+/* ミャンマー：黄#FFCD00 緑#43B02A 赤#EE2737 */
+body.lang-my{--accent:#2f7d20;--accent-rgb:47,125,32;--accent2:#ffcd00;
+  --tint-a:#fffdf0;--tint-b:#f4f6da;--tint-c:#dceccf;--btn-ok:#43b02a;--btn-again:#ee2737}
+/* ネパール：紅#DC143C 青#003893 */
+body.lang-ne{--accent:#c01236;--accent-rgb:192,18,54;--accent2:#3b63c7;
+  --tint-a:#fff5f7;--tint-b:#fbdfe6;--tint-c:#dfe3f5;--btn-ok:#dc143c;--btn-again:#003893}
+/* モンゴル：青#015197 赤#C4272F 黄#F9CF02 */
+body.lang-mn{--accent:#015197;--accent-rgb:1,81,151;--accent2:#f9cf02;
+  --tint-a:#f2f7fc;--tint-b:#dfeaf6;--tint-c:#c7dcee;--btn-ok:#0369b8;--btn-again:#c4272f}
+
+/* ===== テーマ ===== */
+body.theme-light{
+  --hero-a:var(--tint-a);--hero-b:var(--tint-b);--hero-c:var(--tint-c);
+  --bg-a:var(--tint-a);--bg-b:var(--tint-c);
+  --panel:rgba(255,255,255,.62);--panel-line:rgba(255,255,255,.9);
+  --card:#fff;--card-line:rgba(var(--accent-rgb),.18);
+  --ink:#282533;--ink-sub:rgba(40,37,51,.6);
+  --chip:rgba(255,255,255,.72);--chip-line:rgba(var(--accent-rgb),.28);
+  --bar-bg:rgba(var(--accent-rgb),.14);
+  --shadow:0 10px 26px rgba(var(--accent-rgb),.14);
+  --shadow-s:0 3px 10px rgba(var(--accent-rgb),.12);
+}
+body.theme-dark{
+  --hero-a:#0e0c1f;--hero-b:#1d1838;--hero-c:#151228;
+  --bg-a:#100e1c;--bg-b:#1a1630;
+  --panel:rgba(255,255,255,.07);--panel-line:rgba(255,255,255,.13);
+  --card:#211d38;--card-line:rgba(255,255,255,.12);
+  --ink:#f2f0fb;--ink-sub:rgba(242,240,251,.6);
+  --chip:rgba(255,255,255,.07);--chip-line:rgba(255,255,255,.18);
+  --bar-bg:rgba(255,255,255,.14);
+  --shadow:0 14px 34px rgba(0,0,0,.45);
+  --shadow-s:0 3px 12px rgba(0,0,0,.35);
+}
+
 body{
   font-family:'Noto Sans JP','Noto Sans',sans-serif;
-  min-height:100dvh;display:flex;flex-direction:column;
-  transition:background .5s ease,color .5s ease;
+  min-height:100dvh;display:flex;flex-direction:column;color:var(--ink);
+  background:linear-gradient(170deg,var(--bg-a) 0%,var(--bg-b) 100%);
+  transition:background .45s ease,color .3s ease;
   overflow-x:hidden;-webkit-tap-highlight-color:transparent;user-select:none;
 }
 
-body.lang-ja{
-  background:linear-gradient(160deg,#fce4ec 0%,#f8bbd0 40%,#f48fb1 100%);
-  --accent:#c62828;--accent-rgb:198,40,40;--accent-light:#ffcdd2;
-  --accent-glow:rgba(198,40,40,.1);--card-bg:#fff;--text:#b71c1c;
-  --btn-ok:#c62828;--btn-again:#455a64;--surface:#fff5f5;
+/* 言語別フォント（訳文のみ） */
+body.lang-th .card-back-word,body.lang-th .card-back-desc{font-family:'Noto Sans Thai','Noto Sans JP',sans-serif;line-height:1.85}
+body.lang-my .card-back-word,body.lang-my .card-back-desc{font-family:'Noto Sans Myanmar','Noto Sans JP',sans-serif;line-height:2.05}
+body.lang-ne .card-back-word,body.lang-ne .card-back-desc{font-family:'Noto Sans Devanagari','Noto Sans JP',sans-serif;line-height:1.9}
+body.lang-mn .card-back-word,body.lang-mn .card-back-desc{font-family:'Noto Sans','Noto Sans JP',sans-serif;line-height:1.7}
+
+/* ============ 共通パーツ ============ */
+.panel{
+  width:100%;max-width:460px;
+  background:var(--panel);border:1px solid var(--panel-line);
+  border-radius:22px;backdrop-filter:blur(12px);
+  padding:15px 16px;box-shadow:var(--shadow-s);
 }
-body.lang-en{
-  background:linear-gradient(160deg,#ede7f6 0%,#d1c4e9 40%,#b39ddb 100%);
-  --accent:#4527a0;--accent-rgb:69,39,160;--accent-light:#d1c4e9;
-  --accent-glow:rgba(69,39,160,.12);--card-bg:#fff;--text:#311b92;
-  --btn-ok:#5e35b1;--btn-again:#c62828;--surface:#ede7f6;
-}
-body.lang-id{
-  background:linear-gradient(160deg,#e8f5e9 0%,#c8e6c9 40%,#a5d6a7 100%);
-  --accent:#2e7d32;--accent-rgb:46,125,50;--accent-light:#c8e6c9;
-  --accent-glow:rgba(46,125,50,.15);--card-bg:#fff;--text:#1b5e20;
-  --btn-ok:#43a047;--btn-again:#e53935;--surface:#f1f8e9;
-}
-body.lang-vi{
-  background:linear-gradient(160deg,#fff3e0 0%,#ffe0b2 40%,#ffcc80 100%);
-  --accent:#e65100;--accent-rgb:230,81,0;--accent-light:#ffcc80;
-  --accent-glow:rgba(230,81,0,.12);--card-bg:#fff;--text:#bf360c;
-  --btn-ok:#f57c00;--btn-again:#c62828;--surface:#fff8e1;
-}
-body.lang-th{
-  background:linear-gradient(160deg,#e3f2fd 0%,#bbdefb 40%,#90caf9 100%);
-  --accent:#1565c0;--accent-rgb:21,101,192;--accent-light:#bbdefb;
-  --accent-glow:rgba(21,101,192,.12);--card-bg:#fff;--text:#0d47a1;
-  --btn-ok:#1976d2;--btn-again:#c62828;--surface:#e3f2fd;
-}
-/* ミャンマー国旗：黄 #FFCD00 / 緑 #43B02A / 赤 #EE2737 */
-body.lang-my{
-  background:linear-gradient(160deg,#fff8e1 0%,#ffecb3 38%,#c5e8b7 100%);
-  --accent:#2f7d20;--accent-rgb:47,125,32;--accent-light:#cfeac4;
-  --accent-glow:rgba(255,205,0,.22);--card-bg:#fff;--text:#1f5a14;
-  --btn-ok:#43b02a;--btn-again:#ee2737;--surface:#fbf8e8;
-}
-/* ネパール国旗：紅 #DC143C / 青 #003893 */
-body.lang-ne{
-  background:linear-gradient(160deg,#fde8ec 0%,#f7c0cb 40%,#b9c6e6 100%);
-  --accent:#c01236;--accent-rgb:192,18,54;--accent-light:#f5c2cd;
-  --accent-glow:rgba(0,56,147,.14);--card-bg:#fff;--text:#8e0c27;
-  --btn-ok:#dc143c;--btn-again:#003893;--surface:#fdf1f3;
-}
-/* モンゴル国旗：青 #015197 / 赤 #C4272F / 黄 #F9CF02 */
-body.lang-mn{
-  background:linear-gradient(160deg,#e4eef8 0%,#bcd6ee 40%,#8fb8dd 100%);
-  --accent:#015197;--accent-rgb:1,81,151;--accent-light:#bcd6ee;
-  --accent-glow:rgba(249,207,2,.2);--card-bg:#fff;--text:#013a6d;
-  --btn-ok:#0369b8;--btn-again:#c4272f;--surface:#eef5fb;
+.panel-title{
+  display:flex;align-items:center;gap:6px;
+  font-size:calc(.8rem * var(--fscale));font-weight:800;
+  color:var(--ink);opacity:.72;margin-bottom:11px;letter-spacing:.02em;
 }
 
-/* ===== 言語別フォント（カード裏の訳文だけに適用） ===== */
-body.lang-th .card-back-word,body.lang-th .card-back-desc{
-  font-family:'Noto Sans Thai','Noto Sans JP',sans-serif;line-height:1.85;
+/* --- 設定バー（ふりがな／テーマ／文字） --- */
+.pref-row{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;align-items:center}
+.switch{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  padding:6px 13px 6px 8px;border-radius:999px;
+  background:var(--chip);border:1px solid var(--chip-line);color:var(--ink);
+  font-family:inherit;font-size:calc(.78rem * var(--fscale));font-weight:800;
+  transition:border-color .2s,background .2s;
 }
-body.lang-my .card-back-word,body.lang-my .card-back-desc{
-  font-family:'Noto Sans Myanmar','Noto Sans JP',sans-serif;line-height:2.05;
+.switch-track{
+  width:38px;height:21px;border-radius:999px;background:var(--bar-bg);
+  position:relative;transition:background .22s;flex-shrink:0;display:block;
 }
-body.lang-ne .card-back-word,body.lang-ne .card-back-desc{
-  font-family:'Noto Sans Devanagari','Noto Sans JP',sans-serif;line-height:1.9;
+.switch-thumb{
+  position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .22s;display:block;
 }
-body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
-  font-family:'Noto Sans','Noto Sans JP',sans-serif;line-height:1.7;
+.switch.on .switch-track{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.switch.on .switch-thumb{transform:translateX(17px)}
+.switch-state{font-size:.72em;font-weight:900;color:var(--accent);letter-spacing:.06em}
+body.theme-dark .switch-state{color:var(--accent2)}
+
+.seg{
+  display:flex;align-items:center;gap:2px;
+  padding:4px;border-radius:999px;
+  background:var(--chip);border:1px solid var(--chip-line);
+}
+.seg-cap{
+  font-size:calc(.7rem * var(--fscale));font-weight:800;color:var(--ink-sub);
+  padding:0 8px 0 6px;white-space:nowrap;
+}
+.seg-btn{
+  border:none;background:transparent;color:var(--ink);cursor:pointer;
+  font-family:inherit;font-size:calc(.76rem * var(--fscale));font-weight:800;
+  padding:6px 12px;border-radius:999px;white-space:nowrap;transition:background .2s,color .2s;
+}
+.seg-btn.on{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  box-shadow:0 2px 10px rgba(var(--accent-rgb),.4);
 }
 
-/* ===== Landing ===== */
+/* ============ LANDING ============ */
 .landing{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100dvh;gap:20px;padding:32px 20px;
-  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
-  color:#fff;text-align:center;position:relative;overflow:hidden;
+  min-height:100dvh;gap:18px;padding:26px 18px 34px;text-align:center;
+  background:linear-gradient(150deg,var(--hero-a) 0%,var(--hero-b) 55%,var(--hero-c) 100%);
+  position:relative;overflow:hidden;
 }
 .landing::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.15) 0%,transparent 60%),
-             radial-gradient(ellipse at 70% 80%,rgba(255,120,200,.1) 0%,transparent 60%);
-  pointer-events:none;
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 22% 12%,rgba(var(--accent-rgb),.18) 0%,transparent 58%),
+             radial-gradient(ellipse at 80% 85%,rgba(var(--accent-rgb),.12) 0%,transparent 60%);
 }
 .landing>*{position:relative;z-index:1}
-
-.brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
-.brand-logo{animation:float 3s ease-in-out infinite}
-.brand-logo img{
-  width:clamp(100px,25vw,160px);height:auto;border-radius:20px;
-  filter:drop-shadow(0 6px 20px rgba(255,255,255,.25));object-fit:contain;
+.top-link{
+  align-self:flex-start;color:var(--ink-sub);text-decoration:none;
+  font-size:calc(.9rem * var(--fscale));font-weight:700;
+  padding:8px 14px;border-radius:999px;border:1px solid var(--panel-line);background:var(--panel);
 }
+.brand{display:flex;flex-direction:column;align-items:center;gap:6px}
+.brand-logo{animation:float 3.4s ease-in-out infinite}
+.brand-logo img{width:clamp(96px,23vw,148px);height:auto;border-radius:22px;object-fit:contain;
+  filter:drop-shadow(0 10px 26px rgba(var(--accent-rgb),.35))}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .brand h1{
   font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;letter-spacing:-.02em;
-  background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
+  font-size:clamp(1.5rem,4.8vw,2.4rem);font-weight:800;letter-spacing:-.02em;line-height:1.35;
+  background:linear-gradient(95deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.brand-sub{font-size:clamp(.85rem,2.5vw,1rem);opacity:.7;font-weight:300}
+.brand-sub{font-size:clamp(.8rem,2.4vw,.95rem);color:var(--ink-sub);font-weight:600;letter-spacing:.04em}
 .landing-desc{
-  font-size:calc(clamp(.95rem,2.8vw,1.15rem) * var(--fscale));opacity:.85;
-  max-width:520px;line-height:2.35;font-weight:300;
+  font-size:calc(clamp(.92rem,2.7vw,1.1rem) * var(--fscale));color:var(--ink);opacity:.92;
+  max-width:500px;line-height:2.3;font-weight:500;
 }
-/* ふりがな（漢字の上に小さく表示） */
 .landing-desc ruby{ruby-position:over;-webkit-ruby-position:before}
-.landing-desc rt{
-  font-size:.5em;font-weight:400;opacity:.8;letter-spacing:0;
-  font-family:'Noto Sans JP',sans-serif;
-}
+.landing-desc rt{font-size:.5em;font-weight:400;opacity:.75;font-family:'Noto Sans JP',sans-serif}
 
-.lang-section{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;width:100%;max-width:520px}
-
-.lang-btn-ja{
-  display:flex;align-items:center;justify-content:center;gap:16px;
-  width:100%;max-width:480px;padding:22px 24px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.2);cursor:pointer;
-  font-size:1rem;font-weight:700;color:#fff;
-  transition:transform .25s,box-shadow .25s,border-color .25s;
-  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;
-  backdrop-filter:blur(8px);background:transparent;
+.lang-section{display:flex;flex-direction:column;align-items:center;gap:11px;width:100%;max-width:500px}
+.lang-hero{
+  display:flex;align-items:center;gap:14px;width:100%;
+  padding:16px 18px;border-radius:20px;cursor:pointer;text-align:left;
+  border:1px solid var(--panel-line);background:var(--panel);color:var(--ink);
+  font-family:inherit;box-shadow:var(--shadow-s);
+  transition:transform .2s,box-shadow .2s,border-color .2s;
 }
-.lang-btn-ja::before{
-  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
-  background:linear-gradient(135deg,#f5f5f5 0%,#e0e0e0 100%);opacity:.92;
-}
-.lang-btn-ja>*{position:relative;z-index:1}
-.lang-btn-ja:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,.3);border-color:rgba(255,255,255,.4)}
-.lang-btn-ja:active{transform:scale(.97)}
-.hinomaru{
-  width:52px;height:52px;border-radius:50%;
-  background:radial-gradient(circle,#c62828 0%,#b71c1c 60%,#d32f2f 100%);
-  box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);flex-shrink:0;
-}
-.ja-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
-.ja-text .lang-main{font-size:calc(1.3rem * var(--fscale));font-weight:900;color:#333}
-.ja-text .lang-sub{font-size:calc(.8rem * var(--fscale));color:#888;font-weight:400}
-
-.lang-btn-en{
-  display:flex;align-items:center;justify-content:center;gap:16px;
-  width:100%;max-width:480px;padding:22px 24px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.2);cursor:pointer;
-  font-size:1rem;font-weight:700;color:#fff;
-  transition:transform .25s,box-shadow .25s,border-color .25s;
-  font-family:'Poppins','Noto Sans JP',sans-serif;position:relative;overflow:hidden;
-  backdrop-filter:blur(8px);background:transparent;
-}
-.lang-btn-en::before{
-  content:'';position:absolute;inset:0;border-radius:22px;z-index:0;
-  background:linear-gradient(135deg,#7c4dff 0%,#536dfe 50%,#448aff 100%);opacity:.92;
-}
-.lang-btn-en>*{position:relative;z-index:1}
-.lang-btn-en:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,.3);border-color:rgba(255,255,255,.4)}
-.lang-btn-en:active{transform:scale(.97)}
-.en-icon{
-  width:52px;height:52px;border-radius:50%;
-  background:linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%);
+.lang-hero:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:rgba(var(--accent-rgb),.5)}
+.lang-hero:active{transform:scale(.98)}
+.hero-mark{
+  width:48px;height:48px;border-radius:14px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;
-  color:#4527a0;letter-spacing:-.02em;
-  box-shadow:0 0 16px rgba(69,39,160,.3),inset 0 -2px 4px rgba(0,0,0,.08);flex-shrink:0;
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:1.05rem;color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
 }
-.en-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
-.en-text .lang-main{font-size:calc(1.3rem * var(--fscale));font-weight:800;color:#fff;letter-spacing:.03em}
-.en-text .lang-sub{font-size:calc(.8rem * var(--fscale));color:rgba(255,255,255,.7);font-weight:400}
+.hero-mark.ja{background:radial-gradient(circle at 50% 50%,#e53935 0 42%,#fff 44%);border:1px solid rgba(0,0,0,.08)}
+.hero-mark.en{background:linear-gradient(135deg,#4c3bd6,#5aa9ff)}
+.lang-hero .l-main{display:block;font-size:calc(1.08rem * var(--fscale));font-weight:900;line-height:1.4}
+.lang-hero .l-sub{display:block;font-size:calc(.76rem * var(--fscale));color:var(--ink-sub);font-weight:600}
 
-.lang-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%}
+.lang-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%}
 .lang-btn{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  flex:1 1 140px;min-width:140px;max-width:180px;padding:20px 14px;border-radius:24px;
-  border:2px solid rgba(255,255,255,.15);cursor:pointer;
-  font-size:1rem;font-weight:700;color:#fff;
-  transition:transform .25s,box-shadow .25s,border-color .25s;
-  font-family:'Noto Sans JP',sans-serif;position:relative;overflow:hidden;
-  backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  flex:1 1 138px;min-width:138px;max-width:170px;padding:14px 10px;
+  border-radius:20px;cursor:pointer;font-family:inherit;color:var(--ink);
+  border:1px solid var(--panel-line);background:var(--panel);box-shadow:var(--shadow-s);
+  transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;overflow:hidden;
 }
-.lang-btn::before{
-  content:'';position:absolute;inset:0;opacity:.85;border-radius:22px;z-index:0;transition:opacity .3s;
+.lang-btn::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:4px;
 }
-.lang-btn>*{position:relative;z-index:1}
-.lang-btn.id::before{background:linear-gradient(135deg,#43a047,#2e7d32)}
-.lang-btn.vi::before{background:linear-gradient(135deg,#ff8f00,#e65100)}
-.lang-btn.th::before{background:linear-gradient(135deg,#42a5f5,#1565c0)}
-/* 国旗の公式色に合わせたグラデーション */
-.lang-btn.my::before{background:linear-gradient(135deg,#ffcd00 0%,#43b02a 60%,#ee2737 100%)}
-.lang-btn.ne::before{background:linear-gradient(135deg,#dc143c 0%,#003893 100%)}
-.lang-btn.mn::before{background:linear-gradient(135deg,#c4272f 0%,#015197 50%,#c4272f 100%)}
-.lang-btn:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,.4)}
-.lang-btn:active{transform:scale(.96)}
-.lang-btn .lang-name{font-size:calc(.95rem * var(--fscale));font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.45)}
-.lang-btn .lang-label{font-size:calc(.75rem * var(--fscale));opacity:.9;font-weight:400;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.lang-btn.id::after{background:linear-gradient(90deg,#e53935,#fff)}
+.lang-btn.vi::after{background:linear-gradient(90deg,#da251d,#ffcd00)}
+.lang-btn.th::after{background:linear-gradient(90deg,#a51931,#f4f5f8 50%,#2d2a4a)}
+.lang-btn.my::after{background:linear-gradient(90deg,#ffcd00,#43b02a,#ee2737)}
+.lang-btn.ne::after{background:linear-gradient(90deg,#dc143c,#003893)}
+.lang-btn.mn::after{background:linear-gradient(90deg,#c4272f,#015197,#c4272f)}
+.lang-btn:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:rgba(var(--accent-rgb),.45)}
+.lang-btn:active{transform:scale(.97)}
+.flag-img{width:62px;height:auto;border-radius:6px;object-fit:contain;background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.lang-btn .lang-name{font-size:calc(.95rem * var(--fscale));font-weight:800}
+.lang-btn .lang-label{font-size:calc(.72rem * var(--fscale));color:var(--ink-sub);font-weight:600}
 .lang-btn.my .lang-name{font-family:'Noto Sans Myanmar','Noto Sans JP',sans-serif}
 .lang-btn.ne .lang-name{font-family:'Noto Sans Devanagari','Noto Sans JP',sans-serif}
 .lang-btn.mn .lang-name{font-family:'Noto Sans','Noto Sans JP',sans-serif}
-
-.flag-img{
-  width:72px;height:auto;border-radius:6px;
-  box-shadow:0 2px 8px rgba(0,0,0,.25);object-fit:contain;
-  background:#fff;
-}
-
-.flag-credit{
-  font-size:.62rem;opacity:.3;color:#fff;margin-top:2px;
-}
+.flag-credit{font-size:.62rem;color:var(--ink-sub);opacity:.7}
 .flag-credit a{color:inherit;text-decoration:underline}
 
-/* ===== Request Box ===== */
-.request-box{
-  width:100%;max-width:480px;
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  border-radius:20px;backdrop-filter:blur(8px);
-  padding:20px 20px 18px;margin-top:6px;
-  display:flex;flex-direction:column;align-items:center;gap:12px;
+/* リクエスト欄・使い方・クレジット */
+.catchcopy{
+  font-size:calc(clamp(.85rem,2.5vw,1rem) * var(--fscale));font-weight:800;
+  line-height:2.1;text-align:center;margin-bottom:11px;
 }
-.request-catchcopy{
-  font-size:calc(clamp(.85rem,2.5vw,1rem) * var(--fscale));font-weight:700;
-  line-height:2.15;color:rgba(255,255,255,.9);text-align:center;
-}
-/* ふりがな（漢字の上に小さく表示） */
-.request-catchcopy ruby{ruby-position:over;-webkit-ruby-position:before}
-.request-catchcopy rt{
-  font-size:.5em;font-weight:400;opacity:.8;letter-spacing:0;
-  font-family:'Noto Sans JP',sans-serif;
-  -webkit-text-fill-color:currentColor;
-}
-.request-catchcopy .highlight{
-  background:linear-gradient(90deg,#ffd54f,#ffb300);
+.catchcopy ruby{ruby-position:over;-webkit-ruby-position:before}
+.catchcopy rt{font-size:.5em;font-weight:400;opacity:.75}
+.catchcopy .hl{
+  background:linear-gradient(95deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  font-weight:900;
 }
-.request-input-row{
-  display:flex;flex-direction:column;gap:10px;width:100%;
+.catchcopy .hl rt{-webkit-text-fill-color:currentColor}
+.req-col{display:flex;flex-direction:column;gap:9px}
+.req-input{
+  width:100%;padding:12px 15px;border-radius:14px;
+  border:1px solid var(--chip-line);background:var(--chip);color:var(--ink);
+  font-size:calc(.92rem * var(--fscale));font-family:inherit;outline:none;
 }
-.request-input{
-  width:100%;padding:12px 16px;border-radius:14px;border:none;
-  font-size:calc(.95rem * var(--fscale));font-family:'Noto Sans JP',sans-serif;
-  background:rgba(255,255,255,.92);color:#333;
-  outline:none;transition:box-shadow .2s;
+.req-input::placeholder{color:var(--ink-sub)}
+.req-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.18)}
+.req-send{
+  padding:13px 18px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  font-size:calc(.95rem * var(--fscale));font-weight:800;
+  box-shadow:0 5px 18px rgba(var(--accent-rgb),.35);transition:transform .15s;
 }
-.request-input::placeholder{color:#aaa;font-size:.85em}
-.request-input:focus{box-shadow:0 0 0 3px rgba(167,139,250,.5)}
-.request-send{
-  width:100%;padding:14px 20px;border-radius:14px;border:none;
-  background:linear-gradient(135deg,#a78bfa,#60a5fa);
-  color:#fff;font-size:calc(1rem * var(--fscale));font-weight:700;cursor:pointer;
-  font-family:'Noto Sans JP',sans-serif;
-  transition:transform .15s,box-shadow .15s;
-  white-space:nowrap;
-}
-.request-send:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(167,139,250,.4)}
-.request-send:active{transform:scale(.95)}
-.request-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.request-feedback{
-  font-size:calc(.8rem * var(--fscale));min-height:1.2em;
-  transition:opacity .3s;
-}
-.request-feedback.success{color:#69f0ae}
-.request-feedback.error{color:#ff8a80}
-
-.how-to{
-  margin-top:6px;padding:14px 20px;
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;backdrop-filter:blur(6px);max-width:480px;width:100%;
-}
-.how-to p{font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));opacity:.75;line-height:1.7;font-weight:300}
-.how-to .icon{font-size:1em;vertical-align:middle;margin-right:2px}
-
-.credit{
-  margin-top:20px;padding:16px 24px;
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;backdrop-filter:blur(8px);
-  display:flex;align-items:center;gap:16px;max-width:480px;width:100%;
-}
-.credit-avatar{flex-shrink:0}
-.credit-avatar img{height:80px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.2));object-fit:contain;}
-.credit-info{display:flex;flex-direction:column;gap:2px;text-align:left}
+.req-send:active{transform:scale(.96)}
+.req-send:disabled{opacity:.5;cursor:not-allowed}
+.req-fb{font-size:calc(.78rem * var(--fscale));min-height:1.2em;text-align:center;color:var(--ink-sub)}
+.req-fb.success{color:#22a06b}
+.req-fb.error{color:#e5484d}
+.how-to p{font-size:calc(clamp(.76rem,2.2vw,.86rem) * var(--fscale));color:var(--ink-sub);line-height:1.95;font-weight:600}
+.credit{display:flex;align-items:center;gap:14px;text-align:left}
+.credit img{height:66px;width:auto;object-fit:contain}
 .credit-org{
-  font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(.8rem,2.2vw,.95rem);font-weight:600;letter-spacing:.04em;
-  background:linear-gradient(90deg,#ffd54f,#ffb300);
+  font-family:'Poppins','Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;letter-spacing:.03em;
+  background:linear-gradient(95deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.credit-name{font-size:clamp(.95rem,2.8vw,1.15rem);font-weight:700;color:#fff;letter-spacing:.03em}
-.credit-title{font-size:.75rem;opacity:.5}
+.credit-name{font-size:1.02rem;font-weight:800}
+.credit-title{font-size:.7rem;color:var(--ink-sub)}
 
-/* ===== Start Screen ===== */
+/* ============ START SCREEN ============ */
 .start-screen{
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100dvh;gap:16px;padding:32px 20px;text-align:center;
+  display:none;flex-direction:column;align-items:center;
+  min-height:100dvh;gap:13px;padding:18px 18px 36px;
+}
+.start-head{display:flex;align-items:center;gap:10px;width:100%;max-width:460px}
+.ghost-btn{
+  width:40px;height:40px;border-radius:14px;flex-shrink:0;cursor:pointer;
+  border:1px solid var(--panel-line);background:var(--panel);color:var(--ink);
+  font-size:1rem;font-family:inherit;display:flex;align-items:center;justify-content:center;
+}
+.start-head-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.start-head-txt b{font-size:calc(1.02rem * var(--fscale));font-weight:900;line-height:1.35}
+.start-head-txt span{font-size:calc(.72rem * var(--fscale));color:var(--ink-sub);font-weight:600}
+
+.ring-card{
+  width:100%;max-width:460px;display:flex;align-items:center;gap:16px;
+  background:var(--panel);border:1px solid var(--panel-line);border-radius:24px;
+  padding:16px;backdrop-filter:blur(12px);box-shadow:var(--shadow);
+}
+.ring{
+  --p:0;
+  width:112px;height:112px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+  background:conic-gradient(var(--accent) calc(var(--p) * 1%),var(--bar-bg) 0);
+  transition:background .6s ease;
+}
+.ring-in{
+  width:88px;height:88px;border-radius:50%;background:var(--card);
+  display:grid;place-items:center;gap:0;box-shadow:inset 0 0 0 1px var(--card-line);
+}
+.ring-pct{font-family:'Poppins',sans-serif;font-size:1.32rem;font-weight:800;color:var(--accent);line-height:1}
+body.theme-dark .ring-pct{color:#fff}
+.ring-sub{font-size:.6rem;color:var(--ink-sub);font-weight:700;margin-top:2px}
+.ring-meta{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.scope-line{font-size:calc(.74rem * var(--fscale));font-weight:800;color:var(--accent);line-height:1.5}
+body.theme-dark .scope-line{color:var(--accent2)}
+.mastered-line{font-size:calc(1.06rem * var(--fscale));font-weight:900;line-height:1.35}
+.lets{font-size:calc(.86rem * var(--fscale));font-weight:800;color:var(--ink-sub)}
+.streak{
+  align-self:flex-start;font-size:calc(.7rem * var(--fscale));font-weight:800;
+  padding:3px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-line);
 }
 
-/* ===== パート選択 ===== */
-.part-box{
-  background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.25);border-radius:22px;
-  padding:16px 18px;max-width:440px;width:100%;
+/* チップ（レベル／パート） */
+.chip-grid{display:flex;flex-direction:column;gap:7px}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  display:flex;align-items:center;gap:9px;cursor:pointer;font-family:inherit;text-align:left;
+  padding:10px 13px;border-radius:15px;color:var(--ink);
+  border:1px solid var(--chip-line);background:var(--chip);
+  transition:transform .15s,box-shadow .2s,border-color .2s,background .2s;
 }
-.part-title{
-  font-size:calc(.82rem * var(--fscale));font-weight:800;color:var(--text);opacity:.75;
-  margin-bottom:10px;letter-spacing:.02em;
+.chip-row .chip{flex:1 1 118px;min-width:118px}
+.chip-code{
+  flex-shrink:0;min-width:30px;padding:2px 7px;border-radius:8px;text-align:center;
+  font-family:'Poppins',sans-serif;font-size:.72rem;font-weight:800;
+  background:rgba(var(--accent-rgb),.14);color:var(--accent);
 }
-.part-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.part-btn{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  flex:1 1 92px;min-width:92px;max-width:150px;
-  padding:9px 12px;border-radius:14px;cursor:pointer;
-  border:2px solid var(--accent);background:transparent;color:var(--accent);
-  font-family:'Noto Sans JP',sans-serif;
-  transition:background .2s,color .2s,transform .15s,box-shadow .2s;
+body.theme-dark .chip-code{background:rgba(255,255,255,.12);color:#fff}
+.chip-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.chip-name{font-size:calc(.83rem * var(--fscale));font-weight:800;line-height:1.35}
+.chip-count{font-size:calc(.68rem * var(--fscale));color:var(--ink-sub);font-weight:700}
+.chip:hover{transform:translateY(-2px);box-shadow:var(--shadow-s);border-color:rgba(var(--accent-rgb),.5)}
+.chip:active{transform:scale(.97)}
+.chip.on{
+  background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;
+  box-shadow:0 6px 20px rgba(var(--accent-rgb),.42);
 }
-.part-btn .part-name{font-size:calc(.86rem * var(--fscale));font-weight:800;line-height:1.25}
-.part-btn .part-count{font-size:calc(.66rem * var(--fscale));opacity:.7;font-weight:600}
-.part-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(var(--accent-rgb),.28)}
-.part-btn:active{transform:scale(.95)}
-.part-btn.active{
-  background:var(--accent);color:#fff;
-  box-shadow:0 4px 16px rgba(var(--accent-rgb),.42);
-}
-.part-btn.active .part-count{opacity:.85}
-.part-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.chip.on .chip-code{background:rgba(255,255,255,.24);color:#fff}
+.chip.on .chip-count{color:rgba(255,255,255,.85)}
+.chip:disabled{opacity:.34;cursor:not-allowed;transform:none;box-shadow:none}
 
-/* ===== 学習レベル選択（パート選択と同じ見た目・1行ずつ） ===== */
-.level-box{
-  background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.25);border-radius:22px;
-  padding:16px 18px;max-width:440px;width:100%;
+.cta-col{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;max-width:460px;margin-top:2px}
+.cta{
+  width:100%;padding:16px 20px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;
+  background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;
+  font-size:calc(1.08rem * var(--fscale));font-weight:900;letter-spacing:.02em;
+  box-shadow:0 8px 26px rgba(var(--accent-rgb),.4);transition:transform .18s,box-shadow .18s;
 }
-.level-title{
-  font-size:calc(.82rem * var(--fscale));font-weight:800;color:var(--text);opacity:.75;
-  margin-bottom:10px;letter-spacing:.02em;
+.cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(var(--accent-rgb),.5)}
+.cta:active{transform:scale(.97)}
+.cta:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.cta.ghost{
+  background:var(--panel);color:var(--ink);border:1px solid var(--chip-line);
+  font-size:calc(.95rem * var(--fscale));font-weight:800;padding:13px 18px;box-shadow:var(--shadow-s);
 }
-.level-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.level-grid .part-btn{flex:1 1 100%;max-width:none}
-.level-grid .part-btn .part-name{font-size:calc(.84rem * var(--fscale));line-height:1.45}
+.cta.ghost:hover{border-color:rgba(var(--accent-rgb),.5)}
+.text-btn{
+  background:none;border:none;color:var(--ink-sub);cursor:pointer;font-family:inherit;
+  font-size:calc(.84rem * var(--fscale));font-weight:700;padding:6px 10px;
+}
+.text-btn:hover{color:var(--ink)}
 
-/* ===== 文字の大きさ 選択 ===== */
-.size-box{
-  background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.25);border-radius:22px;
-  padding:16px 18px;max-width:440px;width:100%;
+/* ============ STUDY ============ */
+.app-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 14px;position:sticky;top:0;z-index:100;
+  background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;
+  box-shadow:0 4px 18px rgba(var(--accent-rgb),.32);
 }
-.size-title{
-  font-size:calc(.82rem * var(--fscale));font-weight:800;color:var(--text);opacity:.75;
-  margin-bottom:10px;letter-spacing:.02em;
+.head-l{display:flex;align-items:center;gap:9px;min-width:0}
+.head-txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.head-txt b{font-size:.88rem;font-weight:800;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.head-chips{display:flex;flex-wrap:wrap;gap:4px}
+.head-chip{
+  font-size:.64rem;font-weight:800;background:rgba(255,255,255,.22);
+  padding:2px 9px;border-radius:999px;white-space:nowrap;
 }
-.size-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.size-btn{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  flex:1 1 92px;min-width:92px;max-width:150px;
-  padding:8px 12px;border-radius:14px;cursor:pointer;
-  border:2px solid var(--accent);background:transparent;color:var(--accent);
-  font-family:'Noto Sans JP',sans-serif;
-  transition:background .2s,color .2s,transform .15s,box-shadow .2s;
+.head-r{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{
+  width:36px;height:36px;border-radius:12px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.16);color:#fff;
+  font-size:.95rem;display:flex;align-items:center;justify-content:center;font-family:inherit;
+  transition:background .2s;
 }
-.size-btn .size-sample{font-weight:900;line-height:1.15}
-.size-btn[data-size="s"] .size-sample{font-size:1rem}
-.size-btn[data-size="l"] .size-sample{font-size:1.3rem}
-.size-btn[data-size="xl"] .size-sample{font-size:1.62rem}
-.size-btn .size-name{font-size:.72rem;font-weight:700;opacity:.85}
-.size-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(var(--accent-rgb),.28)}
-.size-btn:active{transform:scale(.95)}
-.size-btn.active{
-  background:var(--accent);color:#fff;
-  box-shadow:0 4px 16px rgba(var(--accent-rgb),.42);
-}
+.icon-btn:hover{background:rgba(255,255,255,.3)}
+.icon-btn.on{background:rgba(255,255,0,.35)}
 
-.start-progress-box{
-  background:rgba(255,255,255,.15);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.2);border-radius:24px;
-  padding:26px 30px;max-width:440px;width:100%;
-}
-.start-scope{
-  font-size:calc(.78rem * var(--fscale));font-weight:700;color:var(--accent);opacity:.85;margin-bottom:6px;
-}
-.start-mastered{font-size:calc(1.45rem * var(--fscale));font-weight:900;color:var(--text);line-height:1.4}
-.start-bar-wrap{margin:12px 0;height:14px;background:rgba(0,0,0,.1);border-radius:14px;overflow:hidden}
-.start-bar-fill{height:100%;border-radius:14px;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
-.start-lets-try{
-  font-size:calc(clamp(1.1rem,3.5vw,1.4rem) * var(--fscale));font-weight:800;color:var(--accent);
-  margin-top:8px;
-}
-.start-btn{
-  margin-top:4px;padding:16px 48px;border-radius:30px;border:none;
-  background:var(--accent);color:#fff;font-size:calc(1.2rem * var(--fscale));font-weight:800;
-  cursor:pointer;font-family:'Poppins','Noto Sans JP',sans-serif;
-  box-shadow:0 6px 24px rgba(var(--accent-rgb),.35);
-  transition:transform .2s,box-shadow .2s;
-}
-.start-btn:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(var(--accent-rgb),.5)}
-.start-btn:active{transform:scale(.95)}
-.start-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.start-back{
-  margin-top:4px;background:none;border:none;color:var(--text);
-  font-size:calc(.9rem * var(--fscale));cursor:pointer;opacity:.6;font-family:'Noto Sans JP',sans-serif;
-}
-.start-back:hover{opacity:1}
-.start-back:disabled{opacity:.35;cursor:default}
-.start-weak-btn{
-  padding:10px 28px;border-radius:20px;
-  border:2px solid var(--accent);background:transparent;color:var(--accent);
-  font-size:calc(.95rem * var(--fscale));font-weight:700;cursor:pointer;
-  font-family:'Noto Sans JP',sans-serif;transition:all .2s;
-}
-.start-weak-btn:hover{background:var(--accent);color:#fff}
-.start-review-btn{
-  padding:13px 34px;border-radius:22px;border:none;
-  background:var(--btn-ok);color:#fff;font-size:calc(1.02rem * var(--fscale));font-weight:800;
-  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
-  box-shadow:0 4px 16px rgba(var(--accent-rgb),.32);
-  transition:transform .2s,box-shadow .2s;display:none;
-}
-.start-review-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(var(--accent-rgb),.45)}
-.start-review-btn:active{transform:scale(.95)}
+.study-tools{display:flex;justify-content:center;padding:10px 14px 2px}
+.progress-area{padding:6px 16px 2px;max-width:520px;width:100%;margin:0 auto}
+.p-row{display:flex;align-items:center;gap:10px}
+.p-bar{flex:1;height:9px;border-radius:999px;background:var(--bar-bg);overflow:hidden}
+.p-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .45s cubic-bezier(.4,0,.2,1)}
+.p-pct{font-family:'Poppins',sans-serif;font-size:.8rem;font-weight:800;color:var(--accent);min-width:42px;text-align:right}
+body.theme-dark .p-pct{color:#fff}
+.p-meta{display:flex;justify-content:center;gap:12px;margin-top:5px;font-size:calc(.72rem * var(--fscale));color:var(--ink-sub);font-weight:700}
+.hint-bar{display:flex;justify-content:center;gap:16px;padding:5px 16px;font-size:.7rem;color:var(--ink-sub);font-weight:600}
 
-/* ===== Header ===== */
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px;background:var(--accent);color:#fff;
-  box-shadow:0 2px 12px rgba(var(--accent-rgb),.3);
-  position:sticky;top:0;z-index:100;
-}
-header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.header-part{
-  font-size:.68rem;font-weight:700;background:rgba(255,255,255,.22);
-  padding:2px 9px;border-radius:10px;margin-left:2px;white-space:nowrap;
-}
-.header-btns{display:flex;gap:6px}
-.hbtn{
-  background:rgba(255,255,255,.18);border:none;color:#fff;
-  padding:6px 12px;border-radius:20px;cursor:pointer;
-  font-size:.8rem;font-weight:700;transition:background .2s;
-  font-family:'Noto Sans JP',sans-serif;white-space:nowrap;
-}
-.hbtn:hover{background:rgba(255,255,255,.32)}
-.hbtn.active{background:rgba(255,255,0,.35)}
-
-/* ===== Progress ===== */
-.progress-area{padding:10px 16px 4px}
-.progress-row{display:flex;align-items:center;gap:10px}
-.progress-bar{flex:1;height:10px;background:var(--accent-light);border-radius:10px;overflow:hidden;position:relative}
-.progress-fill{
-  height:100%;border-radius:10px;
-  background:linear-gradient(90deg,var(--accent),rgba(var(--accent-rgb),.7));
-  transition:width .5s cubic-bezier(.4,0,.2,1);position:relative;
-}
-.progress-fill::after{
-  content:'';position:absolute;right:0;top:0;bottom:0;width:20px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));border-radius:10px;
-}
-.progress-pct{font-size:.85rem;font-weight:700;color:var(--accent);min-width:42px;text-align:right}
-.progress-text{font-size:.72rem;color:var(--text);text-align:center;opacity:.5;margin-top:2px}
-.mastered-text{font-size:calc(.78rem * var(--fscale));color:var(--accent);text-align:center;font-weight:700;margin-top:4px}
-
-/* ===== Hint ===== */
-.hint-bar{
-  display:flex;justify-content:center;gap:18px;
-  padding:6px 16px;opacity:.55;font-size:.75rem;color:var(--text);
-}
-.hint-bar span{display:flex;align-items:center;gap:4px}
-
-/* ===== Card ===== */
-.card-area{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-start;
-  padding:12px 16px 0;gap:14px;
-  margin-bottom:140px;
-}
-
-.flip-container{
-  width:min(88vw,400px);perspective:1200px;
-  cursor:pointer;position:relative;
-}
-.flip-card{
-  width:100%;position:relative;
-  transition:transform .6s cubic-bezier(.4,.2,.2,1);
-  transform-style:preserve-3d;
-}
+.card-area{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 16px 0;margin-bottom:150px}
+.flip-container{width:min(88vw,420px);perspective:1200px;cursor:pointer;position:relative}
+.flip-card{width:100%;position:relative;transition:transform .6s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
 .flip-container.flipped .flip-card{transform:rotateY(180deg)}
 .flip-front,.flip-back{
-  width:100%;backface-visibility:hidden;
-  border-radius:24px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;padding:28px 20px;gap:8px;
-  background:var(--card-bg);
-  box-shadow:0 8px 32px rgba(var(--accent-rgb),.12),0 2px 8px rgba(0,0,0,.06);
-  border:2px solid var(--accent-light);overflow:hidden;
-  min-height:220px;
+  width:100%;backface-visibility:hidden;border-radius:26px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:26px 20px;gap:8px;background:var(--card);border:1px solid var(--card-line);
+  box-shadow:var(--shadow);overflow:hidden;min-height:224px;
 }
-.flip-front{position:relative;padding-top:62px;padding-bottom:54px}
+.flip-front{position:relative;padding-top:66px;padding-bottom:34px}
 .flip-front::after{
-  content:'';position:absolute;top:-30%;right:-30%;width:60%;height:60%;
-  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
-  pointer-events:none;
+  content:'';position:absolute;top:-34%;right:-30%;width:64%;height:64%;pointer-events:none;
+  background:radial-gradient(circle,rgba(var(--accent-rgb),.16) 0%,transparent 70%);
 }
-.flip-back{
-  position:absolute;top:0;left:0;
-  transform:rotateY(180deg);background:var(--surface);
-  justify-content:flex-start;padding:24px 18px 18px;
-}
+.flip-back{position:absolute;top:0;left:0;transform:rotateY(180deg);justify-content:flex-start;padding:24px 18px 20px}
 .card-num{
-  position:absolute;top:12px;left:16px;
-  font-size:.66rem;font-weight:700;color:var(--accent);opacity:.5;
-  letter-spacing:.02em;
+  position:absolute;top:13px;left:17px;font-family:'Poppins',sans-serif;
+  font-size:.64rem;font-weight:700;color:var(--ink-sub);letter-spacing:.04em;
 }
-.card-level-tag{
-  position:absolute;top:32px;left:16px;right:70px;text-align:left;
-  font-size:.62rem;font-weight:700;color:var(--accent);opacity:.55;line-height:1.35;
+.card-tags{position:absolute;top:32px;left:15px;right:64px;display:flex;flex-wrap:wrap;gap:4px}
+.card-tag{
+  font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:999px;
+  background:rgba(var(--accent-rgb),.12);color:var(--accent);white-space:nowrap;
 }
-.card-mastered-badge{
-  position:absolute;top:10px;right:66px;
-  font-size:.7rem;font-weight:700;color:#fff;
-  background:var(--btn-ok);padding:2px 10px;border-radius:10px;
-  display:none;
+body.theme-dark .card-tag{background:rgba(255,255,255,.1);color:var(--ink)}
+.card-badge{
+  position:absolute;top:11px;right:64px;display:none;
+  font-size:.66rem;font-weight:800;color:#fff;background:var(--btn-ok);
+  padding:3px 10px;border-radius:999px;
 }
 .card-front-main{
-  font-size:calc(clamp(1.3rem,4.6vw,1.9rem) * var(--fscale));font-weight:900;color:var(--text);
-  text-align:center;line-height:1.95;
-  word-break:normal;overflow-wrap:anywhere;
+  font-size:calc(clamp(1.3rem,4.6vw,1.9rem) * var(--fscale));font-weight:900;color:var(--ink);
+  text-align:center;line-height:1.95;word-break:normal;overflow-wrap:anywhere;
 }
 .card-front-main ruby{ruby-position:over;-webkit-ruby-position:before}
-.card-front-main rt{
-  font-size:.42em;font-weight:500;opacity:.78;letter-spacing:0;
-  font-family:'Noto Sans JP',sans-serif;
-}
-.card-front-sub{font-size:calc(.85rem * var(--fscale));color:var(--accent);opacity:.6;font-weight:400}
+.card-front-main rt{font-size:.42em;font-weight:500;opacity:.7;font-family:'Noto Sans JP',sans-serif}
 .card-back-word{
   font-size:calc(clamp(1.1rem,3.5vw,1.4rem) * var(--fscale));font-weight:800;color:var(--accent);
-  text-align:center;line-height:1.85;margin-top:12px;
-  word-break:normal;overflow-wrap:anywhere;
+  text-align:center;line-height:1.85;margin-top:10px;word-break:normal;overflow-wrap:anywhere;
 }
+body.theme-dark .card-back-word{color:var(--accent2)}
 .card-back-word ruby{ruby-position:over;-webkit-ruby-position:before}
-.card-back-word rt{
-  font-size:.48em;font-weight:500;opacity:.85;
-  font-family:'Noto Sans JP',sans-serif;
-}
+.card-back-word rt{font-size:.48em;font-weight:500;opacity:.8;font-family:'Noto Sans JP',sans-serif}
 .card-back-meaning{
-  font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));color:#555;
-  text-align:center;line-height:1.8;
-  padding:6px 12px;margin:4px 0;
-  background:rgba(0,0,0,.04);border-radius:10px;
-  border-left:3px solid var(--accent);
-  font-family:'Noto Sans JP',sans-serif;
-  word-break:normal;overflow-wrap:anywhere;
+  font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));color:var(--ink);
+  text-align:center;line-height:1.85;padding:8px 13px;margin:5px 0;
+  background:var(--chip);border-radius:12px;border-left:3px solid var(--accent);
+  font-family:'Noto Sans JP',sans-serif;word-break:normal;overflow-wrap:anywhere;
 }
 .card-back-meaning ruby{ruby-position:over;-webkit-ruby-position:before}
-.card-back-meaning rt{
-  font-size:.52em;font-weight:500;opacity:.8;
-  font-family:'Noto Sans JP',sans-serif;
-}
+.card-back-meaning rt{font-size:.52em;font-weight:500;opacity:.78;font-family:'Noto Sans JP',sans-serif}
 .card-back-desc{
-  font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));color:var(--text);
-  text-align:center;line-height:1.7;opacity:.85;
-  word-break:normal;overflow-wrap:anywhere;
+  font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));color:var(--ink);opacity:.86;
+  text-align:center;line-height:1.75;word-break:normal;overflow-wrap:anywhere;
 }
-.tap-hint{font-size:.65rem;opacity:.35;color:var(--text);margin-top:6px}
-
-/* ===== 🔊 読み上げボタン ===== */
+.tap-hint{font-size:.66rem;color:var(--ink-sub);margin-top:6px}
 .speak-btn{
-  position:absolute;top:12px;right:12px;z-index:3;
-  width:44px;height:44px;padding:0;border-radius:50%;
-  border:2px solid var(--accent-light);background:var(--card-bg);color:var(--accent);
-  font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;box-shadow:0 2px 8px rgba(var(--accent-rgb),.18);
-  transition:transform .15s,background .2s,color .2s;
-  -webkit-appearance:none;appearance:none;
-  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  position:absolute;top:12px;right:12px;z-index:3;width:44px;height:44px;padding:0;border-radius:50%;
+  border:1px solid var(--card-line);background:var(--chip);color:var(--accent);
+  font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-s);transition:transform .15s,background .2s,color .2s;
+  -webkit-appearance:none;appearance:none;-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
+body.theme-dark .speak-btn{color:var(--ink)}
 .speak-btn:active{transform:scale(.9)}
 .speak-btn.speaking{background:var(--accent);color:#fff}
 .speak-btn[hidden]{display:none}
 .flip-container.flipped .speak-btn{opacity:0;visibility:hidden;pointer-events:none}
 
-/* ===== ふりがな ON/OFF スイッチ ===== */
-.furi-switch{
-  position:absolute;left:12px;bottom:10px;z-index:3;
-  display:flex;align-items:center;gap:7px;cursor:pointer;
-  padding:5px 11px 5px 6px;border-radius:999px;
-  background:var(--surface);border:1px solid var(--accent-light);
-  box-shadow:0 1px 4px rgba(0,0,0,.08);
-  -webkit-backface-visibility:hidden;backface-visibility:hidden;
-}
-.furi-switch input{position:absolute;opacity:0;width:0;height:0}
-.furi-track{
-  width:36px;height:20px;border-radius:999px;background:#cfcfcf;
-  position:relative;transition:background .2s;flex-shrink:0;display:block;
-}
-.furi-thumb{
-  position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
-  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s;display:block;
-}
-.furi-switch input:checked + .furi-track{background:var(--accent)}
-.furi-switch input:checked + .furi-track .furi-thumb{transform:translateX(16px)}
-.furi-text{font-size:.68rem;font-weight:700;color:var(--accent);white-space:nowrap}
-.flip-container.flipped .furi-switch{opacity:0;visibility:hidden;pointer-events:none}
-
-/* ===== 画面下部固定バー ===== */
 .bottom-bar{
   position:fixed;bottom:0;left:0;right:0;z-index:90;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  padding:10px 16px 6px;
-  background:linear-gradient(to top,rgba(255,255,255,.95) 60%,rgba(255,255,255,0) 100%);
-  backdrop-filter:blur(8px);
-  pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 16px 8px;
+  background:linear-gradient(to top,var(--bg-b) 55%,rgba(0,0,0,0) 100%);
+  backdrop-filter:blur(10px);pointer-events:none;
 }
-.bottom-bar>*{pointer-events:auto;}
-
-/* ===== Judge Buttons ===== */
+.bottom-bar>*{pointer-events:auto}
 .judge-row{
-  display:flex;gap:14px;align-items:center;justify-content:center;
-  width:100%;max-width:400px;
-  opacity:0;transform:translateY(10px);
-  transition:opacity .3s,transform .3s;pointer-events:none !important;
-  max-height:0;overflow:hidden;
+  display:flex;gap:11px;justify-content:center;width:100%;max-width:420px;
+  opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;
+  pointer-events:none !important;max-height:0;overflow:hidden;
 }
-.judge-row.visible{
-  opacity:1;transform:translateY(0);pointer-events:auto !important;
-  max-height:96px;
-}
+.judge-row.visible{opacity:1;transform:translateY(0);pointer-events:auto !important;max-height:110px}
 .judge-btn{
-  padding:14px 28px;border-radius:24px;border:none;
-  font-size:calc(1rem * var(--fscale));font-weight:800;cursor:pointer;
-  font-family:'Noto Sans JP',sans-serif;
-  transition:transform .15s,box-shadow .15s;
-  box-shadow:0 4px 16px rgba(0,0,0,.18);
+  flex:1;padding:14px 18px;border-radius:18px;border:none;cursor:pointer;font-family:inherit;
+  font-size:calc(.98rem * var(--fscale));font-weight:900;color:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.2);transition:transform .15s;
 }
-.judge-btn:active{transform:scale(.92)}
-.judge-ok{background:var(--btn-ok);color:#fff}
-.judge-ok:hover{box-shadow:0 6px 24px rgba(var(--accent-rgb),.45)}
-.judge-again{background:var(--btn-again);color:#fff}
-.judge-again:hover{box-shadow:0 6px 24px rgba(0,0,0,.3)}
-
-/* ===== Nav Row ===== */
-.nav-row{display:flex;gap:12px;align-items:center}
+.judge-btn:active{transform:scale(.94)}
+.judge-ok{background:var(--btn-ok)}
+.judge-again{background:var(--btn-again)}
+.nav-row{display:flex;gap:10px;align-items:center}
 .nav-btn{
-  width:44px;height:44px;border-radius:50%;
-  border:2px solid var(--accent);background:var(--card-bg);
-  color:var(--accent);font-size:1.2rem;cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(var(--accent-rgb),.15);
+  width:46px;height:46px;border-radius:50%;cursor:pointer;
+  border:1px solid var(--chip-line);background:var(--card);color:var(--accent);
+  font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-s);transition:background .2s,color .2s;
 }
+body.theme-dark .nav-btn{color:var(--ink)}
 .nav-btn:hover{background:var(--accent);color:#fff}
+.bottom-note{font-size:.66rem;color:var(--ink-sub)}
 
-.bottom-footer{
-  font-size:.7rem;opacity:.4;color:var(--text);
-  text-align:center;padding:2px 0 6px;
-}
-
-/* ===== Swipe Animations ===== */
+/* スワイプ演出 */
 .flip-container.swipe-left .flip-card{animation:swipeLeft .35s ease-out forwards}
 .flip-container.swipe-right .flip-card{animation:swipeRight .35s ease-out forwards}
 @keyframes swipeLeft{0%{transform:translateX(0) rotate(0);opacity:1}100%{transform:translateX(-120%) rotate(-8deg);opacity:0}}
@@ -685,142 +514,112 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 @keyframes enterLeft{0%{transform:translateX(120%) rotate(8deg);opacity:0}100%{transform:translateX(0) rotate(0);opacity:1}}
 @keyframes enterRight{0%{transform:translateX(-120%) rotate(-8deg);opacity:0}100%{transform:translateX(0) rotate(0);opacity:1}}
 
-/* ===== Cheer Overlay ===== */
+/* 応援オーバーレイ */
 .cheer-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:flex;align-items:center;justify-content:center;
-  z-index:9999;opacity:0;pointer-events:none;transition:opacity .4s;
+  position:fixed;inset:0;background:rgba(8,6,20,.62);display:flex;align-items:center;justify-content:center;
+  z-index:9999;opacity:0;pointer-events:none;transition:opacity .35s;padding:20px;
 }
 .cheer-overlay.show{opacity:1;pointer-events:auto}
 .cheer-box{
-  background:#fff;border-radius:28px;padding:36px 28px;
-  text-align:center;max-width:340px;width:90%;
-  box-shadow:0 20px 60px rgba(0,0,0,.3);
-  transform:scale(.8);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  background:var(--card);border:1px solid var(--card-line);border-radius:26px;
+  padding:32px 26px;text-align:center;max-width:340px;width:100%;box-shadow:var(--shadow);
+  transform:scale(.85);transition:transform .38s cubic-bezier(.34,1.56,.64,1);
 }
 .cheer-overlay.show .cheer-box{transform:scale(1)}
-.cheer-emoji{font-size:3rem;margin-bottom:8px}
-.cheer-msg{font-size:calc(1rem * var(--fscale));font-weight:700;line-height:1.7;color:#333;white-space:pre-line}
+.cheer-emoji{font-size:2.8rem;margin-bottom:8px}
+.cheer-msg{font-size:calc(.98rem * var(--fscale));font-weight:800;line-height:1.75;white-space:pre-line}
 .cheer-close{
-  margin-top:16px;padding:10px 32px;border-radius:20px;
-  border:none;background:linear-gradient(135deg,#a78bfa,#60a5fa);
-  color:#fff;font-size:calc(.9rem * var(--fscale));font-weight:700;cursor:pointer;
-  font-family:'Noto Sans JP',sans-serif;
-}
-/* トップに戻るリンク */
-.back-to-top-link{
-  color:rgba(255,255,255,.75);
-  font-size:clamp(1.1rem,3.2vw,1.35rem);
-  font-weight:500;
-  text-decoration:none;
-  transition:color .2s,opacity .2s;
-  align-self:flex-start;
-  margin-left:16px;
-  margin-top:4px;
-  margin-bottom:4px;
-}
-.back-to-top-link:hover{
-  color:#fff;
-  opacity:1;
+  margin-top:16px;padding:11px 30px;border-radius:16px;border:none;cursor:pointer;font-family:inherit;
+  background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;
+  font-size:calc(.9rem * var(--fscale));font-weight:800;
 }
 </style>
 </head>
-<body>
+<body class="theme-light">
 
 <!-- ===== LANDING ===== -->
 <div class="landing" id="landing">
+  <a href="index.html" class="top-link">← トップに戻る</a>
+
   <div class="brand">
-    <div class="brand-logo">
-      <img src="gift-logo.png" alt="GIFT協会ロゴ">
-    </div>
+    <div class="brand-logo"><img src="gift-logo.png" alt="GIFT協会ロゴ"></div>
     <h1>介護用語フラッシュカード</h1>
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
+
   <p class="landing-desc">
     <ruby>介護<rt>かいご</rt></ruby><ruby>福祉士<rt>ふくしし</rt></ruby>の<ruby>試験<rt>しけん</rt></ruby>に<ruby>出<rt>で</rt></ruby>る<ruby>用語<rt>ようご</rt></ruby>を<br>
     <ruby>母国語<rt>ぼこくご</rt></ruby>で<ruby>楽<rt>たの</rt></ruby>しく<ruby>覚<rt>おぼ</rt></ruby>えよう！
   </p>
-  <a href="index.html" class="back-to-top-link">← トップに戻る</a>
+
+  <!-- 設定バー（ふりがな／テーマ／文字） -->
+  <div class="panel" data-pref-bar="landing"></div>
+
   <div class="lang-section">
-    <div class="lang-btn-ja" onclick="chooseLang('ja')">
-      <div class="hinomaru"></div>
-      <div class="ja-text">
-        <span class="lang-main">日本語で学ぶ</span>
-        <span class="lang-sub">単語 → ふりがな・意味</span>
-      </div>
-    </div>
-    <div class="lang-btn-en" onclick="chooseLang('en')">
-      <div class="en-icon">EN</div>
-      <div class="en-text">
-        <span class="lang-main">Learn in English</span>
-        <span class="lang-sub">Word → English meaning</span>
-      </div>
-    </div>
+    <button class="lang-hero" type="button" onclick="chooseLang('ja')">
+      <span class="hero-mark ja"></span>
+      <span><span class="l-main">日本語で学ぶ</span><span class="l-sub">単語 → ふりがな・意味</span></span>
+    </button>
+    <button class="lang-hero" type="button" onclick="chooseLang('en')">
+      <span class="hero-mark en">EN</span>
+      <span><span class="l-main">Learn in English</span><span class="l-sub">Word → English meaning</span></span>
+    </button>
     <div class="lang-grid">
-      <div class="lang-btn id" onclick="chooseLang('id')">
+      <button class="lang-btn id" type="button" onclick="chooseLang('id')">
         <img class="flag-img" src="https://flagcdn.com/w160/id.png" alt="Indonesia">
-        <span class="lang-name">Indonesia</span>
-        <span class="lang-label">インドネシア語</span>
-      </div>
-      <div class="lang-btn vi" onclick="chooseLang('vi')">
+        <span class="lang-name">Indonesia</span><span class="lang-label">インドネシア語</span>
+      </button>
+      <button class="lang-btn vi" type="button" onclick="chooseLang('vi')">
         <img class="flag-img" src="https://flagcdn.com/w160/vn.png" alt="Việt Nam">
-        <span class="lang-name">Tiếng Việt</span>
-        <span class="lang-label">ベトナム語</span>
-      </div>
-      <div class="lang-btn th" onclick="chooseLang('th')">
+        <span class="lang-name">Tiếng Việt</span><span class="lang-label">ベトナム語</span>
+      </button>
+      <button class="lang-btn th" type="button" onclick="chooseLang('th')">
         <img class="flag-img" src="https://flagcdn.com/w160/th.png" alt="ไทย">
-        <span class="lang-name">ภาษาไทย</span>
-        <span class="lang-label">タイ語</span>
-      </div>
-      <div class="lang-btn my" onclick="chooseLang('my')">
+        <span class="lang-name">ภาษาไทย</span><span class="lang-label">タイ語</span>
+      </button>
+      <button class="lang-btn my" type="button" onclick="chooseLang('my')">
         <img class="flag-img" src="https://flagcdn.com/w160/mm.png" alt="Myanmar">
-        <span class="lang-name">မြန်မာ</span>
-        <span class="lang-label">ミャンマー語</span>
-      </div>
-      <div class="lang-btn ne" onclick="chooseLang('ne')">
+        <span class="lang-name">မြန်မာ</span><span class="lang-label">ミャンマー語</span>
+      </button>
+      <button class="lang-btn ne" type="button" onclick="chooseLang('ne')">
         <img class="flag-img" src="https://flagcdn.com/w160/np.png" alt="Nepal">
-        <span class="lang-name">नेपाली</span>
-        <span class="lang-label">ネパール語</span>
-      </div>
-      <div class="lang-btn mn" onclick="chooseLang('mn')">
+        <span class="lang-name">नेपाली</span><span class="lang-label">ネパール語</span>
+      </button>
+      <button class="lang-btn mn" type="button" onclick="chooseLang('mn')">
         <img class="flag-img" src="https://flagcdn.com/w160/mn.png" alt="Mongolia">
-        <span class="lang-name">Монгол</span>
-        <span class="lang-label">モンゴル語</span>
-      </div>
+        <span class="lang-name">Монгол</span><span class="lang-label">モンゴル語</span>
+      </button>
     </div>
     <div class="flag-credit">
       国旗画像：<a href="https://flagpedia.net" target="_blank" rel="noopener">Flagpedia.net</a>（パブリックドメイン）
     </div>
   </div>
 
-  <!-- ★ リクエスト入力欄 ★ -->
-  <div class="request-box">
-    <div class="request-catchcopy">
-      📝 <span class="highlight">あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</span>
+  <!-- リクエスト -->
+  <div class="panel">
+    <div class="catchcopy">
+      📝 <span class="hl">あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</span>
     </div>
-    <div class="request-input-row">
-      <input type="text" class="request-input" id="requestInput"
-             placeholder="知りたい用語を入力…" maxlength="100">
-      <button class="request-send" id="requestSendBtn" onclick="sendRequest()">送信</button>
+    <div class="req-col">
+      <input type="text" class="req-input" id="requestInput" placeholder="知りたい用語を入力…" maxlength="100">
+      <button class="req-send" id="requestSendBtn" type="button" onclick="sendRequest()">送信</button>
+      <div class="req-fb" id="requestFeedback"></div>
     </div>
-    <div class="request-feedback" id="requestFeedback"></div>
   </div>
 
-  <div class="how-to">
+  <div class="panel how-to">
     <p>
-      <span class="icon">👆</span> タップでカードを裏返す<br>
-      <span class="icon">👈👉</span> スワイプでカード切り替え<br>
-      <span class="icon">🎚</span> 学習レベル（日常生活・初任者研修・実務者研修）で絞れます<br>
-      <span class="icon">📚</span> Aパート・Bパート・Cパートごとに練習できます<br>
-      <span class="icon">🔤</span> カード左下のスイッチでふりがなON/OFF<br>
-      <span class="icon">🔍</span> 文字の大きさを 標準・大・特大 から選べます
+      👆 タップでカードを裏返す<br>
+      👈👉 スワイプでカード切り替え<br>
+      🎚 学習レベル（日常生活・初任者研修・実務者研修…）で絞れます<br>
+      📚 Aパート・Bパート・Cパートごとに練習できます<br>
+      🔤 ふりがな・テーマ・文字サイズはいつでも上のバーから変更できます
     </p>
   </div>
-  <div class="credit">
-    <div class="credit-avatar">
-      <img src="muneishi-icon.png" alt="宗石光英">
-    </div>
-    <div class="credit-info">
+
+  <div class="panel credit">
+    <img src="muneishi-icon.png" alt="宗石光英">
+    <div>
       <div class="credit-org">一般社団法人 GIFT協会</div>
       <div class="credit-name">宗石 光英</div>
       <div class="credit-title">Created by Mitsuhide Muneishi</div>
@@ -830,78 +629,90 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 
 <!-- ===== START SCREEN ===== -->
 <div class="start-screen" id="startScreen">
-
-  <!-- ★ 学習レベル（G列） ★ -->
-  <div class="level-box" id="levelBox">
-    <div class="level-title" id="levelTitle">🎚 学習するレベル</div>
-    <div class="level-grid" id="levelGrid"></div>
+  <div class="start-head">
+    <button class="ghost-btn" type="button" onclick="backToLanding()" aria-label="back">←</button>
+    <div class="start-head-txt">
+      <b id="startHeadTitle">学習の準備</b>
+      <span id="startHeadSub"></span>
+    </div>
   </div>
 
-  <!-- ★ パートごと（B列） ★ -->
-  <div class="part-box" id="partBox">
-    <div class="part-title" id="partTitle">📚 パートごと</div>
-    <div class="part-grid" id="partGrid"></div>
+  <div class="ring-card">
+    <div class="ring" id="ring" style="--p:0">
+      <div class="ring-in">
+        <div class="ring-pct" id="ringPct">0%</div>
+        <div class="ring-sub" id="ringSub"></div>
+      </div>
+    </div>
+    <div class="ring-meta">
+      <div class="scope-line" id="startScope"></div>
+      <div class="mastered-line" id="startMastered">0 / 0</div>
+      <div class="lets" id="startLetsTry"></div>
+      <div class="streak" id="startStreak" style="display:none"></div>
+    </div>
   </div>
 
-  <!-- ★ 文字の大きさ ★ -->
-  <div class="size-box" id="sizeBox">
-    <div class="size-title" id="sizeTitle">🔍 文字の大きさ</div>
-    <div class="size-grid" id="sizeGrid"></div>
+  <div class="panel">
+    <div class="panel-title" id="levelTitle">🎚 学習するレベル</div>
+    <div class="chip-grid" id="levelGrid"></div>
   </div>
 
-  <div class="start-progress-box">
-    <div class="start-scope" id="startScope"></div>
-    <div class="start-mastered" id="startMastered">🎯 覚えた単語：0 / 0</div>
-    <div class="start-bar-wrap"><div class="start-bar-fill" id="startBarFill" style="width:0%"></div></div>
-    <div class="start-lets-try" id="startLetsTry"></div>
+  <div class="panel">
+    <div class="panel-title" id="partTitle">📚 パートごと</div>
+    <div class="chip-row" id="partGrid"></div>
   </div>
-  <button class="start-btn" id="startBtn" onclick="startQuiz(false)">▶ START</button>
-  <button class="start-review-btn" id="startReviewBtn" onclick="startQuiz('due')">⏰ 今日の復習</button>
 
-  <button class="start-weak-btn" id="startWeakBtn" onclick="startQuiz(true)">🔄 にがてだけ特訓</button>
-  <button class="start-back" id="startReloadBtn" onclick="reloadData()">↻ 最新データを読み込む</button>
-  <button class="start-back" id="startBackBtn" onclick="backToLanding()">← 言語選択に戻る</button>
+  <div class="panel" data-pref-bar="start"></div>
+
+  <div class="cta-col">
+    <button class="cta" id="startBtn" type="button" onclick="startQuiz(false)">▶ START</button>
+    <button class="cta ghost" id="startReviewBtn" type="button" onclick="startQuiz('due')" style="display:none">⏰ 今日の復習</button>
+    <button class="cta ghost" id="startWeakBtn" type="button" onclick="startQuiz(true)" style="display:none">🔄 にがてだけ特訓</button>
+    <button class="text-btn" id="startReloadBtn" type="button" onclick="reloadData()">↻ 最新データを読み込む</button>
+  </div>
 </div>
 
-<!-- ===== MAIN APP ===== -->
+<!-- ===== STUDY ===== -->
 <div id="app" style="display:none;flex-direction:column;min-height:100dvh">
-  <header>
-    <h2 id="headerTitle">📖 学習中<span class="header-part" id="headerLevel"></span><span class="header-part" id="headerPart"></span></h2>
-    <div class="header-btns">
-      <button class="hbtn" id="btnSize" onclick="cycleFontSize()">🔍A</button>
-      <button class="hbtn" id="btnWeak" onclick="toggleWeakMode()">😤</button>
-      <button class="hbtn" onclick="shuffleCards()">🔀</button>
-      <button class="hbtn" onclick="backToStart()">🏠</button>
+  <header class="app-head">
+    <div class="head-l">
+      <button class="icon-btn" type="button" onclick="backToStart()" aria-label="home">🏠</button>
+      <div class="head-txt">
+        <b id="headLang">学習中</b>
+        <div class="head-chips" id="headScope"></div>
+      </div>
+    </div>
+    <div class="head-r">
+      <button class="icon-btn" id="btnWeak" type="button" onclick="toggleWeakMode()" aria-label="weak">😤</button>
+      <button class="icon-btn" type="button" onclick="shuffleCards()" aria-label="shuffle">🔀</button>
     </div>
   </header>
+
+  <div class="study-tools"><div data-pref-bar="study"></div></div>
+
   <div class="progress-area">
-    <div class="progress-row">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <span class="progress-pct" id="progressPct">0%</span>
+    <div class="p-row">
+      <div class="p-bar"><div class="p-fill" id="progressFill" style="width:0%"></div></div>
+      <span class="p-pct" id="progressPct">0%</span>
     </div>
-    <div class="progress-text" id="progressText"></div>
-    <div class="mastered-text" id="masteredText"></div>
+    <div class="p-meta">
+      <span id="progressText"></span>
+      <span id="masteredText"></span>
+    </div>
   </div>
-  <div class="hint-bar" id="hintBar">
-    <span>👆 タップ＝裏返す</span>
-    <span>👈👉 スワイプ＝次/前</span>
-  </div>
+
+  <div class="hint-bar" id="hintBar"></div>
+
   <div class="card-area">
     <div class="flip-container" id="flipContainer">
       <div class="flip-card" id="flipCard">
         <div class="flip-front" id="cardFront">
           <span class="card-num" id="cardNum"></span>
-          <span class="card-level-tag" id="cardLevelTag"></span>
-          <span class="card-mastered-badge" id="masteredBadge">✓</span>
+          <div class="card-tags" id="cardTags"></div>
+          <span class="card-badge" id="masteredBadge">✓</span>
           <button class="speak-btn" id="speakBtn" type="button" aria-label="読み上げ">🔊</button>
           <div class="card-front-main" id="frontMain"></div>
-          <div class="card-front-sub" id="frontSub"></div>
           <span class="tap-hint" id="tapHintFront"></span>
-          <label class="furi-switch" id="furiSwitch">
-            <input type="checkbox" id="furiToggle" checked>
-            <span class="furi-track"><span class="furi-thumb"></span></span>
-            <span class="furi-text" id="furiText">ふりがな</span>
-          </label>
         </div>
         <div class="flip-back" id="cardBack">
           <span class="card-num" id="cardNumBack"></span>
@@ -913,397 +724,302 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
       </div>
     </div>
   </div>
-  <!-- ★画面下部固定バー -->
+
   <div class="bottom-bar" id="bottomBar">
     <div class="judge-row" id="judgeRow">
-      <button class="judge-btn judge-again" id="judgeAgain" onclick="judgeCard(false)">🔄 もう一回</button>
-      <button class="judge-btn judge-ok" id="judgeOk" onclick="judgeCard(true)">✅ 覚えた！</button>
+      <button class="judge-btn judge-again" id="judgeAgain" type="button" onclick="judgeCard(false)">🔄 もう一回</button>
+      <button class="judge-btn judge-ok" id="judgeOk" type="button" onclick="judgeCard(true)">✅ 覚えた！</button>
     </div>
     <div class="nav-row">
-      <button class="nav-btn" onclick="prevCard()">◀</button>
-      <button class="nav-btn" onclick="nextCard()">▶</button>
+      <button class="nav-btn" type="button" onclick="prevCard()" aria-label="prev">◀</button>
+      <button class="nav-btn" type="button" onclick="nextCard()" aria-label="next">▶</button>
     </div>
-    <div class="bottom-footer">© 一般社団法人 GIFT協会</div>
+    <div class="bottom-note">© 一般社団法人 GIFT協会</div>
   </div>
 </div>
 
-<!-- ===== CHEER OVERLAY ===== -->
+<!-- ===== CHEER ===== -->
 <div class="cheer-overlay" id="cheerOverlay">
   <div class="cheer-box">
     <div class="cheer-emoji" id="cheerEmoji"></div>
     <div class="cheer-msg" id="cheerMsg"></div>
-    <button class="cheer-close" onclick="closeCheer()">OK!</button>
+    <button class="cheer-close" type="button" onclick="closeCheer()">OK!</button>
   </div>
 </div>
 
 <script>
 /* ========== CONFIG ========== */
-/* 新スプレッドシート（A〜AB列・8言語すべて1枚） */
 const CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vSSigciJqcqSYI9Wkwp4-QIvXocFtV9li12It8QvOd4qosRL-gRjeLfciF1CPZQp9EOFxMF2sZHWB4H/pub?gid=0&single=true&output=csv';
 const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
 
-/* 言語コード → スプレッドシートの列見出しの接頭辞 */
 const LANG_PREFIX={id:'ID',th:'TH',vi:'VI',en:'EN',my:'MY',ne:'NE',mn:'MN'};
 
-/* ============================================================
-   B列＝パート（A / B / C / Z）
-   ここに無い記号がデータに現れた場合は、記号がそのまま表示されます。
-   ============================================================ */
+/* ===== B列＝パート（A/B/C/Z） ===== */
 const PART_ORDER=['A','B','C','Z'];
-/* 「{X}」の部分に A / B / C が入ります */
 const PART_WORD={
   ja:'{X}パート', en:'Part {X}', id:'Bagian {X}', vi:'Phần {X}',
   th:'ส่วน {X}', my:'အပိုင်း {X}', ne:'भाग {X}', mn:'{X} хэсэг'
 };
-/* Z（設問共通）だけ別の言い方 */
 const PART_Z_TEXT={
   ja:'設問共通', en:'Common exam phrases', id:'Umum untuk soal', vi:'Dùng chung trong đề thi',
   th:'คำที่ใช้ร่วมในข้อสอบ', my:'မေးခွန်းများတွင် အသုံးများ', ne:'प्रश्नमा साझा', mn:'Асуултад нийтлэг'
 };
 
-/* ============================================================
-   G列＝学習レベル（L / K1 / K2）
-   訳文を直したいときは、この表の文字だけ書き換えてください。
-   ============================================================ */
-const LEVEL_ORDER=['L','K1','K2'];
+/* ===== G列＝学習レベル（L/K1/K2/K3） =====
+   ★K3のラベルは仮です。正しい名称に書き換えてください。 */
+const LEVEL_ORDER=['L','K1','K2','K3'];
 const LEVEL_TEXT={
-  ja:{L:'日常生活レベル',              K1:'介護職員初任者研修レベル',            K2:'介護職員実務者研修レベル'},
-  en:{L:'Daily life level',            K1:'Initial caregiver training',          K2:'Practical caregiver training'},
-  id:{L:'Tingkat kehidupan harian',    K1:'Pelatihan dasar perawat',             K2:'Pelatihan praktisi perawat'},
-  vi:{L:'Trình độ sinh hoạt hằng ngày',K1:'Đào tạo sơ cấp điều dưỡng',           K2:'Đào tạo thực hành điều dưỡng'},
-  th:{L:'ระดับชีวิตประจำวัน',           K1:'อบรมผู้ดูแลระดับต้น',                  K2:'อบรมผู้ดูแลระดับปฏิบัติ'},
-  my:{L:'နေ့စဉ်ဘဝ အဆင့်',             K1:'ပြုစုစောင့်ရှောက်မှု အခြေခံသင်တန်း',   K2:'ပြုစုစောင့်ရှောက်မှု လက်တွေ့သင်တန်း'},
-  ne:{L:'दैनिक जीवन स्तर',              K1:'हेरचाहकर्मी प्रारम्भिक तालिम',          K2:'हेरचाहकर्मी व्यावहारिक तालिम'},
-  mn:{L:'Ахуйн харилцааны түвшин',     K1:'Сувилагчийн анхан шатны сургалт',     K2:'Сувилагчийн дадлагын сургалт'}
+  ja:{L:'日常生活レベル',              K1:'介護職員初任者研修レベル',          K2:'介護職員実務者研修レベル',          K3:'介護福祉士国家試験レベル'},
+  en:{L:'Daily life level',            K1:'Initial caregiver training',        K2:'Practical caregiver training',      K3:'National exam level'},
+  id:{L:'Tingkat kehidupan harian',    K1:'Pelatihan dasar perawat',           K2:'Pelatihan praktisi perawat',        K3:'Tingkat ujian nasional'},
+  vi:{L:'Trình độ sinh hoạt hằng ngày',K1:'Đào tạo sơ cấp điều dưỡng',         K2:'Đào tạo thực hành điều dưỡng',      K3:'Trình độ kỳ thi quốc gia'},
+  th:{L:'ระดับชีวิตประจำวัน',           K1:'อบรมผู้ดูแลระดับต้น',                K2:'อบรมผู้ดูแลระดับปฏิบัติ',            K3:'ระดับสอบระดับชาติ'},
+  my:{L:'နေ့စဉ်ဘဝ အဆင့်',             K1:'ပြုစုစောင့်ရှောက်မှု အခြေခံသင်တန်း', K2:'ပြုစုစောင့်ရှောက်မှု လက်တွေ့သင်တန်း', K3:'နိုင်ငံတော်စာမေးပွဲ အဆင့်'},
+  ne:{L:'दैनिक जीवन स्तर',              K1:'हेरचाहकर्मी प्रारम्भिक तालिम',        K2:'हेरचाहकर्मी व्यावहारिक तालिम',       K3:'राष्ट्रिय परीक्षा स्तर'},
+  mn:{L:'Ахуйн харилцааны түвшин',     K1:'Сувилагчийн анхан шатны сургалт',   K2:'Сувилагчийн дадлагын сургалт',      K3:'Улсын шалгалтын түвшин'}
 };
-/* ヘッダー・カードの小さなタグ用（日本語画面だけで使用） */
-const LEVEL_SHORT={L:'日常生活',K1:'初任者研修',K2:'実務者研修'};
+const LEVEL_SHORT={L:'日常生活',K1:'初任者',K2:'実務者',K3:'国家試験'};
 
 let allData=[],partData=[],displayData=[],currentLang='',idx=0,weakMode=false;
 let currentLevel='ALL',currentPart='ALL';
 let levelList=[],partList=[];
-
-/* ===== 過去問アプリからの単語指定（?word=…） ===== */
 let pendingWord='';
+let masteredSet=new Set();
+let srsData={};
+let lastMilestone=0;
 
 /* ========== ふりがな処理 ========== */
-/* 漢字（々〆ヵヶ含む）のかたまり＋（よみ） にだけ反応する */
 const FURI_RE=/([\u4E00-\u9FFF\u3005\u3006\u30F5\u30F6]+)（([^（）]+)）/g;
-
 function escapeHtml(s){
-  return String(s==null?'':s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-
-/* ふりがなを ruby タグにして返す（HTML） */
+const esc=escapeHtml;
 function toRubyHtml(text){
   if(!text)return '';
-  const src=String(text);
-  let out='',i=0,m;
+  const src=String(text);let out='',i=0,m;
   FURI_RE.lastIndex=0;
   while((m=FURI_RE.exec(src))!==null){
-    out+=escapeHtml(src.slice(i,m.index));
-    out+='<ruby>'+escapeHtml(m[1])+'<rt>'+escapeHtml(m[2])+'</rt></ruby>';
+    out+=esc(src.slice(i,m.index));
+    out+='<ruby>'+esc(m[1])+'<rt>'+esc(m[2])+'</rt></ruby>';
     i=m.index+m[0].length;
   }
-  out+=escapeHtml(src.slice(i));
-  return out;
+  return out+esc(src.slice(i));
 }
+function stripFurigana(text){return text?String(text).replace(FURI_RE,'$1'):'';}
+function toKanaReading(text){return text?String(text).replace(FURI_RE,function(_,k,y){return y;}):'';}
 
-/* ふりがなを取り除いた素の文字列 */
-function stripFurigana(text){
-  if(!text)return '';
-  return String(text).replace(FURI_RE,'$1');
-}
-
-/* 漢字をよみに置き換えた「読み専用」文字列（読み上げ用） */
-function toKanaReading(text){
-  if(!text)return '';
-  return String(text).replace(FURI_RE,function(_,kanji,yomi){return yomi;});
-}
-
-function normalizeWord(s){
-  if(!s)return '';
-  return String(s)
-    .replace(/（[^）]*）/g,'')
-    .replace(/\([^)]*\)/g,'')
-    .replace(/[\s　]/g,'')
-    .trim();
-}
-
-/* 単語検索は「全データ」から探す（絞り込み中でも見つかるように） */
-function findCardIndexInAll(word){
-  const target=normalizeWord(word);
-  if(!target)return -1;
-  for(let i=0;i<allData.length;i++){
-    if(normalizeWord(allData[i].word)===target)return i;
-  }
-  for(let i=0;i<allData.length;i++){
-    if(normalizeWord(allData[i].word).indexOf(target)!==-1)return i;
-  }
-  for(let i=0;i<allData.length;i++){
-    const w=normalizeWord(allData[i].word);
-    if(w&&target.indexOf(w)!==-1)return i;
-  }
-  return -1;
-}
-
-function jumpToPendingWord(){
-  if(!pendingWord)return;
-  const word=pendingWord;
-  pendingWord='';
-
-  /* リロードで毎回飛ばないようにURLから word を消す */
-  try{
-    const u=new URL(location.href);
-    u.searchParams.delete('word');
-    history.replaceState(null,'',u.pathname+(u.search?u.search:'')+u.hash);
-  }catch(e){}
-
-  const i=findCardIndexInAll(word);
-  if(i<0){
-    startQuiz(false);
-    showCheer('🔍','「'+word+'」のカードはまだありません。\nリクエストいただければ追加します！');
-    return;
-  }
-  /* 絞り込みを解除してから、その単語まで移動する */
-  const target=allData[i];
-  resetFilters();
-  startQuiz(false);
-  for(let k=0;k<displayData.length;k++){
-    if(displayData[k].no===target.no){idx=k;break;}
-  }
-  showCard();
-}
-
-let masteredSet=new Set();
-
-/* ===== 復習の間隔（レベルごとの日数） ===== */
-let srsData={};
-const SRS_INTERVALS={1:1,2:3,3:7,4:14,5:30};
-const REVIEW_LABEL={
-  ja:'今日の復習', en:"Today's review", id:'Ulangan hari ini',
-  vi:'Ôn tập hôm nay', th:'ทบทวนวันนี้',
-  my:'ဒီနေ့ ပြန်လေ့လာရန်', ne:'आजको पुनरावलोकन', mn:'Өнөөдрийн давтлага'
-};
-
-function srsKey(){return 'kaigo-srs-'+currentLang;}
-
-function loadSrs(){
-  try{
-    const s=localStorage.getItem(srsKey());
-    srsData=s?JSON.parse(s):{};
-  }catch(e){srsData={};}
-  if(!srsData||typeof srsData!=='object')srsData={};
-}
-
-function saveSrs(){
-  try{localStorage.setItem(srsKey(),JSON.stringify(srsData));}catch(e){}
-}
-
-function updateSrs(no,ok){
-  const key=String(no);
-  const rec=srsData[key]||{box:0};
-  if(ok){
-    rec.box=Math.min((rec.box||0)+1,5);
-    rec.next=Date.now()+SRS_INTERVALS[rec.box]*86400000;
-  }else{
-    rec.box=1;
-    rec.next=Date.now();
-  }
-  srsData[key]=rec;
-}
-
-/* 復習対象は「いま絞り込んでいる範囲」から探す */
-function getDueCards(){
-  const now=Date.now();
-  return partData.filter(function(d){
-    const rec=srsData[String(d.no)];
-    return rec && rec.next<=now;
-  });
-}
-
-/* ========== ふりがな表示 ON/OFF ========== */
-let furiOn=true;
-function loadFuri(){
-  try{
-    const v=localStorage.getItem('kaigo-furigana');
-    furiOn=(v===null)?true:(v==='1');
-  }catch(e){furiOn=true;}
-  const cb=document.getElementById('furiToggle');
-  if(cb)cb.checked=furiOn;
-}
-function saveFuri(){
-  try{localStorage.setItem('kaigo-furigana',furiOn?'1':'0');}catch(e){}
-}
-
-/* ========== 文字の大きさ（標準／大／特大） ========== */
+/* ========== 設定（テーマ・文字・ふりがな） ========== */
+let theme='light',fontSize='s',furiOn=true;
 const FONT_SIZES=['s','l','xl'];
-const FONT_MARK={s:'A',l:'A+',xl:'A++'};
-let fontSize='s';
 
-function loadFontSize(){
-  try{
-    const v=localStorage.getItem('kaigo-fontsize');
-    if(v&&FONT_SIZES.indexOf(v)>=0)fontSize=v;
-  }catch(e){}
+function loadPrefs(){
+  try{const t=localStorage.getItem('kaigo-theme');if(t==='dark'||t==='light')theme=t;}catch(e){}
+  try{const v=localStorage.getItem('kaigo-fontsize');if(v&&FONT_SIZES.indexOf(v)>=0)fontSize=v;}catch(e){}
+  try{const f=localStorage.getItem('kaigo-furigana');furiOn=(f===null)?true:(f==='1');}catch(e){}
 }
-function saveFontSize(){
-  try{localStorage.setItem('kaigo-fontsize',fontSize);}catch(e){}
+function applyTheme(){
+  document.body.classList.remove('theme-light','theme-dark');
+  document.body.classList.add('theme-'+theme);
+  renderPrefBars();
 }
-
-/* html要素にクラスを付ける（bodyのclassNameを書き換える処理と衝突しないため） */
+function setTheme(t){
+  theme=(t==='dark')?'dark':'light';
+  try{localStorage.setItem('kaigo-theme',theme);}catch(e){}
+  applyTheme();
+}
 function applyFontSize(){
   const h=document.documentElement;
   h.classList.remove('fs-s','fs-l','fs-xl');
   h.classList.add('fs-'+fontSize);
-  renderSizeButtons();
-  updateSizeBtnLabel();
+  renderPrefBars();
   adjustCardHeight();
 }
-
 function setFontSize(code){
   if(FONT_SIZES.indexOf(code)<0)return;
   fontSize=code;
-  saveFontSize();
+  try{localStorage.setItem('kaigo-fontsize',fontSize);}catch(e){}
   applyFontSize();
 }
-
-function cycleFontSize(){
-  const i=FONT_SIZES.indexOf(fontSize);
-  setFontSize(FONT_SIZES[(i+1)%FONT_SIZES.length]);
+function setFuri(on){
+  furiOn=!!on;
+  try{localStorage.setItem('kaigo-furigana',furiOn?'1':'0');}catch(e){}
+  renderPrefBars();
+  if(document.getElementById('app').style.display!=='none'&&displayData.length){
+    const fc=document.getElementById('flipContainer');
+    const wasFlipped=fc.classList.contains('flipped');
+    showCard();
+    if(wasFlipped)fc.classList.add('flipped');
+  }
 }
 
-function sizeLabel(code){
+/* 設定バーをまとめて描き直す */
+function renderPrefBars(){
   const meta=LANG_META[currentLang]||LANG_META.ja;
-  if(code==='s')return meta.sizeS;
-  if(code==='l')return meta.sizeL;
-  return meta.sizeXL;
+  const sizeBtns=FONT_SIZES.map(function(c){
+    const name=(c==='s')?meta.sizeS:(c==='l'?meta.sizeL:meta.sizeXL);
+    return '<button class="seg-btn'+(fontSize===c?' on':'')+'" type="button" data-act="size" data-val="'+c+'">'+esc(name)+'</button>';
+  }).join('');
+  const html=
+    '<div class="pref-row">'+
+      '<button class="switch'+(furiOn?' on':'')+'" type="button" data-act="furi">'+
+        '<span class="switch-track"><span class="switch-thumb"></span></span>'+
+        '<span class="switch-label">'+esc(meta.furiLabel)+'</span>'+
+        '<span class="switch-state">'+(furiOn?'ON':'OFF')+'</span>'+
+      '</button>'+
+      '<div class="seg">'+
+        '<button class="seg-btn'+(theme==='light'?' on':'')+'" type="button" data-act="theme" data-val="light">☀ '+esc(meta.themeLight)+'</button>'+
+        '<button class="seg-btn'+(theme==='dark'?' on':'')+'" type="button" data-act="theme" data-val="dark">🌙 '+esc(meta.themeDark)+'</button>'+
+      '</div>'+
+      '<div class="seg"><span class="seg-cap">'+esc(meta.sizeCap)+'</span>'+sizeBtns+'</div>'+
+    '</div>';
+  const list=document.querySelectorAll('[data-pref-bar]');
+  for(let i=0;i<list.length;i++)list[i].innerHTML=html;
 }
 
-function renderSizeButtons(){
-  const grid=document.getElementById('sizeGrid');
-  if(!grid)return;
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  const st=document.getElementById('sizeTitle');
-  if(st)st.textContent=meta.sizeTitle;
+document.addEventListener('click',function(e){
+  const b=e.target.closest('[data-act]');
+  if(!b)return;
+  const act=b.getAttribute('data-act');
+  if(act==='furi'){setFuri(!furiOn);}
+  else if(act==='theme'){setTheme(b.getAttribute('data-val'));}
+  else if(act==='size'){setFontSize(b.getAttribute('data-val'));}
+});
 
-  grid.innerHTML='';
-  FONT_SIZES.forEach(function(code){
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='size-btn'+(code===fontSize?' active':'');
-    b.setAttribute('data-size',code);
-    const s=document.createElement('span');
-    s.className='size-sample';
-    s.textContent='あA';
-    const n=document.createElement('span');
-    n.className='size-name';
-    n.textContent=sizeLabel(code);
-    b.appendChild(s);b.appendChild(n);
-    b.addEventListener('click',function(){setFontSize(code);});
-    grid.appendChild(b);
+/* ========== 連続学習日数 ========== */
+let streak={last:'',days:0};
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+}
+function loadStreak(){
+  try{const s=localStorage.getItem('kaigo-streak');streak=s?JSON.parse(s):{last:'',days:0};}catch(e){streak={last:'',days:0};}
+  if(!streak||typeof streak!=='object')streak={last:'',days:0};
+}
+function touchStreak(){
+  const t=todayKey();
+  if(streak.last===t)return;
+  const y=new Date(Date.now()-86400000);
+  const yk=y.getFullYear()+'-'+('0'+(y.getMonth()+1)).slice(-2)+'-'+('0'+y.getDate()).slice(-2);
+  streak.days=(streak.last===yk)?(streak.days||0)+1:1;
+  streak.last=t;
+  try{localStorage.setItem('kaigo-streak',JSON.stringify(streak));}catch(e){}
+}
+function renderStreak(){
+  const el=document.getElementById('startStreak');
+  if(!el)return;
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  if(!streak.days){el.style.display='none';return;}
+  el.style.display='inline-block';
+  el.textContent='🔥 '+meta.streakTpl.replace('{n}',streak.days);
+}
+
+/* ========== SRS ========== */
+const SRS_INTERVALS={1:1,2:3,3:7,4:14,5:30};
+function srsKey(){return 'kaigo-srs-'+currentLang;}
+function loadSrs(){
+  try{const s=localStorage.getItem(srsKey());srsData=s?JSON.parse(s):{};}catch(e){srsData={};}
+  if(!srsData||typeof srsData!=='object')srsData={};
+}
+function saveSrs(){try{localStorage.setItem(srsKey(),JSON.stringify(srsData));}catch(e){}}
+function updateSrs(no,ok){
+  const key=String(no);
+  const rec=srsData[key]||{box:0};
+  if(ok){rec.box=Math.min((rec.box||0)+1,5);rec.next=Date.now()+SRS_INTERVALS[rec.box]*86400000;}
+  else{rec.box=1;rec.next=Date.now();}
+  srsData[key]=rec;
+}
+function getDueCards(){
+  const now=Date.now();
+  return partData.filter(function(d){
+    const rec=srsData[String(d.no)];
+    return rec&&rec.next<=now;
   });
 }
 
-function updateSizeBtnLabel(){
-  const btn=document.getElementById('btnSize');
-  if(!btn)return;
-  btn.textContent='🔍'+FONT_MARK[fontSize];
-  btn.setAttribute('aria-label',sizeLabel(fontSize));
+/* ========== STORAGE（覚えた） ========== */
+function storageKey(){return 'kaigo-mastered-'+currentLang;}
+function loadMastered(){
+  try{const s=localStorage.getItem(storageKey());masteredSet=s?new Set(JSON.parse(s)):new Set();}catch(e){masteredSet=new Set();}
+}
+function saveMastered(){
+  try{localStorage.setItem(storageKey(),JSON.stringify([...masteredSet]));}catch(e){}
 }
 
-let lastMilestone=0;
-
-/* ========== PWA: Service Worker登録 ========== */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
-}
-
-/* ========== LANG META ========== */
+/* ========== 言語ごとの文字 ========== */
 const LANG_META={
-  ja:{header:'📖 日本語で学習中',tapFront:'タップで意味を見る',tapBack:'タップで表に戻す',
+  ja:{header:'日本語で学習中',langName:'日本語',tapFront:'タップで意味を見る',tapBack:'タップで表に戻す',
       hintTap:'👆 タップ＝裏返す',hintSwipe:'👈👉 スワイプ＝次/前',
       letsTry:'レッツトライ！',okBtn:'✅ 覚えた！',againBtn:'🔄 もう一回',
-      weakBtn:'にがてだけ特訓',masteredLabel:'覚えた',
-      furiLabel:'ふりがな',reloadBtn:'↻ 最新データを読み込む',
-      partTitle:'🎚 学習するレベルを選ぶ',allParts:'ぜんぶ',
-      sizeTitle:'🔍 文字の大きさ',sizeS:'標準',sizeL:'大',sizeXL:'特大',
-      backBtn:'← 言語選択に戻る'},
-  en:{header:'📖 Learning in English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',
-      hintTap:'👆 Tap = flip card',hintSwipe:'👈👉 Swipe = next/prev',
-      letsTry:"Let's try!",okBtn:'✅ Got it!',againBtn:'🔄 One more time',
-      weakBtn:'Weak cards only',masteredLabel:'Mastered',
-      furiLabel:'Furigana',reloadBtn:'↻ Reload latest data',
-      partTitle:'🎚 Choose your level',allParts:'All',
-      sizeTitle:'🔍 Text size',sizeS:'Standard',sizeL:'Large',sizeXL:'Extra large',
-      backBtn:'← Back to language select'},
-  id:{header:'📖 Belajar Bahasa Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',
-      hintTap:'👆 Ketuk = balik kartu',hintSwipe:'👈👉 Geser = kartu berikutnya',
+      weakBtn:'にがてだけ特訓',masteredLabel:'覚えた',furiLabel:'ふりがな',
+      reloadBtn:'↻ 最新データを読み込む',backBtn:'← 言語選択に戻る',
+      levelTitle:'🎚 学習するレベル',partTitle:'📚 パートごと',
+      allLevels:'ぜんぶ',allParts:'ぜんぶ',prepare:'学習の準備',
+      themeLight:'ライト',themeDark:'ダーク',sizeCap:'文字',sizeS:'標準',sizeL:'大',sizeXL:'特大',
+      streakTpl:'{n}日れんぞく',review:'今日の復習',ringSub:'マスター'},
+  en:{header:'Learning in English',langName:'English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',
+      hintTap:'👆 Tap = flip',hintSwipe:'👈👉 Swipe = next/prev',
+      letsTry:"Let's try!",okBtn:'✅ Got it!',againBtn:'🔄 One more',
+      weakBtn:'Weak cards only',masteredLabel:'Mastered',furiLabel:'Furigana',
+      reloadBtn:'↻ Reload latest data',backBtn:'← Back to languages',
+      levelTitle:'🎚 Study level',partTitle:'📚 By part',
+      allLevels:'All',allParts:'All',prepare:'Set up your session',
+      themeLight:'Light',themeDark:'Dark',sizeCap:'Text',sizeS:'Standard',sizeL:'Large',sizeXL:'X-large',
+      streakTpl:'{n}-day streak',review:"Today's review",ringSub:'mastered'},
+  id:{header:'Belajar Bahasa Indonesia',langName:'Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',
+      hintTap:'👆 Ketuk = balik',hintSwipe:'👈👉 Geser = berikutnya',
       letsTry:'Ayo coba!',okBtn:'✅ Hafal!',againBtn:'🔄 Sekali lagi',
-      weakBtn:'Kartu sulit saja',masteredLabel:'Hafal',
-      furiLabel:'Furigana',reloadBtn:'↻ Muat data terbaru',
-      partTitle:'🎚 Pilih tingkat belajar',allParts:'Semua',
-      sizeTitle:'🔍 Ukuran huruf',sizeS:'Standar',sizeL:'Besar',sizeXL:'Sangat besar',
-      backBtn:'← Kembali ke pilihan bahasa'},
-  vi:{header:'📖 Học Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',
-      hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ tiếp theo',
+      weakBtn:'Kartu sulit saja',masteredLabel:'Hafal',furiLabel:'Furigana',
+      reloadBtn:'↻ Muat data terbaru',backBtn:'← Kembali ke bahasa',
+      levelTitle:'🎚 Tingkat belajar',partTitle:'📚 Per bagian',
+      allLevels:'Semua',allParts:'Semua',prepare:'Siapkan sesi belajar',
+      themeLight:'Terang',themeDark:'Gelap',sizeCap:'Huruf',sizeS:'Standar',sizeL:'Besar',sizeXL:'Sangat besar',
+      streakTpl:'{n} hari berturut',review:'Ulangan hari ini',ringSub:'hafal'},
+  vi:{header:'Học Tiếng Việt',langName:'Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',
+      hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ sau',
       letsTry:'Hãy thử nào!',okBtn:'✅ Thuộc rồi!',againBtn:'🔄 Một lần nữa',
-      weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc',
-      furiLabel:'Furigana',reloadBtn:'↻ Tải dữ liệu mới nhất',
-      partTitle:'🎚 Chọn trình độ học',allParts:'Tất cả',
-      sizeTitle:'🔍 Cỡ chữ',sizeS:'Chuẩn',sizeL:'Lớn',sizeXL:'Rất lớn',
-      backBtn:'← Quay lại chọn ngôn ngữ'},
-  th:{header:'📖 เรียนภาษาไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับด้านหน้า',
-      hintTap:'👆 แตะ = พลิกการ์ด',hintSwipe:'👈👉 ปัด = การ์ดถัดไป',
+      weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc',furiLabel:'Furigana',
+      reloadBtn:'↻ Tải dữ liệu mới',backBtn:'← Chọn ngôn ngữ',
+      levelTitle:'🎚 Trình độ học',partTitle:'📚 Theo phần',
+      allLevels:'Tất cả',allParts:'Tất cả',prepare:'Chuẩn bị học',
+      themeLight:'Sáng',themeDark:'Tối',sizeCap:'Cỡ chữ',sizeS:'Chuẩn',sizeL:'Lớn',sizeXL:'Rất lớn',
+      streakTpl:'{n} ngày liên tiếp',review:'Ôn tập hôm nay',ringSub:'đã thuộc'},
+  th:{header:'เรียนภาษาไทย',langName:'ไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับ',
+      hintTap:'👆 แตะ = พลิก',hintSwipe:'👈👉 ปัด = ถัดไป',
       letsTry:'มาลองกันเลย!',okBtn:'✅ จำได้แล้ว!',againBtn:'🔄 อีกครั้ง',
-      weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้',
-      furiLabel:'ฟุริงานะ',reloadBtn:'↻ โหลดข้อมูลล่าสุด',
-      partTitle:'🎚 เลือกระดับการเรียน',allParts:'ทั้งหมด',
-      sizeTitle:'🔍 ขนาดตัวอักษร',sizeS:'มาตรฐาน',sizeL:'ใหญ่',sizeXL:'ใหญ่มาก',
-      backBtn:'← กลับไปเลือกภาษา'},
-  my:{header:'📖 မြန်မာဘာသာဖြင့် လေ့လာနေသည်',tapFront:'အဓိပ္ပာယ်ကြည့်ရန် တို့ပါ',tapBack:'အရှေ့ဘက် ပြန်သွားရန် တို့ပါ',
+      weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้',furiLabel:'ฟุริงานะ',
+      reloadBtn:'↻ โหลดข้อมูลล่าสุด',backBtn:'← เลือกภาษา',
+      levelTitle:'🎚 ระดับการเรียน',partTitle:'📚 แยกตามส่วน',
+      allLevels:'ทั้งหมด',allParts:'ทั้งหมด',prepare:'เตรียมเรียน',
+      themeLight:'สว่าง',themeDark:'มืด',sizeCap:'ตัวอักษร',sizeS:'มาตรฐาน',sizeL:'ใหญ่',sizeXL:'ใหญ่มาก',
+      streakTpl:'ต่อเนื่อง {n} วัน',review:'ทบทวนวันนี้',ringSub:'จำได้'},
+  my:{header:'မြန်မာဘာသာဖြင့် လေ့လာနေသည်',langName:'မြန်မာ',tapFront:'အဓိပ္ပာယ်ကြည့်ရန် တို့ပါ',tapBack:'ပြန်သွားရန် တို့ပါ',
       hintTap:'👆 တို့ = ကတ်လှန်',hintSwipe:'👈👉 ပွတ်ဆွဲ = နောက်/ရှေ့',
       letsTry:'စလိုက်ရအောင်!',okBtn:'✅ မှတ်မိပြီ!',againBtn:'🔄 နောက်တစ်ကြိမ်',
-      weakBtn:'ခက်သောကတ်များသာ',masteredLabel:'မှတ်မိပြီ',
-      furiLabel:'ဖူရိဂါနာ',reloadBtn:'↻ နောက်ဆုံးဒေတာ ရယူရန်',
-      partTitle:'🎚 လေ့လာမည့် အဆင့် ရွေးပါ',allParts:'အားလုံး',
-      sizeTitle:'🔍 စာလုံးအရွယ်အစား',sizeS:'ပုံမှန်',sizeL:'ကြီး',sizeXL:'အလွန်ကြီး',
-      backBtn:'← ဘာသာစကား ရွေးချယ်ရန်'},
-  ne:{header:'📖 नेपालीमा सिक्दै',tapFront:'अर्थ हेर्न ट्याप गर्नुहोस्',tapBack:'अगाडि फर्कन ट्याप गर्नुहोस्',
-      hintTap:'👆 ट्याप = कार्ड पल्टाउनुहोस्',hintSwipe:'👈👉 स्वाइप = अर्को/अघिल्लो',
+      weakBtn:'ခက်သောကတ်များသာ',masteredLabel:'မှတ်မိပြီ',furiLabel:'ဖူရိဂါနာ',
+      reloadBtn:'↻ နောက်ဆုံးဒေတာ ရယူရန်',backBtn:'← ဘာသာစကား ရွေးရန်',
+      levelTitle:'🎚 လေ့လာမည့် အဆင့်',partTitle:'📚 အပိုင်းအလိုက်',
+      allLevels:'အားလုံး',allParts:'အားလုံး',prepare:'လေ့လာမှု ပြင်ဆင်ပါ',
+      themeLight:'အလင်း',themeDark:'အမှောင်',sizeCap:'စာလုံး',sizeS:'ပုံမှန်',sizeL:'ကြီး',sizeXL:'အလွန်ကြီး',
+      streakTpl:'{n} ရက် ဆက်တိုက်',review:'ဒီနေ့ ပြန်လေ့လာရန်',ringSub:'မှတ်မိပြီ'},
+  ne:{header:'नेपालीमा सिक्दै',langName:'नेपाली',tapFront:'अर्थ हेर्न ट्याप गर्नुहोस्',tapBack:'फर्कन ट्याप गर्नुहोस्',
+      hintTap:'👆 ट्याप = पल्टाउनु',hintSwipe:'👈👉 स्वाइप = अर्को/अघिल्लो',
       letsTry:'सुरु गरौं!',okBtn:'✅ याद भयो!',againBtn:'🔄 फेरि एकपटक',
-      weakBtn:'कमजोर कार्डहरू मात्र',masteredLabel:'याद भयो',
-      furiLabel:'फुरिगाना',reloadBtn:'↻ नयाँ डाटा लोड गर्नुहोस्',
-      partTitle:'🎚 अध्ययन स्तर छान्नुहोस्',allParts:'सबै',
-      sizeTitle:'🔍 अक्षरको आकार',sizeS:'सामान्य',sizeL:'ठूलो',sizeXL:'धेरै ठूलो',
-      backBtn:'← भाषा छनोटमा फर्कनुहोस्'},
-  mn:{header:'📖 Монголоор суралцаж байна',tapFront:'Утгыг харахын тулд товшино уу',tapBack:'Буцахын тулд товшино уу',
-      hintTap:'👆 Товших = хөзрийг эргүүлэх',hintSwipe:'👈👉 Шудрах = дараах/өмнөх',
-      letsTry:'Эхэлцгээе!',okBtn:'✅ Цээжиллээ!',againBtn:'🔄 Дахин нэг удаа',
-      weakBtn:'Зөвхөн хэцүү хөзөр',masteredLabel:'Цээжилсэн',
-      furiLabel:'Фуригана',reloadBtn:'↻ Шинэ өгөгдөл ачаалах',
-      partTitle:'🎚 Сурах түвшнээ сонго',allParts:'Бүгд',
-      sizeTitle:'🔍 Үсгийн хэмжээ',sizeS:'Стандарт',sizeL:'Том',sizeXL:'Онцгой том',
-      backBtn:'← Хэл сонгох руу буцах'}
+      weakBtn:'कमजोर कार्ड मात्र',masteredLabel:'याद भयो',furiLabel:'फुरिगाना',
+      reloadBtn:'↻ नयाँ डाटा लोड',backBtn:'← भाषा छनोट',
+      levelTitle:'🎚 अध्ययन स्तर',partTitle:'📚 भाग अनुसार',
+      allLevels:'सबै',allParts:'सबै',prepare:'अध्ययन तयारी',
+      themeLight:'उज्यालो',themeDark:'अँध्यारो',sizeCap:'अक्षर',sizeS:'सामान्य',sizeL:'ठूलो',sizeXL:'धेरै ठूलो',
+      streakTpl:'{n} दिन लगातार',review:'आजको पुनरावलोकन',ringSub:'याद भयो'},
+  mn:{header:'Монголоор суралцаж байна',langName:'Монгол',tapFront:'Утгыг харах бол товшино уу',tapBack:'Буцахын тулд товшино уу',
+      hintTap:'👆 Товших = эргүүлэх',hintSwipe:'👈👉 Шудрах = дараах/өмнөх',
+      letsTry:'Эхэлцгээе!',okBtn:'✅ Цээжиллээ!',againBtn:'🔄 Дахин',
+      weakBtn:'Зөвхөн хэцүү хөзөр',masteredLabel:'Цээжилсэн',furiLabel:'Фуригана',
+      reloadBtn:'↻ Шинэ өгөгдөл',backBtn:'← Хэл сонгох',
+      levelTitle:'🎚 Сурах түвшин',partTitle:'📚 Хэсэг тус бүр',
+      allLevels:'Бүгд',allParts:'Бүгд',prepare:'Хичээлийн тохиргоо',
+      themeLight:'Цайвар',themeDark:'Бараан',sizeCap:'Үсэг',sizeS:'Стандарт',sizeL:'Том',sizeXL:'Онцгой том',
+      streakTpl:'{n} хоног дараалан',review:'Өнөөдрийн давтлага',ringSub:'цээжилсэн'}
 };
-
-/* ===== レベル／パートの見出しを LANG_META に追加 ===== */
-const EXTRA_META={
-  ja:{levelTitle:'🎚 学習するレベル',   partTitle:'📚 パートごと',       allLevels:'ぜんぶ'},
-  en:{levelTitle:'🎚 Study level',      partTitle:'📚 By part',          allLevels:'All'},
-  id:{levelTitle:'🎚 Tingkat belajar',  partTitle:'📚 Per bagian',       allLevels:'Semua'},
-  vi:{levelTitle:'🎚 Trình độ học',     partTitle:'📚 Theo phần',        allLevels:'Tất cả'},
-  th:{levelTitle:'🎚 ระดับการเรียน',    partTitle:'📚 แยกตามส่วน',       allLevels:'ทั้งหมด'},
-  my:{levelTitle:'🎚 လေ့လာမည့် အဆင့်', partTitle:'📚 အပိုင်းအလိုက်',    allLevels:'အားလုံး'},
-  ne:{levelTitle:'🎚 अध्ययन स्तर',      partTitle:'📚 भाग अनुसार',       allLevels:'सबै'},
-  mn:{levelTitle:'🎚 Сурах түвшин',     partTitle:'📚 Хэсэг тус бүр',    allLevels:'Бүгд'}
-};
-Object.keys(EXTRA_META).forEach(function(k){
-  if(LANG_META[k])Object.assign(LANG_META[k],EXTRA_META[k]);
-});
 
 const CHEERS=[
   {at:10,emoji:'🌟',msg:'すごい！10問クリア！\nGreat! 10 cards done!'},
@@ -1315,61 +1031,32 @@ const CHEERS=[
   {at:200,emoji:'🎓',msg:'200問！合格間違いなし！\n200! You will definitely pass!'}
 ];
 
-/* ========== REQUEST SEND ========== */
+/* ========== リクエスト送信 ========== */
 function sendRequest(){
   const input=document.getElementById('requestInput');
   const btn=document.getElementById('requestSendBtn');
   const fb=document.getElementById('requestFeedback');
   const word=input.value.trim();
-
-  if(!word){
-    fb.textContent='⚠ 用語を入力してください';
-    fb.className='request-feedback error';
-    return;
-  }
-
-  btn.disabled=true;
-  btn.textContent='送信中…';
-  fb.textContent='';
-  fb.className='request-feedback';
-
-  fetch(GAS_URL,{
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({word:word})
-  })
-  .then(()=>{
-    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';
-    fb.className='request-feedback success';
+  if(!word){fb.textContent='⚠ 用語を入力してください';fb.className='req-fb error';return;}
+  btn.disabled=true;btn.textContent='送信中…';fb.textContent='';fb.className='req-fb';
+  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:word})})
+  .then(function(){
+    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';fb.className='req-fb success';
     input.value='';
-    setTimeout(()=>{fb.textContent='';fb.className='request-feedback';},4000);
+    setTimeout(function(){fb.textContent='';fb.className='req-fb';},4000);
   })
-  .catch(()=>{
-    fb.textContent='❌ 送信に失敗しました。もう一度お試しください';
-    fb.className='request-feedback error';
-  })
-  .finally(()=>{
-    btn.disabled=false;
-    btn.textContent='送信';
-  });
+  .catch(function(){fb.textContent='❌ 送信に失敗しました。もう一度お試しください';fb.className='req-fb error';})
+  .finally(function(){btn.disabled=false;btn.textContent='送信';});
 }
-
-/* Enterキーでも送信 */
 document.addEventListener('DOMContentLoaded',function(){
   const ri=document.getElementById('requestInput');
-  if(ri){
-    ri.addEventListener('keydown',function(e){
-      if(e.key==='Enter'){e.preventDefault();sendRequest();}
-    });
-  }
+  if(ri)ri.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendRequest();}});
 });
 
-/* ========== SOUND (Web Audio API) ========== */
+/* ========== 効果音 ========== */
 const AudioCtx=window.AudioContext||window.webkitAudioContext;
 let audioCtx;
 function ensureAudio(){if(!audioCtx&&AudioCtx)audioCtx=new AudioCtx();}
-
 function playFlip(){
   ensureAudio();if(!audioCtx)return;
   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
@@ -1377,23 +1064,19 @@ function playFlip(){
   o.frequency.exponentialRampToValueAtTime(400,audioCtx.currentTime+.08);
   g.gain.setValueAtTime(.12,audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.1);
-  o.connect(g);g.connect(audioCtx.destination);
-  o.start();o.stop(audioCtx.currentTime+.1);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.1);
 }
-
 function playOk(){
   ensureAudio();if(!audioCtx)return;
   const t=audioCtx.currentTime;
-  [523.25,659.25,783.99].forEach((f,i)=>{
+  [523.25,659.25,783.99].forEach(function(f,i){
     const o=audioCtx.createOscillator(),g=audioCtx.createGain();
     o.type='sine';o.frequency.value=f;
     g.gain.setValueAtTime(.15,t+i*.08);
     g.gain.exponentialRampToValueAtTime(.001,t+i*.08+.2);
-    o.connect(g);g.connect(audioCtx.destination);
-    o.start(t+i*.08);o.stop(t+i*.08+.2);
+    o.connect(g);g.connect(audioCtx.destination);o.start(t+i*.08);o.stop(t+i*.08+.2);
   });
 }
-
 function playAgain(){
   ensureAudio();if(!audioCtx)return;
   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
@@ -1401,83 +1084,65 @@ function playAgain(){
   o.frequency.exponentialRampToValueAtTime(200,audioCtx.currentTime+.15);
   g.gain.setValueAtTime(.1,audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.15);
-  o.connect(g);g.connect(audioCtx.destination);
-  o.start();o.stop(audioCtx.currentTime+.15);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.15);
 }
-
 function playClear(){
   ensureAudio();if(!audioCtx)return;
   const t=audioCtx.currentTime;
-  [523.25,659.25,783.99,1046.5].forEach((f,i)=>{
+  [523.25,659.25,783.99,1046.5].forEach(function(f,i){
     const o=audioCtx.createOscillator(),g=audioCtx.createGain();
     o.type='sine';o.frequency.value=f;
     g.gain.setValueAtTime(.18,t+i*.12);
     g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.35);
-    o.connect(g);g.connect(audioCtx.destination);
-    o.start(t+i*.12);o.stop(t+i*.12+.35);
+    o.connect(g);g.connect(audioCtx.destination);o.start(t+i*.12);o.stop(t+i*.12+.35);
   });
 }
 
-/* ========== STORAGE ========== */
-function storageKey(){return 'kaigo-mastered-'+currentLang;}
-function loadMastered(){
-  try{
-    const s=localStorage.getItem(storageKey());
-    masteredSet=s?new Set(JSON.parse(s)):new Set();
-  }catch(e){masteredSet=new Set();}
-}
-function saveMastered(){
-  try{localStorage.setItem(storageKey(),JSON.stringify([...masteredSet]));}catch(e){}
-}
-
-/* ========== FLOW ========== */
+/* ========== 画面遷移 ========== */
 function chooseLang(lang){
   currentLang=lang;
   try{localStorage.setItem('kaigo-last-lang',lang);}catch(e){}
-  document.body.className='lang-'+lang;
-  loadMastered();
-  loadSrs();
-  loadFuri();
-  loadLevel();
-  loadPart();
-  loadFontSize();
-  applyFontSize();
+  document.body.classList.remove('lang-ja','lang-en','lang-id','lang-vi','lang-th','lang-my','lang-ne','lang-mn');
+  document.body.classList.add('lang-'+lang);
+  loadMastered();loadSrs();loadStreak();loadLevel();loadPart();
+  renderPrefBars();
   const meta=LANG_META[lang]||LANG_META.ja;
-  const ft=document.getElementById('furiText');
-  if(ft)ft.textContent=meta.furiLabel;
-  const lt=document.getElementById('levelTitle');
-  if(lt)lt.textContent=meta.levelTitle;
-  const pt=document.getElementById('partTitle');
-  if(pt)pt.textContent=meta.partTitle;
+  document.getElementById('startHeadTitle').textContent=meta.prepare;
+  document.getElementById('startHeadSub').textContent=meta.langName;
+  document.getElementById('levelTitle').textContent=meta.levelTitle;
+  document.getElementById('partTitle').textContent=meta.partTitle;
+  document.getElementById('ringSub').textContent=meta.ringSub;
   document.getElementById('landing').style.display='none';
   document.getElementById('startScreen').style.display='flex';
+  renderStreak();
   loadDataForStart(false);
 }
+function backToLanding(){
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('landing').style.display='flex';
+}
+function backToStart(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('startScreen').style.display='flex';
+  weakMode=false;
+  renderLevelChips();renderPartChips();renderPrefBars();updateStartScreen();
+}
 
-/* ============================================================
-   絞り込み（G列＝学習レベル × B列＝パート）
-   ============================================================ */
-/* 全角・小文字・空白のゆらぎをそろえる（ａ→A、"K1 "→"K1"） */
+/* ========== 絞り込み（G列レベル × B列パート） ========== */
 function normCode(s){
   if(s==null)return '';
   return String(s)
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);})
     .replace(/[\s\u3000]/g,'').toUpperCase().trim();
 }
-
-function loadLevel(){
-  try{const v=localStorage.getItem('kaigo-level');currentLevel=v?v:'ALL';}catch(e){currentLevel='ALL';}
-}
+function loadLevel(){try{const v=localStorage.getItem('kaigo-level');currentLevel=v?v:'ALL';}catch(e){currentLevel='ALL';}}
 function saveLevel(){try{localStorage.setItem('kaigo-level',currentLevel);}catch(e){}}
-function loadPart(){
-  try{const v=localStorage.getItem('kaigo-part');currentPart=v?v:'ALL';}catch(e){currentPart='ALL';}
-}
+function loadPart(){try{const v=localStorage.getItem('kaigo-part');currentPart=v?v:'ALL';}catch(e){currentPart='ALL';}}
 function savePart(){try{localStorage.setItem('kaigo-part',currentPart);}catch(e){}}
 
-/* ---- 表示名 ---- */
 function levelLabel(code){
   const meta=LANG_META[currentLang]||LANG_META.ja;
-  if(code==='ALL')return meta.allLevels||meta.allParts;
+  if(code==='ALL')return meta.allLevels;
   const t=LEVEL_TEXT[currentLang]||LEVEL_TEXT.ja;
   return t[code]||code;
 }
@@ -1485,12 +1150,8 @@ function partLabel(code){
   const meta=LANG_META[currentLang]||LANG_META.ja;
   if(code==='ALL')return meta.allParts;
   if(code==='Z')return PART_Z_TEXT[currentLang]||PART_Z_TEXT.ja;
-  const tpl=PART_WORD[currentLang]||PART_WORD.ja;
-  return tpl.replace('{X}',code);
+  return (PART_WORD[currentLang]||PART_WORD.ja).replace('{X}',code);
 }
-function partShort(code){return partLabel(code);}
-
-/* ---- データに実在する記号を集めて並べる ---- */
 function sortCodes(codes,order){
   return codes.slice().sort(function(a,b){
     const ia=order.indexOf(a),ib=order.indexOf(b);
@@ -1502,165 +1163,129 @@ function sortCodes(codes,order){
 }
 function buildFilterLists(){
   const lv={},pt={};
-  allData.forEach(function(d){
-    if(d.level)lv[d.level]=1;
-    if(d.part)pt[d.part]=1;
-  });
+  allData.forEach(function(d){if(d.level)lv[d.level]=1;if(d.part)pt[d.part]=1;});
   levelList=sortCodes(Object.keys(lv),LEVEL_ORDER);
-  partList =sortCodes(Object.keys(pt),PART_ORDER);
+  partList=sortCodes(Object.keys(pt),PART_ORDER);
   if(currentLevel!=='ALL'&&levelList.indexOf(currentLevel)<0)currentLevel='ALL';
-  if(currentPart !=='ALL'&&partList.indexOf(currentPart) <0)currentPart ='ALL';
+  if(currentPart!=='ALL'&&partList.indexOf(currentPart)<0)currentPart='ALL';
 }
-
-function matchLevel(d,code){return code==='ALL'||d.level===code;}
-function matchPart(d,code){return code==='ALL'||d.part===code;}
-
-/* 組み合わせたときの語数（ボタンの「○語」用） */
-function countBy(levelCode,partCode){
+function matchLevel(d,c){return c==='ALL'||d.level===c;}
+function matchPart(d,c){return c==='ALL'||d.part===c;}
+function countBy(lv,pt){
   let n=0;
-  for(let i=0;i<allData.length;i++){
-    if(matchLevel(allData[i],levelCode)&&matchPart(allData[i],partCode))n++;
-  }
+  for(let i=0;i<allData.length;i++)if(matchLevel(allData[i],lv)&&matchPart(allData[i],pt))n++;
   return n;
 }
-
-/* レベルとパートの両方を適用 */
 function applyFilters(){
-  partData=allData.filter(function(d){
-    return matchLevel(d,currentLevel)&&matchPart(d,currentPart);
-  });
+  partData=allData.filter(function(d){return matchLevel(d,currentLevel)&&matchPart(d,currentPart);});
 }
+function wordUnit(n){return (currentLang==='ja')?(n+' 語'):(n+'');}
 
-function makeFilterBtn(name,count,active,onClick){
+function makeChip(code,name,count,active,onClick){
   const b=document.createElement('button');
   b.type='button';
-  b.className='part-btn'+(active?' active':'');
+  b.className='chip'+(active?' on':'');
+  if(code){
+    const c=document.createElement('span');
+    c.className='chip-code';c.textContent=code;
+    b.appendChild(c);
+  }
+  const t=document.createElement('span');
+  t.className='chip-txt';
   const n=document.createElement('span');
-  n.className='part-name';n.textContent=name;
-  const c=document.createElement('span');
-  c.className='part-count';c.textContent=count+' 語';
-  b.appendChild(n);b.appendChild(c);
+  n.className='chip-name';n.textContent=name;
+  const k=document.createElement('span');
+  k.className='chip-count';k.textContent=wordUnit(count);
+  t.appendChild(n);t.appendChild(k);
+  b.appendChild(t);
   if(count===0&&!active)b.disabled=true;
   b.addEventListener('click',onClick);
   return b;
 }
-
-function renderLevelButtons(){
+function renderLevelChips(){
   const grid=document.getElementById('levelGrid');
-  const box=document.getElementById('levelBox');
-  if(!grid||!box)return;
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  const t=document.getElementById('levelTitle');
-  if(t)t.textContent=meta.levelTitle;
+  if(!grid)return;
+  const box=grid.parentElement;
   if(levelList.length<=1){box.style.display='none';return;}
   box.style.display='block';
+  document.getElementById('levelTitle').textContent=(LANG_META[currentLang]||LANG_META.ja).levelTitle;
   grid.innerHTML='';
-  grid.appendChild(makeFilterBtn(
-    levelLabel('ALL'),countBy('ALL',currentPart),currentLevel==='ALL',
-    function(){setLevel('ALL');}
-  ));
+  grid.appendChild(makeChip('★',levelLabel('ALL'),countBy('ALL',currentPart),currentLevel==='ALL',function(){setLevel('ALL');}));
   levelList.forEach(function(code){
-    grid.appendChild(makeFilterBtn(
-      code+'：'+levelLabel(code),countBy(code,currentPart),currentLevel===code,
-      function(){setLevel(code);}
-    ));
+    grid.appendChild(makeChip(code,levelLabel(code),countBy(code,currentPart),currentLevel===code,function(){setLevel(code);}));
   });
 }
-
-function renderPartButtons(){
+function renderPartChips(){
   const grid=document.getElementById('partGrid');
-  const box=document.getElementById('partBox');
-  if(!grid||!box)return;
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  const t=document.getElementById('partTitle');
-  if(t)t.textContent=meta.partTitle;
+  if(!grid)return;
+  const box=grid.parentElement;
   if(partList.length<=1){box.style.display='none';return;}
   box.style.display='block';
+  document.getElementById('partTitle').textContent=(LANG_META[currentLang]||LANG_META.ja).partTitle;
   grid.innerHTML='';
-  grid.appendChild(makeFilterBtn(
-    partLabel('ALL'),countBy(currentLevel,'ALL'),currentPart==='ALL',
-    function(){setPart('ALL');}
-  ));
+  grid.appendChild(makeChip('',partLabel('ALL'),countBy(currentLevel,'ALL'),currentPart==='ALL',function(){setPart('ALL');}));
   partList.forEach(function(code){
-    grid.appendChild(makeFilterBtn(
-      partLabel(code),countBy(currentLevel,code),currentPart===code,
-      function(){setPart(code);}
-    ));
+    grid.appendChild(makeChip('',partLabel(code),countBy(currentLevel,code),currentPart===code,function(){setPart(code);}));
   });
 }
-
 function setLevel(code,silent){
   currentLevel=code;saveLevel();applyFilters();
-  renderLevelButtons();renderPartButtons();
+  renderLevelChips();renderPartChips();
   if(!silent)updateStartScreen();
 }
 function setPart(code,silent){
   currentPart=code;savePart();applyFilters();
-  renderLevelButtons();renderPartButtons();
+  renderLevelChips();renderPartChips();
   if(!silent)updateStartScreen();
 }
 function resetFilters(){
   currentLevel='ALL';currentPart='ALL';
   saveLevel();savePart();applyFilters();
-  renderLevelButtons();renderPartButtons();
+  renderLevelChips();renderPartChips();
 }
-
-/* いまの絞り込みを文字にする */
 function scopeLabel(){
   const meta=LANG_META[currentLang]||LANG_META.ja;
   const a=[];
   if(currentLevel!=='ALL')a.push(currentLevel+'：'+levelLabel(currentLevel));
-  if(currentPart !=='ALL')a.push(partLabel(currentPart));
-  return a.length?a.join(' × '):(meta.allParts);
+  if(currentPart!=='ALL')a.push(partLabel(currentPart));
+  return a.length?a.join('  ×  '):meta.allParts;
 }
-function updateHeaderBadges(){
-  const hl=document.getElementById('headerLevel');
-  const hp=document.getElementById('headerPart');
-  if(hl){
-    const s=LEVEL_SHORT[currentLevel];
-    const txt=(currentLevel==='ALL')?'':(currentLevel+((currentLang==='ja'&&s)?'：'+s:''));
-    hl.textContent=txt;
-    hl.style.display=txt?'inline-block':'none';
+function updateHeaderChips(){
+  const box=document.getElementById('headScope');
+  if(!box)return;
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  const items=[];
+  if(currentLevel==='ALL'&&currentPart==='ALL')items.push(meta.allParts);
+  else{
+    if(currentLevel!=='ALL')items.push(currentLevel+((currentLang==='ja'&&LEVEL_SHORT[currentLevel])?'：'+LEVEL_SHORT[currentLevel]:''));
+    if(currentPart!=='ALL')items.push(partLabel(currentPart));
   }
-  if(hp){
-    hp.textContent=partLabel(currentPart);
-    hp.style.display='inline-block';
-  }
+  if(weakMode)items.push('😤 '+meta.weakBtn);
+  box.innerHTML=items.map(function(s){return '<span class="head-chip">'+esc(s)+'</span>';}).join('');
 }
 
-/* ========== CSV 読み込み（列は「見出し名」で探す） ========== */
-function normHeader(s){
-  return String(s==null?'':s).replace(/^\uFEFF/,'').replace(/[\s\u3000]/g,'').trim();
-}
-
-/* 5分単位のキャッシュ回避キー */
+/* ========== CSV 読み込み ========== */
+function normHeader(s){return String(s==null?'':s).replace(/^\uFEFF/,'').replace(/[\s\u3000]/g,'').trim();}
 function cacheBuster(){return Math.floor(Date.now()/300000);}
-
 function csvUrl(force){
   const cb=force?Date.now():cacheBuster();
   return CSV_MAIN+(CSV_MAIN.indexOf('?')>=0?'&':'?')+'cb='+cb;
 }
-
 function pickCol(H,head,exactName,prefixName,fallbackIdx){
   if(H[exactName]!==undefined)return H[exactName];
-  for(let i=0;i<head.length;i++){
-    if(head[i].indexOf(prefixName)===0)return i;
-  }
+  for(let i=0;i<head.length;i++)if(head[i].indexOf(prefixName)===0)return i;
   return fallbackIdx;
 }
-
 function cell(row,i){
   if(i<0||i>=row.length)return '';
   return String(row[i]==null?'':row[i]).trim();
 }
-
 function loadDataForStart(force){
   Papa.parse(csvUrl(force),{
     download:true,header:false,skipEmptyLines:true,
     complete:function(res){
       const rows=(res&&res.data)?res.data:[];
       if(rows.length<2){showLoadError('データが空です');return;}
-
       const head=rows[0].map(normHeader);
       const H={};
       head.forEach(function(h,i){if(h!==''&&H[h]===undefined)H[h]=i;});
@@ -1676,23 +1301,17 @@ function loadDataForStart(force){
       const LC={};
       Object.keys(LANG_PREFIX).forEach(function(lk){
         const p=LANG_PREFIX[lk];
-        LC[lk]={
-          w:(H[p+'_語']!==undefined)?H[p+'_語']:-1,
-          d:(H[p+'_意味']!==undefined)?H[p+'_意味']:-1
-        };
+        LC[lk]={w:(H[p+'_語']!==undefined)?H[p+'_語']:-1,d:(H[p+'_意味']!==undefined)?H[p+'_意味']:-1};
       });
 
       allData=[];
       for(let r=1;r<rows.length;r++){
         const row=rows[r];
         if(!row)continue;
-        const no=cell(row,cNo);
-        const word=cell(row,cWord);
+        const no=cell(row,cNo),word=cell(row,cWord);
         if(!no||!word)continue;
         const o={
-          no:no,
-          word:word,
-          meaning:cell(row,cMean),
+          no:no,word:word,meaning:cell(row,cMean),
           part:normCode(cell(row,cPart)),
           subject:cell(row,cSubj),
           type:cell(row,cType),
@@ -1705,72 +1324,109 @@ function loadDataForStart(force){
         allData.push(o);
       }
 
-      buildFilterLists();
-      applyFilters();
-      renderLevelButtons();
-      renderPartButtons();
-      renderSizeButtons();
-      restoreReloadBtn();
-      updateStartScreen();
+      buildFilterLists();applyFilters();
+      renderLevelChips();renderPartChips();renderPrefBars();
+      restoreReloadBtn();updateStartScreen();
       if(pendingWord)jumpToPendingWord();
     },
-    error:function(){
-      showLoadError('読み込みに失敗しました');
-    }
+    error:function(){showLoadError('読み込みに失敗しました');}
   });
 }
-
 function showLoadError(msg){
   restoreReloadBtn();
   const el=document.getElementById('startMastered');
-  if(el)el.textContent='⚠ '+msg+'（通信環境をご確認ください）';
+  if(el)el.textContent='⚠ '+msg;
+  const sc=document.getElementById('startScope');
+  if(sc)sc.textContent='通信環境をご確認ください';
   const btn=document.getElementById('startBtn');
   if(btn)btn.disabled=true;
 }
-
 function restoreReloadBtn(){
   const btn=document.getElementById('startReloadBtn');
   if(!btn)return;
   btn.disabled=false;
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  btn.textContent=meta.reloadBtn;
+  btn.textContent=(LANG_META[currentLang]||LANG_META.ja).reloadBtn;
 }
-
 function reloadData(){
   const btn=document.getElementById('startReloadBtn');
   if(btn){btn.disabled=true;btn.textContent='↻ …';}
   loadDataForStart(true);
 }
 
+/* ========== 単語ジャンプ ========== */
+function normalizeWord(s){
+  if(!s)return '';
+  return String(s).replace(/（[^）]*）/g,'').replace(/\([^)]*\)/g,'').replace(/[\s　]/g,'').trim();
+}
+function findCardIndexInAll(word){
+  const target=normalizeWord(word);
+  if(!target)return -1;
+  for(let i=0;i<allData.length;i++)if(normalizeWord(allData[i].word)===target)return i;
+  for(let i=0;i<allData.length;i++)if(normalizeWord(allData[i].word).indexOf(target)!==-1)return i;
+  for(let i=0;i<allData.length;i++){
+    const w=normalizeWord(allData[i].word);
+    if(w&&target.indexOf(w)!==-1)return i;
+  }
+  return -1;
+}
+function jumpToPendingWord(){
+  if(!pendingWord)return;
+  const word=pendingWord;pendingWord='';
+  try{
+    const u=new URL(location.href);
+    u.searchParams.delete('word');
+    history.replaceState(null,'',u.pathname+(u.search?u.search:'')+u.hash);
+  }catch(e){}
+  const i=findCardIndexInAll(word);
+  if(i<0){
+    startQuiz(false);
+    showCheer('🔍','「'+word+'」のカードはまだありません。\nリクエストいただければ追加します！');
+    return;
+  }
+  const target=allData[i];
+  resetFilters();startQuiz(false);
+  for(let k=0;k<displayData.length;k++){if(displayData[k].no===target.no){idx=k;break;}}
+  showCard();
+}
+
+/* ========== スタート画面 ========== */
+function setRing(pct){
+  const r=document.getElementById('ring');
+  if(r)r.style.setProperty('--p',pct);
+  const p=document.getElementById('ringPct');
+  if(p)p.textContent=pct+'%';
+}
 function updateStartScreen(){
   const meta=LANG_META[currentLang]||LANG_META.ja;
   const total=partData.length;
   const m=partData.filter(function(d){return masteredSet.has(d.no);}).length;
   const pct=total?Math.round(m/total*100):0;
 
-  document.getElementById('startScope').textContent=scopeLabel()+'（'+total+'）';
-  document.getElementById('startMastered').textContent='🎯 '+meta.masteredLabel+'：'+m+' / '+total;
-  document.getElementById('startBarFill').style.width=pct+'%';
+  document.getElementById('startScope').textContent=scopeLabel();
+  document.getElementById('startMastered').textContent='🎯 '+meta.masteredLabel+'  '+m+' / '+total;
   document.getElementById('startLetsTry').textContent=meta.letsTry;
+  document.getElementById('ringSub').textContent=meta.ringSub;
+  setRing(pct);
+  renderStreak();
 
   const sbtn=document.getElementById('startBtn');
-  if(sbtn)sbtn.disabled=(total===0);
+  sbtn.disabled=(total===0);
+  sbtn.textContent='▶ START';
 
   const weakCount=partData.filter(function(d){return !masteredSet.has(d.no);}).length;
   const wbtn=document.getElementById('startWeakBtn');
-  wbtn.style.display=(weakCount>0&&weakCount<total)?'inline-block':'none';
+  wbtn.style.display=(weakCount>0&&weakCount<total)?'block':'none';
   wbtn.textContent='🔄 '+meta.weakBtn+'（'+weakCount+'）';
-
-  document.getElementById('startBackBtn').textContent=meta.backBtn;
-  restoreReloadBtn();
 
   const dueCount=getDueCards().length;
   const rbtn=document.getElementById('startReviewBtn');
-  const rlabel=REVIEW_LABEL[currentLang]||REVIEW_LABEL.ja;
-  rbtn.style.display=dueCount>0?'inline-block':'none';
-  rbtn.textContent='⏰ '+rlabel+'（'+dueCount+'）';
+  rbtn.style.display=dueCount>0?'block':'none';
+  rbtn.textContent='⏰ '+meta.review+'（'+dueCount+'）';
+
+  restoreReloadBtn();
 }
 
+/* ========== 学習開始 ========== */
 function startQuiz(mode){
   if(!partData.length)return;
   if(mode==='due'){
@@ -1785,40 +1441,21 @@ function startQuiz(mode){
     weakMode=false;
     displayData=partData.slice();
   }
-  idx=0;
-  lastMilestone=0;
+  idx=0;lastMilestone=0;
+  touchStreak();
+  const meta=LANG_META[currentLang]||LANG_META.ja;
   document.getElementById('startScreen').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('bottomBar').style.display='flex';
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  document.getElementById('headerTitle').firstChild.nodeValue=meta.header;
-  updateHeaderBadges();
-  document.getElementById('hintBar').innerHTML='<span>'+meta.hintTap+'</span><span>'+meta.hintSwipe+'</span>';
+  document.getElementById('headLang').textContent='📖 '+meta.header;
+  updateHeaderChips();
+  document.getElementById('hintBar').innerHTML='<span>'+esc(meta.hintTap)+'</span><span>'+esc(meta.hintSwipe)+'</span>';
   document.getElementById('judgeOk').textContent=meta.okBtn;
   document.getElementById('judgeAgain').textContent=meta.againBtn;
-  document.getElementById('furiText').textContent=meta.furiLabel;
-  document.getElementById('btnWeak').classList.toggle('active',weakMode);
-  updateSizeBtnLabel();
+  document.getElementById('btnWeak').classList.toggle('on',weakMode);
+  renderPrefBars();
   showCard();
 }
-
-function backToStart(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('bottomBar').style.display='none';
-  document.getElementById('startScreen').style.display='flex';
-  weakMode=false;
-  renderLevelButtons();
-  renderPartButtons();
-  renderSizeButtons();
-  updateStartScreen();
-}
-
-function backToLanding(){
-  document.getElementById('startScreen').style.display='none';
-  document.getElementById('landing').style.display='flex';
-  document.body.className='';
-}
-
 function toggleWeakMode(){
   if(!weakMode){
     const weak=partData.filter(function(d){return !masteredSet.has(d.no);});
@@ -1828,11 +1465,12 @@ function toggleWeakMode(){
     displayData=partData.slice();weakMode=false;
   }
   idx=0;
-  document.getElementById('btnWeak').classList.toggle('active',weakMode);
+  document.getElementById('btnWeak').classList.toggle('on',weakMode);
+  updateHeaderChips();
   showCard();
 }
 
-/* ========== カードの高さ調整 ========== */
+/* ========== カード表示 ========== */
 function adjustCardHeight(){
   const fcard=document.getElementById('flipCard');
   const front=document.getElementById('cardFront');
@@ -1841,14 +1479,10 @@ function adjustCardHeight(){
   requestAnimationFrame(function(){
     fcard.style.minHeight='0px';
     requestAnimationFrame(function(){
-      const frontH=front.scrollHeight;
-      const backH=back.scrollHeight;
-      fcard.style.minHeight=Math.max(frontH,backH)+'px';
+      fcard.style.minHeight=Math.max(front.scrollHeight,back.scrollHeight)+'px';
     });
   });
 }
-
-/* ========== CARD DISPLAY ========== */
 function showCard(){
   if(!displayData.length)return;
   const fc=document.getElementById('flipContainer');
@@ -1861,28 +1495,23 @@ function showCard(){
   document.getElementById('progressPct').textContent=pct+'%';
   document.getElementById('progressText').textContent=(idx+1)+' / '+total;
 
-  /* 覚えた数は「いま絞り込んでいる範囲」の中で数える */
+  const meta=LANG_META[currentLang]||LANG_META.ja;
   const scopeTotal=partData.length;
   const mCount=partData.filter(function(x){return masteredSet.has(x.no);}).length;
   const mPct=scopeTotal?Math.round(mCount/scopeTotal*100):0;
-  const meta=LANG_META[currentLang]||LANG_META.ja;
-  document.getElementById('masteredText').textContent='🎯 '+meta.masteredLabel+'：'+mCount+' / '+scopeTotal+'（'+mPct+'%）';
-
+  document.getElementById('masteredText').textContent='🎯 '+meta.masteredLabel+' '+mCount+' / '+scopeTotal+'（'+mPct+'%）';
   document.getElementById('tapHintFront').textContent=meta.tapFront;
   document.getElementById('tapHintBack').textContent=meta.tapBack;
-  document.getElementById('furiText').textContent=meta.furiLabel;
 
   document.getElementById('cardNum').textContent=d.no;
   document.getElementById('cardNumBack').textContent=d.no;
 
-  /* カード左上のタグ：パート／レベル／科目 */
-  (function(){
-    const tag=[];
-    if(d.part)tag.push(partLabel(d.part));
-    if(d.level)tag.push(d.level+((currentLang==='ja'&&LEVEL_SHORT[d.level])?'：'+LEVEL_SHORT[d.level]:''));
-    if(d.subject)tag.push(d.subject);
-    document.getElementById('cardLevelTag').textContent=tag.join(' / ');
-  })();
+  const tags=[];
+  if(d.part)tags.push(partLabel(d.part));
+  if(d.level)tags.push(d.level+((currentLang==='ja'&&LEVEL_SHORT[d.level])?'：'+LEVEL_SHORT[d.level]:''));
+  if(d.subject)tags.push(d.subject);
+  document.getElementById('cardTags').innerHTML=
+    tags.map(function(s){return '<span class="card-tag">'+esc(s)+'</span>';}).join('');
 
   const badge=document.getElementById('masteredBadge');
   const srsRec=srsData[String(d.no)];
@@ -1896,121 +1525,74 @@ function showCard(){
     badge.style.display='none';
   }
 
-  /* --- 表：スイッチでふりがな ON/OFF --- */
   const fm=document.getElementById('frontMain');
-  if(furiOn){fm.innerHTML=toRubyHtml(d.word);}
-  else{fm.textContent=stripFurigana(d.word);}
-  document.getElementById('frontSub').textContent='';
+  if(furiOn)fm.innerHTML=toRubyHtml(d.word);
+  else fm.textContent=stripFurigana(d.word);
 
-  /* --- 裏：答えなので、日本語のふりがなはスイッチに追従 --- */
   const bw=document.getElementById('backWord');
   const bm=document.getElementById('backMeaning');
   const bd=document.getElementById('backDesc');
 
   if(currentLang==='ja'){
     bw.innerHTML=toRubyHtml(d.word);
-    if(d.meaning){
-      if(furiOn){bm.innerHTML=toRubyHtml(d.meaning);}
-      else{bm.textContent=stripFurigana(d.meaning);}
-      bm.style.display='block';
-    }else{
-      bm.textContent='';
-      bm.style.display='none';
-    }
-    bd.textContent='';
-    bd.style.display='none';
+    bd.textContent='';bd.style.display='none';
   }else{
     const tr=(d.t&&d.t[currentLang])?d.t[currentLang]:{w:'',d:''};
     bw.textContent=tr.w;
-    if(d.meaning){
-      if(furiOn){bm.innerHTML=toRubyHtml(d.meaning);}
-      else{bm.textContent=stripFurigana(d.meaning);}
-      bm.style.display='block';
-    }else{
-      bm.textContent='';
-      bm.style.display='none';
-    }
     bd.textContent=tr.d;
     bd.style.display=tr.d?'block':'none';
+  }
+  if(d.meaning){
+    if(furiOn)bm.innerHTML=toRubyHtml(d.meaning);
+    else bm.textContent=stripFurigana(d.meaning);
+    bm.style.display='block';
+  }else{
+    bm.textContent='';bm.style.display='none';
   }
 
   adjustCardHeight();
 }
 
-/* ========== FLIP ========== */
+/* ========== めくる ========== */
 function flipCard(){
   const fc=document.getElementById('flipContainer');
   fc.classList.toggle('flipped');
   playFlip();
-  if(fc.classList.contains('flipped')){
-    document.getElementById('judgeRow').classList.add('visible');
-  }else{
-    document.getElementById('judgeRow').classList.remove('visible');
-  }
+  document.getElementById('judgeRow').classList.toggle('visible',fc.classList.contains('flipped'));
 }
 document.getElementById('flipContainer').addEventListener('click',function(e){
-  if(e.target.closest('.judge-btn'))return;
-  if(e.target.closest('.furi-switch'))return;
   if(e.target.closest('.speak-btn'))return;
   flipCard();
 });
 
-/* ========== ふりがなスイッチの操作 ========== */
-(function(){
-  const sw=document.getElementById('furiSwitch');
-  const cb=document.getElementById('furiToggle');
-  if(!sw||!cb)return;
-  sw.addEventListener('click',function(e){e.stopPropagation();});
-  sw.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
-  cb.addEventListener('change',function(e){
-    furiOn=e.target.checked;
-    saveFuri();
-    const fc=document.getElementById('flipContainer');
-    const wasFlipped=fc.classList.contains('flipped');
-    showCard();
-    if(wasFlipped)fc.classList.add('flipped');
-  });
-})();
-
-/* ========== JUDGE ========== */
+/* ========== 判定 ========== */
 function judgeCard(mastered){
   const d=displayData[idx];
   if(!d)return;
   if(mastered){
-    masteredSet.add(d.no);
-    updateSrs(d.no,true);
-    playOk();
+    masteredSet.add(d.no);updateSrs(d.no,true);playOk();
     confetti({particleCount:30,spread:50,origin:{y:.7},colors:['#4caf50','#81c784','#fff']});
   }else{
-    masteredSet.delete(d.no);
-    updateSrs(d.no,false);
-    playAgain();
+    masteredSet.delete(d.no);updateSrs(d.no,false);playAgain();
   }
-  saveMastered();
-  saveSrs();
-  checkMilestone();
-  nextCard();
+  saveMastered();saveSrs();checkMilestone();nextCard();
 }
-
-/* ========== MILESTONE ========== */
 function checkMilestone(){
   const m=partData.filter(function(x){return masteredSet.has(x.no);}).length;
   const total=partData.length;
   for(const c of CHEERS){
     if(m>=c.at&&lastMilestone<c.at){
-      lastMilestone=c.at;
-      showCheer(c.emoji,c.msg);
+      lastMilestone=c.at;showCheer(c.emoji,c.msg);
       confetti({particleCount:120,spread:80,origin:{y:.6}});
       if(m>=total)playClear();
       return;
     }
   }
   if(total<=50){
-    const pctMilestones=[25,50,75,100];
-    for(const p of pctMilestones){
-      const threshold=Math.round(total*p/100);
-      if(m>=threshold&&lastMilestone<threshold&&threshold>0){
-        lastMilestone=threshold;
+    for(const p of [25,50,75,100]){
+      const th=Math.round(total*p/100);
+      if(m>=th&&lastMilestone<th&&th>0){
+        lastMilestone=th;
         const emoji=p===100?'🎊':p>=75?'💎':p>=50?'🏆':'🌟';
         showCheer(emoji,p+'% マスター！\n'+p+'% Mastered!');
         confetti({particleCount:120,spread:80,origin:{y:.6}});
@@ -2020,56 +1602,51 @@ function checkMilestone(){
     }
   }
 }
-
 function showCheer(emoji,msg){
   document.getElementById('cheerEmoji').textContent=emoji;
   document.getElementById('cheerMsg').textContent=msg;
   document.getElementById('cheerOverlay').classList.add('show');
 }
-function closeCheer(){
-  document.getElementById('cheerOverlay').classList.remove('show');
-}
+function closeCheer(){document.getElementById('cheerOverlay').classList.remove('show');}
 
-/* ========== NAVIGATION ========== */
+/* ========== 移動 ========== */
 function nextCard(){
   if(!displayData.length)return;
   const fc=document.getElementById('flipContainer');
   fc.classList.remove('flipped');
   document.getElementById('judgeRow').classList.remove('visible');
   fc.classList.add('swipe-left');
-  setTimeout(()=>{
+  setTimeout(function(){
     fc.classList.remove('swipe-left');
     idx=(idx+1)%displayData.length;
     showCard();
     fc.classList.add('enter-left');
-    setTimeout(()=>fc.classList.remove('enter-left'),350);
+    setTimeout(function(){fc.classList.remove('enter-left');},350);
   },300);
 }
-
 function prevCard(){
   if(!displayData.length)return;
   const fc=document.getElementById('flipContainer');
   fc.classList.remove('flipped');
   document.getElementById('judgeRow').classList.remove('visible');
   fc.classList.add('swipe-right');
-  setTimeout(()=>{
+  setTimeout(function(){
     fc.classList.remove('swipe-right');
     idx=(idx-1+displayData.length)%displayData.length;
     showCard();
     fc.classList.add('enter-right');
-    setTimeout(()=>fc.classList.remove('enter-right'),350);
+    setTimeout(function(){fc.classList.remove('enter-right');},350);
   },300);
 }
-
 function shuffleCards(){
   for(let i=displayData.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
-    [displayData[i],displayData[j]]=[displayData[j],displayData[i]];
+    const t=displayData[i];displayData[i]=displayData[j];displayData[j]=t;
   }
   idx=0;showCard();
 }
 
-/* ========== SWIPE ========== */
+/* ========== スワイプ ========== */
 (function(){
   let sx=0,sy=0,swiping=false;
   const fc=document.getElementById('flipContainer');
@@ -2080,9 +1657,7 @@ function shuffleCards(){
     if(!swiping)return;swiping=false;
     const dx=e.changedTouches[0].clientX-sx;
     const dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){
-      if(dx<0)nextCard();else prevCard();
-    }
+    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){if(dx<0)nextCard();else prevCard();}
   },{passive:true});
 })();
 
@@ -2090,28 +1665,22 @@ function shuffleCards(){
 (function(){
   const btn=document.getElementById('speakBtn');
   if(!btn)return;
-
   const TTS_OK=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   if(!TTS_OK){btn.hidden=true;return;}
-
   let jaVoice=null;
   function pickJaVoice(){
     const list=window.speechSynthesis.getVoices()||[];
     const ja=list.filter(function(v){return /^ja([-_]|$)/i.test(v.lang||'');});
     if(!ja.length)return null;
     const prefer=['Kyoko','Otoya','O-Ren','Hattori','Google 日本語','Google Japanese','Nanami','Ayumi','Haruka'];
-    for(let i=0;i<prefer.length;i++){
-      for(let j=0;j<ja.length;j++){
+    for(let i=0;i<prefer.length;i++)
+      for(let j=0;j<ja.length;j++)
         if((ja[j].name||'').indexOf(prefer[i])!==-1)return ja[j];
-      }
-    }
-    for(let k=0;k<ja.length;k++){if(ja[k].localService)return ja[k];}
+    for(let k=0;k<ja.length;k++)if(ja[k].localService)return ja[k];
     return ja[0];
   }
   jaVoice=pickJaVoice();
   window.speechSynthesis.onvoiceschanged=function(){jaVoice=pickJaVoice();};
-
-  /* ふりがなを使って「読み」で読み上げる */
   function getSpeakText(){
     if(!displayData.length)return '';
     const d=displayData[idx];
@@ -2119,51 +1688,42 @@ function shuffleCards(){
     const kana=toKanaReading(d.word).trim();
     return kana||stripFurigana(d.word).trim();
   }
-
   function speakJa(text){
     if(!text)return;
     const synth=window.speechSynthesis;
-    if(synth.speaking||synth.pending){
-      synth.cancel();
-      btn.classList.remove('speaking');
-    }
+    if(synth.speaking||synth.pending){synth.cancel();btn.classList.remove('speaking');}
     if(!jaVoice)jaVoice=pickJaVoice();
     const u=new SpeechSynthesisUtterance(String(text));
     u.lang='ja-JP';
     if(jaVoice)u.voice=jaVoice;
-    u.rate=0.85;   /* 速度：1が標準。ゆっくりにしたいなら 0.75 など */
-    u.pitch=1.05;  /* 高さ：1が標準 */
-    u.volume=1;
+    u.rate=0.85;u.pitch=1.05;u.volume=1;
     u.onstart=function(){btn.classList.add('speaking');};
     u.onend=function(){btn.classList.remove('speaking');};
     u.onerror=function(){btn.classList.remove('speaking');};
     synth.speak(u);
   }
-
   btn.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
   btn.addEventListener('click',function(e){
-    e.stopPropagation();
-    e.preventDefault();
+    e.stopPropagation();e.preventDefault();
     speakJa(getSpeakText());
   });
 })();
 
-/* ===== 起動時：文字サイズを反映 ===== */
-(function(){
-  loadFontSize();
-  applyFontSize();
-})();
+/* ========== PWA ========== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+}
 
-/* ===== URLで単語が指定されていたら自動で開く ===== */
+/* ========== 起動 ========== */
 (function(){
+  loadPrefs();loadStreak();
+  applyTheme();applyFontSize();renderPrefBars();
   const params=new URLSearchParams(location.search);
   const w=params.get('word');
   if(!w)return;
   pendingWord=w;
   let lang=params.get('lang');
-  if(!lang){
-    try{lang=localStorage.getItem('kaigo-last-lang');}catch(e){}
-  }
+  if(!lang){try{lang=localStorage.getItem('kaigo-last-lang');}catch(e){}}
   if(!lang||!LANG_META[lang])lang='ja';
   chooseLang(lang);
 })();
