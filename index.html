@@ -30,6 +30,17 @@ body::before{
 }
 body>*{position:relative;z-index:1}
 
+/* ===== ふりがな（ルビ）===== */
+ruby{ruby-position:over;-webkit-ruby-position:before}
+rt{
+  font-size:.52em;font-weight:400;letter-spacing:0;
+  opacity:.85;line-height:1.1;
+  transform:translateY(.12em);
+}
+/* ふりがなを消したいときは、この行のコメントを外す
+rt{display:none}
+*/
+
 .top-container{
   display:flex;flex-direction:column;align-items:center;
   min-height:100dvh;gap:20px;padding:32px 20px;
@@ -50,6 +61,49 @@ body>*{position:relative;z-index:1}
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .brand-sub{font-size:clamp(.8rem,2.2vw,.95rem);opacity:.6;font-weight:300}
+
+/* ===== 試験カウントダウン ===== */
+.countdown{
+  width:100%;padding:16px 20px 18px;border-radius:22px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  --cd-accent:#60a5fa;--cd-glow:rgba(96,165,250,.45);
+}
+.countdown::after{
+  content:'';position:absolute;left:0;right:0;top:0;height:3px;
+  background:var(--cd-accent);
+}
+.cd-title{
+  font-size:.72rem;font-weight:700;letter-spacing:.03em;line-height:2.1;
+  color:rgba(255,255,255,.62);
+}
+.cd-main{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  justify-content:center;line-height:2;
+  font-size:clamp(.9rem,2.6vw,1.05rem);font-weight:700;
+}
+.cd-num{
+  font-family:'Poppins',sans-serif;font-weight:800;
+  font-size:clamp(2.3rem,9vw,3.3rem);line-height:1;
+  color:var(--cd-accent);text-shadow:0 0 18px var(--cd-glow);
+}
+.cd-unit{font-size:.9rem;font-weight:700;opacity:.85}
+.cd-msg{
+  font-size:.78rem;font-weight:700;line-height:2;text-align:center;
+  color:rgba(255,255,255,.78);
+}
+.countdown.calm {--cd-accent:#34d399;--cd-glow:rgba(52,211,153,.45)}
+.countdown.blue {--cd-accent:#60a5fa;--cd-glow:rgba(96,165,250,.45)}
+.countdown.warn {--cd-accent:#ffa726;--cd-glow:rgba(255,167,38,.45)}
+.countdown.hurry{--cd-accent:#ff5252;--cd-glow:rgba(255,82,82,.5)}
+.countdown.today{--cd-accent:#ffd54f;--cd-glow:rgba(255,213,79,.5)}
+.countdown.done {--cd-accent:#a78bfa;--cd-glow:rgba(167,139,250,.4)}
+.countdown.hurry .cd-num{animation:cdPulse 1.6s ease-in-out infinite}
+@keyframes cdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 
 .section-title{
   font-size:.8rem;color:rgba(255,255,255,.45);font-weight:700;
@@ -108,9 +162,10 @@ body>*{position:relative;z-index:1}
   display:flex;align-items:center;justify-content:center;
   background:rgba(255,255,255,.15);border-radius:16px;
 }
-.menu-info{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left}
-.menu-title{font-size:1.15rem;font-weight:800;line-height:1.3}
-.menu-desc{font-size:.78rem;opacity:.75;font-weight:400;line-height:1.5}
+.menu-info{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left}
+.menu-title{font-size:1.15rem;font-weight:800;line-height:2.1}
+.menu-desc{font-size:.78rem;opacity:.75;font-weight:400;line-height:2.2}
+
 /* ===== リクエストボックス ===== */
 .request-box{
   width:100%;
@@ -121,7 +176,7 @@ body>*{position:relative;z-index:1}
 }
 .request-catchcopy{
   font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
-  line-height:1.6;color:rgba(255,255,255,.9);text-align:center;
+  line-height:2.2;color:rgba(255,255,255,.9);text-align:center;
 }
 .request-catchcopy .highlight{
   background:linear-gradient(90deg,#ffd54f,#ffb300);
@@ -192,6 +247,13 @@ body>*{position:relative;z-index:1}
     <div class="brand-sub">一般社団法人GIFT協会</div>
   </div>
 
+  <!-- ===== 試験カウントダウン ===== -->
+  <div class="countdown" id="countdown" hidden>
+    <div class="cd-title" id="cdTitle"></div>
+    <div class="cd-main"  id="cdMain"></div>
+    <div class="cd-msg"   id="cdMsg"></div>
+  </div>
+
   <!-- ===== メニュー ===== -->
   <div class="section-title" style="font-size:clamp(1.2rem,3.5vw,1.6rem)">メニュー</div>
   <ul class="menu-list">
@@ -199,8 +261,11 @@ body>*{position:relative;z-index:1}
       <a href="flashcard.html" class="menu-card flashcard">
         <div class="menu-icon">📚</div>
         <div class="menu-info">
-          <div class="menu-title">介護（かいご）用語（ようご）フラッシュカード</div>
-          <div class="menu-desc">日本語・英語・インドネシア語・ベトナム語・タイ語対応<br>単語をカードで楽しく覚えよう</div>
+          <div class="menu-title"><ruby>介護<rt>かいご</rt></ruby><ruby>用語<rt>ようご</rt></ruby>フラッシュカード</div>
+          <div class="menu-desc">
+            <ruby>日本語<rt>にほんご</rt></ruby>・<ruby>英語<rt>えいご</rt></ruby>・インドネシア<ruby>語<rt>ご</rt></ruby>・ベトナム<ruby>語<rt>ご</rt></ruby>・タイ<ruby>語<rt>ご</rt></ruby><ruby>対応<rt>たいおう</rt></ruby><br>
+            <ruby>単語<rt>たんご</rt></ruby>をカードで<ruby>楽<rt>たの</rt></ruby>しく<ruby>覚<rt>おぼ</rt></ruby>えよう
+          </div>
         </div>
       </a>
     </li>
@@ -208,8 +273,11 @@ body>*{position:relative;z-index:1}
       <a href="exam/index.html" class="menu-card exam">
         <div class="menu-icon">📝</div>
         <div class="menu-info">
-          <div class="menu-title">過去問（かこもん）に挑戦（ちょうせん）</div>
-          <div class="menu-desc">介護福祉士国家試験の過去問を解こう<br>科目別・パート別で学習できます</div>
+          <div class="menu-title"><ruby>過去問<rt>かこもん</rt></ruby>に<ruby>挑戦<rt>ちょうせん</rt></ruby></div>
+          <div class="menu-desc">
+            <ruby>介護<rt>かいご</rt></ruby><ruby>福祉士<rt>ふくしし</rt></ruby><ruby>国家<rt>こっか</rt></ruby><ruby>試験<rt>しけん</rt></ruby>の<ruby>過去問<rt>かこもん</rt></ruby>を<ruby>解<rt>と</rt></ruby>こう<br>
+            <ruby>科目別<rt>かもくべつ</rt></ruby>・パート<ruby>別<rt>べつ</rt></ruby>で<ruby>学習<rt>がくしゅう</rt></ruby>できます
+          </div>
         </div>
       </a>
     </li>
@@ -218,8 +286,11 @@ body>*{position:relative;z-index:1}
         <div class="menu-badge">NEW</div>
         <div class="menu-icon">⚖️</div>
         <div class="menu-info">
-          <div class="menu-title">法改正（ほうかいせい）まるわかりノート</div>
-          <div class="menu-desc">新（あたら）しい制度（せいど）を9章（しょう）でまとめて確認（かくにん）<br>予想問題（よそうもんだい）29問（もん）つき・ふりがな切（き）りかえOK</div>
+          <div class="menu-title"><ruby>法改正<rt>ほうかいせい</rt></ruby>まるわかりノート</div>
+          <div class="menu-desc">
+            <ruby>新<rt>あたら</rt></ruby>しい<ruby>制度<rt>せいど</rt></ruby>を9<ruby>章<rt>しょう</rt></ruby>でまとめて<ruby>確認<rt>かくにん</rt></ruby><br>
+            <ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby>つき・ふりがな<ruby>切<rt>き</rt></ruby>りかえOK
+          </div>
         </div>
       </a>
     </li>
@@ -229,7 +300,7 @@ body>*{position:relative;z-index:1}
   <div class="section-title" style="font-size:clamp(1.2rem,3.5vw,1.6rem)">リクエスト</div>
   <div class="request-box">
     <div class="request-catchcopy">
-      📝 <span class="highlight">あなたの疑問（ぎもん）は<br>誰（だれ）かの為（ため）になる</span>
+      📝 <span class="highlight">あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</span>
     </div>
     <div class="request-input-row">
       <input type="text" class="request-input" id="requestInput"
@@ -255,6 +326,100 @@ body>*{position:relative;z-index:1}
 
 <script>
 var GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
+
+/* =====================================================
+ *  試験カウントダウン
+ *  ★次の試験に変えるときは EXAM_INFO の2行を直すだけ
+ * ===================================================== */
+var EXAM_INFO = {
+  round : 39,             // 第○回
+  date  : '2027-01-31',   // 試験日（YYYY-MM-DD）
+  thanks: 7               // 試験後、ねぎらい表示を出す日数
+};
+
+var CD_MSG = {
+  calm : ['今日（きょう）も1歩（いっぽ）前進（ぜんしん）しよう！',
+          '毎日（まいにち）5分（ふん）でも、力（ちから）になる。',
+          '今日（きょう）の1枚（まい）が、本番（ほんばん）の1点（てん）に。'],
+  blue : ['今日（きょう）の積（つ）み重（かさ）ねが自信（じしん）になる！',
+          'あせらず、1日（いちにち）1テーマずつ。'],
+  warn : ['ここからが伸（の）びる時期（じき）！1問（もん）でも進（すす）もう。',
+          '苦手（にがて）な言葉（ことば）を、今日（きょう）3つ覚（おぼ）えよう！'],
+  hurry: ['ラストスパート！やってきた自分（じぶん）を信（しん）じよう。',
+          '体調（たいちょう）を整（ととの）えるのも、大切（たいせつ）な勉強（べんきょう）。']
+};
+
+/* 「漢字（ふりがな）」を自動で <ruby> に変換する */
+function toRuby(text){
+  return text.replace(/([一-龠々〆ヵヶ]+)（([ぁ-んー]+)）/g,
+    function(_,kanji,kana){ return '<ruby>'+kanji+'<rt>'+kana+'</rt></ruby>'; });
+}
+
+function cdFormatDate(str){
+  var p = str.split('-');
+  var d = new Date(+p[0], +p[1]-1, +p[2]);
+  var w = ['日','月','火','水','木','金','土'][d.getDay()];
+  return p[0] + '年' + (+p[1]) + '月' + (+p[2]) + '日（' + w + '）';
+}
+
+function cdDaysLeft(){
+  var p = EXAM_INFO.date.split('-');
+  var exam = new Date(+p[0], +p[1]-1, +p[2]);
+  var n = new Date();
+  var today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  return Math.round((exam - today) / 86400000);
+}
+
+function cdPick(arr, d){ return arr[Math.abs(d) % arr.length]; }
+
+function renderCountdown(){
+  var box = document.getElementById('countdown');
+  if(!box) return;
+  var title = document.getElementById('cdTitle');
+  var main  = document.getElementById('cdMain');
+  var msg   = document.getElementById('cdMsg');
+  var d = cdDaysLeft();
+
+  box.className = 'countdown';
+  title.innerHTML = '第' + EXAM_INFO.round + '回　'
+                  + toRuby('介護（かいご）福祉士（ふくしし）国家（こっか）試験（しけん）')
+                  + '　' + cdFormatDate(EXAM_INFO.date);
+
+  if(d > 0){
+    main.innerHTML = '<span>' + toRuby('試験（しけん）') + 'まで あと</span>'
+                   + '<span class="cd-num">' + d + '</span>'
+                   + '<span class="cd-unit">' + toRuby('日（にち）') + '</span>';
+    if(d > 60)      { box.classList.add('calm');  msg.innerHTML = toRuby(cdPick(CD_MSG.calm,  d)); }
+    else if(d > 30) { box.classList.add('blue');  msg.innerHTML = toRuby(cdPick(CD_MSG.blue,  d)); }
+    else if(d > 7)  { box.classList.add('warn');  msg.innerHTML = toRuby(cdPick(CD_MSG.warn,  d)); }
+    else            { box.classList.add('hurry'); msg.innerHTML = toRuby(cdPick(CD_MSG.hurry, d)); }
+    box.hidden = false;
+  }
+  else if(d === 0){
+    box.classList.add('today');
+    main.innerHTML = '<span class="cd-num" style="font-size:clamp(1.6rem,6vw,2.2rem)">'
+                   + toRuby('本番（ほんばん）') + 'です！</span>';
+    msg.innerHTML = toRuby('落（お）ち着（つ）いて、いつも通（どお）りに。応援（おうえん）しています！');
+    box.hidden = false;
+  }
+  else if(d >= -EXAM_INFO.thanks){
+    box.classList.add('done');
+    main.innerHTML = '<span class="cd-num" style="font-size:clamp(1.4rem,5vw,2rem)">'
+                   + toRuby('お疲（つか）れさまでした！') + '</span>';
+    msg.innerHTML = '第' + EXAM_INFO.round + '回 '
+                  + toRuby('試験（しけん）終了（しゅうりょう）。ゆっくり休（やす）んでください。');
+    box.hidden = false;
+  }
+  else {
+    box.hidden = true;   // 次回日程が未設定のあいだは非表示
+  }
+}
+
+renderCountdown();
+setInterval(renderCountdown, 60000);
+document.addEventListener('visibilitychange', function(){
+  if(!document.hidden) renderCountdown();
+});
 
 function sendRequest(){
   var input=document.getElementById('requestInput');
