@@ -122,7 +122,13 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 .brand-sub{font-size:clamp(.85rem,2.5vw,1rem);opacity:.7;font-weight:300}
 .landing-desc{
   font-size:clamp(.95rem,2.8vw,1.15rem);opacity:.85;
-  max-width:520px;line-height:1.7;font-weight:300;
+  max-width:520px;line-height:2.35;font-weight:300;
+}
+/* ふりがな（漢字の上に小さく表示） */
+.landing-desc ruby{ruby-position:over;-webkit-ruby-position:before}
+.landing-desc rt{
+  font-size:.5em;font-weight:400;opacity:.8;letter-spacing:0;
+  font-family:'Noto Sans JP',sans-serif;
 }
 
 .lang-section{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;width:100%;max-width:520px}
@@ -230,7 +236,14 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 }
 .request-catchcopy{
   font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
-  line-height:1.6;color:rgba(255,255,255,.9);text-align:center;
+  line-height:2.15;color:rgba(255,255,255,.9);text-align:center;
+}
+/* ふりがな（漢字の上に小さく表示） */
+.request-catchcopy ruby{ruby-position:over;-webkit-ruby-position:before}
+.request-catchcopy rt{
+  font-size:.5em;font-weight:400;opacity:.8;letter-spacing:0;
+  font-family:'Noto Sans JP',sans-serif;
+  -webkit-text-fill-color:currentColor;
 }
 .request-catchcopy .highlight{
   background:linear-gradient(90deg,#ffd54f,#ffb300);
@@ -662,7 +675,8 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
     <div class="brand-sub">Kaigo Vocabulary Flashcards</div>
   </div>
   <p class="landing-desc">
-    かいごふくししのしけんにでるようごを<br>介護福祉士の試験に出る用語を<br>ぼこくごでたのしくおぼえよう！<br>母国語で楽しく覚えよう！
+    <ruby>介護<rt>かいご</rt></ruby><ruby>福祉士<rt>ふくしし</rt></ruby>の<ruby>試験<rt>しけん</rt></ruby>に<ruby>出<rt>で</rt></ruby>る<ruby>用語<rt>ようご</rt></ruby>を<br>
+    <ruby>母国語<rt>ぼこくご</rt></ruby>で<ruby>楽<rt>たの</rt></ruby>しく<ruby>覚<rt>おぼ</rt></ruby>えよう！
   </p>
   <a href="index.html" class="back-to-top-link">← トップに戻る</a>
   <div class="lang-section">
@@ -720,7 +734,7 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   <!-- ★ リクエスト入力欄 ★ -->
   <div class="request-box">
     <div class="request-catchcopy">
-      📝 <span class="highlight">あなたの疑問（ぎもん）は<br>誰（だれ）かの為（ため）になる</span>
+      📝 <span class="highlight">あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</span>
     </div>
     <div class="request-input-row">
       <input type="text" class="request-input" id="requestInput"
@@ -1572,19 +1586,30 @@ function showCard(){
   const bw=document.getElementById('backWord');
   const bm=document.getElementById('backMeaning');
   const bd=document.getElementById('backDesc');
-  const meaningText=furiOn?d.meaning:stripFurigana(d.meaning);
 
   if(currentLang==='ja'){
     bw.innerHTML=toRubyHtml(d.word);
-    bm.textContent=meaningText;
-    bm.style.display=meaningText?'block':'none';
+    if(d.meaning){
+      if(furiOn){bm.innerHTML=toRubyHtml(d.meaning);}
+      else{bm.textContent=stripFurigana(d.meaning);}
+      bm.style.display='block';
+    }else{
+      bm.textContent='';
+      bm.style.display='none';
+    }
     bd.textContent='';
     bd.style.display='none';
   }else{
     const tr=(d.t&&d.t[currentLang])?d.t[currentLang]:{w:'',d:''};
     bw.textContent=tr.w;
-    bm.textContent=meaningText;
-    bm.style.display=meaningText?'block':'none';
+    if(d.meaning){
+      if(furiOn){bm.innerHTML=toRubyHtml(d.meaning);}
+      else{bm.textContent=stripFurigana(d.meaning);}
+      bm.style.display='block';
+    }else{
+      bm.textContent='';
+      bm.style.display='none';
+    }
     bd.textContent=tr.d;
     bd.style.display=tr.d?'block':'none';
   }
