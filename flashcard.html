@@ -18,6 +18,15 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
+
+/* ===== 文字の大きさ（標準／大／特大） =====
+   html要素に fs-s / fs-l / fs-xl が付きます。
+   倍率を変えたいときは、この数字だけ書き換えてください。 */
+:root{--fscale:1}
+html.fs-s{--fscale:1}
+html.fs-l{--fscale:1.25}
+html.fs-xl{--fscale:1.55}
+
 body{
   font-family:'Noto Sans JP','Noto Sans',sans-serif;
   min-height:100dvh;display:flex;flex-direction:column;
@@ -121,7 +130,7 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 }
 .brand-sub{font-size:clamp(.85rem,2.5vw,1rem);opacity:.7;font-weight:300}
 .landing-desc{
-  font-size:clamp(.95rem,2.8vw,1.15rem);opacity:.85;
+  font-size:calc(clamp(.95rem,2.8vw,1.15rem) * var(--fscale));opacity:.85;
   max-width:520px;line-height:2.35;font-weight:300;
 }
 /* ふりがな（漢字の上に小さく表示） */
@@ -155,8 +164,8 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   box-shadow:0 0 16px rgba(198,40,40,.4),inset 0 -2px 4px rgba(0,0,0,.1);flex-shrink:0;
 }
 .ja-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
-.ja-text .lang-main{font-size:1.3rem;font-weight:900;color:#333}
-.ja-text .lang-sub{font-size:.8rem;color:#888;font-weight:400}
+.ja-text .lang-main{font-size:calc(1.3rem * var(--fscale));font-weight:900;color:#333}
+.ja-text .lang-sub{font-size:calc(.8rem * var(--fscale));color:#888;font-weight:400}
 
 .lang-btn-en{
   display:flex;align-items:center;justify-content:center;gap:16px;
@@ -183,8 +192,8 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   box-shadow:0 0 16px rgba(69,39,160,.3),inset 0 -2px 4px rgba(0,0,0,.08);flex-shrink:0;
 }
 .en-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
-.en-text .lang-main{font-size:1.3rem;font-weight:800;color:#fff;letter-spacing:.03em}
-.en-text .lang-sub{font-size:.8rem;color:rgba(255,255,255,.7);font-weight:400}
+.en-text .lang-main{font-size:calc(1.3rem * var(--fscale));font-weight:800;color:#fff;letter-spacing:.03em}
+.en-text .lang-sub{font-size:calc(.8rem * var(--fscale));color:rgba(255,255,255,.7);font-weight:400}
 
 .lang-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%}
 .lang-btn{
@@ -209,8 +218,8 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 .lang-btn.mn::before{background:linear-gradient(135deg,#c4272f 0%,#015197 50%,#c4272f 100%)}
 .lang-btn:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,.4)}
 .lang-btn:active{transform:scale(.96)}
-.lang-btn .lang-name{font-size:.95rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.45)}
-.lang-btn .lang-label{font-size:.75rem;opacity:.9;font-weight:400;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.lang-btn .lang-name{font-size:calc(.95rem * var(--fscale));font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.lang-btn .lang-label{font-size:calc(.75rem * var(--fscale));opacity:.9;font-weight:400;text-shadow:0 1px 3px rgba(0,0,0,.4)}
 .lang-btn.my .lang-name{font-family:'Noto Sans Myanmar','Noto Sans JP',sans-serif}
 .lang-btn.ne .lang-name{font-family:'Noto Sans Devanagari','Noto Sans JP',sans-serif}
 .lang-btn.mn .lang-name{font-family:'Noto Sans','Noto Sans JP',sans-serif}
@@ -235,7 +244,7 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   display:flex;flex-direction:column;align-items:center;gap:12px;
 }
 .request-catchcopy{
-  font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
+  font-size:calc(clamp(.85rem,2.5vw,1rem) * var(--fscale));font-weight:700;
   line-height:2.15;color:rgba(255,255,255,.9);text-align:center;
 }
 /* ふりがな（漢字の上に小さく表示） */
@@ -255,16 +264,16 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 }
 .request-input{
   width:100%;padding:12px 16px;border-radius:14px;border:none;
-  font-size:.95rem;font-family:'Noto Sans JP',sans-serif;
+  font-size:calc(.95rem * var(--fscale));font-family:'Noto Sans JP',sans-serif;
   background:rgba(255,255,255,.92);color:#333;
   outline:none;transition:box-shadow .2s;
 }
-.request-input::placeholder{color:#aaa;font-size:.85rem}
+.request-input::placeholder{color:#aaa;font-size:.85em}
 .request-input:focus{box-shadow:0 0 0 3px rgba(167,139,250,.5)}
 .request-send{
   width:100%;padding:14px 20px;border-radius:14px;border:none;
   background:linear-gradient(135deg,#a78bfa,#60a5fa);
-  color:#fff;font-size:1rem;font-weight:700;cursor:pointer;
+  color:#fff;font-size:calc(1rem * var(--fscale));font-weight:700;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
   transition:transform .15s,box-shadow .15s;
   white-space:nowrap;
@@ -273,7 +282,7 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 .request-send:active{transform:scale(.95)}
 .request-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .request-feedback{
-  font-size:.8rem;min-height:1.2em;
+  font-size:calc(.8rem * var(--fscale));min-height:1.2em;
   transition:opacity .3s;
 }
 .request-feedback.success{color:#69f0ae}
@@ -284,8 +293,8 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
   border-radius:14px;backdrop-filter:blur(6px);max-width:480px;width:100%;
 }
-.how-to p{font-size:clamp(.78rem,2.2vw,.88rem);opacity:.75;line-height:1.6;font-weight:300}
-.how-to .icon{font-size:1rem;vertical-align:middle;margin-right:2px}
+.how-to p{font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));opacity:.75;line-height:1.7;font-weight:300}
+.how-to .icon{font-size:1em;vertical-align:middle;margin-right:2px}
 
 .credit{
   margin-top:20px;padding:16px 24px;
@@ -318,7 +327,7 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   padding:16px 18px;max-width:440px;width:100%;
 }
 .part-title{
-  font-size:.82rem;font-weight:800;color:var(--text);opacity:.75;
+  font-size:calc(.82rem * var(--fscale));font-weight:800;color:var(--text);opacity:.75;
   margin-bottom:10px;letter-spacing:.02em;
 }
 .part-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
@@ -330,8 +339,8 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
   font-family:'Noto Sans JP',sans-serif;
   transition:background .2s,color .2s,transform .15s,box-shadow .2s;
 }
-.part-btn .part-name{font-size:.86rem;font-weight:800;line-height:1.25}
-.part-btn .part-count{font-size:.66rem;opacity:.7;font-weight:600}
+.part-btn .part-name{font-size:calc(.86rem * var(--fscale));font-weight:800;line-height:1.25}
+.part-btn .part-count{font-size:calc(.66rem * var(--fscale));opacity:.7;font-weight:600}
 .part-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(var(--accent-rgb),.28)}
 .part-btn:active{transform:scale(.95)}
 .part-btn.active{
@@ -340,24 +349,55 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 }
 .part-btn.active .part-count{opacity:.85}
 
+/* ===== 文字の大きさ 選択 ===== */
+.size-box{
+  background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.25);border-radius:22px;
+  padding:16px 18px;max-width:440px;width:100%;
+}
+.size-title{
+  font-size:calc(.82rem * var(--fscale));font-weight:800;color:var(--text);opacity:.75;
+  margin-bottom:10px;letter-spacing:.02em;
+}
+.size-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.size-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  flex:1 1 92px;min-width:92px;max-width:150px;
+  padding:8px 12px;border-radius:14px;cursor:pointer;
+  border:2px solid var(--accent);background:transparent;color:var(--accent);
+  font-family:'Noto Sans JP',sans-serif;
+  transition:background .2s,color .2s,transform .15s,box-shadow .2s;
+}
+.size-btn .size-sample{font-weight:900;line-height:1.15}
+.size-btn[data-size="s"] .size-sample{font-size:1rem}
+.size-btn[data-size="l"] .size-sample{font-size:1.3rem}
+.size-btn[data-size="xl"] .size-sample{font-size:1.62rem}
+.size-btn .size-name{font-size:.72rem;font-weight:700;opacity:.85}
+.size-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(var(--accent-rgb),.28)}
+.size-btn:active{transform:scale(.95)}
+.size-btn.active{
+  background:var(--accent);color:#fff;
+  box-shadow:0 4px 16px rgba(var(--accent-rgb),.42);
+}
+
 .start-progress-box{
   background:rgba(255,255,255,.15);backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,.2);border-radius:24px;
   padding:26px 30px;max-width:440px;width:100%;
 }
 .start-scope{
-  font-size:.78rem;font-weight:700;color:var(--accent);opacity:.85;margin-bottom:6px;
+  font-size:calc(.78rem * var(--fscale));font-weight:700;color:var(--accent);opacity:.85;margin-bottom:6px;
 }
-.start-mastered{font-size:1.45rem;font-weight:900;color:var(--text)}
+.start-mastered{font-size:calc(1.45rem * var(--fscale));font-weight:900;color:var(--text);line-height:1.4}
 .start-bar-wrap{margin:12px 0;height:14px;background:rgba(0,0,0,.1);border-radius:14px;overflow:hidden}
 .start-bar-fill{height:100%;border-radius:14px;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
 .start-lets-try{
-  font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
+  font-size:calc(clamp(1.1rem,3.5vw,1.4rem) * var(--fscale));font-weight:800;color:var(--accent);
   margin-top:8px;
 }
 .start-btn{
   margin-top:4px;padding:16px 48px;border-radius:30px;border:none;
-  background:var(--accent);color:#fff;font-size:1.2rem;font-weight:800;
+  background:var(--accent);color:#fff;font-size:calc(1.2rem * var(--fscale));font-weight:800;
   cursor:pointer;font-family:'Poppins','Noto Sans JP',sans-serif;
   box-shadow:0 6px 24px rgba(var(--accent-rgb),.35);
   transition:transform .2s,box-shadow .2s;
@@ -367,20 +407,20 @@ body.lang-mn .card-back-word,body.lang-mn .card-back-desc{
 .start-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 .start-back{
   margin-top:4px;background:none;border:none;color:var(--text);
-  font-size:.9rem;cursor:pointer;opacity:.6;font-family:'Noto Sans JP',sans-serif;
+  font-size:calc(.9rem * var(--fscale));cursor:pointer;opacity:.6;font-family:'Noto Sans JP',sans-serif;
 }
 .start-back:hover{opacity:1}
 .start-back:disabled{opacity:.35;cursor:default}
 .start-weak-btn{
   padding:10px 28px;border-radius:20px;
   border:2px solid var(--accent);background:transparent;color:var(--accent);
-  font-size:.95rem;font-weight:700;cursor:pointer;
+  font-size:calc(.95rem * var(--fscale));font-weight:700;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;transition:all .2s;
 }
 .start-weak-btn:hover{background:var(--accent);color:#fff}
 .start-review-btn{
   padding:13px 34px;border-radius:22px;border:none;
-  background:var(--btn-ok);color:#fff;font-size:1.02rem;font-weight:800;
+  background:var(--btn-ok);color:#fff;font-size:calc(1.02rem * var(--fscale));font-weight:800;
   cursor:pointer;font-family:'Noto Sans JP',sans-serif;
   box-shadow:0 4px 16px rgba(var(--accent-rgb),.32);
   transition:transform .2s,box-shadow .2s;display:none;
@@ -405,7 +445,7 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   background:rgba(255,255,255,.18);border:none;color:#fff;
   padding:6px 12px;border-radius:20px;cursor:pointer;
   font-size:.8rem;font-weight:700;transition:background .2s;
-  font-family:'Noto Sans JP',sans-serif;
+  font-family:'Noto Sans JP',sans-serif;white-space:nowrap;
 }
 .hbtn:hover{background:rgba(255,255,255,.32)}
 .hbtn.active{background:rgba(255,255,0,.35)}
@@ -425,7 +465,7 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 }
 .progress-pct{font-size:.85rem;font-weight:700;color:var(--accent);min-width:42px;text-align:right}
 .progress-text{font-size:.72rem;color:var(--text);text-align:center;opacity:.5;margin-top:2px}
-.mastered-text{font-size:.78rem;color:var(--accent);text-align:center;font-weight:700;margin-top:4px}
+.mastered-text{font-size:calc(.78rem * var(--fscale));color:var(--accent);text-align:center;font-weight:700;margin-top:4px}
 
 /* ===== Hint ===== */
 .hint-bar{
@@ -488,7 +528,7 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   display:none;
 }
 .card-front-main{
-  font-size:clamp(1.3rem,4.6vw,1.9rem);font-weight:900;color:var(--text);
+  font-size:calc(clamp(1.3rem,4.6vw,1.9rem) * var(--fscale));font-weight:900;color:var(--text);
   text-align:center;line-height:1.95;
   word-break:normal;overflow-wrap:anywhere;
 }
@@ -497,9 +537,9 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   font-size:.42em;font-weight:500;opacity:.78;letter-spacing:0;
   font-family:'Noto Sans JP',sans-serif;
 }
-.card-front-sub{font-size:.85rem;color:var(--accent);opacity:.6;font-weight:400}
+.card-front-sub{font-size:calc(.85rem * var(--fscale));color:var(--accent);opacity:.6;font-weight:400}
 .card-back-word{
-  font-size:clamp(1.1rem,3.5vw,1.4rem);font-weight:800;color:var(--accent);
+  font-size:calc(clamp(1.1rem,3.5vw,1.4rem) * var(--fscale));font-weight:800;color:var(--accent);
   text-align:center;line-height:1.85;margin-top:12px;
   word-break:normal;overflow-wrap:anywhere;
 }
@@ -509,16 +549,23 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   font-family:'Noto Sans JP',sans-serif;
 }
 .card-back-meaning{
-  font-size:clamp(.75rem,2.2vw,.85rem);color:#555;
-  text-align:center;line-height:1.65;
+  font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));color:#555;
+  text-align:center;line-height:1.8;
   padding:6px 12px;margin:4px 0;
   background:rgba(0,0,0,.04);border-radius:10px;
   border-left:3px solid var(--accent);
   font-family:'Noto Sans JP',sans-serif;
+  word-break:normal;overflow-wrap:anywhere;
+}
+.card-back-meaning ruby{ruby-position:over;-webkit-ruby-position:before}
+.card-back-meaning rt{
+  font-size:.52em;font-weight:500;opacity:.8;
+  font-family:'Noto Sans JP',sans-serif;
 }
 .card-back-desc{
-  font-size:clamp(.75rem,2.2vw,.85rem);color:var(--text);
-  text-align:center;line-height:1.6;opacity:.85;
+  font-size:calc(clamp(.78rem,2.2vw,.88rem) * var(--fscale));color:var(--text);
+  text-align:center;line-height:1.7;opacity:.85;
+  word-break:normal;overflow-wrap:anywhere;
 }
 .tap-hint{font-size:.65rem;opacity:.35;color:var(--text);margin-top:6px}
 
@@ -582,11 +629,11 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 }
 .judge-row.visible{
   opacity:1;transform:translateY(0);pointer-events:auto !important;
-  max-height:80px;
+  max-height:96px;
 }
 .judge-btn{
   padding:14px 28px;border-radius:24px;border:none;
-  font-size:1rem;font-weight:800;cursor:pointer;
+  font-size:calc(1rem * var(--fscale));font-weight:800;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
   transition:transform .15s,box-shadow .15s;
   box-shadow:0 4px 16px rgba(0,0,0,.18);
@@ -638,11 +685,11 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
 }
 .cheer-overlay.show .cheer-box{transform:scale(1)}
 .cheer-emoji{font-size:3rem;margin-bottom:8px}
-.cheer-msg{font-size:1rem;font-weight:700;line-height:1.7;color:#333;white-space:pre-line}
+.cheer-msg{font-size:calc(1rem * var(--fscale));font-weight:700;line-height:1.7;color:#333;white-space:pre-line}
 .cheer-close{
   margin-top:16px;padding:10px 32px;border-radius:20px;
   border:none;background:linear-gradient(135deg,#a78bfa,#60a5fa);
-  color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;
+  color:#fff;font-size:calc(.9rem * var(--fscale));font-weight:700;cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;
 }
 /* トップに戻るリンク */
@@ -749,7 +796,8 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
       <span class="icon">👆</span> タップでカードを裏返す<br>
       <span class="icon">👈👉</span> スワイプでカード切り替え<br>
       <span class="icon">🎚</span> レベル別（日常会話・初任者・実務者）に絞って学習できます<br>
-      <span class="icon">🔤</span> カード左下のスイッチでふりがなON/OFF
+      <span class="icon">🔤</span> カード左下のスイッチでふりがなON/OFF<br>
+      <span class="icon">🔍</span> 文字の大きさを 標準・大・特大 から選べます
     </p>
   </div>
   <div class="credit">
@@ -771,6 +819,12 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
     <div class="part-grid" id="partGrid"></div>
   </div>
 
+  <!-- ★ 文字の大きさ ★ -->
+  <div class="size-box" id="sizeBox">
+    <div class="size-title" id="sizeTitle">🔍 文字の大きさ</div>
+    <div class="size-grid" id="sizeGrid"></div>
+  </div>
+
   <div class="start-progress-box">
     <div class="start-scope" id="startScope"></div>
     <div class="start-mastered" id="startMastered">🎯 覚えた単語：0 / 0</div>
@@ -790,6 +844,7 @@ header h2{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6p
   <header>
     <h2 id="headerTitle">📖 学習中<span class="header-part" id="headerPart"></span></h2>
     <div class="header-btns">
+      <button class="hbtn" id="btnSize" onclick="cycleFontSize()">🔍A</button>
       <button class="hbtn" id="btnWeak" onclick="toggleWeakMode()">😤</button>
       <button class="hbtn" onclick="shuffleCards()">🔀</button>
       <button class="hbtn" onclick="backToStart()">🏠</button>
@@ -1035,6 +1090,82 @@ function saveFuri(){
   try{localStorage.setItem('kaigo-furigana',furiOn?'1':'0');}catch(e){}
 }
 
+/* ========== 文字の大きさ（標準／大／特大） ========== */
+const FONT_SIZES=['s','l','xl'];
+const FONT_MARK={s:'A',l:'A+',xl:'A++'};
+let fontSize='s';
+
+function loadFontSize(){
+  try{
+    const v=localStorage.getItem('kaigo-fontsize');
+    if(v&&FONT_SIZES.indexOf(v)>=0)fontSize=v;
+  }catch(e){}
+}
+function saveFontSize(){
+  try{localStorage.setItem('kaigo-fontsize',fontSize);}catch(e){}
+}
+
+/* html要素にクラスを付ける（bodyのclassNameを書き換える処理と衝突しないため） */
+function applyFontSize(){
+  const h=document.documentElement;
+  h.classList.remove('fs-s','fs-l','fs-xl');
+  h.classList.add('fs-'+fontSize);
+  renderSizeButtons();
+  updateSizeBtnLabel();
+  adjustCardHeight();
+}
+
+function setFontSize(code){
+  if(FONT_SIZES.indexOf(code)<0)return;
+  fontSize=code;
+  saveFontSize();
+  applyFontSize();
+}
+
+function cycleFontSize(){
+  const i=FONT_SIZES.indexOf(fontSize);
+  setFontSize(FONT_SIZES[(i+1)%FONT_SIZES.length]);
+}
+
+function sizeLabel(code){
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  if(code==='s')return meta.sizeS;
+  if(code==='l')return meta.sizeL;
+  return meta.sizeXL;
+}
+
+function renderSizeButtons(){
+  const grid=document.getElementById('sizeGrid');
+  if(!grid)return;
+  const meta=LANG_META[currentLang]||LANG_META.ja;
+  const st=document.getElementById('sizeTitle');
+  if(st)st.textContent=meta.sizeTitle;
+
+  grid.innerHTML='';
+  FONT_SIZES.forEach(function(code){
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='size-btn'+(code===fontSize?' active':'');
+    b.setAttribute('data-size',code);
+    const s=document.createElement('span');
+    s.className='size-sample';
+    s.textContent='あA';
+    const n=document.createElement('span');
+    n.className='size-name';
+    n.textContent=sizeLabel(code);
+    b.appendChild(s);b.appendChild(n);
+    b.addEventListener('click',function(){setFontSize(code);});
+    grid.appendChild(b);
+  });
+}
+
+function updateSizeBtnLabel(){
+  const btn=document.getElementById('btnSize');
+  if(!btn)return;
+  btn.textContent='🔍'+FONT_MARK[fontSize];
+  btn.setAttribute('aria-label',sizeLabel(fontSize));
+}
+
 let lastMilestone=0;
 
 /* ========== PWA: Service Worker登録 ========== */
@@ -1052,6 +1183,7 @@ const LANG_META={
       weakBtn:'にがてだけ特訓',masteredLabel:'覚えた',
       furiLabel:'ふりがな',reloadBtn:'↻ 最新データを読み込む',
       partTitle:'🎚 学習するレベルを選ぶ',allParts:'ぜんぶ',
+      sizeTitle:'🔍 文字の大きさ',sizeS:'標準',sizeL:'大',sizeXL:'特大',
       backBtn:'← 言語選択に戻る'},
   en:{header:'📖 Learning in English',tapFront:'Tap to see the meaning',tapBack:'Tap to flip back',
       hintTap:'👆 Tap = flip card',hintSwipe:'👈👉 Swipe = next/prev',
@@ -1059,6 +1191,7 @@ const LANG_META={
       weakBtn:'Weak cards only',masteredLabel:'Mastered',
       furiLabel:'Furigana',reloadBtn:'↻ Reload latest data',
       partTitle:'🎚 Choose your level',allParts:'All',
+      sizeTitle:'🔍 Text size',sizeS:'Standard',sizeL:'Large',sizeXL:'Extra large',
       backBtn:'← Back to language select'},
   id:{header:'📖 Belajar Bahasa Indonesia',tapFront:'Ketuk untuk lihat arti',tapBack:'Ketuk untuk kembali',
       hintTap:'👆 Ketuk = balik kartu',hintSwipe:'👈👉 Geser = kartu berikutnya',
@@ -1066,6 +1199,7 @@ const LANG_META={
       weakBtn:'Kartu sulit saja',masteredLabel:'Hafal',
       furiLabel:'Furigana',reloadBtn:'↻ Muat data terbaru',
       partTitle:'🎚 Pilih tingkat belajar',allParts:'Semua',
+      sizeTitle:'🔍 Ukuran huruf',sizeS:'Standar',sizeL:'Besar',sizeXL:'Sangat besar',
       backBtn:'← Kembali ke pilihan bahasa'},
   vi:{header:'📖 Học Tiếng Việt',tapFront:'Chạm để xem nghĩa',tapBack:'Chạm để quay lại',
       hintTap:'👆 Chạm = lật thẻ',hintSwipe:'👈👉 Vuốt = thẻ tiếp theo',
@@ -1073,6 +1207,7 @@ const LANG_META={
       weakBtn:'Chỉ thẻ yếu',masteredLabel:'Thuộc',
       furiLabel:'Furigana',reloadBtn:'↻ Tải dữ liệu mới nhất',
       partTitle:'🎚 Chọn trình độ học',allParts:'Tất cả',
+      sizeTitle:'🔍 Cỡ chữ',sizeS:'Chuẩn',sizeL:'Lớn',sizeXL:'Rất lớn',
       backBtn:'← Quay lại chọn ngôn ngữ'},
   th:{header:'📖 เรียนภาษาไทย',tapFront:'แตะเพื่อดูความหมาย',tapBack:'แตะเพื่อกลับด้านหน้า',
       hintTap:'👆 แตะ = พลิกการ์ด',hintSwipe:'👈👉 ปัด = การ์ดถัดไป',
@@ -1080,6 +1215,7 @@ const LANG_META={
       weakBtn:'เฉพาะการ์ดที่ยาก',masteredLabel:'จำได้',
       furiLabel:'ฟุริงานะ',reloadBtn:'↻ โหลดข้อมูลล่าสุด',
       partTitle:'🎚 เลือกระดับการเรียน',allParts:'ทั้งหมด',
+      sizeTitle:'🔍 ขนาดตัวอักษร',sizeS:'มาตรฐาน',sizeL:'ใหญ่',sizeXL:'ใหญ่มาก',
       backBtn:'← กลับไปเลือกภาษา'},
   my:{header:'📖 မြန်မာဘာသာဖြင့် လေ့လာနေသည်',tapFront:'အဓိပ္ပာယ်ကြည့်ရန် တို့ပါ',tapBack:'အရှေ့ဘက် ပြန်သွားရန် တို့ပါ',
       hintTap:'👆 တို့ = ကတ်လှန်',hintSwipe:'👈👉 ပွတ်ဆွဲ = နောက်/ရှေ့',
@@ -1087,6 +1223,7 @@ const LANG_META={
       weakBtn:'ခက်သောကတ်များသာ',masteredLabel:'မှတ်မိပြီ',
       furiLabel:'ဖူရိဂါနာ',reloadBtn:'↻ နောက်ဆုံးဒေတာ ရယူရန်',
       partTitle:'🎚 လေ့လာမည့် အဆင့် ရွေးပါ',allParts:'အားလုံး',
+      sizeTitle:'🔍 စာလုံးအရွယ်အစား',sizeS:'ပုံမှန်',sizeL:'ကြီး',sizeXL:'အလွန်ကြီး',
       backBtn:'← ဘာသာစကား ရွေးချယ်ရန်'},
   ne:{header:'📖 नेपालीमा सिक्दै',tapFront:'अर्थ हेर्न ट्याप गर्नुहोस्',tapBack:'अगाडि फर्कन ट्याप गर्नुहोस्',
       hintTap:'👆 ट्याप = कार्ड पल्टाउनुहोस्',hintSwipe:'👈👉 स्वाइप = अर्को/अघिल्लो',
@@ -1094,6 +1231,7 @@ const LANG_META={
       weakBtn:'कमजोर कार्डहरू मात्र',masteredLabel:'याद भयो',
       furiLabel:'फुरिगाना',reloadBtn:'↻ नयाँ डाटा लोड गर्नुहोस्',
       partTitle:'🎚 अध्ययन स्तर छान्नुहोस्',allParts:'सबै',
+      sizeTitle:'🔍 अक्षरको आकार',sizeS:'सामान्य',sizeL:'ठूलो',sizeXL:'धेरै ठूलो',
       backBtn:'← भाषा छनोटमा फर्कनुहोस्'},
   mn:{header:'📖 Монголоор суралцаж байна',tapFront:'Утгыг харахын тулд товшино уу',tapBack:'Буцахын тулд товшино уу',
       hintTap:'👆 Товших = хөзрийг эргүүлэх',hintSwipe:'👈👉 Шудрах = дараах/өмнөх',
@@ -1101,6 +1239,7 @@ const LANG_META={
       weakBtn:'Зөвхөн хэцүү хөзөр',masteredLabel:'Цээжилсэн',
       furiLabel:'Фуригана',reloadBtn:'↻ Шинэ өгөгдөл ачаалах',
       partTitle:'🎚 Сурах түвшнээ сонго',allParts:'Бүгд',
+      sizeTitle:'🔍 Үсгийн хэмжээ',sizeS:'Стандарт',sizeL:'Том',sizeXL:'Онцгой том',
       backBtn:'← Хэл сонгох руу буцах'}
 };
 
@@ -1238,6 +1377,8 @@ function chooseLang(lang){
   loadSrs();
   loadFuri();
   loadPart();
+  loadFontSize();
+  applyFontSize();
   const meta=LANG_META[lang]||LANG_META.ja;
   const ft=document.getElementById('furiText');
   if(ft)ft.textContent=meta.furiLabel;
@@ -1414,6 +1555,7 @@ function loadDataForStart(force){
       buildPartList();
       applyPartFilter();
       renderPartButtons();
+      renderSizeButtons();
       restoreReloadBtn();
       updateStartScreen();
       if(pendingWord)jumpToPendingWord();
@@ -1504,6 +1646,7 @@ function startQuiz(mode){
   document.getElementById('judgeAgain').textContent=meta.againBtn;
   document.getElementById('furiText').textContent=meta.furiLabel;
   document.getElementById('btnWeak').classList.toggle('active',weakMode);
+  updateSizeBtnLabel();
   showCard();
 }
 
@@ -1513,6 +1656,7 @@ function backToStart(){
   document.getElementById('startScreen').style.display='flex';
   weakMode=false;
   renderPartButtons();
+  renderSizeButtons();
   updateStartScreen();
 }
 
@@ -1533,6 +1677,22 @@ function toggleWeakMode(){
   idx=0;
   document.getElementById('btnWeak').classList.toggle('active',weakMode);
   showCard();
+}
+
+/* ========== カードの高さ調整 ========== */
+function adjustCardHeight(){
+  const fcard=document.getElementById('flipCard');
+  const front=document.getElementById('cardFront');
+  const back=document.getElementById('cardBack');
+  if(!fcard||!front||!back)return;
+  requestAnimationFrame(function(){
+    fcard.style.minHeight='0px';
+    requestAnimationFrame(function(){
+      const frontH=front.scrollHeight;
+      const backH=back.scrollHeight;
+      fcard.style.minHeight=Math.max(frontH,backH)+'px';
+    });
+  });
 }
 
 /* ========== CARD DISPLAY ========== */
@@ -1614,11 +1774,7 @@ function showCard(){
     bd.style.display=tr.d?'block':'none';
   }
 
-  requestAnimationFrame(()=>{
-    const frontH=document.getElementById('cardFront').scrollHeight;
-    const backH=document.getElementById('cardBack').scrollHeight;
-    document.getElementById('flipCard').style.minHeight=Math.max(frontH,backH)+'px';
-  });
+  adjustCardHeight();
 }
 
 /* ========== FLIP ========== */
@@ -1830,6 +1986,12 @@ function shuffleCards(){
     e.preventDefault();
     speakJa(getSpeakText());
   });
+})();
+
+/* ===== 起動時：文字サイズを反映 ===== */
+(function(){
+  loadFontSize();
+  applyFontSize();
 })();
 
 /* ===== URLで単語が指定されていたら自動で開く ===== */
