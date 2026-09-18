@@ -23,7 +23,9 @@
     resume:  'hk_resume'  + V,   // 途中でやめたときの続き
     furi:    'hk_furi'    + V,   // ふりがな ON/OFF
     days:    'hk_days'    + V,   // 連続学習日数
-    shuffle: 'hk_shuffle' + V    // 選択肢シャッフル ON/OFF
+    shuffle: 'hk_shuffle' + V,   // 選択肢シャッフル ON/OFF
+    where:   'hk_where'   + V,   // 【追加】どの画面・どの章を見ていたか
+    back:    'hk_back'    + V    // 【追加】フラッシュカードから戻ってくる合図
   };
 
   /* =================================================================
@@ -467,6 +469,11 @@
   var SCREENS = ['hkMenu', 'hkNote', 'hkChapterSelect', 'hkQuiz', 'hkResult', 'hkSummary', 'hkStats'];
   var current = 'hkMenu';
 
+  /* 【追加】ページを開いた時点で「前回どこを見ていたか」を先に控えておく。
+     このあと show('hkMenu') が走ると記録が上書きされてしまうので、
+     ファイルが読みこまれた瞬間にここで写しておきます。 */
+  var WHERE_AT_LOAD = load(K.where, null);
+
   function show(id) {
     for (var j = 0; j < SCREENS.length; j++) {
       var el = $(SCREENS[j]);
@@ -486,6 +493,68 @@
     else if (current === 'hkQuiz')     { renderQuestion(); }
     else if (current === 'hkResult')   { renderResult(); }
     else if (current === 'hkStats')    { renderStats(); }
+  }
+
+  /* =================================================================
+     5-B.【追加】フラッシュカードへ行く前の場所をおぼえて、戻ってきたら再現する
+     ================================================================= */
+
+  // いま見ている画面・開いている章・スクロール位置を書きとめる
+  function saveWhere() {
+    var chaps = [];
+    for (var k in openSet) {
+      if (openSet.hasOwnProperty(k) && openSet[k]) chaps.push(parseInt(k, 10));
+    }
+    save(K.where, {
+      screen: current,
+      chaps:  chaps,
+      star3:  star3Only,
+      y:      window.pageYOffset || document.documentElement.scrollTop || 0,
+      at:     Date.now()
+    });
+  }
+
+  // 戻ってきたときに、そこまで復元する
+  function restoreFromFlashcard() {
+    var flag = load(K.back, null);
+    remove(K.back);                 // 合図は一度きり。ふつうに開いたときは動きません
+    if (!flag) return;
+
+    var w = WHERE_AT_LOAD;
+    if (!w || !w.screen) return;
+    if (Date.now() - (w.at || 0) > 24 * 60 * 60 * 1000) return;   // 1日以上前なら無視
+
+    // 問題を解いている途中だった → 中断データから再開する
+    if (w.screen === 'hkQuiz' || w.screen === 'hkResult') {
+      var res = load(K.resume, null);
+      if (res && res.queue && res.queue.length) { doResume(); return; }
+      return;
+    }
+
+    // ノートを読んでいた → 開いていた章をもう一度開いて、同じ場所まで下げる
+    if (w.screen === 'hkNote') {
+      openSet = {};
+      var list = w.chaps || [];
+      for (var j = 0; j < list.length; j++) openSet[list[j]] = true;
+      star3Only = !!w.star3;
+      show('hkNote');
+      renderNote();
+      refreshFurigana();
+      if (w.y) window.scrollTo(0, w.y);
+      return;
+    }
+
+    if (w.screen === 'hkChapterSelect') {
+      show('hkChapterSelect'); renderChapterSelect(); refreshFurigana();
+      if (w.y) window.scrollTo(0, w.y);
+      return;
+    }
+
+    if (w.screen === 'hkStats') {
+      show('hkStats'); renderStats(); refreshFurigana();
+      if (w.y) window.scrollTo(0, w.y);
+      return;
+    }
   }
 
   /* =================================================================
@@ -1316,6 +1385,17 @@
     document.addEventListener('click', onClick);
     document.addEventListener('keydown', onKey);
 
+    /* 【追加】ふきだしの「フラッシュカードで見る」が押された瞬間に、
+       いまの画面と開いている章とスクロール位置を書きとめる。
+       （ページが切りかわる前に保存されます） */
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) return;
+      if (!t.closest('.gloss-link')) return;
+      saveWhere();
+      save(K.back, Date.now());
+    }, true);
+
     // 途中でページを閉じても続きから再開できるように
     window.addEventListener('beforeunload', function () {
       if (current === 'hkQuiz' || current === 'hkResult') saveResume();
@@ -1324,6 +1404,9 @@
     show('hkMenu');
     renderMenu();
     refreshFurigana();
+
+    /* 【追加】フラッシュカードから戻ってきたときだけ、元の場所へ */
+    restoreFromFlashcard();
   }
 
   if (document.readyState === 'loading') {
