@@ -17,6 +17,10 @@
     '38': 'data/past_exam_38.json'
   };
 
+  /* ★追加：フラッシュカードへ行くときの「戻り札」 */
+  var TICKET_KEY  = 'kaigo_return_ticket_v1';
+  var TICKET_LIFE = 3 * 60 * 60 * 1000;   // 3時間たった札は無効
+
   /* =====================================================
    *  状態変数
    * ===================================================== */
@@ -107,6 +111,30 @@
       document.body.appendChild(loadingEl);
     }
     loadingEl.style.display = on ? 'flex' : 'none';
+  }
+
+  /* ★追加：画面下に一瞬だけ出るお知らせ（CSSは足さずに済ませます） */
+  var toastEl = null;
+
+  function showToast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.style.cssText =
+        'position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);'
+        + 'z-index:9995;max-width:86%;padding:12px 20px;border-radius:999px;'
+        + 'background:rgba(15,12,41,.94);color:#fff;font-size:.88rem;font-weight:700;'
+        + 'box-shadow:0 8px 26px rgba(0,0,0,.4);opacity:0;pointer-events:none;'
+        + 'transition:opacity .25s ease,transform .25s ease;text-align:center;line-height:1.5;';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.style.opacity   = '1';
+    toastEl.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(function () {
+      toastEl.style.opacity   = '0';
+      toastEl.style.transform = 'translateX(-50%) translateY(14px)';
+    }, 2600);
   }
 
   /* =====================================================
@@ -382,6 +410,15 @@
     return p;
   }
 
+  /* ★追加：戻り札からの復帰用。1問目（i=0）でも復元できるようにする。
+     「続きがあります」の画面に出す条件（loadProgress）は変えません。 */
+  function loadProgressAny(slot) {
+    var p = allProgress()[slot];
+    if (!p || !p.ids || !p.ids.length) return null;
+    if (p.i < 0 || p.i >= p.ids.length) return null;
+    return p;
+  }
+
   function clearProgress(slot) {
     if (!Store || !slot) return;
     var all = allProgress();
@@ -398,6 +435,117 @@
       out.push(map[ids[j]]);
     }
     return out;
+  }
+
+  /* =====================================================
+   *  ★追加：フラッシュカードへの「戻り札」
+   *  なぞって質問した瞬間に、いまの問題と画面を覚えておきます。
+   *  フラッシュカード側はこの札を読んで
+   *  「← 解いていた問題に戻る」ボタンを出します。
+   * ===================================================== */
+  function nowQuestionLabel() {
+    var q = questions[currentIndex];
+    if (!q) return quizLabel || '過去問';
+    var s = '';
+    if (q._kai) s += '第' + q._kai + '回 ';
+    s += '問' + (q.id || (currentIndex + 1));
+    return s;
+  }
+
+  function saveReturnTicket(word) {
+    if (!quizSlot || questions.length === 0) return;
+    var onResult = !!lastResultQ;   // 解説画面を見ている途中かどうか
+    var ticket = {
+      from:  'exam',
+      url:   'exam/index.html',     // フラッシュカード（ルート）から見た場所
+      slot:  quizSlot,
+      label: nowQuestionLabel(),
+      i:     currentIndex,
+      sel:   onResult ? lastResultSelected : null,
+      word:  word || '',
+      d:     Date.now()
+    };
+    try { localStorage.setItem(TICKET_KEY, JSON.stringify(ticket)); } catch (e) {}
+  }
+
+  function readReturnTicket() {
+    try {
+      var s = localStorage.getItem(TICKET_KEY);
+      if (!s) return null;
+      var t = JSON.parse(s);
+      if (!t || t.from !== 'exam' || !t.slot) return null;
+      if (Date.now() - (t.d || 0) > TICKET_LIFE) return null;
+      return t;
+    } catch (e) { return null; }
+  }
+
+  function clearReturnTicket() {
+    try { localStorage.removeItem(TICKET_KEY); } catch (e) {}
+  }
+
+  // 解説画面まで戻す（選んだ選択肢もそのまま表示する）
+  function repaintResultFor(q, selected) {
+    lastResultSeconds = 0;
+    lastAnswerKey     = Store ? Store.keyOf(q) : '';
+    paintResult(q, selected);
+    paintConfidence('');
+    showScreen(resultScreen);
+  }
+
+  function resumeWithPool(pool, saved, ticket) {
+    var revived = questionsFromIds(saved.ids, pool);
+    if (!revived) { showToast('問題データが更新されたため、続きから戻れませんでした'); return; }
+
+    var at = (typeof ticket.i === 'number' && ticket.i >= 0 && ticket.i < revived.length)
+      ? ticket.i : saved.i;
+
+    startQuiz(revived, saved.mode || '', saved.label || ticket.label || '', ticket.slot,
+      { i: at, score: saved.score || 0 });
+
+    if (ticket.sel !== null && ticket.sel !== undefined && revived[at]) {
+      repaintResultFor(revived[at], ticket.sel);
+    }
+
+    clearReturnTicket();
+    showToast('🔙 ' + (ticket.label || '解いていた問題') + ' にもどりました');
+  }
+
+  // フラッシュカードから ?resume=1 で戻ってきたときの自動復帰
+  function resumeFromTicket() {
+    var wants = false;
+    try {
+      wants = (new URLSearchParams(location.search)).get('resume') === '1';
+    } catch (e) { wants = /[?&]resume=1(&|$)/.test(location.search); }
+    if (!wants) return;
+
+    // アドレスから resume を消しておく（再読み込みで二重に動かないように）
+    try {
+      var u = new URL(location.href);
+      u.searchParams.delete('resume');
+      history.replaceState(null, '', u.pathname + (u.search ? u.search : '') + u.hash);
+    } catch (e) {}
+
+    var ticket = readReturnTicket();
+    if (!ticket) return;
+
+    var saved = loadProgressAny(ticket.slot);
+    if (!saved) { clearReturnTicket(); return; }
+
+    // kai38 などは1回分だけ、それ以外は3回分まとめて読み込む
+    if (ticket.slot.indexOf('kai') === 0) {
+      var kai = ticket.slot.slice(3);
+      showLoading(true);
+      loadRound(kai, function (data) {
+        showLoading(false);
+        if (!data || !data.length) { clearReturnTicket(); return; }
+        resumeWithPool(data, saved, ticket);
+      });
+    } else {
+      loadAllRounds(function (data) {
+        if (!data || !data.length) { clearReturnTicket(); return; }
+        resumeWithPool(data, saved, ticket);
+      });
+    }
   }
 
   // 「続きから / 最初から」を選ぶ画面
@@ -1124,6 +1272,12 @@
       var w = askWord;
       var q = lastResultQ || questions[currentIndex] || null;
       hideAskChip();
+
+      /* ★追加：フラッシュカードへ行っても戻れるように、
+         いまの問題・いまの画面を「戻り札」として残しておく */
+      saveProgress();
+      saveReturnTicket(w);
+
       if (typeof window.KaigoAskWord === 'function') {
         window.KaigoAskWord(w, q);
       } else {
@@ -1195,5 +1349,9 @@
       console.warn('この環境では学習記録を保存できません（プライベートモードの可能性）');
     }
   }
+
+  /* ★追加：フラッシュカードから「← 解いていた問題に戻る」で来たときは
+     メニューを飛ばして、さっきの問題（解説画面なら解説のまま）に直行する */
+  resumeFromTicket();
 
 })();
