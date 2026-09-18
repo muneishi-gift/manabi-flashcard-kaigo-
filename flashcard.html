@@ -887,7 +887,7 @@ body.theme-dark .rt-go{color:var(--accent2)}
 <script>
 /* ========== CONFIG ========== */
 const CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vSSigciJqcqSYI9Wkwp4-QIvXocFtV9li12It8QvOd4qosRL-gRjeLfciF1CPZQp9EOFxMF2sZHWB4H/pub?gid=0&single=true&output=csv';
-const GAS_URL='https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
+const const GAS_URL='https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
 
 const LANG_PREFIX={id:'ID',th:'TH',vi:'VI',en:'EN',my:'MY',ne:'NE',mn:'MN'};
 
@@ -1226,7 +1226,7 @@ function sendRequest(){
   const word=input.value.trim();
   if(!word){fb.textContent='⚠ 用語を入力してください';fb.className='req-fb error';return;}
   btn.disabled=true;btn.textContent='送信中…';fb.textContent='';fb.className='req-fb';
-  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:word})})
+  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:word,from:'flashcard'})
   .then(function(){
     fb.textContent='✅ ありがとうございます！リクエストを受け付けました';fb.className='req-fb success';
     input.value='';
