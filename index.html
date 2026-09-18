@@ -478,7 +478,7 @@ function sendRequest(){
     method:'POST',
     mode:'no-cors',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({word:word})
+    body:JSON.stringify({word:word,from:'top'})
   })
   .then(function(){
     fb.textContent='✅ ありがとうございます！リクエストを受け付けました';
