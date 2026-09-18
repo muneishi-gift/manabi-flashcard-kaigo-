@@ -4,7 +4,7 @@
 
   // シート1（gid=0）＝フラッシュカードの日本語モードと同じデータ
   var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTS_qE9X6cIZrofQmV9bDSfQVBAp0IoGbQ6e0esP6UQp_L97pRv4D1LRuv_h-4AGohXtrHALsWtSv/pub?output=csv&gid=0';
-  var GAS_URL = 'https://script.google.com/macros/s/AKfycbwZ9ryPnu7Jq23WoyKulycirve1y1358yOEjONbz9fbDOe_LtTrhFCtMz7-JIOkFhtS/exec';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
 
   var COL_NO      = 0;  // A列 No
   var COL_WORD    = 1;  // B列 言葉（漢字・ふりがな）
