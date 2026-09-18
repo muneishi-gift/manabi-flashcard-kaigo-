@@ -605,6 +605,62 @@ body.theme-dark .nav-btn{color:var(--ink)}
   .fx-star,.fx-ring,.fx-plus,.judge-ok.fx-pop,.fx-flash{animation:none!important}
   .fx-plus{opacity:1;animation:fxPlus 400ms linear forwards}
 }
+
+/* =====================================================
+ *  ★追加：過去問・法改正ノートへ「もどる」バー
+ *  なぞって調べに来たときだけ出ます
+ * ===================================================== */
+[data-return-bar]{width:100%;max-width:500px}
+[data-return-bar]:empty{display:none}
+.rt-slot{display:flex;justify-content:center;padding:10px 14px 0}
+.rt-slot:has(> :empty){padding:0}
+
+.rt-bar{
+  display:flex;align-items:stretch;gap:0;width:100%;
+  border-radius:18px;overflow:hidden;
+  border:1px solid rgba(var(--accent-rgb),.42);
+  background:var(--panel);backdrop-filter:blur(12px);
+  box-shadow:var(--shadow-s);
+  animation:rtIn .4s cubic-bezier(.34,1.4,.64,1);
+}
+@keyframes rtIn{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:translateY(0)}}
+
+.rt-main{
+  flex:1;display:flex;align-items:center;gap:11px;min-width:0;
+  padding:11px 13px;border:none;background:transparent;color:var(--ink);
+  font-family:inherit;text-align:left;cursor:pointer;transition:background .2s;
+}
+.rt-main:hover{background:rgba(var(--accent-rgb),.08)}
+.rt-main:active{background:rgba(var(--accent-rgb),.16)}
+
+.rt-ico{
+  flex-shrink:0;width:34px;height:34px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 3px 10px rgba(var(--accent-rgb),.34);
+}
+.rt-txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.rt-txt b{
+  font-size:calc(.88rem * var(--fscale));font-weight:900;line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rt-txt span{
+  font-size:calc(.7rem * var(--fscale));font-weight:700;color:var(--ink-sub);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rt-go{flex-shrink:0;font-size:.8rem;color:var(--accent);font-weight:900}
+body.theme-dark .rt-go{color:var(--accent2)}
+
+.rt-x{
+  flex-shrink:0;width:38px;border:none;cursor:pointer;font-family:inherit;
+  background:transparent;color:var(--ink-sub);font-size:.8rem;
+  border-left:1px solid var(--chip-line);transition:background .2s,color .2s;
+}
+.rt-x:hover{background:rgba(var(--accent-rgb),.1);color:var(--ink)}
+
+/* 学習画面のヘッダーはアクセント色なので、その下では白っぽく見せる */
+#app .rt-bar{border-color:rgba(var(--accent-rgb),.3)}
 </style>
 </head>
 <body class="theme-light">
@@ -612,6 +668,9 @@ body.theme-dark .nav-btn{color:var(--ink)}
 <!-- ===== LANDING ===== -->
 <div class="landing" id="landing">
   <a href="index.html" class="top-link">← トップに戻る</a>
+
+  <!-- ★追加：もどるバー（過去問・法改正から来たときだけ出ます） -->
+  <div data-return-bar="landing"></div>
 
   <div class="brand">
     <div class="brand-logo"><img src="gift-logo.png" alt="GIFT協会ロゴ"></div>
@@ -709,6 +768,9 @@ body.theme-dark .nav-btn{color:var(--ink)}
     </div>
   </div>
 
+  <!-- ★追加：もどるバー -->
+  <div data-return-bar="start"></div>
+
   <div class="ring-card">
     <div class="ring" id="ring" style="--p:0">
       <div class="ring-in">
@@ -759,6 +821,9 @@ body.theme-dark .nav-btn{color:var(--ink)}
       <button class="icon-btn" type="button" onclick="shuffleCards()" aria-label="shuffle">🔀</button>
     </div>
   </header>
+
+  <!-- ★追加：もどるバー（カードを見ている最中でも、いつでも戻れます） -->
+  <div class="rt-slot"><div data-return-bar="study"></div></div>
 
   <div class="study-tools"><div data-pref-bar="study"></div></div>
 
@@ -880,6 +945,54 @@ function toRubyHtml(text){
 function stripFurigana(text){return text?String(text).replace(FURI_RE,'$1'):'';}
 function toKanaReading(text){return text?String(text).replace(FURI_RE,function(_,k,y){return y;}):'';}
 
+/* =====================================================
+ *  ★追加：過去問・法改正ノートへ「もどる」しくみ
+ *  exam/app.js が残した札（localStorage）を読んで、
+ *  画面の上に「もどる」バーを出します。
+ * ===================================================== */
+const RT_KEY='kaigo_return_ticket_v1';
+const RT_LIFE=3*60*60*1000;   // 3時間たった札は無効
+
+function readTicket(){
+  try{
+    const s=localStorage.getItem(RT_KEY);
+    if(!s)return null;
+    const t=JSON.parse(s);
+    if(!t||!t.from)return null;
+    if(t.from!=='exam'&&t.from!=='houkaisei')return null;
+    if(Date.now()-(t.d||0)>RT_LIFE)return null;
+    return t;
+  }catch(e){return null;}
+}
+function clearTicket(){try{localStorage.removeItem(RT_KEY);}catch(e){}}
+
+function renderReturnBar(){
+  const t=readTicket();
+  let html='';
+  if(t){
+    const main=(t.from==='houkaisei')?'法改正ノートにもどる':'解いていた問題にもどる';
+    let sub=t.label||((t.from==='houkaisei')?'法改正まるわかりノート':'過去問');
+    if(t.word)sub+='　／　調べた言葉：'+stripFurigana(t.word);
+    html=
+      '<div class="rt-bar">'+
+        '<button class="rt-main" type="button" data-act="return">'+
+          '<span class="rt-ico">↩</span>'+
+          '<span class="rt-txt"><b>'+esc(main)+'</b><span>'+esc(sub)+'</span></span>'+
+          '<span class="rt-go">▶</span>'+
+        '</button>'+
+        '<button class="rt-x" type="button" data-act="return-x" aria-label="このお知らせを閉じる">✕</button>'+
+      '</div>';
+  }
+  const list=document.querySelectorAll('[data-return-bar]');
+  for(let i=0;i<list.length;i++)list[i].innerHTML=html;
+}
+function goBackToTicket(){
+  const t=readTicket();
+  if(!t){renderReturnBar();return;}
+  const url=t.url||'exam/index.html';
+  location.href=url+(url.indexOf('?')>=0?'&':'?')+'resume=1';
+}
+
 /* ========== 設定（テーマ・文字・ふりがな） ========== */
 let theme='light',fontSize='s',furiOn=true;
 const FONT_SIZES=['s','l','xl'];
@@ -955,6 +1068,8 @@ document.addEventListener('click',function(e){
   if(act==='furi'){setFuri(!furiOn);}
   else if(act==='theme'){setTheme(b.getAttribute('data-val'));}
   else if(act==='size'){setFontSize(b.getAttribute('data-val'));}
+  else if(act==='return'){goBackToTicket();}                      /* ★追加 */
+  else if(act==='return-x'){clearTicket();renderReturnBar();}      /* ★追加 */
 });
 
 /* ========== 連続学習日数 ========== */
@@ -1177,7 +1292,7 @@ function chooseLang(lang){
   document.body.classList.remove('lang-ja','lang-en','lang-id','lang-vi','lang-th','lang-my','lang-ne','lang-mn');
   document.body.classList.add('lang-'+lang);
   loadMastered();loadSrs();loadStreak();loadLevel();loadPart();
-  renderPrefBars();
+  renderPrefBars();renderReturnBar();
   const meta=LANG_META[lang]||LANG_META.ja;
   document.getElementById('startHeadTitle').textContent=meta.prepare;
   document.getElementById('startHeadSub').textContent=meta.langName;
@@ -1190,14 +1305,17 @@ function chooseLang(lang){
   loadDataForStart(false);
 }
 function backToLanding(){
+  restoreFilters();                       /* ★追加：一時解除した絞り込みを元に戻す */
   document.getElementById('startScreen').style.display='none';
   document.getElementById('landing').style.display='flex';
+  renderReturnBar();
 }
 function backToStart(){
+  restoreFilters();                       /* ★追加 */
   document.getElementById('app').style.display='none';
   document.getElementById('startScreen').style.display='flex';
   weakMode=false;
-  renderLevelChips();renderPartChips();renderPrefBars();updateStartScreen();
+  renderLevelChips();renderPartChips();renderPrefBars();renderReturnBar();updateStartScreen();
 }
 
 /* ========== 絞り込み（G列レベル × B列パート） ========== */
@@ -1301,20 +1419,45 @@ function renderPartChips(){
   });
 }
 function setLevel(code,silent){
+  filterBackup=null;                      /* ★追加：自分で選び直したら復元はしない */
   currentLevel=code;saveLevel();applyFilters();
   renderLevelChips();renderPartChips();
   if(!silent)updateStartScreen();
 }
 function setPart(code,silent){
+  filterBackup=null;                      /* ★追加 */
   currentPart=code;savePart();applyFilters();
   renderLevelChips();renderPartChips();
   if(!silent)updateStartScreen();
 }
-function resetFilters(){
+
+/* ★変更：なぞって飛んできたときは「一時的に」ぜんぶ表示にします。
+   以前はここで保存もしていたため、ユーザーが選んでいた
+   レベル・パートの設定が消えてしまっていました。 */
+let filterBackup=null;
+
+function resetFilters(temp){
+  if(temp){
+    if(!filterBackup)filterBackup={level:currentLevel,part:currentPart};
+    currentLevel='ALL';currentPart='ALL';
+    applyFilters();
+    renderLevelChips();renderPartChips();
+    return;
+  }
+  filterBackup=null;
   currentLevel='ALL';currentPart='ALL';
   saveLevel();savePart();applyFilters();
   renderLevelChips();renderPartChips();
 }
+function restoreFilters(){
+  if(!filterBackup)return;
+  currentLevel=filterBackup.level;
+  currentPart=filterBackup.part;
+  filterBackup=null;
+  applyFilters();
+  renderLevelChips();renderPartChips();
+}
+
 function scopeLabel(){
   const meta=LANG_META[currentLang]||LANG_META.ja;
   const a=[];
@@ -1456,7 +1599,8 @@ function jumpToPendingWord(){
     return;
   }
   const target=allData[i];
-  resetFilters();startQuiz(false);
+  resetFilters(true);                     /* ★変更：一時的に解除（設定は消しません） */
+  startQuiz(false);
   for(let k=0;k<displayData.length;k++){if(displayData[k].no===target.no){idx=k;break;}}
   showCard();
 }
@@ -1525,7 +1669,7 @@ function startQuiz(mode){
   document.getElementById('judgeOk').textContent=meta.okBtn;
   document.getElementById('judgeAgain').textContent=meta.againBtn;
   document.getElementById('btnWeak').classList.toggle('on',weakMode);
-  renderPrefBars();
+  renderPrefBars();renderReturnBar();
   showCard();
 }
 function toggleWeakMode(){
@@ -1790,6 +1934,7 @@ if('serviceWorker' in navigator){
 (function(){
   loadPrefs();loadStreak();
   applyTheme();applyFontSize();renderPrefBars();
+  renderReturnBar();                      /* ★追加：もどるバーを出す */
   const params=new URLSearchParams(location.search);
   const w=params.get('word');
   if(!w)return;
