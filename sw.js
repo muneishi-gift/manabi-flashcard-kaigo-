@@ -1,7 +1,7 @@
 // sw.js – 介護福祉士国家試験対策アプリ
 // 方式：ネットワーク優先（オンラインなら常に最新版を取得し、失敗時のみキャッシュを使用）
 
-const CACHE_NAME = 'kaigo-vf-v50';
+const CACHE_NAME = 'kaigo-vf-v52';
 
 // 最初から保存しておくファイル
 const ASSETS = [
@@ -24,6 +24,7 @@ const ASSETS = [
   './houkaisei/index.html',
   './houkaisei/houkaisei.css',
   './houkaisei/houkaisei.js',
+  './houkaisei/gloss-hook.js',
   './houkaisei/data/note.js',
   './houkaisei/data/quiz.js',
 
