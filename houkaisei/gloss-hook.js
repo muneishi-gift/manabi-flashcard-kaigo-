@@ -13,23 +13,28 @@
   var MAX_LEN = 30;   // 長い文章の選択は無視（誤作動を防ぐ）
 
   /* ---------------------------------------------------------
-     0.【追加】戻り札（もどりふだ）
+     0. 戻り札（もどりふだ）
         フラッシュカードへ飛ぶ直前に「どこから来たか」を記録する。
         flashcard.html 側が、この記録を読んで
         「← 法改正ノートに戻る」のバーを出します。
-        ※ TICKET_KEY の文字列は exam/app.js と flashcard.html と
-          まったく同じにしてください。
+        ※ 下の3つは exam/app.js と flashcard.html に合わせています。
+           ・保存する名前  … kaigo_return_ticket_v1
+           ・時刻の項目名  … d
+           ・url の書き方  … ルートから見た場所を文字で書く
+          ここを変えると、戻るバーが出なくなります。
      --------------------------------------------------------- */
-  var TICKET_KEY = 'kaigo-return-ticket';
+  var TICKET_KEY = 'kaigo_return_ticket_v1';
+
+  var lastWord = '';   // 直前に調べた言葉（戻るバーに表示されます）
 
   function saveReturnTicket() {
     try {
       var ticket = {
-        url:   location.pathname + location.search,  // 例: /.../houkaisei/index.html
-        label: '法改正まるわかりノート',
-        sub:   contextLabel(),                       // 例: 法改正ノート（本文）
         from:  'houkaisei',
-        at:    Date.now()
+        url:   'houkaisei/index.html',   // フラッシュカード（ルート）から見た場所
+        label: contextLabel(),           // 例: 法改正ノート（本文）
+        word:  lastWord,
+        d:     Date.now()
       };
       localStorage.setItem(TICKET_KEY, JSON.stringify(ticket));
     } catch (e) {}
@@ -271,6 +276,7 @@
 
   function ask(word) {
     if (!word) return;
+    lastWord = word;        /* 戻るバーに「調べた言葉」を出すために覚えておく */
     hideChip();
     try {
       var sel = window.getSelection && window.getSelection();
@@ -279,8 +285,8 @@
 
     if (typeof window.KaigoAskWord === 'function') {
       window.KaigoAskWord(word, {
-        label: contextLabel(),   // glossary.js を新版にすると、これがそのまま記録されます
-        id:    contextLabel(),   // 旧版のままでも記録が空にならないための保険
+        label: contextLabel(),   // これが出題元の列にそのまま入ります
+        id:    contextLabel(),   // 旧版の glossary.js でも空にならないための保険
         from:  'houkaisei'
       });
     } else {
@@ -315,7 +321,7 @@
       hideChip();
     });
 
-    /* 【追加】ふきだしの中の「フラッシュカードで見る」が押された瞬間に
+    /* ふきだしの中の「フラッシュカードで見る」が押された瞬間に
        戻り札を残す。ページが切りかわる前に保存されます。 */
     document.addEventListener('click', function (e) {
       var t = e.target;
