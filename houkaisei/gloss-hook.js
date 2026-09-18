@@ -13,6 +13,29 @@
   var MAX_LEN = 30;   // 長い文章の選択は無視（誤作動を防ぐ）
 
   /* ---------------------------------------------------------
+     0.【追加】戻り札（もどりふだ）
+        フラッシュカードへ飛ぶ直前に「どこから来たか」を記録する。
+        flashcard.html 側が、この記録を読んで
+        「← 法改正ノートに戻る」のバーを出します。
+        ※ TICKET_KEY の文字列は exam/app.js と flashcard.html と
+          まったく同じにしてください。
+     --------------------------------------------------------- */
+  var TICKET_KEY = 'kaigo-return-ticket';
+
+  function saveReturnTicket() {
+    try {
+      var ticket = {
+        url:   location.pathname + location.search,  // 例: /.../houkaisei/index.html
+        label: '法改正まるわかりノート',
+        sub:   contextLabel(),                       // 例: 法改正ノート（本文）
+        from:  'houkaisei',
+        at:    Date.now()
+      };
+      localStorage.setItem(TICKET_KEY, JSON.stringify(ticket));
+    } catch (e) {}
+  }
+
+  /* ---------------------------------------------------------
      1. 見た目
         exam/style.css の .gloss-* と同じクラス名を使いつつ、
         色は --gl-* という独自の変数で持つので houkaisei.css と
@@ -291,6 +314,14 @@
       if (btn) btn.click();
       hideChip();
     });
+
+    /* 【追加】ふきだしの中の「フラッシュカードで見る」が押された瞬間に
+       戻り札を残す。ページが切りかわる前に保存されます。 */
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) return;
+      if (t.closest('.gloss-link')) saveReturnTicket();
+    }, true);
   }
 
   if (document.readyState === 'loading') {
