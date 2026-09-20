@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>各科目ごと要点集｜介護福祉士国家試験対策</title>
+  <meta name="description" content="第39回介護福祉士国家試験 各科目ごと要点集 - 一般社団法人GIFT協会">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="youten.css">
+  <!-- 表示設定（ライト/ダーク・文字サイズ）は過去問・法改正ノートと共通 -->
+  <script src="../exam/theme.js"></script>
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <div class="yt-header">
+    <a href="../index.html">
+      <img src="../gift-logo.png" alt="GIFT協会ロゴ" class="yt-header-logo">
+    </a>
+    <div class="yt-header-title">各科目ごと要点集</div>
+    <div class="yt-header-sub">第39回 介護福祉士国家試験対策</div>
+  </div>
+
+  <!-- ===== ふりがな切り替え（法改正ノートと同じ形・初期値OFF） ===== -->
+  <div class="yt-furigana-toggle">
+    <span class="yt-furigana-label">ふりがな</span>
+    <div class="yt-furigana-switch" id="ytFuriganaSwitch" role="switch"
+         tabindex="0" aria-checked="false" aria-label="ふりがなの表示">
+      <div class="yt-furigana-track" id="ytFuriganaTrack">
+        <div class="yt-furigana-thumb"></div>
+      </div>
+      <span class="yt-furigana-status" id="ytFuriganaStatus">OFF</span>
+    </div>
+  </div>
+
+  <!-- ===== 表示設定（theme.js が制御） ===== -->
+  <div class="yt-display-settings">
+    <div class="yt-theme-group" role="group" aria-label="表示モード">
+      <button type="button" class="theme-btn" data-theme-set="light">☀️ ライト</button>
+      <button type="button" class="theme-btn" data-theme-set="dark">🌙 ダーク</button>
+    </div>
+    <div class="yt-fs-group" role="group" aria-label="文字サイズ">
+      <span class="yt-fs-label">文字</span>
+      <button type="button" class="fs-btn" data-fs="normal">標準</button>
+      <button type="button" class="fs-btn" data-fs="large">大</button>
+      <button type="button" class="fs-btn" data-fs="xlarge">特大</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       画面1　科目えらび
+       ============================================================ -->
+  <div class="yt-container" id="ytMenu">
+    <a href="../index.html" class="yt-back">← トップに戻る</a>
+
+    <div class="yt-dash" id="ytDash">
+      <div class="yt-dash-row">
+        <div class="yt-dash-cell">
+          <div class="yt-dash-num" id="ytDashRead">0<span id="ytDashTotal">/0</span></div>
+          <div class="yt-dash-cap">開いた科目</div>
+        </div>
+        <div class="yt-dash-cell">
+          <div class="yt-dash-num" id="ytDashItems">0</div>
+          <div class="yt-dash-cap">収録テーマ数</div>
+        </div>
+      </div>
+      <div class="yt-dash-bar"><div class="yt-dash-fill" id="ytDashFill" style="width:0%"></div></div>
+      <div class="yt-dash-msg" id="ytDashMsg">気になる科目から読んで大丈夫です。</div>
+    </div>
+
+    <div class="yt-note-caution">
+      この要点集は、出題傾向をもとにまとめた<strong>学習用の整理ノート</strong>です。<br>
+      本文の言葉を指でなぞると、意味を調べたりフラッシュカードで確認したりできます。
+    </div>
+
+    <div id="ytSubjectList"></div>
+  </div>
+
+  <!-- ============================================================
+       画面2　科目の中身
+       ============================================================ -->
+  <div class="yt-container hidden" id="ytSubject">
+    <button class="yt-back" type="button" data-yt-action="backToMenu">← 科目一覧に戻る</button>
+
+    <div class="yt-subject-head">
+      <div class="yt-subject-part" id="ytSubjectPart"></div>
+      <div class="yt-subject-no" id="ytSubjectNo">科目1</div>
+      <h2 class="yt-subject-title" id="ytSubjectTitle"></h2>
+      <div class="yt-subject-lead" id="ytSubjectLead"></div>
+      <div class="yt-subject-intro" id="ytSubjectIntro"></div>
+    </div>
+
+    <div id="ytItems"></div>
+
+    <div class="yt-foot-tools">
+      <button type="button" class="yt-fc-btn" id="ytToFlashcard">
+        📚 フラッシュカードで用語を確認する
+      </button>
+      <button type="button" class="yt-back yt-back-bottom" data-yt-action="backToMenu">
+        ← 科目一覧に戻る
+      </button>
+    </div>
+  </div>
+
+  <div class="yt-credit">Created by Mitsuhide Muneishi ／ 一般社団法人GIFT協会</div>
+
+  <!-- ===== データ（科目を作るたびに1行ずつ増やします） ===== -->
+  <script src="data/youten-01.js"></script>
+
+  <!-- ===== 動きの部分 ===== -->
+  <script src="youten.js"></script>
+
+  <!-- ===== 用語をなぞって調べる（過去問と同じ用語集を使います） ===== -->
+  <script src="../exam/glossary.js"></script>
+  <script src="gloss-hook.js"></script>
+
+</body>
+</html>
