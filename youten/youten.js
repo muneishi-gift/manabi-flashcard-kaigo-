@@ -5,6 +5,9 @@
    ※ 過去問(exam/app.js)・法改正ノート(houkaisei.js)とは独立しています。
    ※ 保存キーはすべて yt_ で始まるので、ほかの記録と混ざりません。
    ※ 読み込むデータ … data/youten-01.js … （window.YT_SUBJECTS に入る）
+   ※ パート・科目名・領域・出題数・科目群は、下の YT_PARTS / YT_META が
+     おおもとです（公式の出題科目表と同じ並び）。
+     データファイル側の part / partTitle は使いません。
    ※ ふりがなは、データに一度書いた読みを辞書に覚えて
      画面ぜんたいの同じ言葉に自動で付けます（法改正ノートと同じ考え方）。
    Created by Mitsuhide Muneishi
@@ -21,6 +24,34 @@
     furi: 'yt_furi' + V,   // ふりがな ON/OFF
     back: 'yt_back' + V    // フラッシュカードから戻ってきたときの合図
   };
+
+  /* =================================================================
+     0-2. 公式の出題科目表（パート／科目名／領域／出題数／科目群）
+          ここを直せば、メニューの並びも見出しも全部そろいます。
+     ================================================================= */
+  var YT_PARTS = [
+    { part:'A', title:'人間（にんげん）と社会（しゃかい）・介護（かいご）',        q:60, subjects:[1,2,3,4,5,6] },
+    { part:'B', title:'こころとからだのしくみ・医療的（いりょうてき）ケア',        q:45, subjects:[7,8,9,10,11] },
+    { part:'C', title:'介護（かいご）・全領域（ぜんりょういき）',                  q:20, subjects:[12,13] }
+  ];
+
+  var YT_META = {
+    1:  { part:'A', name:'人間（にんげん）の尊厳（そんげん）と自立（じりつ）',        area:'人間（にんげん）と社会（しゃかい）', q:2,  group:1  },
+    2:  { part:'A', name:'介護（かいご）の基本（きほん）',                          area:'介護（かいご）',                     q:10, group:1  },
+    3:  { part:'A', name:'社会（しゃかい）の理解（りかい）',                        area:'人間（にんげん）と社会（しゃかい）', q:12, group:2  },
+    4:  { part:'A', name:'人間関係（にんげんかんけい）とコミュニケーション',        area:'人間（にんげん）と社会（しゃかい）', q:4,  group:3  },
+    5:  { part:'A', name:'コミュニケーション技術（ぎじゅつ）',                      area:'介護（かいご）',                     q:6,  group:3  },
+    6:  { part:'A', name:'生活支援技術（せいかつしえんぎじゅつ）',                  area:'介護（かいご）',                     q:26, group:4  },
+    7:  { part:'B', name:'こころとからだのしくみ',                                  area:'こころとからだのしくみ',             q:12, group:5  },
+    8:  { part:'B', name:'発達（はったつ）と老化（ろうか）の理解（りかい）',        area:'こころとからだのしくみ',             q:8,  group:6  },
+    9:  { part:'B', name:'認知症（にんちしょう）の理解（りかい）',                  area:'こころとからだのしくみ',             q:10, group:7  },
+    10: { part:'B', name:'障害（しょうがい）の理解（りかい）',                      area:'こころとからだのしくみ',             q:10, group:8  },
+    11: { part:'B', name:'医療的（いりょうてき）ケア',                              area:'医療的（いりょうてき）ケア',         q:5,  group:9  },
+    12: { part:'C', name:'介護過程（かいごかてい）',                                area:'介護（かいご）',                     q:8,  group:10 },
+    13: { part:'C', name:'総合問題（そうごうもんだい）',                            area:'全領域（ぜんりょういき）',           q:12, group:11 }
+  };
+
+  var MARU = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬';
 
   var SUBJECTS = (window.YT_SUBJECTS || []).slice().sort(function (a, b) {
     return (a.no || 0) - (b.no || 0);
@@ -50,6 +81,21 @@
     return '★';
   }
 
+  function findSubject(no) {
+    for (var i = 0; i < SUBJECTS.length; i++) {
+      if (SUBJECTS[i].no === no) return SUBJECTS[i];
+    }
+    return null;
+  }
+
+  function metaOf(no) {
+    return YT_META[no] || { part:'', name:'', area:'', q:0, group:0 };
+  }
+
+  function groupMark(n) {
+    return (n >= 1 && n <= MARU.length) ? MARU.charAt(n - 1) : '';
+  }
+
   /* =================================================================
      2. ふりがな
         データ側は「介護（かいご）」の形で書きます。
@@ -70,6 +116,7 @@
      （数字のうしろの漢字は辞書に覚えないので、ここに書きます） */
   var YT_FIX = {
     '要点集':'ようてんしゅう', '各科目':'かくかもく', '科目':'かもく',
+    '科目群':'かもくぐん', '領域':'りょういき', '出題数':'しゅつだいすう',
     '介護福祉士':'かいごふくしし', '国家試験':'こっかしけん', '対策':'たいさく',
     '介護':'かいご', '福祉':'ふくし', '試験':'しけん',
     '第':'だい', '条':'じょう', '章':'しょう', '回':'かい', '問':'もん',
@@ -80,6 +127,7 @@
     '全':'ぜん', '点':'てん', '言葉':'ことば', '意味':'いみ', '調':'しら',
     '指':'ゆび', '確認':'かくにん', '整理':'せいり', '学習用':'がくしゅうよう',
     '本文':'ほんぶん', '用語':'ようご', '収録':'しゅうろく',
+    '公開':'こうかい', '準備中':'じゅんびちゅう', '合計':'ごうけい',
     '気':'き', '大丈夫':'だいじょうぶ', '一覧':'いちらん',
     '一般社団法人':'いっぱんしゃだんほうじん', '協会':'きょうかい',
     '宗石':'むねいし', '光英':'みつひで'
@@ -116,6 +164,8 @@
   }
   function fgBuildDict() {
     FG_DICT = {};
+    fgScan(YT_PARTS, 0);
+    fgScan(YT_META, 0);
     fgScan(SUBJECTS, 0);
     for (var k in YT_FIX) { if (YT_FIX.hasOwnProperty(k)) FG_DICT[k] = YT_FIX[k]; }
     FG_MAX = 1;
@@ -264,6 +314,40 @@
     if (list.indexOf(no) === -1) { list.push(no); save(K.read, list); }
   }
 
+  /* ---- 科目1つぶんのボタン ---- */
+  function menuItemHtml(no, read) {
+    var m = metaOf(no);
+    var s = findSubject(no);
+    var ready = !!s;
+    var title = ready ? s.title : m.name;
+
+    var chips =
+      '<span class="yt-menu-meta">' +
+        '<span class="yt-chip yt-chip-area">' + deco(m.area) + '</span>' +
+        '<span class="yt-chip yt-chip-q">' + deco(m.q + '問（もん）') + '</span>' +
+        '<span class="yt-chip yt-chip-group">' + deco('科目群（かもくぐん）') + groupMark(m.group) + '</span>' +
+      '</span>';
+
+    if (!ready) {
+      return '<li>' +
+        '<div class="yt-menu-item is-soon" aria-disabled="true">' +
+          '<span class="yt-menu-no">科目' + no + '</span>' +
+          '<span class="yt-menu-title">' + deco(title) + '</span>' +
+          chips +
+          '<span class="yt-menu-soon">' + deco('準備中（じゅんびちゅう）') + '</span>' +
+        '</div></li>';
+    }
+
+    return '<li>' +
+      '<button type="button" class="yt-menu-item" data-yt-open="' + no + '">' +
+        '<span class="yt-menu-no">科目' + no + '</span>' +
+        '<span class="yt-menu-title">' + deco(title) + '</span>' +
+        (s.lead ? '<span class="yt-menu-sub">' + deco(s.lead) + '</span>' : '') +
+        chips +
+        (read.indexOf(no) !== -1 ? '<span class="yt-menu-read">読んだ</span>' : '') +
+      '</button></li>';
+  }
+
   /* ---- 画面1：科目えらび ---- */
   function renderMenu() {
     var box = $('ytSubjectList');
@@ -271,50 +355,64 @@
 
     var read = readList();
     var html = '';
-    var lastPart = null;
     var items = 0;
+    var ready = 0;
+    var done  = 0;
+    var listed = {};
+    var i, j;
 
-    for (var i = 0; i < SUBJECTS.length; i++) {
-      var s = SUBJECTS[i];
-      items += (s.items || []).length;
+    for (i = 0; i < YT_PARTS.length; i++) {
+      var pt = YT_PARTS[i];
 
-      if (s.partTitle && s.partTitle !== lastPart) {
-        html += '<div class="yt-section-title">' +
-                (s.part ? 'パート' + esc(s.part) + '　' : '') +
-                deco(s.partTitle) + '</div><ul class="yt-menu-list">';
-        lastPart = s.partTitle;
-      } else if (i === 0) {
-        html += '<ul class="yt-menu-list">';
+      html += '<div class="yt-part">' +
+        '<div class="yt-part-head">' +
+          '<span class="yt-part-badge">' + esc(pt.part) + 'パート</span>' +
+          '<span class="yt-part-title">' + deco(pt.title) + '</span>' +
+          '<span class="yt-part-count">' + deco(pt.q + '問（もん）') + '</span>' +
+        '</div><ul class="yt-menu-list">';
+
+      for (j = 0; j < pt.subjects.length; j++) {
+        var no = pt.subjects[j];
+        listed[no] = true;
+        var s = findSubject(no);
+        if (s) {
+          ready++;
+          items += (s.items || []).length;
+          if (read.indexOf(no) !== -1) done++;
+        }
+        html += menuItemHtml(no, read);
       }
 
-      html += '<li>' +
-        '<button type="button" class="yt-menu-item" data-yt-open="' + s.no + '">' +
-          '<span class="yt-menu-no">科目' + s.no + '</span>' +
-          '<span class="yt-menu-title">' + deco(s.title) + '</span>' +
-          (s.lead ? '<span class="yt-menu-sub">' + deco(s.lead) + '</span>' : '') +
-          (read.indexOf(s.no) !== -1 ? '<span class="yt-menu-read">読んだ</span>' : '') +
-        '</button></li>';
-
-      var next = SUBJECTS[i + 1];
-      if (!next || (next.partTitle && next.partTitle !== lastPart)) html += '</ul>';
+      html += '</ul></div>';
     }
 
-    if (!SUBJECTS.length) {
-      html = '<div class="yt-empty">まだ科目データが入っていません。</div>';
+    /* 表にない番号のデータが入っていたときの受け皿 */
+    var extra = '';
+    for (i = 0; i < SUBJECTS.length; i++) {
+      if (!listed[SUBJECTS[i].no]) {
+        extra += menuItemHtml(SUBJECTS[i].no, read);
+        ready++;
+        items += (SUBJECTS[i].items || []).length;
+      }
     }
+    if (extra) {
+      html += '<div class="yt-part"><div class="yt-part-head">' +
+              '<span class="yt-part-title">そのほか</span></div>' +
+              '<ul class="yt-menu-list">' + extra + '</ul></div>';
+    }
+
     box.innerHTML = html;
 
-    var total = SUBJECTS.length;
-    var done = 0;
-    for (var j = 0; j < read.length; j++) {
-      for (var k = 0; k < SUBJECTS.length; k++) {
-        if (SUBJECTS[k].no === read[j]) { done++; break; }
-      }
-    }
     if ($('ytDashRead'))  $('ytDashRead').firstChild.nodeValue = String(done);
-    if ($('ytDashTotal')) $('ytDashTotal').textContent = '/' + total;
+    if ($('ytDashTotal')) $('ytDashTotal').textContent = '/' + ready;
     if ($('ytDashItems')) $('ytDashItems').textContent = String(items);
-    if ($('ytDashFill'))  $('ytDashFill').style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+    if ($('ytDashFill'))  $('ytDashFill').style.width = (ready ? Math.round(done / ready * 100) : 0) + '%';
+    if ($('ytDashMsg')) {
+      $('ytDashMsg').innerHTML = deco(
+        '公開（こうかい）ずみ ' + ready + '科目（かもく）／全（ぜん）13科目（かもく）　' +
+        '気（き）になる科目（かもく）から読（よ）んで大丈夫（だいじょうぶ）です。'
+      );
+    }
   }
 
   /* ---- 画面2：科目の中身 ---- */
@@ -322,10 +420,17 @@
     nowSubject = s;
     document.body.setAttribute('data-yt-subject', String(s.no));
 
-    if ($('ytSubjectPart'))  $('ytSubjectPart').innerHTML  =
-      (s.part ? 'パート' + esc(s.part) + '　' : '') + deco(s.partTitle || '');
+    var m = metaOf(s.no);
+
+    if ($('ytSubjectPart')) {
+      $('ytSubjectPart').innerHTML =
+        (m.part ? '<span class="yt-tag yt-tag-part">' + esc(m.part) + 'パート</span>' : '') +
+        (m.area ? '<span class="yt-tag yt-tag-area">' + deco(m.area) + '</span>' : '') +
+        (m.q    ? '<span class="yt-tag yt-tag-q">' + deco(m.q + '問（もん）') + '</span>' : '') +
+        (m.group ? '<span class="yt-tag yt-tag-group">' + deco('科目群（かもくぐん）') + groupMark(m.group) + '</span>' : '');
+    }
     if ($('ytSubjectNo'))    $('ytSubjectNo').textContent  = '科目' + s.no;
-    if ($('ytSubjectTitle')) $('ytSubjectTitle').innerHTML = deco(s.title);
+    if ($('ytSubjectTitle')) $('ytSubjectTitle').innerHTML = deco(s.title || m.name);
     if ($('ytSubjectLead'))  $('ytSubjectLead').innerHTML  = deco(s.lead || '');
     if ($('ytSubjectIntro')) $('ytSubjectIntro').innerHTML = deco(s.intro || '');
 
@@ -358,10 +463,7 @@
   }
 
   function openSubject(no, keepOpen, y) {
-    var s = null;
-    for (var i = 0; i < SUBJECTS.length; i++) {
-      if (SUBJECTS[i].no === no) { s = SUBJECTS[i]; break; }
-    }
+    var s = findSubject(no);
     if (!s) return;
     renderSubject(s, keepOpen);
     markRead(no);
@@ -491,6 +593,7 @@
   window.YtPage = {
     subjectNo: function () { return nowSubject ? nowSubject.no : 0; },
     openedIds: openedIds,
-    backKey:  K.back
+    backKey:  K.back,
+    meta:     function (no) { return metaOf(no); }
   };
 })();
