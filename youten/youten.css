@@ -1,0 +1,387 @@
+/* ===================================================================
+   各科目ごと要点集 - スタイル
+   manabi-flashcard-kaigo- / youten/youten.css
+   ※ class名はすべて yt- で始まり、過去問・法改正ノートとぶつかりません。
+   ※ 色と文字サイズの値は houkaisei.css と同じものを使っています。
+   Created by Mitsuhide Muneishi
+   =================================================================== */
+
+/* ---------- 文字サイズ（theme.js が data-fs を付けます） ---------- */
+:root{
+  --fs-body: 16px;
+  --fs-sub:  13.5px;
+  --lh-body: 1.90;
+  --ruby-scale: 58%;
+}
+:root[data-fs="large"]{  --fs-body:18px; --fs-sub:14.5px; --lh-body:1.95; }
+:root[data-fs="xlarge"]{ --fs-body:20px; --fs-sub:15.5px; --lh-body:2.00; }
+
+/* ---------- 配色（theme.js が data-theme を付けます） ---------- */
+:root[data-theme="dark"]{
+  --bg-grad: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  --glow-a: rgba(120,100,255,.15);
+  --glow-b: rgba(255,120,200,.10);
+  --ink:       #EDEFF4;
+  --ink-sub:   rgba(237,239,244,.78);
+  --ink-faint: rgba(237,239,244,.60);
+  --card:      rgba(255,255,255,.08);
+  --card-soft: rgba(255,255,255,.05);
+  --line:      rgba(255,255,255,.16);
+  --line-soft: rgba(255,255,255,.10);
+  --hover:     rgba(255,255,255,.15);
+  --accent:    #a78bfa;
+  --accent-2:  #60a5fa;
+  --btn-grad:  linear-gradient(135deg, #a78bfa, #60a5fa);
+  --ok:   #3ECFC0;
+  --ng:   #FFA45C;
+  --pick: #F2B705;
+  --pick-bg: rgba(242,183,5,.16);
+  --shadow: rgba(0,0,0,.30);
+  --ruby-ink: rgba(237,239,244,.86);
+}
+:root[data-theme="light"]{
+  --bg-grad: linear-gradient(135deg, #E8E3DA 0%, #EDE9E2 50%, #E4E7EC 100%);
+  --glow-a: rgba(120,100,255,.06);
+  --glow-b: rgba(255,120,200,.04);
+  --ink:       #1F2328;
+  --ink-sub:   #4A5158;
+  --ink-faint: #626A72;
+  --card:      #FAF8F5;
+  --card-soft: #F4F1EC;
+  --line:      rgba(31,35,40,.20);
+  --line-soft: rgba(31,35,40,.12);
+  --hover:     #FFFFFF;
+  --accent:    #6D28D9;
+  --accent-2:  #1D4ED8;
+  --btn-grad:  linear-gradient(135deg, #6D28D9, #1D4ED8);
+  --ok:   #0E7C86;
+  --ng:   #C2410C;
+  --pick: #9A6700;
+  --pick-bg: rgba(154,103,0,.12);
+  --shadow: rgba(31,35,40,.14);
+  --ruby-ink: #3D444B;
+}
+
+/* ---------- リセット ---------- */
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  font-family:'Noto Sans JP','Noto Sans',sans-serif;
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:var(--bg-grad);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  position:relative;
+}
+body::before{
+  content:'';
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--glow-a) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, var(--glow-b) 0%, transparent 60%);
+  pointer-events:none; z-index:0;
+}
+body > *{ position:relative; z-index:1; }
+
+.hidden{ display:none !important; }
+
+/* ---------- ふりがなの見え方 ---------- */
+ruby{ ruby-position:over; -webkit-ruby-position:before; }
+rt{
+  font-size:var(--ruby-scale);
+  font-weight:400;
+  color:var(--ruby-ink);
+  letter-spacing:0;
+  user-select:none;            /* コピーしたとき読みが混ざらないように */
+}
+
+/* ---------- ヘッダー ---------- */
+.yt-header{
+  width:100%; max-width:760px;
+  padding:22px 18px 6px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  text-align:center;
+}
+.yt-header-logo{ width:64px; height:auto; border-radius:14px; }
+.yt-header-title{
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  font-size:clamp(1.25rem,4.6vw,1.7rem);
+  font-weight:800; letter-spacing:-.01em;
+  background:var(--btn-grad);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.yt-header-sub{ font-size:var(--fs-sub); color:var(--ink-sub); font-weight:600; }
+
+/* ---------- ふりがなスイッチ ---------- */
+.yt-furigana-toggle{
+  width:100%; max-width:760px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:10px 18px 0;
+}
+.yt-furigana-label{ font-size:var(--fs-sub); font-weight:700; color:var(--ink-sub); }
+.yt-furigana-switch{
+  display:flex; align-items:center; gap:9px;
+  padding:7px 14px 7px 9px; min-height:44px;
+  border:1px solid var(--line); border-radius:999px;
+  background:var(--card); cursor:pointer;
+}
+.yt-furigana-switch:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+.yt-furigana-track{
+  width:40px; height:22px; border-radius:999px;
+  background:var(--line); position:relative; transition:background .22s; flex-shrink:0;
+}
+.yt-furigana-track.on{ background:var(--btn-grad); }
+.yt-furigana-thumb{
+  position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%;
+  background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.35); transition:transform .22s;
+}
+.yt-furigana-track.on .yt-furigana-thumb{ transform:translateX(18px); }
+.yt-furigana-status{ font-size:.78rem; font-weight:900; color:var(--accent); letter-spacing:.06em; }
+
+/* ---------- 表示設定 ---------- */
+.yt-display-settings{
+  width:100%; max-width:760px;
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  padding:10px 18px 0;
+}
+.yt-theme-group, .yt-fs-group{
+  display:flex; align-items:center; gap:4px;
+  padding:4px; border:1px solid var(--line); border-radius:999px; background:var(--card);
+}
+.yt-fs-label{ font-size:.78rem; font-weight:800; color:var(--ink-sub); padding:0 6px 0 8px; }
+.theme-btn, .fs-btn{
+  border:0; background:transparent; color:var(--ink); cursor:pointer;
+  font-family:inherit; font-size:.82rem; font-weight:800;
+  padding:9px 13px; min-height:40px; border-radius:999px; white-space:nowrap;
+}
+.theme-btn.selected, .fs-btn.selected{
+  background:var(--btn-grad); color:#fff;
+  box-shadow:0 2px 10px var(--shadow);
+}
+
+/* ---------- 共通の枠 ---------- */
+.yt-container{
+  width:100%; max-width:760px;
+  padding:16px 18px 40px;
+}
+.yt-back{
+  display:inline-block; margin-bottom:14px;
+  padding:11px 16px; min-height:44px;
+  border:1px solid var(--line); border-radius:999px;
+  background:var(--card); color:var(--ink);
+  font-family:inherit; font-size:.9rem; font-weight:700;
+  text-decoration:none; cursor:pointer;
+}
+.yt-back-bottom{ margin:10px 0 0; }
+
+/* ---------- ダッシュボード ---------- */
+.yt-dash{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:18px; padding:16px; margin-bottom:14px;
+}
+.yt-dash-row{ display:flex; gap:10px; }
+.yt-dash-cell{ flex:1; text-align:center; }
+.yt-dash-num{ font-size:1.6rem; font-weight:900; color:var(--accent); line-height:1.3; }
+.yt-dash-num span{ font-size:.9rem; color:var(--ink-faint); font-weight:700; }
+.yt-dash-cap{ font-size:var(--fs-sub); color:var(--ink-sub); }
+.yt-dash-bar{
+  height:8px; border-radius:999px; background:var(--line-soft);
+  margin:12px 0 8px; overflow:hidden;
+}
+.yt-dash-fill{ height:100%; background:var(--btn-grad); transition:width .4s; }
+.yt-dash-msg{ font-size:var(--fs-sub); color:var(--ink-sub); text-align:center; }
+
+.yt-note-caution{
+  background:var(--card-soft); border:1px dashed var(--line);
+  border-radius:14px; padding:12px 14px; margin-bottom:16px;
+  font-size:var(--fs-sub); color:var(--ink-sub); line-height:1.9;
+}
+
+/* ---------- 科目えらび ---------- */
+.yt-section-title{
+  font-size:.92rem; font-weight:900; color:var(--ink-sub);
+  letter-spacing:.04em; margin:18px 0 8px;
+}
+.yt-menu-list{ list-style:none; display:flex; flex-direction:column; gap:10px; }
+.yt-menu-item{
+  position:relative; width:100%; text-align:left;
+  display:flex; flex-direction:column; gap:4px;
+  padding:16px 18px; min-height:56px;
+  border:1px solid var(--line); border-radius:16px;
+  background:var(--card); color:var(--ink);
+  font-family:inherit; font-size:1rem; cursor:pointer;
+  transition:background .2s, transform .1s;
+}
+.yt-menu-item:hover{ background:var(--hover); }
+.yt-menu-item:active{ transform:scale(.99); }
+.yt-menu-no{ font-size:.74rem; font-weight:900; color:var(--accent); letter-spacing:.08em; }
+.yt-menu-title{ font-weight:800; line-height:1.7; word-break:auto-phrase; }
+.yt-menu-sub{ font-size:var(--fs-sub); color:var(--ink-sub); }
+.yt-menu-read{
+  position:absolute; top:12px; right:14px;
+  font-size:.7rem; font-weight:900; color:var(--ok);
+  border:1px solid var(--ok); border-radius:999px; padding:2px 8px;
+}
+.yt-empty{
+  padding:26px; text-align:center; color:var(--ink-sub);
+  border:1px dashed var(--line); border-radius:16px;
+}
+
+/* ---------- 科目の中身 ---------- */
+.yt-subject-head{ margin-bottom:16px; }
+.yt-subject-part{ font-size:var(--fs-sub); color:var(--ink-faint); font-weight:700; }
+.yt-subject-no{ font-size:.76rem; font-weight:900; color:var(--accent); letter-spacing:.08em; margin-top:4px; }
+.yt-subject-title{
+  font-size:clamp(1.2rem,4.4vw,1.55rem); font-weight:900; line-height:1.6;
+  margin:2px 0 6px; word-break:auto-phrase;
+}
+.yt-subject-lead{ font-size:var(--fs-sub); color:var(--ink-sub); font-weight:700; }
+.yt-subject-intro{
+  margin-top:10px; padding:14px 16px;
+  background:var(--card); border:1px solid var(--line); border-radius:16px;
+  font-size:.95rem; line-height:1.95;
+}
+
+/* ---------- テーマ（アコーディオン） ---------- */
+.yt-item{
+  border:1px solid var(--line); border-radius:18px;
+  background:var(--card); margin-bottom:12px; overflow:hidden;
+  scroll-margin-top:14px;
+}
+.yt-item-head{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  width:100%; text-align:left;
+  padding:16px 16px; min-height:56px;
+  border:0; background:transparent; color:var(--ink);
+  font-family:inherit; font-size:1rem; font-weight:800; cursor:pointer;
+}
+.yt-item-head:focus-visible{ outline:3px solid var(--accent); outline-offset:-3px; }
+.yt-item-id{
+  font-size:.74rem; font-weight:900; color:#fff;
+  background:var(--btn-grad); border-radius:999px; padding:3px 10px; flex-shrink:0;
+}
+.yt-item-title{ flex:1; line-height:1.7; word-break:auto-phrase; }
+.yt-item-star{ font-size:.85rem; color:var(--pick); letter-spacing:.04em; }
+.yt-item-arrow{ font-size:.8rem; color:var(--ink-faint); transition:transform .2s; }
+.yt-item.yt-open .yt-item-arrow{ transform:rotate(180deg); }
+
+.yt-item-body{ display:none; padding:0 16px 18px; }
+.yt-item.yt-open .yt-item-body{ display:block; }
+
+.yt-hitokoto{
+  background:var(--card-soft); border-left:4px solid var(--accent);
+  border-radius:0 12px 12px 0; padding:11px 14px; margin-bottom:14px;
+  font-size:var(--fs-sub); color:var(--ink-sub); line-height:1.9;
+}
+
+/* ---------- ブロック ---------- */
+.yt-block{ margin-bottom:16px; }
+.yt-block-cap{
+  font-size:.92rem; font-weight:900; color:var(--accent);
+  margin-bottom:8px; line-height:1.7;
+}
+.yt-text{ line-height:1.95; word-break:auto-phrase; }
+.yt-list{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+.yt-list li{
+  position:relative; padding-left:1.35em; line-height:1.95; word-break:auto-phrase;
+}
+.yt-list li::before{
+  content:'●'; position:absolute; left:0; top:0;
+  font-size:.62em; color:var(--accent); line-height:2.9;
+}
+
+/* 表（横に長い表はスワイプで見られます） */
+.yt-table-wrap{
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  border:1px solid var(--line); border-radius:14px;
+}
+.yt-table{ width:100%; border-collapse:collapse; min-width:520px; font-size:.93rem; }
+.yt-table th, .yt-table td{
+  border-bottom:1px solid var(--line-soft);
+  border-right:1px solid var(--line-soft);
+  padding:11px 12px; text-align:left; vertical-align:top; line-height:1.85;
+  word-break:auto-phrase;
+}
+.yt-table th{
+  background:var(--card-soft); font-weight:900; color:var(--ink-sub);
+  font-size:.86rem; white-space:nowrap;
+}
+.yt-table tr:last-child td{ border-bottom:0; }
+.yt-table th:last-child, .yt-table td:last-child{ border-right:0; }
+.yt-td-head{ font-weight:800; }
+
+/* ○×の考え方 */
+.yt-judge{ display:flex; flex-direction:column; gap:10px; }
+.yt-judge-col{ border-radius:14px; padding:12px 14px; border:1px solid var(--line); }
+.yt-judge-ok{ border-left:4px solid var(--ok); }
+.yt-judge-ng{ border-left:4px solid var(--ng); }
+.yt-judge-cap{ font-size:.86rem; font-weight:900; margin-bottom:7px; }
+.yt-judge-ok .yt-judge-cap{ color:var(--ok); }
+.yt-judge-ng .yt-judge-cap{ color:var(--ng); }
+.yt-judge ul{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+.yt-judge li{ position:relative; padding-left:1.2em; line-height:1.9; }
+.yt-judge li::before{ content:'・'; position:absolute; left:0; top:0; }
+
+/* 強調わく */
+.yt-key{
+  background:var(--pick-bg); border:1px solid var(--pick);
+  border-radius:14px; padding:13px 15px; line-height:1.95; font-weight:600;
+}
+
+/* ここが出る */
+.yt-point{
+  margin-top:14px; padding:14px 15px;
+  background:var(--card-soft); border:1px solid var(--line); border-radius:14px;
+  line-height:1.95; font-size:.95rem;
+}
+.yt-point-cap{
+  display:inline-block; margin-right:8px; padding:2px 10px;
+  font-size:.72rem; font-weight:900; color:#fff;
+  background:var(--btn-grad); border-radius:999px;
+}
+
+/* ---------- 下のボタン ---------- */
+.yt-foot-tools{ display:flex; flex-direction:column; gap:10px; margin-top:22px; }
+.yt-fc-btn{
+  width:100%; padding:16px; min-height:56px;
+  border:0; border-radius:16px;
+  background:var(--btn-grad); color:#fff;
+  font-family:inherit; font-size:1rem; font-weight:800; cursor:pointer;
+}
+.yt-fc-btn:active{ transform:scale(.99); }
+
+.yt-credit{
+  width:100%; max-width:760px; padding:0 18px 28px;
+  text-align:center; font-size:.76rem; color:var(--ink-faint);
+}
+
+/* ---------- 本文は指でなぞれるように（ボタンは除く） ---------- */
+#ytItems, #ytItems *, .yt-subject-head, .yt-subject-head *, .yt-note-caution{
+  user-select:text; -webkit-user-select:text;
+}
+#ytItems button, #ytItems .yt-back{
+  user-select:none; -webkit-user-select:none;
+}
+::selection{ background:var(--pick-bg); }
+
+/* ---------- 画面が広いとき ---------- */
+@media (min-width:640px){
+  .yt-judge{ flex-direction:row; }
+  .yt-judge-col{ flex:1; }
+}
+
+/* ---------- 紙に印刷するとき ---------- */
+@media print{
+  body{ background:#fff; color:#000; }
+  .yt-furigana-toggle, .yt-display-settings, .yt-back, .yt-foot-tools, .yt-dash{ display:none !important; }
+  .yt-item-body{ display:block !important; }
+  .yt-item{ break-inside:avoid; border:1px solid #999; }
+}
