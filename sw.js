@@ -1,7 +1,7 @@
 // sw.js – 介護福祉士国家試験対策アプリ
 // 方式：ネットワーク優先（オンラインなら常に最新版を取得し、失敗時のみキャッシュを使用）
 
-const CACHE_NAME = 'kaigo-vf-v70';
+const CACHE_NAME = 'kaigo-vf-v71';
 
 // 最初から保存しておくファイル
 const ASSETS = [
@@ -39,6 +39,8 @@ const ASSETS = [
   './youten/data/youten-05.js',
   './youten/data/youten-06a.js',
   './youten/data/youten-06b.js',
+  './youten/data/youten-07a.js',
+  './youten/data/youten-07b.js',
   './youten/data/youten-08.js', 
   './youten/data/youten-12.js',
 
