@@ -46,7 +46,8 @@ const ASSETS = [
   './youten/data/youten-09b.js',
   './youten/data/youten-10a.js',
   './youten/data/youten-10b.js',
-
+  './youten/data/youten-11a.js',
+  './youten/data/youten-11b.js',
   './youten/data/youten-12.js',
 
 
