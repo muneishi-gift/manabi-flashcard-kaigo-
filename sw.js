@@ -36,7 +36,7 @@ const ASSETS = [
   './youten/data/youten-02.js',
   './youten/data/youten-03.js',
   './youten/data/youten-04.js',
-
+  './youten/data/youten-05.js',
 
 
   'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap',
