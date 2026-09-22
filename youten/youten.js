@@ -159,7 +159,7 @@
   function fgScan(v, depth) {
     if (v === null || v === undefined) return;
     if (typeof v === 'string') { fgLearn(v); return; }
-    if (typeof v === 'object' && (depth || 0) < 8) {
+    if (typeof v === 'object' && (depth || 0) < 12) {
       for (var k in v) { if (v.hasOwnProperty(k)) fgScan(v[k], (depth || 0) + 1); }
     }
   }
@@ -286,8 +286,41 @@
       }
       h += '</div>';
 
-    } else if (b.type === 'key') {
+        } else if (b.type === 'key') {
       h = '<div class="yt-key">' + deco(b.body) + '</div>';
+
+    } else if (b.type === 'pyramid') {
+      var lys = b.layers || [];
+      var n = lys.length;
+      h = '<div class="yt-pyramid">';
+      for (i = 0; i < n; i++) {
+        var ly = lys[i] || {};
+        var w = (n > 1) ? (58 + 42 * i / (n - 1)) : 100;
+        h += '<div class="yt-pyr-row">' +
+               '<div class="yt-pyr-layer" style="width:' + w.toFixed(1) + '%">' +
+                 '<span class="yt-pyr-label">' + deco(ly.label) + '</span>' +
+                 (ly.note ? '<span class="yt-pyr-note">' + deco(ly.note) + '</span>' : '') +
+               '</div>' +
+             '</div>';
+      }
+      h += '</div>';
+
+    } else if (b.type === 'steps') {
+      var sts = b.items || [];
+      h = '<ol class="yt-steps' + (b.flow ? ' yt-steps-flow' : '') + '">';
+      for (i = 0; i < sts.length; i++) {
+        var st = sts[i] || {};
+        var slab = (typeof st === 'string') ? st : st.label;
+        var snote = (typeof st === 'string') ? '' : st.note;
+        h += '<li class="yt-step">' +
+               '<span class="yt-step-no">' + (i + 1) + '</span>' +
+               '<span class="yt-step-body">' +
+                 '<span class="yt-step-label">' + deco(slab) + '</span>' +
+                 (snote ? '<span class="yt-step-note">' + deco(snote) + '</span>' : '') +
+               '</span>' +
+             '</li>';
+      }
+      h += '</ol>';
     }
 
     return '<div class="yt-block">' + cap + h + '</div>';
