@@ -35,7 +35,9 @@
        その1行だけを直してください。
        末尾の ?v=2 はブラウザに新しい画像を読ませるための番号です。
        画像を差し替えたら v=3、v=4 と数字を増やしてください。
-   ・図はタップすると元の大きさで別のタブに開きます。
+      ・図はタップすると画面の上に大きく重ねて表示され、もう一度タップすると閉じます。
+       閉じる処理は youten.css の .yt-spine-overlay と、このファイル末尾の
+       ytSpineToggle の2つで動きます。
    ・youten.css に yt-spine のスタイルを追記しておく必要があります。
        youten.js の改造は不要です〈type:'text' の body に HTML を
        書いているだけなので、既存の描画処理で表示されます〉。
@@ -91,10 +93,12 @@
       '<div class="yt-spine-body">' +
 
         '<figure class="yt-spine-fig">' +
-          '<a class="yt-spine-zoom" href="' + SPINE_IMG + '" target="_blank" rel="noopener">' +
+                    '<div class="yt-spine-zoom" onclick="ytSpineToggle(this)">' +
             '<img src="' + SPINE_IMG + '" loading="lazy" ' +
                  'alt="背骨の高さをC1からS5まで上から順にあらわした図">' +
             '<span class="yt-spine-hint">タップで大（おお）きく</span>' +
+          '</div>' +
+
           '</a>' +
           '<figcaption class="yt-spine-cap">' +
             'C＝頸椎（けいつい）／T＝胸椎（きょうつい）／L＝腰椎（ようつい）／S＝仙椎（せんつい）' +
@@ -582,8 +586,37 @@
 
   ];
 
-  for (i = 0; i < more.length; i++) {
+    for (i = 0; i < more.length; i++) {
     subject.items.push(more[i]);
   }
+
+  /* ---- 図（ず）を拡大（かくだい）して見（み）るしくみ ----
+     1回目のタップで画面いっぱいに開き、もう1回どこを触（さわ）っても閉（と）じます。
+     Escキーでも閉（と）じられます。別（べつ）のタブは開（ひら）きません。 */
+  window.ytSpineToggle = function (box) {
+    var ov = document.getElementById('yt-spine-overlay');
+    if (ov) { window.ytSpineClose(); return; }
+    var img = box.querySelector('img');
+    if (!img) { return; }
+    ov = document.createElement('div');
+    ov.id = 'yt-spine-overlay';
+    ov.className = 'yt-spine-overlay';
+    ov.innerHTML = '<img src="' + img.getAttribute('src') + '" alt="">';
+    ov.addEventListener('click', window.ytSpineClose);
+    document.body.appendChild(ov);
+    document.documentElement.style.overflow = 'hidden';
+  };
+
+  window.ytSpineClose = function () {
+    var ov = document.getElementById('yt-spine-overlay');
+    if (ov) { ov.parentNode.removeChild(ov); }
+    document.documentElement.style.overflow = '';
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { window.ytSpineClose(); }
+  });
+
+})();
 
 })();
