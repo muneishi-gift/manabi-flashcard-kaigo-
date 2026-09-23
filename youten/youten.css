@@ -630,3 +630,10 @@ rt{
   .yt-spine-fig{ position:static; }
   .yt-spine-group{ break-inside:avoid; }
 }
+.yt-spine-zoom{ display:block; text-decoration:none; }
+.yt-spine-hint{
+  display:block; margin-top:5px;
+  font-size:.68rem; font-weight:800; line-height:1.7;
+  color:var(--accent-2);
+}
+@media print{ .yt-spine-hint{ display:none; } }
