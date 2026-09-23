@@ -464,3 +464,40 @@ rt{
   content:'';position:absolute;left:.92em;top:2.5em;bottom:-.3em;
   width:2px;background:linear-gradient(180deg,rgba(124,77,255,.5),rgba(68,138,255,.2));
 }
+/* ===== 系統図（tree）====================================== */
+.yt-tree { overflow-x: auto; padding: 4px 0 8px; }
+.yt-tree ul { list-style: none; margin: 0; padding: 0 0 0 20px; }
+.yt-tree > ul { padding-left: 0; }
+.yt-tree li { position: relative; padding: 6px 0 6px 18px; }
+.yt-tree > ul > li { padding-left: 0; }
+
+/* 縦の罫線 */
+.yt-tree li::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0;
+  border-left: 2px solid #c9c2e8;
+}
+.yt-tree li:last-child::before { bottom: auto; height: 22px; }
+.yt-tree > ul > li::before { display: none; }
+
+/* 横の罫線 */
+.yt-tree li::after {
+  content: ""; position: absolute; top: 22px; left: 0; width: 16px;
+  border-top: 2px solid #c9c2e8;
+}
+.yt-tree > ul > li::after { display: none; }
+
+.yt-tree-box {
+  display: inline-block; border: 2px solid #8b7fd4; border-radius: 8px;
+  background: #f7f5ff; padding: 6px 12px; max-width: 34em;
+}
+.yt-tree-label { display: block; font-weight: 700; color: #4a3f9e; }
+.yt-tree-note  { display: block; font-size: 0.88em; color: #444; margin-top: 2px; line-height: 1.5; }
+
+/* 階層ごとに濃淡をつけて見分けやすくする */
+.yt-tree > ul > li > .yt-tree-box { border-color: #4a3f9e; background: #ede9ff; }
+.yt-tree ul ul ul .yt-tree-box    { border-color: #a9a0e0; background: #fbfaff; }
+
+@media (max-width: 480px) {
+  .yt-tree ul { padding-left: 12px; }
+  .yt-tree-box { padding: 5px 9px; font-size: 0.94em; }
+}
