@@ -4,6 +4,10 @@
    ※ class名はすべて yt- で始まり、過去問・法改正ノートとぶつかりません。
    ※ 色と文字サイズの値は houkaisei.css と同じものを使っています。
    Created by Mitsuhide Muneishi
+   -------------------------------------------------------------------
+   更新メモ（系統図の追加）
+   ・.yt-cap を .yt-block-cap と同じ見た目にしました（JSがどちらを出力しても崩れません）
+   ・系統図（tree）の色をテーマ変数にそろえ、ダークテーマでも読めるようにしました
    =================================================================== */
 
 /* ---------- 文字サイズ（theme.js が data-fs を付けます） ---------- */
@@ -284,10 +288,15 @@ rt{
 
 /* ---------- ブロック ---------- */
 .yt-block{ margin-bottom:16px; }
-.yt-block-cap{
+
+/* 見出し（.yt-block-cap と .yt-cap はまったく同じ見た目です）
+   JS が どちらのクラス名を書き出しても崩れないようにしてあります */
+.yt-block-cap,
+.yt-cap{
   font-size:.92rem; font-weight:900; color:var(--accent);
   margin-bottom:8px; line-height:1.7;
 }
+
 .yt-text{ line-height:1.95; word-break:auto-phrase; }
 .yt-list{ list-style:none; display:flex; flex-direction:column; gap:9px; }
 .yt-list li{
@@ -385,6 +394,7 @@ rt{
   .yt-item-body{ display:block !important; }
   .yt-item{ break-inside:avoid; border:1px solid #999; }
 }
+
 /* ===================================================================
    パート／領域の区分（公式の出題科目表にあわせた並び）
    =================================================================== */
@@ -464,40 +474,79 @@ rt{
   content:'';position:absolute;left:.92em;top:2.5em;bottom:-.3em;
   width:2px;background:linear-gradient(180deg,rgba(124,77,255,.5),rgba(68,138,255,.2));
 }
-/* ===== 系統図（tree）====================================== */
-.yt-tree { overflow-x: auto; padding: 4px 0 8px; }
-.yt-tree ul { list-style: none; margin: 0; padding: 0 0 0 20px; }
-.yt-tree > ul { padding-left: 0; }
-.yt-tree li { position: relative; padding: 6px 0 6px 18px; }
-.yt-tree > ul > li { padding-left: 0; }
+
+/* ===================================================================
+   系統図（tree）
+   神経の分類のように「枝分かれ」を見せたいときに使います。
+   色はテーマ変数を使うので、ライトでもダークでも読めます。
+   =================================================================== */
+.yt-tree{
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  padding:4px 0 8px;
+}
+.yt-tree ul{ list-style:none; margin:0; padding:0 0 0 20px; }
+.yt-tree > ul{ padding-left:0; }
+.yt-tree li{ position:relative; padding:6px 0 6px 18px; }
+.yt-tree > ul > li{ padding-left:0; }
 
 /* 縦の罫線 */
-.yt-tree li::before {
-  content: ""; position: absolute; top: 0; bottom: 0; left: 0;
-  border-left: 2px solid #c9c2e8;
+.yt-tree li::before{
+  content:''; position:absolute; top:0; bottom:0; left:0;
+  border-left:2px solid var(--line);
 }
-.yt-tree li:last-child::before { bottom: auto; height: 22px; }
-.yt-tree > ul > li::before { display: none; }
+.yt-tree li:last-child::before{ bottom:auto; height:22px; }
+.yt-tree > ul > li::before{ display:none; }
 
 /* 横の罫線 */
-.yt-tree li::after {
-  content: ""; position: absolute; top: 22px; left: 0; width: 16px;
-  border-top: 2px solid #c9c2e8;
+.yt-tree li::after{
+  content:''; position:absolute; top:22px; left:0; width:16px;
+  border-top:2px solid var(--line);
 }
-.yt-tree > ul > li::after { display: none; }
+.yt-tree > ul > li::after{ display:none; }
 
-.yt-tree-box {
-  display: inline-block; border: 2px solid #8b7fd4; border-radius: 8px;
-  background: #f7f5ff; padding: 6px 12px; max-width: 34em;
+/* 枝のはこ */
+.yt-tree-box{
+  display:inline-block; max-width:34em;
+  padding:7px 13px; border-radius:10px;
+  border:2px solid var(--line);
+  background:var(--card-soft);
 }
-.yt-tree-label { display: block; font-weight: 700; color: #4a3f9e; }
-.yt-tree-note  { display: block; font-size: 0.88em; color: #444; margin-top: 2px; line-height: 1.5; }
+.yt-tree-label{
+  display:block; font-weight:800; line-height:1.8;
+  color:var(--ink); word-break:auto-phrase;
+}
+.yt-tree-note{
+  display:block; margin-top:2px;
+  font-size:.86em; line-height:1.75; color:var(--ink-sub);
+  word-break:auto-phrase;
+}
 
-/* 階層ごとに濃淡をつけて見分けやすくする */
-.yt-tree > ul > li > .yt-tree-box { border-color: #4a3f9e; background: #ede9ff; }
-.yt-tree ul ul ul .yt-tree-box    { border-color: #a9a0e0; background: #fbfaff; }
+/* 階層ごとに濃さを変えて、親子関係を見分けやすくします */
+/* 1階層目（いちばん親：神経系） */
+.yt-tree > ul > li > .yt-tree-box{
+  border-color:var(--accent);
+  background:var(--pick-bg);
+}
+.yt-tree > ul > li > .yt-tree-box .yt-tree-label{ color:var(--accent); }
 
-@media (max-width: 480px) {
-  .yt-tree ul { padding-left: 12px; }
-  .yt-tree-box { padding: 5px 9px; font-size: 0.94em; }
+/* 2階層目（体性神経・自律神経） */
+.yt-tree > ul > li > ul > li > .yt-tree-box{
+  border-color:var(--accent-2);
+}
+.yt-tree > ul > li > ul > li > .yt-tree-box .yt-tree-label{ color:var(--accent-2); }
+
+/* 3階層目（運動神経・感覚神経・交感神経・副交感神経） */
+.yt-tree > ul > li > ul > li > ul > li > .yt-tree-box{
+  border-color:var(--line);
+  background:var(--card);
+}
+
+@media (max-width:480px){
+  .yt-tree ul{ padding-left:12px; }
+  .yt-tree-box{ padding:6px 10px; font-size:.94em; }
+}
+
+@media print{
+  .yt-tree-box{ border:1px solid #666; background:#fff; }
+  .yt-tree li::before, .yt-tree li::after{ border-color:#666; }
 }
