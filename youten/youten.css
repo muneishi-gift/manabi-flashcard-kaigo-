@@ -630,10 +630,19 @@ rt{
   .yt-spine-fig{ position:static; }
   .yt-spine-group{ break-inside:avoid; }
 }
-.yt-spine-zoom{ display:block; text-decoration:none; }
-.yt-spine-hint{
-  display:block; margin-top:5px;
-  font-size:.68rem; font-weight:800; line-height:1.7;
-  color:var(--accent-2);
+.yt-spine-zoom{display:block;cursor:zoom-in;}
+.yt-spine-zoom .yt-spine-img{display:block;width:100%;height:auto;}
+.yt-spine-hint{display:block;margin-top:5px;text-align:center;
+  font-size:.68rem;font-weight:800;line-height:1.7;color:var(--accent-2);}
+
+.yt-spine-overlay{
+  position:fixed;inset:0;z-index:9999;padding:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.78);cursor:zoom-out;
 }
-@media print{ .yt-spine-hint{ display:none; } }
+.yt-spine-overlay img{
+  width:auto;height:auto;max-width:96vw;max-height:94vh;
+  background:#fff;border-radius:12px;padding:8px;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
+}
+@media print{.yt-spine-hint,.yt-spine-overlay{display:none;}}
