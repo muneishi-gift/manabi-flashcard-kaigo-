@@ -550,3 +550,83 @@ rt{
   .yt-tree-box{ border:1px solid #666; background:#fff; }
   .yt-tree li::before, .yt-tree li::after{ border-color:#666; }
 }
+/* ===================================================================
+   脊髄損傷（せきずいそんしょう）の図と一覧　yt-spine
+   youten-10b.js の 10-9 で使います。youten.js の改造は不要です。
+   =================================================================== */
+
+/* 見出しが空のときは、すき間を作らずに消します */
+.yt-cap:empty, .yt-block-cap:empty{ display:none; }
+
+.yt-spine{ margin:2px 0; }
+
+.yt-spine-title{
+  font-size:1.04rem; font-weight:900; line-height:1.7;
+  color:var(--accent-2); margin-bottom:12px;
+  word-break:auto-phrase;
+}
+
+/* 図と一覧を横に並べます */
+.yt-spine-body{ display:flex; align-items:flex-start; gap:14px; }
+
+/* 左：イラスト（スクロールしても見えるように貼り付きます） */
+.yt-spine-fig{
+  flex:0 0 130px; width:130px; margin:0;
+  text-align:center; position:sticky; top:10px;
+}
+.yt-spine-fig img{
+  display:block; width:100%; height:auto;
+  border-radius:8px; background:#fff; padding:4px;
+}
+.yt-spine-cap{
+  margin-top:7px; font-size:.72rem; line-height:1.75; color:var(--ink-faint);
+}
+
+/* 右：影響の一覧 */
+.yt-spine-list{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:14px; }
+
+.yt-spine-group{
+  border-left:6px solid var(--line);
+  border-radius:0 10px 10px 0;
+  padding:2px 0 4px 12px;
+}
+.yt-spine-region{
+  display:inline-block; margin-bottom:6px; padding:2px 12px;
+  font-size:.76rem; font-weight:900; color:#fff;
+  border-radius:999px; letter-spacing:.04em;
+}
+.yt-spine-row{ display:flex; gap:10px; align-items:flex-start; padding:6px 0; }
+.yt-spine-row + .yt-spine-row{ border-top:1px dashed var(--line-soft); }
+.yt-spine-lv{ flex:0 0 5.8em; font-weight:900; font-size:.9rem; line-height:1.9; }
+.yt-spine-eff{
+  flex:1 1 auto; min-width:0;
+  font-size:.93rem; line-height:1.9; word-break:auto-phrase;
+}
+.yt-spine-note{
+  display:block; margin-top:2px;
+  font-size:.86em; line-height:1.8; color:var(--ink-sub);
+}
+
+/* 部位ごとの色（イラストの色に合わせています） */
+.yt-sp-cervical{ border-left-color:#4AA3DD; }
+.yt-sp-cervical .yt-spine-region{ background:#1F6FA8; }
+.yt-sp-thoracic{ border-left-color:#8CC63F; }
+.yt-sp-thoracic .yt-spine-region{ background:#4E7A12; }
+.yt-sp-lumbar{   border-left-color:#F07D2A; }
+.yt-sp-lumbar .yt-spine-region{ background:#B34A0C; }
+.yt-sp-sacral{   border-left-color:#F5C242; }
+.yt-sp-sacral .yt-spine-region{ background:#8A6200; }
+
+/* スマホでは、イラストを上にして縦に並べます */
+@media (max-width:560px){
+  .yt-spine-body{ flex-direction:column; align-items:center; }
+  .yt-spine-fig{ position:static; flex:0 0 auto; width:104px; margin-bottom:4px; }
+  .yt-spine-list{ width:100%; }
+  .yt-spine-row{ flex-direction:column; gap:2px; }
+  .yt-spine-lv{ flex:none; }
+}
+
+@media print{
+  .yt-spine-fig{ position:static; }
+  .yt-spine-group{ break-inside:avoid; }
+}
