@@ -67,7 +67,7 @@
        ★?v=2 はキャッシュ対策の番号です。画像を同じ名前で差し替えたら
          この数字を増やしてください。増やさないと古い画像が残ります。
      ------------------------------------------------------------------ */
-  var SPINE_IMG = 'youten/img/spine-levels.png?v=2';
+  var SPINE_IMG = '/manabi-flashcard-kaigo-/youten/img/spine-levels.png?v=2';
 
   // 1行分〈損傷の高さ ＋ 影響〉を作る
   function spRow(level, effect) {
