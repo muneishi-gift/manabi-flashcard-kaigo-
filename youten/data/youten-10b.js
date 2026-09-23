@@ -93,13 +93,11 @@
       '<div class="yt-spine-body">' +
 
         '<figure class="yt-spine-fig">' +
-                    '<div class="yt-spine-zoom" onclick="ytSpineToggle(this)">' +
+          '<div class="yt-spine-zoom" onclick="ytSpineToggle(this)">' +
             '<img src="' + SPINE_IMG + '" loading="lazy" ' +
                  'alt="背骨の高さをC1からS5まで上から順にあらわした図">' +
             '<span class="yt-spine-hint">タップで大（おお）きく</span>' +
           '</div>' +
-
-          '</a>' +
           '<figcaption class="yt-spine-cap">' +
             'C＝頸椎（けいつい）／T＝胸椎（きょうつい）／L＝腰椎（ようつい）／S＝仙椎（せんつい）' +
           '</figcaption>' +
@@ -586,7 +584,7 @@
 
   ];
 
-    for (i = 0; i < more.length; i++) {
+  for (i = 0; i < more.length; i++) {
     subject.items.push(more[i]);
   }
 
@@ -616,7 +614,5 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { window.ytSpineClose(); }
   });
-
-})();
 
 })();
