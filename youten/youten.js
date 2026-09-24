@@ -218,17 +218,37 @@
     return out;
   }
 
+    /* 書いたとおりの「漢字（かな）」を、その位置のまま ruby にする。
+     カッコで読みを書いていない漢字だけ、辞書（FG_DICT）で補います。 */
+  function fgInlineHtml(s) {
+    var out = '', last = 0, m;
+    RE_RUBY_ANY.lastIndex = 0;
+    while ((m = RE_RUBY_ANY.exec(s)) !== null) {
+      var lead = s.slice(last, m.index);
+      out += furiOn ? fgTextHtml(lead) : esc(lead);
+      if (furiOn) {
+        out += '<ruby>' + esc(m[1]) + '<rt>' + esc(fgKana(m[2])) + '</rt></ruby>';
+      } else {
+        out += esc(m[1]);
+      }
+      last = m.index + m[0].length;
+    }
+    var tail = s.slice(last);
+    out += furiOn ? fgTextHtml(tail) : esc(tail);
+    return out;
+  }
+
   /* データの文字列を画面用のHTMLに変える。
      <strong> や <br> はそのまま残し、文字の部分だけにふりがなを付けます。 */
   function deco(text) {
-    var s = stripRuby(text);
-    var parts = s.split(/(<[^>]+>)/);
+    if (text === undefined || text === null) return '';
+    var parts = String(text).split(/(<[^>]+>)/);
     var out = '';
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
       if (!p) continue;
       if (p.charAt(0) === '<' && p.charAt(p.length - 1) === '>') { out += p; }
-      else { out += furiOn ? fgTextHtml(p) : esc(p); }
+      else { out += fgInlineHtml(p); }
     }
     return out;
   }
