@@ -361,6 +361,14 @@ body.theme-dark .chip-code{background:rgba(255,255,255,.12);color:#fff}
   font-size:calc(.95rem * var(--fscale));font-weight:800;padding:13px 18px;box-shadow:var(--shadow-s);
 }
 .cta.ghost:hover{border-color:rgba(var(--accent-rgb),.5)}
+/* ★追加⑤-1：🆕 リクエスト入口ボタン */
+.cta.req{
+  background:linear-gradient(120deg,#ff8a3d,#ff5f6d);
+  color:#fff;border:none;font-weight:900;
+  font-size:calc(.98rem * var(--fscale));padding:14px 18px;
+  box-shadow:0 8px 26px rgba(255,95,109,.38);
+}
+.cta.req:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,95,109,.48)}
 .text-btn{
   background:none;border:none;color:var(--ink-sub);cursor:pointer;font-family:inherit;
   font-size:calc(.84rem * var(--fscale));font-weight:700;padding:6px 10px;
@@ -428,6 +436,9 @@ body.theme-dark .p-pct{color:#fff}
   background:rgba(var(--accent-rgb),.12);color:var(--accent);white-space:nowrap;
 }
 body.theme-dark .card-tag{background:rgba(255,255,255,.1);color:var(--ink)}
+/* ★追加⑤-2：🆕 リクエストタグ（必ず .card-tag のダーク指定より後に置く） */
+.card-tag.req{background:linear-gradient(120deg,#ff8a3d,#ff5f6d);color:#fff}
+body.theme-dark .card-tag.req{background:linear-gradient(120deg,#ff8a3d,#ff5f6d);color:#fff}
 .card-badge{
   position:absolute;top:11px;right:64px;display:none;
   font-size:.66rem;font-weight:800;color:#fff;background:var(--btn-ok);
@@ -738,6 +749,8 @@ body.theme-dark .nav-btn{color:var(--ink)}
 
   <div class="cta-col">
     <button class="cta" id="startBtn" type="button" onclick="startQuiz(false)">▶ START</button>
+    <!-- ★追加④：🆕 リクエスト専用の入口 -->
+    <button class="cta req" id="startRequestBtn" type="button" onclick="startQuiz('req')" style="display:none">🆕 リクエストにお答えしました</button>
     <button class="cta ghost" id="startReviewBtn" type="button" onclick="startQuiz('due')" style="display:none">⏰ 今日の復習</button>
     <button class="cta ghost" id="startWeakBtn" type="button" onclick="startQuiz(true)" style="display:none">🔄 にがてだけ特訓</button>
     <button class="text-btn" id="startReloadBtn" type="button" onclick="reloadData()">↻ 最新データを読み込む</button>
@@ -852,7 +865,26 @@ const LEVEL_TEXT={
 };
 const LEVEL_SHORT={L:'日常生活',K1:'初任者',K2:'実務者',K3:'国家試験'};
 
+/* ★追加①：🆕 リクエスト対応語（行IDに REQ を含む行）
+   例）38-REQ-001 → リクエストから追加した語。
+   C列「科目」には本来の科目名（科目3 など）を入れてください。
+   そうすると科目1〜13の語と混ざって通常学習に出ます。 */
+const REQ_RE=/(^|[-_])REQ([-_]|$)/i;
+function isRequest(d){return !!(d&&d.no&&REQ_RE.test(d.no));}
+const REQ_META={
+  ja:{btn:'リクエストにお答えしました',tag:'リクエスト'},
+  en:{btn:'We answered your requests',tag:'Request'},
+  id:{btn:'Kami menjawab permintaan Anda',tag:'Permintaan'},
+  vi:{btn:'Đã trả lời yêu cầu của bạn',tag:'Yêu cầu'},
+  th:{btn:'เราตอบคำขอของคุณแล้ว',tag:'คำขอ'},
+  my:{btn:'သင့်တောင်းဆိုချက်ကို ဖြေပြီးပါပြီ',tag:'တောင်းဆိုချက်'},
+  ne:{btn:'तपाईंको अनुरोधको जवाफ दिइयो',tag:'अनुरोध'},
+  mn:{btn:'Таны хүсэлтэд хариуллаа',tag:'Хүсэлт'}
+};
+function reqMeta(){return REQ_META[currentLang]||REQ_META.ja;}
+
 let allData=[],partData=[],displayData=[],currentLang='',idx=0,weakMode=false;
+let requestMode=false;                 /* ★追加②：リクエスト専用モードかどうか */
 let currentLevel='ALL',currentPart='ALL';
 let levelList=[],partList=[];
 let pendingWord='';
@@ -1008,6 +1040,15 @@ function getDueCards(){
   });
 }
 
+/* ★追加③：リクエスト関連のヘルパー
+   getRequestCards … レベル・パートの絞り込みを無視して REQ 行を全部集めます
+   currentPool     … いま学習している「母集団」。進捗バーや😤の基準に使います
+   loadReqSeen     … 前に見たときのリクエスト件数（増えていたら ✨NEW を出します） */
+function getRequestCards(){return allData.filter(isRequest);}
+function currentPool(){return requestMode?getRequestCards():partData;}
+function loadReqSeen(){try{return parseInt(localStorage.getItem('kaigo-req-seen')||'0',10)||0;}catch(e){return 0;}}
+function saveReqSeen(n){try{localStorage.setItem('kaigo-req-seen',String(n));}catch(e){}}
+
 /* ========== STORAGE（覚えた） ========== */
 function storageKey(){return 'kaigo-mastered-'+currentLang;}
 function loadMastered(){
@@ -1102,7 +1143,6 @@ const CHEERS=[
   {at:150,emoji:'🚀',msg:'150問！伝説レベル！\n150 cards! Legendary!'},
   {at:200,emoji:'🎓',msg:'200問！合格間違いなし！\n200! You will definitely pass!'}
 ];
-
 /* ========== リクエスト送信 ========== */
 function sendRequest(){
   const input=document.getElementById('requestInput');
@@ -1113,7 +1153,8 @@ function sendRequest(){
   btn.disabled=true;btn.textContent='送信中…';fb.textContent='';fb.className='req-fb';
   fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:word,from:'flashcard'})})
   .then(function(){
-    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';fb.className='req-fb success';
+    /* ★変更⑬：追加後にどこで見られるかを案内します */
+    fb.textContent='✅ ありがとうございます！追加できたら「🆕 リクエストにお答えしました」に出ます';fb.className='req-fb success';
     input.value='';
     setTimeout(function(){fb.textContent='';fb.className='req-fb';},4000);
   })
@@ -1196,7 +1237,7 @@ function backToLanding(){
 function backToStart(){
   document.getElementById('app').style.display='none';
   document.getElementById('startScreen').style.display='flex';
-  weakMode=false;
+  weakMode=false;requestMode=false;              /* ★変更⑫：リクエストモードも解除 */
   renderLevelChips();renderPartChips();renderPrefBars();updateStartScreen();
 }
 
@@ -1327,8 +1368,12 @@ function updateHeaderChips(){
   if(!box)return;
   const meta=LANG_META[currentLang]||LANG_META.ja;
   const items=[];
-  if(currentLevel==='ALL'&&currentPart==='ALL')items.push(meta.allParts);
-  else{
+  /* ★変更⑪：リクエストモード中は絞り込みではなく 🆕 を表示します */
+  if(requestMode){
+    items.push('🆕 '+reqMeta().tag);
+  }else if(currentLevel==='ALL'&&currentPart==='ALL'){
+    items.push(meta.allParts);
+  }else{
     if(currentLevel!=='ALL')items.push(currentLevel+((currentLang==='ja'&&LEVEL_SHORT[currentLevel])?'：'+LEVEL_SHORT[currentLevel]:''));
     if(currentPart!=='ALL')items.push(partLabel(currentPart));
   }
@@ -1495,22 +1540,41 @@ function updateStartScreen(){
   rbtn.style.display=dueCount>0?'block':'none';
   rbtn.textContent='⏰ '+meta.review+'（'+dueCount+'）';
 
+  /* ★追加⑩：🆕 リクエスト入口ボタンの表示と件数
+     前に見たときより増えていれば ✨NEW を付けます */
+  const reqAll=getRequestCards();
+  const qbtn=document.getElementById('startRequestBtn');
+  if(reqAll.length){
+    const fresh=reqAll.length>loadReqSeen();
+    qbtn.style.display='block';
+    qbtn.textContent='🆕 '+reqMeta().btn+'（'+reqAll.length+'）'+(fresh?'  ✨NEW':'');
+  }else{
+    qbtn.style.display='none';
+  }
+
   restoreReloadBtn();
 }
 
 /* ========== 学習開始 ========== */
 function startQuiz(mode){
-  if(!partData.length)return;
-  if(mode==='due'){
-    weakMode=false;
+  /* ★変更⑥：'req' を追加。リクエストはレベル・パートの絞り込みを無視します */
+  if(mode==='req'){
+    const req=getRequestCards();
+    if(!req.length)return;
+    weakMode=false;requestMode=true;
+    displayData=req;saveReqSeen(req.length);
+  }else if(!partData.length){
+    return;
+  }else if(mode==='due'){
+    weakMode=false;requestMode=false;
     displayData=getDueCards();
     if(!displayData.length)displayData=partData.slice();
   }else if(mode===true){
-    weakMode=true;
+    weakMode=true;requestMode=false;
     displayData=partData.filter(function(d){return !masteredSet.has(d.no);});
     if(!displayData.length){displayData=partData.slice();weakMode=false;}
   }else{
-    weakMode=false;
+    weakMode=false;requestMode=false;
     displayData=partData.slice();
   }
   idx=0;lastMilestone=0;
@@ -1529,12 +1593,14 @@ function startQuiz(mode){
   showCard();
 }
 function toggleWeakMode(){
+  /* ★変更⑨：リクエストモード中はリクエスト用語の中だけで絞ります */
+  const pool=currentPool();
   if(!weakMode){
-    const weak=partData.filter(function(d){return !masteredSet.has(d.no);});
+    const weak=pool.filter(function(d){return !masteredSet.has(d.no);});
     if(!weak.length)return;
     displayData=weak;weakMode=true;
   }else{
-    displayData=partData.slice();weakMode=false;
+    displayData=pool.slice();weakMode=false;
   }
   idx=0;
   document.getElementById('btnWeak').classList.toggle('on',weakMode);
@@ -1568,8 +1634,10 @@ function showCard(){
   document.getElementById('progressText').textContent=(idx+1)+' / '+total;
 
   const meta=LANG_META[currentLang]||LANG_META.ja;
-  const scopeTotal=partData.length;
-  const mCount=partData.filter(function(x){return masteredSet.has(x.no);}).length;
+  /* ★変更⑦：進捗の母数をモードに合わせます */
+  const pool=currentPool();
+  const scopeTotal=pool.length;
+  const mCount=pool.filter(function(x){return masteredSet.has(x.no);}).length;
   const mPct=scopeTotal?Math.round(mCount/scopeTotal*100):0;
   document.getElementById('masteredText').textContent='🎯 '+meta.masteredLabel+' '+mCount+' / '+scopeTotal+'（'+mPct+'%）';
   document.getElementById('tapHintFront').textContent=meta.tapFront;
@@ -1578,12 +1646,14 @@ function showCard(){
   document.getElementById('cardNum').textContent=d.no;
   document.getElementById('cardNumBack').textContent=d.no;
 
+  /* ★変更⑧：リクエスト由来の語には先頭に 🆕 タグを付けます
+     （科目1〜13に混ざって出てきても、ひと目でわかります） */
   const tags=[];
-  if(d.part)tags.push(partLabel(d.part));
-  if(d.level)tags.push(d.level+((currentLang==='ja'&&LEVEL_SHORT[d.level])?'：'+LEVEL_SHORT[d.level]:''));
-  if(d.subject)tags.push(d.subject);
-  document.getElementById('cardTags').innerHTML=
-    tags.map(function(s){return '<span class="card-tag">'+esc(s)+'</span>';}).join('');
+  if(isRequest(d))tags.push('<span class="card-tag req">🆕 '+esc(reqMeta().tag)+'</span>');
+  if(d.part)tags.push('<span class="card-tag">'+esc(partLabel(d.part))+'</span>');
+  if(d.level)tags.push('<span class="card-tag">'+esc(d.level+((currentLang==='ja'&&LEVEL_SHORT[d.level])?'：'+LEVEL_SHORT[d.level]:''))+'</span>');
+  if(d.subject)tags.push('<span class="card-tag">'+esc(d.subject)+'</span>');
+  document.getElementById('cardTags').innerHTML=tags.join('');
 
   const badge=document.getElementById('masteredBadge');
   const srsRec=srsData[String(d.no)];
@@ -1650,8 +1720,8 @@ function judgeCard(mastered){
   saveMastered();saveSrs();checkMilestone();nextCard();
 }
 function checkMilestone(){
-  const m=partData.filter(function(x){return masteredSet.has(x.no);}).length;
-  const total=partData.length;
+  const m = partData.filter(function(x){return masteredSet.has(x.no);}).length;
+  const total = partData.length;
   for(const c of CHEERS){
     if(m>=c.at&&lastMilestone<c.at){
       lastMilestone=c.at;showCheer(c.emoji,c.msg);
@@ -1680,7 +1750,6 @@ function showCheer(emoji,msg){
   document.getElementById('cheerOverlay').classList.add('show');
 }
 function closeCheer(){document.getElementById('cheerOverlay').classList.remove('show');}
-
 /* ========== 移動 ========== */
 function nextCard(){
   if(!displayData.length)return;
@@ -1894,7 +1963,6 @@ function fxBurst(x, y, opt){
   }
 }
 
-/* 「覚えた！」ボタンを後乗りで監視（既存の処理はそのまま動く） */
 function fxBindJudge(){
   document.addEventListener('click', function(e){
     if(!FX_ON) return;
