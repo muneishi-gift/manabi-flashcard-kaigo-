@@ -12,40 +12,186 @@
 <link rel="apple-touch-icon" href="gift-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+
+<!-- ===== 共通設定：ページ読み込み時に即座に設定を反映（画面チラつき防止） ===== -->
+<script>
+(function(){
+  /* localStorageから設定を読み込んでhtmlに即座に反映する */
+  var theme    = localStorage.getItem('gift_theme')    || 'dark';
+  var fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+  var ruby     = localStorage.getItem('gift_ruby')     || 'on';
+  /* テーマをhtmlのdata属性にセット */
+  document.documentElement.setAttribute('data-theme', theme);
+  /* 文字サイズをhtmlのdata属性にセット */
+  document.documentElement.setAttribute('data-fontsize', fontsize);
+  /* ふりがなをhtmlのdata属性にセット */
+  document.documentElement.setAttribute('data-ruby', ruby);
+})();
+</script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Noto Sans JP','Noto Sans',sans-serif;
-  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
-  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
-  color:#fff;overflow-x:hidden;-webkit-tap-highlight-color:transparent;
-  user-select:none;position:relative;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.15) 0%,transparent 60%),
-             radial-gradient(ellipse at 70% 80%,rgba(255,120,200,.1) 0%,transparent 60%);
-  pointer-events:none;z-index:0;
-}
-body>*{position:relative;z-index:1}
 
-/* ===== ふりがな（ルビ）=====
-   ルビは行の上に出るので、ルビが載る行は line-height を広めに取る */
+/* ===== 文字サイズ設定（data属性で切り替え） ===== */
+html[data-fontsize="normal"]{font-size:100%}
+html[data-fontsize="large"]{font-size:112.5%}
+html[data-fontsize="xlarge"]{font-size:125%}
+
+/* ===== ふりがな設定 ===== */
 ruby{ruby-position:over;-webkit-ruby-position:before}
 rt{
   font-size:.5em;font-weight:400;letter-spacing:0;
   line-height:1;opacity:.8;user-select:none;
   transform:translateY(.1em);
+  transition:opacity .2s;
 }
-/* ふりがなを全部消したいときは下のコメントを外す
-rt{display:none}
-*/
+/* ふりがなオフ時は非表示 */
+html[data-ruby="off"] rt{
+  display:none;
+}
+
+/* ===== ダークモード（デフォルト） ===== */
+html[data-theme="dark"] body{
+  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+  color:#fff;
+}
+html[data-theme="dark"] body::before{
+  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 80%,rgba(255,120,200,.1) 0%,transparent 60%);
+}
+html[data-theme="dark"] .countdown{
+  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
+  border-color:rgba(255,255,255,.16);
+}
+html[data-theme="dark"] .menu-card{
+  border-color:rgba(255,255,255,.13);
+}
+html[data-theme="dark"] .request-box{
+  background:rgba(255,255,255,.07);
+  border-color:rgba(255,255,255,.15);
+}
+html[data-theme="dark"] .request-input{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.2);
+  color:#fff;
+}
+html[data-theme="dark"] .settings-panel{
+  background:rgba(30,25,60,0.92);
+  border-color:rgba(255,255,255,.15);
+  color:#fff;
+}
+
+/* ===== ライトモード ===== */
+html[data-theme="light"] body{
+  background:linear-gradient(135deg,#e8eeff 0%,#f0f4ff 50%,#f5f0ff 100%);
+  color:#1a1a2e;
+}
+html[data-theme="light"] body::before{
+  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.08) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 80%,rgba(200,100,255,.06) 0%,transparent 60%);
+}
+html[data-theme="light"] .brand h1{
+  background:linear-gradient(90deg,#6d28d9,#2563eb,#059669);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+html[data-theme="light"] .brand-sub{color:#4b5563}
+html[data-theme="light"] .countdown{
+  background:rgba(255,255,255,.75);
+  border-color:rgba(100,100,200,.25);
+  box-shadow:0 10px 28px rgba(100,100,200,.12);
+}
+html[data-theme="light"] .cd-title{color:#4b5563}
+html[data-theme="light"] .cd-msg{color:#4b5563}
+html[data-theme="light"] .menu-card{
+  border-color:rgba(100,100,200,.18);
+  box-shadow:0 4px 20px rgba(100,100,200,.1);
+}
+html[data-theme="light"] .menu-card .card-desc{color:#374151}
+html[data-theme="light"] .menu-card .card-tags span{
+  background:rgba(0,0,0,.08);color:#374151;
+}
+html[data-theme="light"] .request-box{
+  background:rgba(255,255,255,.8);
+  border-color:rgba(100,100,200,.2);
+}
+html[data-theme="light"] .request-box h2{color:#1a1a2e}
+html[data-theme="light"] .request-box p{color:#374151}
+html[data-theme="light"] .request-input{
+  background:rgba(255,255,255,.9);
+  border-color:rgba(100,100,200,.3);
+  color:#1a1a2e;
+}
+html[data-theme="light"] .request-input::placeholder{color:#9ca3af}
+html[data-theme="light"] .footer-credit{color:#6b7280}
+html[data-theme="light"] .settings-panel{
+  background:rgba(240,244,255,0.97);
+  border-color:rgba(100,100,200,.25);
+  color:#1a1a2e;
+}
+html[data-theme="light"] .settings-label{color:#4b5563}
+html[data-theme="light"] .jlpt-separator-text{color:rgba(30,30,80,0.45)}
+html[data-theme="light"] .jlpt-separator-line{background:rgba(30,30,80,0.15)}
+
+body{
+  font-family:'Noto Sans JP','Noto Sans',sans-serif;
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  overflow-x:hidden;-webkit-tap-highlight-color:transparent;
+  user-select:none;position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  pointer-events:none;z-index:0;
+}
+body>*{position:relative;z-index:1}
 
 .top-container{
   display:flex;flex-direction:column;align-items:center;
   min-height:100dvh;gap:0;padding:28px 18px 40px;
   text-align:center;width:100%;max-width:560px;
+}
+
+/* ===== 共通設定パネル ===== */
+.settings-panel{
+  position:fixed;top:12px;right:12px;z-index:999;
+  border-radius:16px;border:1px solid;
+  padding:10px 12px;
+  backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
+  min-width:130px;
+}
+.settings-label{
+  font-size:.58rem;font-weight:700;letter-spacing:.08em;
+  opacity:.6;text-align:center;margin-bottom:2px;
+}
+.settings-row{
+  display:flex;align-items:center;gap:6px;
+  justify-content:space-between;
+}
+.settings-row-label{
+  font-size:.65rem;font-weight:700;white-space:nowrap;opacity:.75;
+}
+.settings-btns{display:flex;gap:4px;}
+.s-btn{
+  border:none;border-radius:8px;cursor:pointer;
+  font-size:.65rem;font-weight:700;padding:4px 7px;
+  transition:all .18s;opacity:.55;
+  background:rgba(128,128,200,.18);color:inherit;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.s-btn.active{
+  opacity:1;
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(124,58,237,.4);
+}
+html[data-theme="light"] .s-btn{
+  background:rgba(100,100,200,.12);
+}
+html[data-theme="light"] .s-btn.active{
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  color:#fff;
 }
 
 /* ===== ブランド ===== */
@@ -67,8 +213,7 @@ rt{display:none}
 /* ===== 試験カウントダウン ===== */
 .countdown{
   width:100%;margin-top:22px;padding:15px 18px 16px;border-radius:20px;
-  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
-  border:1px solid rgba(255,255,255,.16);
+  border:1px solid;
   backdrop-filter:blur(10px);
   display:flex;flex-direction:column;align-items:center;gap:2px;
   position:relative;overflow:hidden;
@@ -96,428 +241,492 @@ rt{display:none}
 .cd-unit{font-size:.88rem;font-weight:700;opacity:.85}
 .cd-msg{
   font-size:.74rem;font-weight:700;line-height:2.1;text-align:center;
-  color:rgba(255,255,255,.72);margin-top:2px;
-}
-.countdown.calm {--cd-accent:#34d399;--cd-glow:rgba(52,211,153,.45)}
-.countdown.blue {--cd-accent:#60a5fa;--cd-glow:rgba(96,165,250,.45)}
-.countdown.warn {--cd-accent:#ffa726;--cd-glow:rgba(255,167,38,.45)}
-.countdown.hurry{--cd-accent:#ff5252;--cd-glow:rgba(255,82,82,.5)}
-.countdown.today{--cd-accent:#ffd54f;--cd-glow:rgba(255,213,79,.5)}
-.countdown.done {--cd-accent:#a78bfa;--cd-glow:rgba(167,139,250,.4)}
-.countdown.hurry .cd-num{animation:cdPulse 1.6s ease-in-out infinite}
-@keyframes cdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
-
-/* ===== セクション見出し ===== */
-.section-title{
-  align-self:stretch;display:flex;align-items:center;gap:10px;
-  font-size:clamp(1.02rem,3.2vw,1.2rem);font-weight:800;letter-spacing:.03em;
-  color:rgba(255,255,255,.92);margin:30px 0 14px;text-align:left;
-}
-.section-title::before{
-  content:'';width:4px;height:1.05em;border-radius:99px;flex:none;
-  background:linear-gradient(180deg,#a78bfa,#60a5fa);
-}
-.section-title::after{
-  content:'';flex:1;height:1px;
-  background:linear-gradient(90deg,rgba(255,255,255,.18),transparent);
+  color:rgba(255,255,255,.55);
 }
 
-/* ===== メニューカード ===== */
-.menu-list{list-style:none;display:flex;flex-direction:column;gap:13px;width:100%}
-
+/* ===== メニュー ===== */
+.menu-section{width:100%;margin-top:26px}
+.menu-title{
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  opacity:.45;margin-bottom:12px;text-align:left;padding-left:4px;
+}
+.menu-list{list-style:none;display:flex;flex-direction:column;gap:12px}
 .menu-card{
   display:grid;grid-template-columns:auto 1fr auto;
-  align-items:center;gap:15px;
-  width:100%;padding:17px 16px;border-radius:22px;
-  border:1px solid rgba(255,255,255,.2);
+  align-items:center;gap:14px;
+  border-radius:22px;padding:16px 18px;
   text-decoration:none;color:#fff;
-  position:relative;overflow:hidden;isolation:isolate;
-  box-shadow:0 8px 22px rgba(0,0,0,.24);
-  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  border:1px solid;
+  backdrop-filter:blur(10px);
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;
+  position:relative;overflow:hidden;
 }
-/* 上からの光沢。クリック判定を邪魔しないよう pointer-events:none */
-.menu-card::after{
-  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);
+.menu-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 60%);
+  pointer-events:none;
 }
-.menu-card:active{transform:scale(.975)}
+.menu-card:active{transform:scale(.97)}
 @media(hover:hover){
-  .menu-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 14px 30px rgba(0,0,0,.32);
-    border-color:rgba(255,255,255,.45);
-  }
-  .menu-card:hover .menu-arrow{transform:translateX(3px);opacity:1}
+  .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(0,0,0,.28)}
+}
+.card-icon{
+  font-size:1.9rem;width:50px;height:50px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:14px;background:rgba(255,255,255,.12);flex-shrink:0;
+}
+.card-body{text-align:left}
+.card-title{
+  font-size:clamp(.95rem,2.8vw,1.05rem);font-weight:700;
+  line-height:1.35;margin-bottom:3px;
+}
+.card-desc{
+  font-size:clamp(.72rem,2vw,.8rem);
+  opacity:.68;line-height:1.45;margin-bottom:5px;
+}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px}
+.card-tags span{
+  font-size:.6rem;font-weight:700;padding:2px 7px;
+  border-radius:20px;background:rgba(255,255,255,.15);
+  letter-spacing:.02em;
+}
+.card-arrow{font-size:1.3rem;opacity:.55;flex-shrink:0}
+.card-badge{
+  position:absolute;top:10px;right:34px;
+  font-size:.58rem;font-weight:800;padding:2px 7px;
+  border-radius:20px;letter-spacing:.04em;
 }
 
-.menu-card.flashcard{background:linear-gradient(135deg,#7c4dff 0%,#536dfe 55%,#448aff 100%)}
-.menu-card.exam     {background:linear-gradient(135deg,#00b894 0%,#00cec9 55%,#0984e3 100%)}
-.menu-card.houkaisei{background:linear-gradient(135deg,#8e2de2 0%,#c2266b 55%,#f5576c 100%)}
-.menu-card.youten   {background:linear-gradient(135deg,#f7971e 0%,#f2600c 55%,#d84315 100%)}
+/* ===== カード色 ===== */
+.flashcard{background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(79,70,229,.2))}
+.exam    {background:linear-gradient(135deg,rgba(16,185,129,.35),rgba(5,150,105,.2))}
+.youten  {background:linear-gradient(135deg,rgba(245,158,11,.35),rgba(217,119,6,.2))}
+.houkaisei{background:linear-gradient(135deg,rgba(168,85,247,.35),rgba(239,68,68,.2))}
+.jlpt    {background:linear-gradient(135deg,rgba(251,191,36,.22),rgba(245,158,11,.12))}
 
-/* アイコン：3枚すべて同じ56px角に固定 */
-.menu-icon{
-  flex:none;width:56px;height:56px;aspect-ratio:1/1;
-  display:grid;place-items:center;
-  font-size:1.85rem;line-height:1;
-  background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.28);
-  border-radius:17px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3);
+/* ===== JLPTセパレーター ===== */
+.jlpt-separator{
+  display:flex;align-items:center;gap:10px;
+  margin:18px 0 6px;padding:0 2px;
 }
-
-.menu-info{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;min-width:0}
-.menu-title{font-size:clamp(.98rem,3.4vw,1.12rem);font-weight:800;line-height:1.95}
-.menu-desc{font-size:.76rem;opacity:.88;font-weight:400;line-height:2}
-
-.menu-arrow{
-  flex:none;font-size:1.3rem;font-weight:700;opacity:.55;
-  transition:transform .22s ease,opacity .22s ease;
+.jlpt-separator-text{
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  color:rgba(255,255,255,0.38);white-space:nowrap;
 }
-
-/* 言語チップ（自動で折り返す） */
-.lang-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-.lang-chip{
-  font-size:.66rem;font-weight:700;line-height:1.7;
-  padding:7px 9px 3px;border-radius:999px;
-  background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.24);
-  white-space:nowrap;
+.jlpt-separator-line{
+  flex:1;height:1px;background:rgba(255,255,255,0.15);
 }
-.lang-chip rt{font-size:.55em;opacity:.9}
 
 /* ===== リクエストボックス ===== */
 .request-box{
-  width:100%;
-  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:20px;backdrop-filter:blur(10px);
-  padding:20px 18px 18px;
-  display:flex;flex-direction:column;align-items:center;gap:12px;
-  box-shadow:0 8px 22px rgba(0,0,0,.18);
+  width:100%;margin-top:30px;padding:22px 20px;border-radius:20px;
+  border:1px solid;
+  backdrop-filter:blur(10px);text-align:center;
 }
-.request-catchcopy{
-  font-size:clamp(.85rem,2.5vw,.98rem);font-weight:700;
-  line-height:2.2;color:rgba(255,255,255,.92);text-align:center;
-}
-.request-catchcopy .highlight{
-  background:linear-gradient(90deg,#ffd54f,#ffb300);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  font-weight:900;
-}
-.request-input-row{display:flex;flex-direction:column;gap:10px;width:100%}
+.request-box h2{font-size:.9rem;font-weight:700;line-height:1.9;margin-bottom:6px}
+.request-box p{font-size:.72rem;opacity:.6;margin-bottom:14px;line-height:1.7}
+.request-form{display:flex;gap:8px}
 .request-input{
-  width:100%;padding:13px 16px;border-radius:14px;border:none;
-  font-size:.95rem;font-family:'Noto Sans JP',sans-serif;
-  background:rgba(255,255,255,.94);color:#333;
-  outline:none;transition:box-shadow .2s;
-}
-.request-input::placeholder{color:#aaa;font-size:.84rem}
-.request-input:focus{box-shadow:0 0 0 3px rgba(167,139,250,.5)}
-.request-send{
-  width:100%;padding:14px 20px;border-radius:14px;border:none;
-  background:linear-gradient(135deg,#a78bfa,#60a5fa);
-  color:#fff;font-size:1rem;font-weight:700;cursor:pointer;
+  flex:1;border:1px solid;border-radius:12px;
+  padding:10px 13px;font-size:.85rem;
   font-family:'Noto Sans JP',sans-serif;
-  box-shadow:0 6px 18px rgba(167,139,250,.3);
-  transition:transform .15s,box-shadow .15s;
+  outline:none;min-width:0;
 }
-.request-send:active{transform:scale(.97)}
-.request-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.request-feedback{font-size:.78rem;min-height:1.2em;transition:opacity .3s}
-.request-feedback.success{color:#69f0ae}
-.request-feedback.error{color:#ff8a80}
+.request-btn{
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  color:#fff;border:none;border-radius:12px;
+  padding:10px 16px;font-size:.85rem;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+  font-family:'Noto Sans JP',sans-serif;
+  transition:opacity .2s;
+}
+.request-btn:hover{opacity:.85}
+.request-feedback{font-size:.75rem;margin-top:8px;min-height:1.2em;font-weight:700}
+.request-feedback.success{color:#34d399}
+.request-feedback.error{color:#f87171}
 
-/* ===== クレジット ===== */
-.credit{
-  margin-top:26px;padding:15px 20px;
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;backdrop-filter:blur(8px);
-  display:flex;align-items:center;gap:15px;width:100%;justify-content:center;
+/* ===== フッター ===== */
+.footer-profile{
+  width:100%;margin-top:36px;padding:20px;border-radius:20px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
 }
-.credit-avatar{flex-shrink:0}
-.credit-avatar img{height:74px;width:auto;filter:drop-shadow(0 4px 12px rgba(255,255,255,.18));object-fit:contain}
-.credit-info{display:flex;flex-direction:column;gap:2px;text-align:left}
-.credit-org{
-  font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(.78rem,2.2vw,.92rem);font-weight:600;
-  background:linear-gradient(90deg,#ffd54f,#ffb300);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+.footer-profile img{
+  width:72px;height:72px;border-radius:50%;
+  object-fit:cover;border:2px solid rgba(255,255,255,.25);
 }
-.credit-name{font-size:clamp(.95rem,2.8vw,1.12rem);font-weight:700;color:#fff}
-.credit-title{font-size:.72rem;opacity:.5}
-
-@media(max-width:380px){
-  .menu-card{padding:15px 13px;gap:12px}
-  .menu-icon{width:50px;height:50px;font-size:1.6rem;border-radius:15px}
-  .lang-chip{font-size:.62rem;padding:6px 8px 3px}
-}
+.footer-credit{font-size:.7rem;opacity:.45;margin-top:4px;line-height:1.8}
 </style>
 </head>
 <body>
+
+<!-- ===== 共通設定パネル（右上固定） ===== -->
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-label">⚙ 表示設定</div>
+
+  <!-- ふりがな切り替え -->
+  <div class="settings-row">
+    <span class="settings-row-label">ふりがな</span>
+    <div class="settings-btns">
+      <button class="s-btn" id="rubyOn"  onclick="setRuby('on')">あり</button>
+      <button class="s-btn" id="rubyOff" onclick="setRuby('off')">なし</button>
+    </div>
+  </div>
+
+  <!-- 文字サイズ切り替え -->
+  <div class="settings-row">
+    <span class="settings-row-label">文字</span>
+    <div class="settings-btns">
+      <button class="s-btn" id="fsNormal" onclick="setFontsize('normal')">標準</button>
+      <button class="s-btn" id="fsLarge"  onclick="setFontsize('large')">大</button>
+      <button class="s-btn" id="fsXlarge" onclick="setFontsize('xlarge')">特大</button>
+    </div>
+  </div>
+
+  <!-- テーマ切り替え -->
+  <div class="settings-row">
+    <span class="settings-row-label">テーマ</span>
+    <div class="settings-btns">
+      <button class="s-btn" id="themeDark"  onclick="setTheme('dark')">🌙</button>
+      <button class="s-btn" id="themeLight" onclick="setTheme('light')">☀️</button>
+    </div>
+  </div>
+</div>
 
 <div class="top-container">
 
   <!-- ===== ブランド ===== -->
   <div class="brand">
     <div class="brand-logo">
-      <img src="gift-logo.png" alt="GIFT協会ロゴ">
+      <img src="gift-logo.png" alt="GIFT協会ロゴ" width="120" height="120">
     </div>
-    <h1>介護福祉士 試験対策</h1>
+    <h1>Manabi App</h1>
     <div class="brand-sub">一般社団法人GIFT協会</div>
   </div>
 
   <!-- ===== 試験カウントダウン ===== -->
-  <div class="countdown" id="countdown" hidden>
+  <div class="countdown" id="countdown">
     <div class="cd-title" id="cdTitle"></div>
-    <div class="cd-main"  id="cdMain"></div>
-    <div class="cd-msg"   id="cdMsg"></div>
+    <div class="cd-main" id="cdMain"></div>
+    <div class="cd-msg"  id="cdMsg"></div>
   </div>
 
   <!-- ===== メニュー ===== -->
-  <div class="section-title">メニュー</div>
-  <ul class="menu-list">
+  <nav class="menu-section" aria-label="メインメニュー">
+    <div class="menu-title">MENU</div>
+    <ul class="menu-list">
 
-    <li>
-      <a href="flashcard.html" class="menu-card flashcard">
-        <div class="menu-icon">📚</div>
-        <div class="menu-info">
-          <div class="menu-title"><ruby>介護<rt>かいご</rt></ruby><ruby>用語<rt>ようご</rt></ruby>フラッシュカード</div>
-          <div class="menu-desc"><ruby>単語<rt>たんご</rt></ruby>をカードで<ruby>楽<rt>たの</rt></ruby>しく<ruby>覚<rt>おぼ</rt></ruby>えよう</div>
-          <div class="lang-chips">
-            <span class="lang-chip"><ruby>日本語<rt>にほんご</rt></ruby></span>
-            <span class="lang-chip"><ruby>英語<rt>えいご</rt></ruby></span>
-            <span class="lang-chip">インドネシア<ruby>語<rt>ご</rt></ruby></span>
-            <span class="lang-chip">ベトナム<ruby>語<rt>ご</rt></ruby></span>
-            <span class="lang-chip">タイ<ruby>語<rt>ご</rt></ruby></span>
-            <span class="lang-chip">ミャンマー<ruby>語<rt>ご</rt></ruby></span>
-            <span class="lang-chip">ネパール<ruby>語<rt>ご</rt></ruby></span>
-            <span class="lang-chip">モンゴル<ruby>語<rt>ご</rt></ruby></span>
+      <!-- 介護用語フラッシュカード -->
+      <li>
+        <a href="./flashcard.html" class="menu-card flashcard">
+          <div class="card-icon">📚</div>
+          <div class="card-body">
+            <div class="card-title">
+              <ruby>介護<rt>かいご</rt></ruby>
+              <ruby>用語<rt>ようご</rt></ruby>フラッシュカード
+            </div>
+            <div class="card-desc">
+              <ruby>単語<rt>たんご</rt></ruby>をカードで
+              <ruby>楽<rt>たの</rt></ruby>しく
+              <ruby>覚<rt>おぼ</rt></ruby>えよう
+            </div>
+            <div class="card-tags">
+              <span><ruby>日本語<rt>にほんご</rt></ruby></span>
+              <span><ruby>英語<rt>えいご</rt></ruby></span>
+              <span>Indonesia</span>
+              <span>Tiếng Việt</span>
+              <span>ภาษาไทย</span>
+              <span>မြန်မာဘာသာ</span>
+              <span>नेपाली</span>
+              <span>Монгол</span>
+            </div>
           </div>
-        </div>
-        <div class="menu-arrow">›</div>
-      </a>
-    </li>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
 
-    <li>
-      <a href="exam/index.html" class="menu-card exam">
-        <div class="menu-icon">📝</div>
-        <div class="menu-info">
-          <div class="menu-title"><ruby>過去問<rt>かこもん</rt></ruby>に<ruby>挑戦<rt>ちょうせん</rt></ruby></div>
-          <div class="menu-desc"><ruby>介護<rt>かいご</rt></ruby><ruby>福祉士<rt>ふくしし</rt></ruby><ruby>国家<rt>こっか</rt></ruby><ruby>試験<rt>しけん</rt></ruby>の<ruby>過去問<rt>かこもん</rt></ruby>を<ruby>解<rt>と</rt></ruby>こう</div>
-          <div class="lang-chips">
-            <span class="lang-chip"><ruby>科目別<rt>かもくべつ</rt></ruby></span>
-            <span class="lang-chip">パート<ruby>別<rt>べつ</rt></ruby></span>
+      <!-- 過去問 -->
+      <li>
+        <a href="./exam/index.html" class="menu-card exam">
+          <div class="card-icon">📝</div>
+          <div class="card-body">
+            <div class="card-title">
+              <ruby>過去問<rt>かこもん</rt></ruby>に
+              <ruby>挑戦<rt>ちょうせん</rt></ruby>
+            </div>
+            <div class="card-desc">
+              <ruby>介護<rt>かいご</rt></ruby>
+              <ruby>福祉士<rt>ふくしし</rt></ruby>
+              <ruby>国家<rt>こっか</rt></ruby>
+              <ruby>試験<rt>しけん</rt></ruby>の
+              <ruby>過去問<rt>かこもん</rt></ruby>を
+              <ruby>解<rt>と</rt></ruby>こう
+            </div>
+            <div class="card-tags">
+              <span><ruby>科目別<rt>かもくべつ</rt></ruby></span>
+              <span>パート<ruby>別<rt>べつ</rt></ruby></span>
+            </div>
           </div>
-        </div>
-        <div class="menu-arrow">›</div>
-      </a>
-    </li>
-    <li>
-      <a href="youten/index.html" class="menu-card youten">
-        <div class="menu-icon">📖</div>
-        <div class="menu-info">
-          <div class="menu-title"><ruby>各科目<rt>かくかもく</rt></ruby>ごと<ruby>要点集<rt>ようてんしゅう</rt></ruby></div>
-          <div class="menu-desc">13<ruby>科目<rt>かもく</rt></ruby>のポイントをまとめて<ruby>確認<rt>かくにん</rt></ruby></div>
-          <div class="lang-chips">
-            <span class="lang-chip">NEW</span>
-            <span class="lang-chip"><ruby>全<rt>ぜん</rt></ruby>13<ruby>科目<rt>かもく</rt></ruby></span>
-            <span class="lang-chip">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
+
+      <!-- 要点集 -->
+      <li>
+        <a href="./youten/index.html" class="menu-card youten">
+          <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
+          <div class="card-icon">📖</div>
+          <div class="card-body">
+            <div class="card-title">
+              <ruby>各科目<rt>かくかもく</rt></ruby>ごと
+              <ruby>要点集<rt>ようてんしゅう</rt></ruby>
+            </div>
+            <div class="card-desc">
+              13<ruby>科目<rt>かもく</rt></ruby>のポイントをまとめて
+              <ruby>確認<rt>かくにん</rt></ruby>
+            </div>
+            <div class="card-tags">
+              <span>NEW</span>
+              <span><ruby>全<rt>ぜん</rt></ruby>13<ruby>科目<rt>かもく</rt></ruby></span>
+              <span>ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
+            </div>
           </div>
-        </div>
-        <div class="menu-arrow">›</div>
-      </a>
-    </li>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
 
-    <li>
-      <a href="houkaisei/index.html" class="menu-card houkaisei">
-        <div class="menu-icon">⚖️</div>
-        <div class="menu-info">
-          <div class="menu-title"><ruby>法改正<rt>ほうかいせい</rt></ruby>まるわかりノート</div>
-          <div class="menu-desc"><ruby>新<rt>あたら</rt></ruby>しい<ruby>制度<rt>せいど</rt></ruby>をまとめて<ruby>確認<rt>かくにん</rt></ruby></div>
-          <div class="lang-chips">
-            <span class="lang-chip">NEW</span>
-            <span class="lang-chip"><ruby>全<rt>ぜん</rt></ruby>9<ruby>章<rt>しょう</rt></ruby></span>
-            <span class="lang-chip"><ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby></span>
-            <span class="lang-chip">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
+      <!-- 法改正ノート -->
+      <li>
+        <a href="./houkaisei/index.html" class="menu-card houkaisei">
+          <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
+          <div class="card-icon">⚖️</div>
+          <div class="card-body">
+            <div class="card-title">
+              <ruby>法改正<rt>ほうかいせい</rt></ruby>まるわかりノート
+            </div>
+            <div class="card-desc">
+              <ruby>新<rt>あたら</rt></ruby>しい
+              <ruby>制度<rt>せいど</rt></ruby>をまとめて
+              <ruby>確認<rt>かくにん</rt></ruby>
+            </div>
+            <div class="card-tags">
+              <span>NEW</span>
+              <span><ruby>全<rt>ぜん</rt></ruby>9<ruby>章<rt>しょう</rt></ruby></span>
+              <span><ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby></span>
+              <span>ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
+            </div>
           </div>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
+
+      <!-- ===== セパレーター ===== -->
+      <li aria-hidden="true">
+        <div class="jlpt-separator">
+          <div class="jlpt-separator-line"></div>
+          <div class="jlpt-separator-text">✦ JLPT 日本語能力試験 対策</div>
+          <div class="jlpt-separator-line"></div>
         </div>
-        <div class="menu-arrow">›</div>
-      </a>
-    </li>
+      </li>
 
-  </ul>
+      <!-- ===== JLPTメニュー ===== -->
+      <li>
+        <a href="./jlpt/index.html" class="menu-card jlpt">
+          <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
+          <div class="card-icon" style="background:rgba(251,191,36,.18);">🎌</div>
+          <div class="card-body">
+            <div class="card-title" style="
+              background:linear-gradient(90deg,#fbbf24,#fde68a);
+              -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+            ">JLPT N1 / N2 <ruby>対策<rt>たいさく</rt></ruby></div>
+            <div class="card-desc">
+              <ruby>日本語<rt>にほんご</rt></ruby>
+              <ruby>能力<rt>のうりょく</rt></ruby>
+              <ruby>試験<rt>しけん</rt></ruby>の
+              <ruby>読解<rt>どっかい</rt></ruby>・
+              <ruby>語彙<rt>ごい</rt></ruby>を
+              <ruby>徹底<rt>てってい</rt></ruby>
+              <ruby>対策<rt>たいさく</rt></ruby>
+            </div>
+            <div class="card-tags">
+              <span>N1 <ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
+              <span>N2 <ruby>準備中<rt>じゅんびちゅう</rt></ruby></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
 
-  <!-- ===== リクエスト ===== -->
-  <div class="section-title">リクエスト</div>
+    </ul>
+  </nav>
+
+  <!-- ===== リクエストボックス ===== -->
   <div class="request-box">
-    <div class="request-catchcopy">
-      📝 <span class="highlight">あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</span>
-    </div>
-    <div class="request-input-row">
+    <h2>
+      📝 あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br>
+      <ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる
+    </h2>
+    <p>
+      <ruby>覚<rt>おぼ</rt></ruby>えたい<ruby>用語<rt>ようご</rt></ruby>や
+      <ruby>質問<rt>しつもん</rt></ruby>をリクエストしてください
+    </p>
+    <div class="request-form">
       <input type="text" class="request-input" id="requestInput"
-             placeholder="知（し）りたい用語（ようご）を入力（にゅうりょく）…" maxlength="100">
-      <button class="request-send" id="requestSendBtn" onclick="sendRequest()">送信</button>
+        placeholder="例：胃ろう、褥瘡…" maxlength="60">
+      <button class="request-btn" id="requestSendBtn" onclick="sendRequest()">送信</button>
     </div>
     <div class="request-feedback" id="requestFeedback"></div>
   </div>
 
-  <!-- ===== クレジット ===== -->
-  <div class="credit">
-    <div class="credit-avatar">
-      <img src="muneishi-icon.png" alt="宗石光英">
-    </div>
-    <div class="credit-info">
-      <div class="credit-org">一般社団法人 GIFT協会</div>
-      <div class="credit-name">宗石 光英</div>
-      <div class="credit-title">Created by Mitsuhide Muneishi</div>
+  <!-- ===== フッター ===== -->
+  <div class="footer-profile">
+    <img src="muneishi-icon.png" alt="宗石光英" width="72" height="72">
+    <div class="footer-credit">
+      一般社団法人 GIFT協会<br>
+      宗石 光英<br>
+      Created by Mitsuhide Muneishi
     </div>
   </div>
 
-</div>
+</div><!-- /top-container -->
 
 <script>
-var GAS_URL='https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
+/* ===== GAS（Googleスプレッドシート送信）URL ===== */
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
 
-/* =====================================================
- *  試験カウントダウン
- *  ★次の試験に変えるときは EXAM_INFO の2行を直すだけ
- * ===================================================== */
-var EXAM_INFO = {
-  round : 39,             // 第○回
-  date  : '2027-01-31',   // 試験日（YYYY-MM-DD）
-  thanks: 7               // 試験後、ねぎらい表示を出す日数
-};
+/* ===== 試験日設定 ===== */
+var EXAM_INFO = { round: 39, date: '2027-01-31', thanks: 7 };
 
-var CD_MSG = {
-  calm : ['今日（きょう）も1歩（いっぽ）前進（ぜんしん）しよう！',
-          '毎日（まいにち）5分（ふん）でも、力（ちから）になる。',
-          '今日（きょう）の1枚（まい）が、本番（ほんばん）の1点（てん）に。'],
-  blue : ['今日（きょう）の積（つ）み重（かさ）ねが自信（じしん）になる！',
-          'あせらず、1日（いちにち）1テーマずつ。'],
-  warn : ['ここからが伸（の）びる時期（じき）！1問（もん）でも進（すす）もう。',
-          '苦手（にがて）な言葉（ことば）を、今日（きょう）3つ覚（おぼ）えよう！'],
-  hurry: ['ラストスパート！やってきた自分（じぶん）を信（しん）じよう。',
-          '体調（たいちょう）を整（ととの）えるのも、大切（たいせつ）な勉強（べんきょう）。']
-};
+/* ===== 設定パネル：ボタンのactive状態を同期する ===== */
+function syncSettingsBtns(){
+  var theme    = localStorage.getItem('gift_theme')    || 'dark';
+  var fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+  var ruby     = localStorage.getItem('gift_ruby')     || 'on';
 
-/* 「漢字（ふりがな）」を自動で <ruby> に変換する */
-function toRuby(text){
-  return text.replace(/([一-龠々〆ヵヶ]+)（([ぁ-んー]+)）/g,
-    function(_,kanji,kana){ return '<ruby>'+kanji+'<rt>'+kana+'</rt></ruby>'; });
+  /* テーマ */
+  document.getElementById('themeDark').classList.toggle('active',  theme === 'dark');
+  document.getElementById('themeLight').classList.toggle('active', theme === 'light');
+  /* 文字サイズ */
+  document.getElementById('fsNormal').classList.toggle('active', fontsize === 'normal');
+  document.getElementById('fsLarge').classList.toggle('active',  fontsize === 'large');
+  document.getElementById('fsXlarge').classList.toggle('active', fontsize === 'xlarge');
+  /* ふりがな */
+  document.getElementById('rubyOn').classList.toggle('active',  ruby === 'on');
+  document.getElementById('rubyOff').classList.toggle('active', ruby === 'off');
 }
 
-function cdFormatDate(str){
-  var p = str.split('-');
-  var d = new Date(+p[0], +p[1]-1, +p[2]);
-  var w = ['日','月','火','水','木','金','土'][d.getDay()];
-  return p[0] + '年' + (+p[1]) + '月' + (+p[2]) + '日（' + w + '）';
+/* ===== ふりがな切り替え ===== */
+function setRuby(val){
+  localStorage.setItem('gift_ruby', val);
+  document.documentElement.setAttribute('data-ruby', val);
+  syncSettingsBtns();
 }
 
-function cdDaysLeft(){
-  var p = EXAM_INFO.date.split('-');
-  var exam = new Date(+p[0], +p[1]-1, +p[2]);
-  var n = new Date();
-  var today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
-  return Math.round((exam - today) / 86400000);
+/* ===== 文字サイズ切り替え ===== */
+function setFontsize(val){
+  localStorage.setItem('gift_fontsize', val);
+  document.documentElement.setAttribute('data-fontsize', val);
+  syncSettingsBtns();
 }
 
-function cdPick(arr, d){ return arr[Math.abs(d) % arr.length]; }
+/* ===== テーマ切り替え ===== */
+function setTheme(val){
+  localStorage.setItem('gift_theme', val);
+  document.documentElement.setAttribute('data-theme', val);
+  syncSettingsBtns();
+}
 
+/* ===== カウントダウン ===== */
 function renderCountdown(){
-  var box = document.getElementById('countdown');
-  if(!box) return;
+  var now   = new Date();
+  var exam  = new Date(EXAM_INFO.date + 'T00:00:00+09:00');
+  var diff  = exam - now;
   var title = document.getElementById('cdTitle');
   var main  = document.getElementById('cdMain');
   var msg   = document.getElementById('cdMsg');
-  var d = cdDaysLeft();
 
-  box.className = 'countdown';
-  title.innerHTML = '第' + EXAM_INFO.round + '回　'
-                  + toRuby('介護（かいご）福祉士（ふくしし）国家（こっか）試験（しけん）')
-                  + '　' + cdFormatDate(EXAM_INFO.date);
+  if(diff <= 0){
+    title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験';
+    main.innerHTML  = '<span class="cd-num">お疲れ様でした！</span>';
+    msg.textContent = '試験当日です。全力を出し切ろう！';
+    return;
+  }
 
-  if(d > 0){
-    main.innerHTML = '<span>' + toRuby('試験（しけん）') + 'まで あと</span>'
-                   + '<span class="cd-num">' + d + '</span>'
-                   + '<span class="cd-unit">' + toRuby('日（にち）') + '</span>';
-    if(d > 60)      { box.classList.add('calm');  msg.innerHTML = toRuby(cdPick(CD_MSG.calm,  d)); }
-    else if(d > 30) { box.classList.add('blue');  msg.innerHTML = toRuby(cdPick(CD_MSG.blue,  d)); }
-    else if(d > 7)  { box.classList.add('warn');  msg.innerHTML = toRuby(cdPick(CD_MSG.warn,  d)); }
-    else            { box.classList.add('hurry'); msg.innerHTML = toRuby(cdPick(CD_MSG.hurry, d)); }
-    box.hidden = false;
-  }
-  else if(d === 0){
-    box.classList.add('today');
-    main.innerHTML = '<span class="cd-num" style="font-size:clamp(1.6rem,6vw,2.2rem)">'
-                   + toRuby('本番（ほんばん）') + 'です！</span>';
-    msg.innerHTML = toRuby('落（お）ち着（つ）いて、いつも通（どお）りに。応援（おうえん）しています！');
-    box.hidden = false;
-  }
-  else if(d >= -EXAM_INFO.thanks){
-    box.classList.add('done');
-    main.innerHTML = '<span class="cd-num" style="font-size:clamp(1.4rem,5vw,2rem)">'
-                   + toRuby('お疲（つか）れさまでした！') + '</span>';
-    msg.innerHTML = '第' + EXAM_INFO.round + '回 '
-                  + toRuby('試験（しけん）終了（しゅうりょう）。ゆっくり休（やす）んでください。');
-    box.hidden = false;
-  }
-  else {
-    box.hidden = true;   // 次回日程が未設定のあいだは非表示
-  }
+  var days  = Math.floor(diff / 86400000);
+  var hours = Math.floor((diff % 86400000) / 3600000);
+  var mins  = Math.floor((diff % 3600000)  / 60000);
+
+  title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験まで';
+  main.innerHTML =
+    '<span class="cd-num">' + days + '</span><span class="cd-unit">日</span>' +
+    '<span class="cd-num">' + hours + '</span><span class="cd-unit">時間</span>' +
+    '<span class="cd-num">' + mins + '</span><span class="cd-unit">分</span>';
+
+  var msgs = [
+    '今日の積み重ねが合格への道。',
+    '毎日少しずつ。それが一番の近道。',
+    'あなたの努力は必ず報われる。',
+    '一問一問、丁寧に取り組もう。',
+    '合格まであと' + days + '日！頑張れ！'
+  ];
+  msg.textContent = msgs[days % msgs.length];
 }
 
-renderCountdown();
+/* ===== ページ読み込み時の初期化 ===== */
+window.addEventListener('DOMContentLoaded', function(){
+  syncSettingsBtns();
+  renderCountdown();
+});
 setInterval(renderCountdown, 60000);
 document.addEventListener('visibilitychange', function(){
   if(!document.hidden) renderCountdown();
 });
 
+/* ===== リクエスト送信 ===== */
 function sendRequest(){
-  var input=document.getElementById('requestInput');
-  var btn=document.getElementById('requestSendBtn');
-  var fb=document.getElementById('requestFeedback');
-  var word=input.value.trim();
+  var input = document.getElementById('requestInput');
+  var btn   = document.getElementById('requestSendBtn');
+  var fb    = document.getElementById('requestFeedback');
+  var word  = input.value.trim();
 
   if(!word){
-    fb.textContent='⚠ 用語を入力してください';
-    fb.className='request-feedback error';
+    fb.textContent = '⚠ 用語を入力してください';
+    fb.className   = 'request-feedback error';
     return;
   }
-
-  btn.disabled=true;
-  btn.textContent='送信中…';
-  fb.textContent='';
-  fb.className='request-feedback';
+  btn.disabled    = true;
+  btn.textContent = '送信中…';
+  fb.textContent  = '';
+  fb.className    = 'request-feedback';
 
   fetch(GAS_URL,{
-    method:'POST',
-    mode:'no-cors',
+    method:'POST', mode:'no-cors',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({word:word,from:'top'})
+    body:JSON.stringify({word:word, from:'top'})
   })
   .then(function(){
-    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';
-    fb.className='request-feedback success';
-    input.value='';
-    setTimeout(function(){fb.textContent='';fb.className='request-feedback';},4000);
+    fb.textContent = '✅ ありがとうございます！リクエストを受け付けました';
+    fb.className   = 'request-feedback success';
+    input.value    = '';
+    setTimeout(function(){ fb.textContent=''; fb.className='request-feedback'; }, 4000);
   })
   .catch(function(){
-    fb.textContent='❌ 送信に失敗しました。もう一度お試しください';
-    fb.className='request-feedback error';
+    fb.textContent = '❌ 送信に失敗しました。もう一度お試しください';
+    fb.className   = 'request-feedback error';
   })
   .finally(function(){
-    btn.disabled=false;
-    btn.textContent='送信';
+    btn.disabled    = false;
+    btn.textContent = '送信';
   });
 }
 
-document.getElementById('requestInput').addEventListener('keydown',function(e){
-  if(e.key==='Enter'){e.preventDefault();sendRequest();}
+document.getElementById('requestInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){ e.preventDefault(); sendRequest(); }
 });
 
+/* ===== Service Worker ===== */
 if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
+  window.addEventListener('load', function(){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
 }
