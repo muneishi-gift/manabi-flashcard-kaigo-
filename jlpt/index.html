@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JLPT 対策｜学びアプリ｜一般社団法人GIFT協会</title>
-  <meta name="description" content="JLPT N1・N2の読解・語彙を徹底対策。外国人介護福祉士志望者向け日本語能力試験対策アプリ。">
+  <meta name="description" content="JLPT N1・N2の読解・語彙を徹底対策。日本語能力試験対策アプリ。">
   <link rel="icon" href="../gift-icon.png">
   <link rel="apple-touch-icon" href="../gift-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,7 +106,7 @@
     .header-sub { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); letter-spacing: .08em; }
 
     /* ═══════════════════════════════════════
-       設定パネル（トップと同じ）
+       設定パネル
     ═══════════════════════════════════════ */
     .settings-panel {
       width: calc(100% - 32px); max-width: 560px; margin: 0 auto 20px;
@@ -160,6 +160,9 @@
     .page-title-block {
       text-align: center;
       margin-bottom: 28px;
+      /* ①見切れ防止: 幅内で折り返す */
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .page-title-en {
       font-family: 'Poppins', sans-serif;
@@ -172,12 +175,16 @@
     }
     .page-title-ja {
       font-family: 'Poppins','Noto Sans JP',sans-serif;
-      font-size: calc(1.6rem * var(--font-scale));
+      /* ①フォントサイズを抑えて見切れ防止、clampで動的調整 */
+      font-size: clamp(1.15rem, 5vw + 0.5rem, calc(1.6rem * var(--font-scale)));
       font-weight: 800;
       background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      line-height: 1.2;
+      /* 折り返しを許可 */
+      line-height: 1.35;
       margin-bottom: 8px;
+      white-space: normal;
+      overflow-wrap: break-word;
     }
     .page-title-desc {
       font-size: calc(0.78rem * var(--font-scale));
@@ -218,10 +225,10 @@
     /* N1カード：ゴールド系 */
     .level-card-n1 { background: var(--card-n1); border-color: var(--card-n1-border); }
 
-    /* N2カード：グレー系（準備中） */
+    /* N2カード：グレー系（準備中）*/
     .level-card-n2 {
       background: var(--card-n2); border-color: var(--card-n2-border);
-      opacity: 0.65; cursor: not-allowed; pointer-events: none;
+      opacity: 0.60; cursor: not-allowed; pointer-events: none;
     }
 
     /* NEWバッジ */
@@ -306,14 +313,15 @@
       display: flex; align-items: center; gap: 6px;
     }
     .info-row {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: baseline;
       padding: 7px 0;
       border-bottom: 1px solid var(--border);
       font-size: calc(0.75rem * var(--font-scale));
+      gap: 12px;
     }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-row-label { color: var(--text-muted); }
-    .info-row-value { color: var(--text-primary); font-weight: 600; }
+    .info-row-label { color: var(--text-muted); flex-shrink: 0; }
+    .info-row-value { color: var(--text-primary); font-weight: 600; text-align: right; }
 
     /* ── 戻るボタン ── */
     .back-btn {
@@ -377,10 +385,12 @@
   <!-- ═══ メインコンテンツ ═══ -->
   <div class="main-section">
 
-    <!-- ページタイトル -->
+    <!-- ①修正: ページタイトル（見切れ防止・折り返し対応） -->
     <div class="page-title-block">
       <div class="page-title-en">JLPT STUDY</div>
-      <div class="page-title-ja">🎌 日本語<ruby>能力<rt>のうりょく</rt></ruby><ruby>試験<rt>しけん</rt></ruby> 対策</div>
+      <div class="page-title-ja">
+        🎌 <ruby>日本語<rt>にほんご</rt></ruby><ruby>能力<rt>のうりょく</rt></ruby><ruby>試験<rt>しけん</rt></ruby> <ruby>対策<rt>たいさく</rt></ruby>
+      </div>
       <div class="page-title-desc">
         レベルを<ruby>選<rt>えら</rt></ruby>んでスタート！
       </div>
@@ -400,16 +410,20 @@
     <!-- レベル選択カード -->
     <ul class="level-list">
 
-      <!-- N1カード -->
+      <!-- ③N1カードを先に（N1が上・N2が下） -->
       <li>
         <a href="./n1/index.html" class="level-card level-card-n1">
           <div class="card-badge-new">NEW</div>
           <div class="card-icon-wrap">🏆</div>
           <div class="card-body">
             <div class="card-level-label card-level-label-n1">N1</div>
+            <!-- ②N1の説明を一般的な内容に変更 -->
             <div class="card-subtitle"><ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N1</div>
             <div class="card-desc">
-              <ruby>最上級<rt>さいじょうきゅう</rt></ruby>レベル。<ruby>介護福祉士<rt>かいごふくしし</rt></ruby><ruby>試験<rt>しけん</rt></ruby>に<ruby>必要<rt>ひつよう</rt></ruby>な<ruby>読解力<rt>どっかいりょく</rt></ruby>を<ruby>徹底<rt>てってい</rt></ruby>トレーニング。
+              JLPT <ruby>最上級<rt>さいじょうきゅう</rt></ruby>レベル。
+              <ruby>幅広<rt>はばひろ</rt></ruby>いテーマの<ruby>文章<rt>ぶんしょう</rt></ruby>を<ruby>読<rt>よ</rt></ruby>み<ruby>解<rt>と</rt></ruby>く
+              <ruby>高度<rt>こうど</rt></ruby>な<ruby>読解力<rt>どっかいりょく</rt></ruby>と
+              <ruby>豊富<rt>ほうふ</rt></ruby>な<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>求<rt>もと</rt></ruby>められます。
             </div>
             <div class="card-tags">
               <span class="tag"><ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
@@ -421,7 +435,7 @@
         </a>
       </li>
 
-      <!-- N2カード（準備中） -->
+      <!-- ③N2カード（準備中）・一般的な説明に変更 -->
       <li>
         <div class="level-card level-card-n2">
           <div class="card-badge-soon">準備中</div>
@@ -431,8 +445,12 @@
             <div class="card-subtitle" style="color:rgba(200,200,220,0.45);">
               <ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N2
             </div>
+            <!-- ③N2の説明を一般的な内容に変更 -->
             <div class="card-desc" style="color:rgba(200,200,220,0.40);">
-              N1の<ruby>次<rt>つぎ</rt></ruby>のレベル。<ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>を<ruby>対策<rt>たいさく</rt></ruby>。<ruby>現在<rt>げんざい</rt></ruby><ruby>準備中<rt>じゅんびちゅう</rt></ruby>です。
+              N1の<ruby>一段<rt>ひとだん</rt></ruby>下のレベル。
+              <ruby>日常的<rt>にちじょうてき</rt></ruby>な<ruby>話題<rt>わだい</rt></ruby>から
+              より<ruby>幅広<rt>はばひろ</rt></ruby>いテーマまで、
+              <ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>を<ruby>総合的<rt>そうごうてき</rt></ruby>に<ruby>対策<rt>たいさく</rt></ruby>します。
             </div>
             <div class="card-tags">
               <span class="tag-muted">Coming Soon</span>
@@ -444,45 +462,45 @@
 
     </ul>
 
-    <!-- 試験情報ボックス -->
+    <!-- ④試験概要（公式JLPTサイトの正しい情報に修正） -->
     <div class="info-box">
-      <div class="info-box-title">📋 JLPT N1 <ruby>試験<rt>しけん</rt></ruby><ruby>概要<rt>がいよう</rt></ruby></div>
+      <div class="info-box-title">📋 JLPT N1 <ruby>試験<rt>しけん</rt></ruby><ruby>概要<rt>がいよう</rt></ruby>（<ruby>公式<rt>こうしき</rt></ruby>）</div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>試験時間<rt>しけんじかん</rt></ruby></span>
-        <span class="info-row-value">110<ruby>分<rt>ふん</rt></ruby>（<ruby>言語知識<rt>げんごちしき</rt></ruby>＋<ruby>読解<rt>どっかい</rt></ruby>）</span>
+        <span class="info-row-label"><ruby>試験科目<rt>しけんかもく</rt></ruby>①</span>
+        <span class="info-row-value"><ruby>言語知識<rt>げんごちしき</rt></ruby>（<ruby>文字<rt>もじ</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>）・<ruby>読解<rt>どっかい</rt></ruby></span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>読解問題数<rt>どっかいもんだいすう</rt></ruby></span>
-        <span class="info-row-value"><ruby>問題<rt>もんだい</rt></ruby>8〜13（6カテゴリ）</span>
+        <span class="info-row-label"><ruby>試験時間<rt>しけんじかん</rt></ruby>①</span>
+        <span class="info-row-value">110<ruby>分<rt>ふん</rt></ruby></span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>短文<rt>たんぶん</rt></ruby>）</span>
-        <span class="info-row-value">50<ruby>問<rt>もん</rt></ruby></span>
+        <span class="info-row-label"><ruby>試験科目<rt>しけんかもく</rt></ruby>②</span>
+        <span class="info-row-value"><ruby>聴解<rt>ちょうかい</rt></ruby></span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>中文<rt>ちゅうぶん</rt></ruby>）</span>
-        <span class="info-row-value">27<ruby>問<rt>もん</rt></ruby></span>
+        <span class="info-row-label"><ruby>試験時間<rt>しけんじかん</rt></ruby>②</span>
+        <span class="info-row-value">55<ruby>分<rt>ふん</rt></ruby></span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>長文<rt>ちょうぶん</rt></ruby>）</span>
-        <span class="info-row-value">20<ruby>問<rt>もん</rt></ruby></span>
+        <span class="info-row-label"><ruby>合格点<rt>ごうかくてん</rt></ruby></span>
+        <span class="info-row-value">100<ruby>点<rt>てん</rt></ruby>（<ruby>総合得点<rt>そうごうとくてん</rt></ruby>180<ruby>点満点<rt>てんまんてん</rt></ruby>）</span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>統合理解<rt>とうごうりかい</rt></ruby></span>
-        <span class="info-row-value">18<ruby>問<rt>もん</rt></ruby></span>
+        <span class="info-row-label"><ruby>読解<rt>どっかい</rt></ruby>カテゴリ</span>
+        <span class="info-row-value">6<ruby>種類<rt>しゅるい</rt></ruby>（<ruby>短文<rt>たんぶん</rt></ruby>・<ruby>中文<rt>ちゅうぶん</rt></ruby>・<ruby>長文<rt>ちょうぶん</rt></ruby>・<ruby>統合<rt>とうごう</rt></ruby>・<ruby>主張<rt>しゅちょう</rt></ruby>・<ruby>情報検索<rt>じょうほうけんさく</rt></ruby>）</span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>主張理解<rt>しゅちょうりかい</rt></ruby></span>
-        <span class="info-row-value">20<ruby>問<rt>もん</rt></ruby></span>
+        <span class="info-row-label"><ruby>年<rt>ねん</rt></ruby>2<ruby>回<rt>かい</rt></ruby> <ruby>実施<rt>じっし</rt></ruby></span>
+        <span class="info-row-value">7<ruby>月<rt>がつ</rt></ruby>・12<ruby>月<rt>がつ</rt></ruby></span>
       </div>
       <div class="info-row">
-        <span class="info-row-label"><ruby>情報検索<rt>じょうほうけんさく</rt></ruby></span>
-        <span class="info-row-value">12<ruby>問<rt>もん</rt></ruby></span>
+        <span class="info-row-label">このアプリの<ruby>練習問題<rt>れんしゅうもんだい</rt></ruby></span>
+        <span class="info-row-value"><ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby>（6カテゴリ）</span>
       </div>
     </div>
 
     <!-- 戻るボタン -->
-    <a href="../index.html" class="back-btn">← <ruby>トップ<rt></rt></ruby>にもどる</a>
+    <a href="../index.html" class="back-btn">← トップにもどる</a>
 
   </div><!-- /main-section -->
 
@@ -506,14 +524,14 @@
       if (rubyToggle) rubyToggle.checked = (ruby === 'on');
     }
 
-    /* ふりがなスイッチ */
+    /* ── ふりがなスイッチ ── */
     document.getElementById('ruby-toggle').addEventListener('change', function() {
       const val = this.checked ? 'on' : 'off';
       localStorage.setItem('gift_ruby', val);
       document.documentElement.setAttribute('data-ruby', val);
     });
 
-    /* フォントサイズ */
+    /* ── フォントサイズ切替 ── */
     function setFontSize(size) {
       localStorage.setItem('gift_fontsize', size);
       document.documentElement.setAttribute('data-fontsize', size);
@@ -522,7 +540,7 @@
       });
     }
 
-    /* テーマ */
+    /* ── テーマ切替 ── */
     function setTheme(theme) {
       localStorage.setItem('gift_theme', theme);
       document.documentElement.setAttribute('data-theme', theme);
@@ -531,7 +549,7 @@
       });
     }
 
-    /* 初回適用 */
+    /* ── 初回適用 ── */
     applySettings();
   </script>
 
