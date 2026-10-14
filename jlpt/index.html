@@ -45,11 +45,14 @@
       --tag-bg:rgba(255,255,255,0.10); --tag-text:rgba(240,236,224,0.75);
       --card-n1:linear-gradient(135deg,rgba(130,90,20,0.60),rgba(100,65,10,0.45));
       --card-n1-border:rgba(200,155,50,0.40);
-      --card-n2:linear-gradient(135deg,rgba(60,60,80,0.50),rgba(40,40,60,0.35));
-      --card-n2-border:rgba(120,120,150,0.25);
+      --card-n2:linear-gradient(135deg,rgba(40,60,100,0.55),rgba(25,45,80,0.40));
+      --card-n2-border:rgba(80,120,200,0.25);
       --back-btn-bg:rgba(255,255,255,0.07); --back-btn-border:rgba(255,255,255,0.15);
-      --info-bg:rgba(255,255,255,0.04);
+      --info-bg-n1:rgba(255,255,255,0.04);
+      --info-bg-n2:rgba(40,60,110,0.12);
+      --info-border-n2:rgba(80,120,200,0.18);
       --info-note:rgba(240,236,224,0.30);
+      --n2-text:rgba(200,210,240,0.55);
     }
 
     /* ── ライトモード ── */
@@ -66,11 +69,14 @@
       --tag-bg:rgba(154,108,30,0.12); --tag-text:rgba(58,46,30,0.80);
       --card-n1:linear-gradient(135deg,rgba(240,220,170,0.75),rgba(230,205,145,0.60));
       --card-n1-border:rgba(180,140,40,0.35);
-      --card-n2:linear-gradient(135deg,rgba(210,210,220,0.70),rgba(195,195,210,0.55));
-      --card-n2-border:rgba(140,140,160,0.30);
+      --card-n2:linear-gradient(135deg,rgba(200,215,245,0.65),rgba(185,200,235,0.50));
+      --card-n2-border:rgba(100,130,200,0.28);
       --back-btn-bg:rgba(150,120,70,0.12); --back-btn-border:rgba(150,120,70,0.25);
-      --info-bg:rgba(150,120,70,0.06);
+      --info-bg-n1:rgba(150,120,70,0.06);
+      --info-bg-n2:rgba(100,130,200,0.07);
+      --info-border-n2:rgba(100,130,200,0.20);
       --info-note:rgba(58,46,30,0.35);
+      --n2-text:rgba(60,80,140,0.55);
     }
 
     /* ═══════════════════════════════════════
@@ -164,14 +170,12 @@
     }
 
     /* ── ページタイトル ──
-       ふりがなをタイトル本体に含めると rt が上に飛び出して
-       見切れる問題が発生するため、絵文字・日本語テキスト・
-       ふりがなを3段に分離して解決する
+       絵文字・ふりがな・本文テキストを3段に分離して
+       rt見切れ問題を根本解決
     ── */
     .page-title-block {
       text-align: center;
       margin-bottom: 32px;
-      /* タイトル上にふりがな分の余白を確保 */
       padding-top: 18px;
     }
     .page-title-en {
@@ -181,34 +185,23 @@
       color: var(--accent); opacity: .7;
       margin-bottom: 6px;
     }
-    /* 絵文字を別行で小さく表示 */
     .page-title-emoji {
-      font-size: 2rem;
-      line-height: 1;
-      margin-bottom: 4px;
-      display: block;
+      font-size: 2rem; line-height: 1;
+      margin-bottom: 4px; display: block;
     }
-    /* ふりがな専用行（小さく・上寄せ） */
     .page-title-ruby {
       font-size: calc(0.60rem * var(--font-scale));
-      color: var(--accent);
-      opacity: .65;
-      letter-spacing: .12em;
-      margin-bottom: 2px;
-      line-height: 1;
+      color: var(--accent); opacity: .65;
+      letter-spacing: .12em; margin-bottom: 2px; line-height: 1;
     }
-    /* タイトル本体（rubyタグなし・見切れゼロ） */
     .page-title-ja {
       font-family: 'Poppins','Noto Sans JP',sans-serif;
       font-size: clamp(1.25rem, 6vw, calc(1.6rem * var(--font-scale)));
       font-weight: 800;
       background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      line-height: 1.2;
-      margin-bottom: 10px;
-      /* 折り返し許可・見切れ防止 */
-      white-space: normal;
-      overflow-wrap: break-word;
+      line-height: 1.2; margin-bottom: 10px;
+      white-space: normal; overflow-wrap: break-word;
     }
     .page-title-desc {
       font-size: calc(0.80rem * var(--font-scale));
@@ -219,6 +212,11 @@
     .section-divider {
       display: flex; align-items: center; gap: 10px;
       margin: 0 0 20px;
+    }
+    /* N1とN2の間のセパレーター */
+    .section-divider-gap {
+      display: flex; align-items: center; gap: 10px;
+      margin: 32px 0 20px;
     }
     .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--divider-color), transparent); }
     .divider-ornament { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
@@ -232,8 +230,6 @@
     .divider-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: .6; }
 
     /* ── レベルカード ── */
-    .level-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
-
     .level-card {
       display: flex; align-items: center; gap: 18px;
       border-radius: 24px; padding: 22px;
@@ -245,10 +241,13 @@
     }
     .level-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.28); }
 
+    /* N1：ゴールド系 */
     .level-card-n1 { background: var(--card-n1); border-color: var(--card-n1-border); }
+
+    /* N2：ブルー系・準備中で操作不可 */
     .level-card-n2 {
       background: var(--card-n2); border-color: var(--card-n2-border);
-      opacity: 0.55; cursor: not-allowed; pointer-events: none;
+      opacity: 0.60; cursor: not-allowed; pointer-events: none;
     }
 
     /* バッジ */
@@ -260,10 +259,10 @@
     }
     .card-badge-soon {
       position: absolute; top: 14px; right: 14px;
-      background: rgba(150,150,170,0.35);
-      color: rgba(255,255,255,0.50); font-size: .56rem; font-weight: 800;
+      background: rgba(80,120,200,0.30);
+      color: rgba(180,200,255,0.60); font-size: .56rem; font-weight: 800;
       padding: 2px 8px; border-radius: 20px; letter-spacing: .05em;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(100,140,220,0.25);
     }
 
     /* アイコン枠 */
@@ -286,7 +285,11 @@
       background: linear-gradient(90deg, var(--accent), #f0d080);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .card-level-label-n2 { color: rgba(200,200,220,0.45); }
+    .card-level-label-n2 {
+      background: linear-gradient(90deg, #6090e0, #90b4f0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      opacity: 0.55;
+    }
 
     .card-subtitle {
       font-size: calc(0.78rem * var(--font-scale));
@@ -303,23 +306,38 @@
       padding: 3px 10px; border-radius: 20px; font-weight: 600;
     }
     .tag-muted {
-      background: rgba(150,150,170,0.15); color: rgba(200,200,220,0.40);
+      background: rgba(80,120,200,0.15); color: rgba(150,180,255,0.45);
       font-size: calc(0.63rem * var(--font-scale));
       padding: 3px 10px; border-radius: 20px; font-weight: 600;
     }
     .card-arrow { font-size: 1.3rem; color: var(--text-muted); flex-shrink: 0; }
-    .card-arrow-muted { font-size: 1.3rem; color: rgba(200,200,220,0.20); flex-shrink: 0; }
+    .card-arrow-muted { font-size: 1.3rem; color: rgba(150,180,255,0.20); flex-shrink: 0; }
 
-    /* ── 試験概要ボックス ── */
+    /* ── 試験概要ボックス 共通 ── */
     .info-box {
-      margin-top: 28px; padding: 18px 20px;
-      background: var(--info-bg); border: 1px solid var(--border);
+      margin-top: 14px; padding: 18px 20px;
       border-radius: 18px;
+    }
+    /* N1用 */
+    .info-box-n1 {
+      background: var(--info-bg-n1);
+      border: 1px solid var(--border);
+    }
+    /* N2用 */
+    .info-box-n2 {
+      background: var(--info-bg-n2);
+      border: 1px solid var(--info-border-n2);
+      opacity: 0.70;
     }
     .info-box-title {
       font-size: calc(0.72rem * var(--font-scale));
       font-weight: 700; color: var(--accent);
       letter-spacing: .06em; margin-bottom: 14px;
+    }
+    .info-box-title-n2 {
+      font-size: calc(0.72rem * var(--font-scale));
+      font-weight: 700; letter-spacing: .06em; margin-bottom: 14px;
+      color: rgba(120,160,240,0.70);
     }
     .info-row {
       display: flex; justify-content: space-between; align-items: baseline;
@@ -329,17 +347,18 @@
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
     .info-row-label { color: var(--text-muted); flex-shrink: 0; }
     .info-row-value { color: var(--text-primary); font-weight: 600; text-align: right; }
-    /* 非対応注記（さりげなく小さく） */
+    /* N2概要の文字は薄め */
+    .info-row-value-n2 { color: var(--n2-text); font-weight: 600; text-align: right; }
+    /* 非対応注記（さりげなく小さく・薄く） */
     .info-note {
       font-size: calc(0.62rem * var(--font-scale));
-      color: var(--info-note); font-weight: 400;
-      margin-left: 4px;
+      color: var(--info-note); font-weight: 400; margin-left: 4px;
     }
 
     /* ── 戻るボタン ── */
     .back-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      margin: 28px 0 0; padding: 10px 18px;
+      margin: 32px 0 0; padding: 10px 18px;
       background: var(--back-btn-bg); border: 1px solid var(--back-btn-border);
       border-radius: 12px; color: var(--text-secondary);
       font-size: calc(0.78rem * var(--font-scale)); font-weight: 600;
@@ -391,8 +410,7 @@
   <!-- ═══ メインコンテンツ ═══ -->
   <div class="main-section">
 
-    <!-- ページタイトル
-         絵文字・ふりがな・本文を3段に分離してrt見切れを解消 -->
+    <!-- ページタイトル（絵文字・ふりがな・本文を3段分離でrt見切れ解消） -->
     <div class="page-title-block">
       <div class="page-title-en">JLPT STUDY</div>
       <span class="page-title-emoji">🎌</span>
@@ -403,74 +421,43 @@
       </div>
     </div>
 
-    <!-- セクション見出し -->
+    <!-- ══ N1セクション ══ -->
     <div class="section-divider">
       <div class="divider-line"></div>
       <div class="divider-ornament">
         <div class="divider-stars">✦ ✦ ✦</div>
-        <div class="divider-text">Level Select</div>
+        <div class="divider-text">N1 Level</div>
         <div class="divider-dot"></div>
       </div>
       <div class="divider-line"></div>
     </div>
 
-    <!-- レベル選択カード -->
-    <ul class="level-list">
-
-      <!-- N1カード -->
-      <li>
-        <a href="./n1/index.html" class="level-card level-card-n1">
-          <div class="card-badge-new">NEW</div>
-          <div class="card-icon-wrap">🏆</div>
-          <div class="card-body">
-            <div class="card-level-label card-level-label-n1">N1</div>
-            <div class="card-subtitle">
-              <ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N1
-            </div>
-            <div class="card-desc">
-              <ruby>幅広<rt>はばひろ</rt></ruby>いテーマの<ruby>文章<rt>ぶんしょう</rt></ruby>を<ruby>読<rt>よ</rt></ruby>み<ruby>解<rt>と</rt></ruby>く
-              <ruby>高度<rt>こうど</rt></ruby>な<ruby>読解力<rt>どっかいりょく</rt></ruby>と
-              <ruby>豊富<rt>ほうふ</rt></ruby>な<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法力<rt>ぶんぽうりょく</rt></ruby>が<ruby>求<rt>もと</rt></ruby>められます。
-            </div>
-            <div class="card-tags">
-              <span class="tag"><ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
-              <span class="tag">6カテゴリ</span>
-              <span class="tag"><ruby>言語知識<rt>げんごちしき</rt></ruby> <ruby>準備中<rt>じゅんびちゅう</rt></ruby></span>
-            </div>
-          </div>
-          <div class="card-arrow">›</div>
-        </a>
-      </li>
-
-      <!-- N2カード（準備中） -->
-      <li>
-        <div class="level-card level-card-n2">
-          <div class="card-badge-soon">準備中</div>
-          <div class="card-icon-wrap">📘</div>
-          <div class="card-body">
-            <div class="card-level-label card-level-label-n2">N2</div>
-            <div class="card-subtitle" style="color:rgba(200,200,220,0.40);">
-              <ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N2
-            </div>
-            <div class="card-desc" style="color:rgba(200,200,220,0.35);">
-              <ruby>日常的<rt>にちじょうてき</rt></ruby>な<ruby>話題<rt>わだい</rt></ruby>から
-              より<ruby>幅広<rt>はばひろ</rt></ruby>いテーマまで、
-              <ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>を
-              <ruby>総合的<rt>そうごうてき</rt></ruby>に<ruby>対策<rt>たいさく</rt></ruby>します。
-            </div>
-            <div class="card-tags">
-              <span class="tag-muted">Coming Soon</span>
-            </div>
-          </div>
-          <div class="card-arrow-muted">›</div>
+    <!-- N1カード -->
+    <a href="./n1/index.html" class="level-card level-card-n1">
+      <div class="card-badge-new">NEW</div>
+      <div class="card-icon-wrap">🏆</div>
+      <div class="card-body">
+        <div class="card-level-label card-level-label-n1">N1</div>
+        <div class="card-subtitle">
+          <ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N1
         </div>
-      </li>
+        <div class="card-desc">
+          <ruby>幅広<rt>はばひろ</rt></ruby>いテーマの<ruby>文章<rt>ぶんしょう</rt></ruby>を<ruby>読<rt>よ</rt></ruby>み<ruby>解<rt>と</rt></ruby>く
+          <ruby>高度<rt>こうど</rt></ruby>な<ruby>読解力<rt>どっかいりょく</rt></ruby>と
+          <ruby>豊富<rt>ほうふ</rt></ruby>な<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法力<rt>ぶんぽうりょく</rt></ruby>が<ruby>求<rt>もと</rt></ruby>められます。
+        </div>
+        <div class="card-tags">
+          <span class="tag"><ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
+          <span class="tag">6カテゴリ</span>
+          <span class="tag"><ruby>言語知識<rt>げんごちしき</rt></ruby> <ruby>準備中<rt>じゅんびちゅう</rt></ruby></span>
+        </div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
 
-    </ul>
-
-    <!-- 試験概要ボックス（公式情報のみ・聴解は非対応明記） -->
-    <div class="info-box">
-      <div class="info-box-title">📋 JLPT N1 <ruby>試験<rt>しけん</rt></ruby><ruby>概要<rt>がいよう</rt></ruby></div>
+    <!-- N1試験概要 -->
+    <div class="info-box info-box-n1">
+      <div class="info-box-title">📋 N1 <ruby>試験<rt>しけん</rt></ruby><ruby>概要<rt>がいよう</rt></ruby></div>
       <div class="info-row">
         <span class="info-row-label"><ruby>言語知識<rt>げんごちしき</rt></ruby>・<ruby>読解<rt>どっかい</rt></ruby></span>
         <span class="info-row-value">110<ruby>分<rt>ふん</rt></ruby></span>
@@ -491,7 +478,71 @@
       </div>
       <div class="info-row">
         <span class="info-row-label"><ruby>読解<rt>どっかい</rt></ruby>カテゴリ</span>
-        <span class="info-row-value"><ruby>短文<rt>たんぶん</rt></ruby>・<ruby>中文<rt>ちゅうぶん</rt></ruby>・<ruby>長文<rt>ちょうぶん</rt></ruby>・<ruby>統合<rt>とうごう</rt></ruby>・<ruby>主張<rt>しゅちょう</rt></ruby>・<ruby>情報検索<rt>じょうほうけんさく</rt></ruby></span>
+        <span class="info-row-value">
+          <ruby>短文<rt>たんぶん</rt></ruby>・<ruby>中文<rt>ちゅうぶん</rt></ruby>・<ruby>長文<rt>ちょうぶん</rt></ruby>・<ruby>統合<rt>とうごう</rt></ruby>・<ruby>主張<rt>しゅちょう</rt></ruby>・<ruby>情報検索<rt>じょうほうけんさく</rt></ruby>
+        </span>
+      </div>
+    </div>
+
+    <!-- ══ N2セクション ══ -->
+    <div class="section-divider-gap">
+      <div class="divider-line"></div>
+      <div class="divider-ornament">
+        <div class="divider-stars" style="color:rgba(100,150,240,0.60);">✦ ✦ ✦</div>
+        <div class="divider-text" style="color:rgba(100,150,240,0.60);">N2 Level</div>
+        <div class="divider-dot" style="background:rgba(100,150,240,0.50);"></div>
+      </div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- N2カード（準備中） -->
+    <div class="level-card level-card-n2">
+      <div class="card-badge-soon">準備中</div>
+      <div class="card-icon-wrap">📘</div>
+      <div class="card-body">
+        <div class="card-level-label card-level-label-n2">N2</div>
+        <div class="card-subtitle" style="color:rgba(150,180,240,0.45);">
+          <ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N2
+        </div>
+        <div class="card-desc" style="color:rgba(150,180,240,0.40);">
+          <ruby>日常的<rt>にちじょうてき</rt></ruby>な<ruby>話題<rt>わだい</rt></ruby>から
+          より<ruby>幅広<rt>はばひろ</rt></ruby>いテーマまで、
+          <ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>を
+          <ruby>総合的<rt>そうごうてき</rt></ruby>に<ruby>対策<rt>たいさく</rt></ruby>します。
+        </div>
+        <div class="card-tags">
+          <span class="tag-muted">Coming Soon</span>
+        </div>
+      </div>
+      <div class="card-arrow-muted">›</div>
+    </div>
+
+    <!-- N2試験概要（公式情報・準備中のため薄め表示） -->
+    <div class="info-box info-box-n2">
+      <div class="info-box-title-n2">📋 N2 <ruby>試験<rt>しけん</rt></ruby><ruby>概要<rt>がいよう</rt></ruby></div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>言語知識<rt>げんごちしき</rt></ruby>・<ruby>読解<rt>どっかい</rt></ruby></span>
+        <span class="info-row-value-n2">105<ruby>分<rt>ふん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>聴解<rt>ちょうかい</rt></ruby></span>
+        <span class="info-row-value-n2">
+          50<ruby>分<rt>ふん</rt></ruby><span class="info-note">（このアプリは非対応）</span>
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>合格点<rt>ごうかくてん</rt></ruby></span>
+        <span class="info-row-value-n2">90<ruby>点<rt>てん</rt></ruby>／180<ruby>点満点<rt>てんまんてん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>実施<rt>じっし</rt></ruby></span>
+        <span class="info-row-value-n2"><ruby>年<rt>ねん</rt></ruby>2<ruby>回<rt>かい</rt></ruby>（7<ruby>月<rt>がつ</rt></ruby>・12<ruby>月<rt>がつ</rt></ruby>）</span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>読解<rt>どっかい</rt></ruby>カテゴリ</span>
+        <span class="info-row-value-n2">
+          <ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>短文<rt>たんぶん</rt></ruby>・<ruby>中文<rt>ちゅうぶん</rt></ruby>・<ruby>長文<rt>ちょうぶん</rt></ruby>）・<ruby>統合理解<rt>とうごうりかい</rt></ruby>・<ruby>情報検索<rt>じょうほうけんさく</rt></ruby>
+        </span>
       </div>
     </div>
 
