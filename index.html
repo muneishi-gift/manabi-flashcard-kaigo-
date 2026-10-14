@@ -16,16 +16,12 @@
 <!-- ===== 共通設定：ページ読み込み時に即座に設定を反映（画面チラつき防止） ===== -->
 <script>
 (function(){
-  /* localStorageから設定を読み込んでhtmlに即座に反映する */
   var theme    = localStorage.getItem('gift_theme')    || 'dark';
   var fontsize = localStorage.getItem('gift_fontsize') || 'normal';
   var ruby     = localStorage.getItem('gift_ruby')     || 'on';
-  /* テーマをhtmlのdata属性にセット */
-  document.documentElement.setAttribute('data-theme', theme);
-  /* 文字サイズをhtmlのdata属性にセット */
+  document.documentElement.setAttribute('data-theme',    theme);
   document.documentElement.setAttribute('data-fontsize', fontsize);
-  /* ふりがなをhtmlのdata属性にセット */
-  document.documentElement.setAttribute('data-ruby', ruby);
+  document.documentElement.setAttribute('data-ruby',     ruby);
 })();
 </script>
 
@@ -33,54 +29,53 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 
-/* ===== 文字サイズ設定（data属性で切り替え） ===== */
+/* ===== 文字サイズ ===== */
 html[data-fontsize="normal"]{font-size:100%}
 html[data-fontsize="large"]{font-size:112.5%}
 html[data-fontsize="xlarge"]{font-size:125%}
 
-/* ===== ふりがな設定 ===== */
+/* ===== ふりがな ===== */
 ruby{ruby-position:over;-webkit-ruby-position:before}
 rt{
   font-size:.5em;font-weight:400;letter-spacing:0;
   line-height:1;opacity:.8;user-select:none;
-  transform:translateY(.1em);
-  transition:opacity .2s;
+  transform:translateY(.1em);transition:opacity .2s;
 }
-/* ふりがなオフ時は非表示 */
-html[data-ruby="off"] rt{
-  display:none;
-}
+html[data-ruby="off"] rt{display:none}
 
-/* ===== ダークモード（デフォルト） ===== */
+/* ===== ダークモード（デフォルト・少し明るめに調整） ===== */
 html[data-theme="dark"] body{
-  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+  background:linear-gradient(135deg,#1a1650 0%,#3d3580 50%,#2d2b5a 100%);
   color:#fff;
 }
 html[data-theme="dark"] body::before{
-  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.15) 0%,transparent 60%),
-             radial-gradient(ellipse at 70% 80%,rgba(255,120,200,.1) 0%,transparent 60%);
+  background:
+    radial-gradient(ellipse at 30% 20%,rgba(140,120,255,.2) 0%,transparent 60%),
+    radial-gradient(ellipse at 70% 80%,rgba(255,140,210,.13) 0%,transparent 60%);
 }
 html[data-theme="dark"] .countdown{
-  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
-  border-color:rgba(255,255,255,.16);
+  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.07));
+  border-color:rgba(255,255,255,.2);
 }
 html[data-theme="dark"] .menu-card{
-  border-color:rgba(255,255,255,.13);
+  border-color:rgba(255,255,255,.16);
 }
 html[data-theme="dark"] .request-box{
-  background:rgba(255,255,255,.07);
-  border-color:rgba(255,255,255,.15);
+  background:rgba(255,255,255,.09);
+  border-color:rgba(255,255,255,.18);
 }
 html[data-theme="dark"] .request-input{
-  background:rgba(255,255,255,.1);
-  border-color:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.12);
+  border-color:rgba(255,255,255,.25);
   color:#fff;
 }
 html[data-theme="dark"] .settings-panel{
-  background:rgba(30,25,60,0.92);
-  border-color:rgba(255,255,255,.15);
+  background:rgba(40,35,80,0.95);
+  border-color:rgba(255,255,255,.18);
   color:#fff;
 }
+html[data-theme="dark"] .cd-title{color:rgba(255,255,255,.7)}
+html[data-theme="dark"] .cd-msg{color:rgba(255,255,255,.65)}
 
 /* ===== ライトモード ===== */
 html[data-theme="light"] body{
@@ -88,8 +83,9 @@ html[data-theme="light"] body{
   color:#1a1a2e;
 }
 html[data-theme="light"] body::before{
-  background:radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.08) 0%,transparent 60%),
-             radial-gradient(ellipse at 70% 80%,rgba(200,100,255,.06) 0%,transparent 60%);
+  background:
+    radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.08) 0%,transparent 60%),
+    radial-gradient(ellipse at 70% 80%,rgba(200,100,255,.06) 0%,transparent 60%);
 }
 html[data-theme="light"] .brand h1{
   background:linear-gradient(90deg,#6d28d9,#2563eb,#059669);
@@ -97,42 +93,46 @@ html[data-theme="light"] .brand h1{
 }
 html[data-theme="light"] .brand-sub{color:#4b5563}
 html[data-theme="light"] .countdown{
-  background:rgba(255,255,255,.75);
-  border-color:rgba(100,100,200,.25);
-  box-shadow:0 10px 28px rgba(100,100,200,.12);
+  background:rgba(255,255,255,.82);
+  border-color:rgba(100,100,200,.28);
+  box-shadow:0 10px 28px rgba(100,100,200,.13);
 }
 html[data-theme="light"] .cd-title{color:#4b5563}
 html[data-theme="light"] .cd-msg{color:#4b5563}
+html[data-theme="light"] .menu-section-title{color:#3730a3}
 html[data-theme="light"] .menu-card{
-  border-color:rgba(100,100,200,.18);
+  border-color:rgba(100,100,200,.2);
   box-shadow:0 4px 20px rgba(100,100,200,.1);
 }
 html[data-theme="light"] .menu-card .card-desc{color:#374151}
 html[data-theme="light"] .menu-card .card-tags span{
-  background:rgba(0,0,0,.08);color:#374151;
+  background:rgba(0,0,0,.09);color:#374151;
 }
 html[data-theme="light"] .request-box{
-  background:rgba(255,255,255,.8);
-  border-color:rgba(100,100,200,.2);
+  background:rgba(255,255,255,.85);
+  border-color:rgba(100,100,200,.22);
 }
 html[data-theme="light"] .request-box h2{color:#1a1a2e}
 html[data-theme="light"] .request-box p{color:#374151}
 html[data-theme="light"] .request-input{
-  background:rgba(255,255,255,.9);
-  border-color:rgba(100,100,200,.3);
+  background:rgba(255,255,255,.95);
+  border-color:rgba(100,100,200,.32);
   color:#1a1a2e;
 }
 html[data-theme="light"] .request-input::placeholder{color:#9ca3af}
 html[data-theme="light"] .footer-credit{color:#6b7280}
 html[data-theme="light"] .settings-panel{
   background:rgba(240,244,255,0.97);
-  border-color:rgba(100,100,200,.25);
+  border-color:rgba(100,100,200,.28);
   color:#1a1a2e;
 }
 html[data-theme="light"] .settings-label{color:#4b5563}
-html[data-theme="light"] .jlpt-separator-text{color:rgba(30,30,80,0.45)}
-html[data-theme="light"] .jlpt-separator-line{background:rgba(30,30,80,0.15)}
+html[data-theme="light"] .s-btn{background:rgba(100,100,200,.12)}
+html[data-theme="light"] .jlpt-separator-text{color:rgba(30,30,80,.45)}
+html[data-theme="light"] .jlpt-separator-line{background:rgba(30,30,80,.15)}
+html[data-theme="light"] .menu-section-label{color:rgba(30,30,80,.5)}
 
+/* ===== ベース ===== */
 body{
   font-family:'Noto Sans JP','Noto Sans',sans-serif;
   min-height:100dvh;display:flex;flex-direction:column;align-items:center;
@@ -140,8 +140,7 @@ body{
   user-select:none;position:relative;
 }
 body::before{
-  content:'';position:fixed;inset:0;
-  pointer-events:none;z-index:0;
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 }
 body>*{position:relative;z-index:1}
 
@@ -151,50 +150,7 @@ body>*{position:relative;z-index:1}
   text-align:center;width:100%;max-width:560px;
 }
 
-/* ===== 共通設定パネル ===== */
-.settings-panel{
-  position:fixed;top:12px;right:12px;z-index:999;
-  border-radius:16px;border:1px solid;
-  padding:10px 12px;
-  backdrop-filter:blur(16px);
-  display:flex;flex-direction:column;gap:8px;
-  box-shadow:0 4px 20px rgba(0,0,0,.25);
-  min-width:130px;
-}
-.settings-label{
-  font-size:.58rem;font-weight:700;letter-spacing:.08em;
-  opacity:.6;text-align:center;margin-bottom:2px;
-}
-.settings-row{
-  display:flex;align-items:center;gap:6px;
-  justify-content:space-between;
-}
-.settings-row-label{
-  font-size:.65rem;font-weight:700;white-space:nowrap;opacity:.75;
-}
-.settings-btns{display:flex;gap:4px;}
-.s-btn{
-  border:none;border-radius:8px;cursor:pointer;
-  font-size:.65rem;font-weight:700;padding:4px 7px;
-  transition:all .18s;opacity:.55;
-  background:rgba(128,128,200,.18);color:inherit;
-  font-family:'Noto Sans JP',sans-serif;
-}
-.s-btn.active{
-  opacity:1;
-  background:linear-gradient(135deg,#7c3aed,#2563eb);
-  color:#fff;
-  box-shadow:0 2px 8px rgba(124,58,237,.4);
-}
-html[data-theme="light"] .s-btn{
-  background:rgba(100,100,200,.12);
-}
-html[data-theme="light"] .s-btn.active{
-  background:linear-gradient(135deg,#7c3aed,#2563eb);
-  color:#fff;
-}
-
-/* ===== ブランド ===== */
+/* ===== ブランドエリア ===== */
 .brand{display:flex;flex-direction:column;align-items:center;gap:4px}
 .brand-logo{animation:float 3.4s ease-in-out infinite}
 .brand-logo img{
@@ -208,11 +164,55 @@ html[data-theme="light"] .s-btn.active{
   background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.brand-sub{font-size:clamp(.78rem,2.2vw,.9rem);opacity:.55;font-weight:400;letter-spacing:.04em}
+.brand-sub{
+  font-size:clamp(.78rem,2.2vw,.9rem);opacity:.55;
+  font-weight:400;letter-spacing:.04em;
+}
 
-/* ===== 試験カウントダウン ===== */
+/* ===== 設定パネル（ロゴ下・横幅いっぱい） ===== */
+.settings-panel{
+  width:100%;margin-top:14px;
+  border-radius:16px;border:1px solid;
+  padding:10px 16px;
+  backdrop-filter:blur(16px);
+  display:flex;flex-direction:row;
+  align-items:center;
+  gap:0;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  flex-wrap:wrap;
+  row-gap:8px;
+}
+.settings-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.08em;
+  opacity:.55;white-space:nowrap;margin-right:10px;
+  display:none; /* 横並びでは省略 */
+}
+.settings-row{
+  display:flex;align-items:center;gap:6px;
+  flex:1;justify-content:center;
+  min-width:100px;
+}
+.settings-row-label{
+  font-size:.65rem;font-weight:700;white-space:nowrap;opacity:.7;
+}
+.settings-btns{display:flex;gap:4px;}
+.s-btn{
+  border:none;border-radius:8px;cursor:pointer;
+  font-size:.65rem;font-weight:700;padding:5px 9px;
+  transition:all .18s;opacity:.5;
+  background:rgba(128,128,200,.18);color:inherit;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.s-btn.active{
+  opacity:1;
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(124,58,237,.4);
+}
+
+/* ===== カウントダウン ===== */
 .countdown{
-  width:100%;margin-top:22px;padding:15px 18px 16px;border-radius:20px;
+  width:100%;margin-top:20px;padding:15px 18px 16px;border-radius:20px;
   border:1px solid;
   backdrop-filter:blur(10px);
   display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -225,32 +225,39 @@ html[data-theme="light"] .s-btn.active{
   background:linear-gradient(90deg,transparent,var(--cd-accent),transparent);
 }
 .cd-title{
-  font-size:.68rem;font-weight:700;letter-spacing:.02em;line-height:2.2;
-  color:rgba(255,255,255,.6);
+  font-size:.7rem;font-weight:700;letter-spacing:.02em;line-height:2;
 }
 .cd-main{
-  display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+  display:flex;align-items:baseline;gap:6px;
   justify-content:center;line-height:1.9;
-  font-size:clamp(.85rem,2.5vw,1rem);font-weight:700;
 }
 .cd-num{
   font-family:'Poppins',sans-serif;font-weight:800;
-  font-size:clamp(2.4rem,10vw,3.4rem);line-height:1;
+  font-size:clamp(2.8rem,11vw,4rem);line-height:1;
   color:var(--cd-accent);text-shadow:0 0 20px var(--cd-glow);
 }
-.cd-unit{font-size:.88rem;font-weight:700;opacity:.85}
+.cd-unit{font-size:1rem;font-weight:700;opacity:.85}
 .cd-msg{
-  font-size:.74rem;font-weight:700;line-height:2.1;text-align:center;
-  color:rgba(255,255,255,.55);
+  font-size:.76rem;font-weight:700;line-height:2;text-align:center;
 }
 
-/* ===== メニュー ===== */
+/* ===== メニューセクション ===== */
 .menu-section{width:100%;margin-top:26px}
-.menu-title{
-  font-size:.7rem;font-weight:700;letter-spacing:.1em;
-  opacity:.45;margin-bottom:12px;text-align:left;padding-left:4px;
+
+/* セクションラベル（◆ タイトル形式） */
+.menu-section-label{
+  display:flex;align-items:center;gap:8px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;
+  color:rgba(255,255,255,.5);
+  margin-bottom:12px;padding-left:2px;
 }
+.menu-section-label-accent{
+  color:#a78bfa;font-size:.85rem;
+}
+
 .menu-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+
+/* ===== メニューカード ===== */
 .menu-card{
   display:grid;grid-template-columns:auto 1fr auto;
   align-items:center;gap:14px;
@@ -264,7 +271,7 @@ html[data-theme="light"] .s-btn.active{
 }
 .menu-card::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 60%);
+  background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 60%);
   pointer-events:none;
 }
 .menu-card:active{transform:scale(.97)}
@@ -274,7 +281,7 @@ html[data-theme="light"] .s-btn.active{
 .card-icon{
   font-size:1.9rem;width:50px;height:50px;
   display:flex;align-items:center;justify-content:center;
-  border-radius:14px;background:rgba(255,255,255,.12);flex-shrink:0;
+  border-radius:14px;background:rgba(255,255,255,.13);flex-shrink:0;
 }
 .card-body{text-align:left}
 .card-title{
@@ -283,12 +290,12 @@ html[data-theme="light"] .s-btn.active{
 }
 .card-desc{
   font-size:clamp(.72rem,2vw,.8rem);
-  opacity:.68;line-height:1.45;margin-bottom:5px;
+  opacity:.7;line-height:1.45;margin-bottom:5px;
 }
 .card-tags{display:flex;flex-wrap:wrap;gap:4px}
 .card-tags span{
   font-size:.6rem;font-weight:700;padding:2px 7px;
-  border-radius:20px;background:rgba(255,255,255,.15);
+  border-radius:20px;background:rgba(255,255,255,.16);
   letter-spacing:.02em;
 }
 .card-arrow{font-size:1.3rem;opacity:.55;flex-shrink:0}
@@ -299,30 +306,29 @@ html[data-theme="light"] .s-btn.active{
 }
 
 /* ===== カード色 ===== */
-.flashcard{background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(79,70,229,.2))}
-.exam    {background:linear-gradient(135deg,rgba(16,185,129,.35),rgba(5,150,105,.2))}
-.youten  {background:linear-gradient(135deg,rgba(245,158,11,.35),rgba(217,119,6,.2))}
-.houkaisei{background:linear-gradient(135deg,rgba(168,85,247,.35),rgba(239,68,68,.2))}
-.jlpt    {background:linear-gradient(135deg,rgba(251,191,36,.22),rgba(245,158,11,.12))}
+.flashcard {background:linear-gradient(135deg,rgba(99,102,241,.38),rgba(79,70,229,.22))}
+.exam      {background:linear-gradient(135deg,rgba(16,185,129,.38),rgba(5,150,105,.22))}
+.youten    {background:linear-gradient(135deg,rgba(245,158,11,.38),rgba(217,119,6,.22))}
+.houkaisei {background:linear-gradient(135deg,rgba(168,85,247,.38),rgba(239,68,68,.22))}
+.jlpt      {background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(245,158,11,.14))}
 
 /* ===== JLPTセパレーター ===== */
 .jlpt-separator{
   display:flex;align-items:center;gap:10px;
-  margin:18px 0 6px;padding:0 2px;
+  margin:10px 0 4px;padding:0 2px;
 }
 .jlpt-separator-text{
   font-size:.68rem;font-weight:700;letter-spacing:.08em;
-  color:rgba(255,255,255,0.38);white-space:nowrap;
+  color:rgba(255,255,255,.38);white-space:nowrap;
 }
 .jlpt-separator-line{
-  flex:1;height:1px;background:rgba(255,255,255,0.15);
+  flex:1;height:1px;background:rgba(255,255,255,.15);
 }
 
 /* ===== リクエストボックス ===== */
 .request-box{
   width:100%;margin-top:30px;padding:22px 20px;border-radius:20px;
-  border:1px solid;
-  backdrop-filter:blur(10px);text-align:center;
+  border:1px solid;backdrop-filter:blur(10px);text-align:center;
 }
 .request-box h2{font-size:.9rem;font-weight:700;line-height:1.9;margin-bottom:6px}
 .request-box p{font-size:.72rem;opacity:.6;margin-bottom:14px;line-height:1.7}
@@ -348,50 +354,19 @@ html[data-theme="light"] .s-btn.active{
 
 /* ===== フッター ===== */
 .footer-profile{
-  width:100%;margin-top:36px;padding:20px;border-radius:20px;
+  width:100%;margin-top:36px;padding:20px;
   display:flex;flex-direction:column;align-items:center;gap:10px;
 }
+/* ★修正⑤：丸枠なし・シンプルな表示 */
 .footer-profile img{
-  width:72px;height:72px;border-radius:50%;
-  object-fit:cover;border:2px solid rgba(255,255,255,.25);
+  width:80px;height:80px;
+  border-radius:16px;
+  object-fit:cover;object-position:top center;
 }
 .footer-credit{font-size:.7rem;opacity:.45;margin-top:4px;line-height:1.8}
 </style>
 </head>
 <body>
-
-<!-- ===== 共通設定パネル（右上固定） ===== -->
-<div class="settings-panel" id="settingsPanel">
-  <div class="settings-label">⚙ 表示設定</div>
-
-  <!-- ふりがな切り替え -->
-  <div class="settings-row">
-    <span class="settings-row-label">ふりがな</span>
-    <div class="settings-btns">
-      <button class="s-btn" id="rubyOn"  onclick="setRuby('on')">あり</button>
-      <button class="s-btn" id="rubyOff" onclick="setRuby('off')">なし</button>
-    </div>
-  </div>
-
-  <!-- 文字サイズ切り替え -->
-  <div class="settings-row">
-    <span class="settings-row-label">文字</span>
-    <div class="settings-btns">
-      <button class="s-btn" id="fsNormal" onclick="setFontsize('normal')">標準</button>
-      <button class="s-btn" id="fsLarge"  onclick="setFontsize('large')">大</button>
-      <button class="s-btn" id="fsXlarge" onclick="setFontsize('xlarge')">特大</button>
-    </div>
-  </div>
-
-  <!-- テーマ切り替え -->
-  <div class="settings-row">
-    <span class="settings-row-label">テーマ</span>
-    <div class="settings-btns">
-      <button class="s-btn" id="themeDark"  onclick="setTheme('dark')">🌙</button>
-      <button class="s-btn" id="themeLight" onclick="setTheme('light')">☀️</button>
-    </div>
-  </div>
-</div>
 
 <div class="top-container">
 
@@ -404,16 +379,53 @@ html[data-theme="light"] .s-btn.active{
     <div class="brand-sub">一般社団法人GIFT協会</div>
   </div>
 
-  <!-- ===== 試験カウントダウン ===== -->
+  <!-- ===== 設定パネル（ロゴ・タイトルの直下） ===== -->
+  <div class="settings-panel" id="settingsPanel">
+
+    <!-- ふりがな -->
+    <div class="settings-row">
+      <span class="settings-row-label">ふりがな</span>
+      <div class="settings-btns">
+        <button class="s-btn" id="rubyOn"  onclick="setRuby('on')">あり</button>
+        <button class="s-btn" id="rubyOff" onclick="setRuby('off')">なし</button>
+      </div>
+    </div>
+
+    <!-- 文字サイズ -->
+    <div class="settings-row">
+      <span class="settings-row-label">文字</span>
+      <div class="settings-btns">
+        <button class="s-btn" id="fsNormal" onclick="setFontsize('normal')">標準</button>
+        <button class="s-btn" id="fsLarge"  onclick="setFontsize('large')">大</button>
+        <button class="s-btn" id="fsXlarge" onclick="setFontsize('xlarge')">特大</button>
+      </div>
+    </div>
+
+    <!-- テーマ -->
+    <div class="settings-row">
+      <span class="settings-row-label">テーマ</span>
+      <div class="settings-btns">
+        <button class="s-btn" id="themeDark"  onclick="setTheme('dark')">🌙 ダーク</button>
+        <button class="s-btn" id="themeLight" onclick="setTheme('light')">☀️ ライト</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== カウントダウン（日数のみ） ===== -->
   <div class="countdown" id="countdown">
     <div class="cd-title" id="cdTitle"></div>
     <div class="cd-main" id="cdMain"></div>
     <div class="cd-msg"  id="cdMsg"></div>
   </div>
 
-  <!-- ===== メニュー ===== -->
-  <nav class="menu-section" aria-label="メインメニュー">
-    <div class="menu-title">MENU</div>
+  <!-- ===== メニュー：介護福祉士 ===== -->
+  <nav class="menu-section" aria-label="介護福祉士国家試験対策メニュー">
+    <div class="menu-section-label">
+      <span class="menu-section-label-accent">◆</span>
+      <ruby>介護福祉士<rt>かいごふくしし</rt></ruby>
+      <ruby>国家試験<rt>こっかしけん</rt></ruby>　対策
+    </div>
     <ul class="menu-list">
 
       <!-- 介護用語フラッシュカード -->
@@ -520,24 +532,27 @@ html[data-theme="light"] .s-btn.active{
         </a>
       </li>
 
-      <!-- ===== セパレーター ===== -->
-      <li aria-hidden="true">
-        <div class="jlpt-separator">
-          <div class="jlpt-separator-line"></div>
-          <div class="jlpt-separator-text">✦ JLPT 日本語能力試験 対策</div>
-          <div class="jlpt-separator-line"></div>
-        </div>
-      </li>
+    </ul>
+  </nav>
 
-      <!-- ===== JLPTメニュー ===== -->
+  <!-- ===== メニュー：JLPT ===== -->
+  <nav class="menu-section" style="margin-top:10px;" aria-label="JLPT対策メニュー">
+    <div class="menu-section-label">
+      <span class="menu-section-label-accent">◆</span>
+      JLPT　<ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby>　対策
+    </div>
+    <ul class="menu-list">
+
+      <!-- JLPTカード -->
       <li>
         <a href="./jlpt/index.html" class="menu-card jlpt">
           <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
-          <div class="card-icon" style="background:rgba(251,191,36,.18);">🎌</div>
+          <div class="card-icon" style="background:rgba(251,191,36,.2);">🎌</div>
           <div class="card-body">
             <div class="card-title" style="
               background:linear-gradient(90deg,#fbbf24,#fde68a);
-              -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+              -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+              background-clip:text;
             ">JLPT N1 / N2 <ruby>対策<rt>たいさく</rt></ruby></div>
             <div class="card-desc">
               <ruby>日本語<rt>にほんご</rt></ruby>
@@ -580,7 +595,7 @@ html[data-theme="light"] .s-btn.active{
 
   <!-- ===== フッター ===== -->
   <div class="footer-profile">
-    <img src="muneishi-icon.png" alt="宗石光英" width="72" height="72">
+    <img src="muneishi-icon.png" alt="宗石光英" width="80" height="80">
     <div class="footer-credit">
       一般社団法人 GIFT協会<br>
       宗石 光英<br>
@@ -591,28 +606,25 @@ html[data-theme="light"] .s-btn.active{
 </div><!-- /top-container -->
 
 <script>
-/* ===== GAS（Googleスプレッドシート送信）URL ===== */
+/* ===== GAS URL ===== */
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
 
 /* ===== 試験日設定 ===== */
-var EXAM_INFO = { round: 39, date: '2027-01-31', thanks: 7 };
+var EXAM_INFO = { round: 39, date: '2027-01-31' };
 
-/* ===== 設定パネル：ボタンのactive状態を同期する ===== */
+/* ===== ボタンのactive状態を同期 ===== */
 function syncSettingsBtns(){
   var theme    = localStorage.getItem('gift_theme')    || 'dark';
   var fontsize = localStorage.getItem('gift_fontsize') || 'normal';
   var ruby     = localStorage.getItem('gift_ruby')     || 'on';
 
-  /* テーマ */
   document.getElementById('themeDark').classList.toggle('active',  theme === 'dark');
   document.getElementById('themeLight').classList.toggle('active', theme === 'light');
-  /* 文字サイズ */
-  document.getElementById('fsNormal').classList.toggle('active', fontsize === 'normal');
-  document.getElementById('fsLarge').classList.toggle('active',  fontsize === 'large');
-  document.getElementById('fsXlarge').classList.toggle('active', fontsize === 'xlarge');
-  /* ふりがな */
-  document.getElementById('rubyOn').classList.toggle('active',  ruby === 'on');
-  document.getElementById('rubyOff').classList.toggle('active', ruby === 'off');
+  document.getElementById('fsNormal').classList.toggle('active',   fontsize === 'normal');
+  document.getElementById('fsLarge').classList.toggle('active',    fontsize === 'large');
+  document.getElementById('fsXlarge').classList.toggle('active',   fontsize === 'xlarge');
+  document.getElementById('rubyOn').classList.toggle('active',     ruby === 'on');
+  document.getElementById('rubyOff').classList.toggle('active',    ruby === 'off');
 }
 
 /* ===== ふりがな切り替え ===== */
@@ -636,43 +648,44 @@ function setTheme(val){
   syncSettingsBtns();
 }
 
-/* ===== カウントダウン ===== */
+/* ===== カウントダウン（日数のみ表示） ===== */
 function renderCountdown(){
-  var now   = new Date();
-  var exam  = new Date(EXAM_INFO.date + 'T00:00:00+09:00');
-  var diff  = exam - now;
+  var now  = new Date();
+  var exam = new Date(EXAM_INFO.date + 'T00:00:00+09:00');
+  var diff = exam - now;
+
   var title = document.getElementById('cdTitle');
   var main  = document.getElementById('cdMain');
   var msg   = document.getElementById('cdMsg');
 
   if(diff <= 0){
     title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験';
-    main.innerHTML  = '<span class="cd-num">お疲れ様でした！</span>';
-    msg.textContent = '試験当日です。全力を出し切ろう！';
+    main.innerHTML    = '<span class="cd-num" style="font-size:2rem;">お疲れ様でした！</span>';
+    msg.textContent   = '試験当日です。全力を出し切ろう！';
     return;
   }
 
-  var days  = Math.floor(diff / 86400000);
-  var hours = Math.floor((diff % 86400000) / 3600000);
-  var mins  = Math.floor((diff % 3600000)  / 60000);
-
-  title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験まで';
-  main.innerHTML =
-    '<span class="cd-num">' + days + '</span><span class="cd-unit">日</span>' +
-    '<span class="cd-num">' + hours + '</span><span class="cd-unit">時間</span>' +
-    '<span class="cd-num">' + mins + '</span><span class="cd-unit">分</span>';
+  /* ★修正③：日数のみ表示 */
+  var days = Math.floor(diff / 86400000);
 
   var msgs = [
     '今日の積み重ねが合格への道。',
     '毎日少しずつ。それが一番の近道。',
     'あなたの努力は必ず報われる。',
     '一問一問、丁寧に取り組もう。',
-    '合格まであと' + days + '日！頑張れ！'
+    '合格まであと' + days + '日！頑張れ！',
+    '継続は力なり。今日も一歩前へ。',
+    '苦手な問題こそ、伸びしろだ！'
   ];
+
+  title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験まで';
+  main.innerHTML =
+    '<span class="cd-num">' + days + '</span>' +
+    '<span class="cd-unit">日</span>';
   msg.textContent = msgs[days % msgs.length];
 }
 
-/* ===== ページ読み込み時の初期化 ===== */
+/* ===== 初期化 ===== */
 window.addEventListener('DOMContentLoaded', function(){
   syncSettingsBtns();
   renderCountdown();
