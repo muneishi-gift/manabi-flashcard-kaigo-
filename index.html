@@ -541,9 +541,8 @@
        リクエストボックス
     ═══════════════════════════════════════ */
     .request-box {
-      width: calc(100% - 32px);
-      max-width: 560px;
-      margin: 36px auto 0;
+      width: 100%;
+      margin: 24px 0 0;
       padding: 24px 20px;
       background: var(--request-bg);
       border: 1px solid var(--request-border);
@@ -551,7 +550,6 @@
       backdrop-filter: blur(10px);
       text-align: center;
       box-sizing: border-box;
-      overflow: hidden;
     }
     .request-form input,
     .request-form textarea,
@@ -843,6 +841,7 @@
   </nav>
 
   <!-- ═══ リクエストボックス ═══ -->
+  <div class="menu-section">
   <div class="request-box">
     <div class="request-title">
       📝 あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる
@@ -854,6 +853,7 @@
       <button type="submit">送信する</button>
     </form>
     <div id="req-msg"></div>
+  </div>
   </div>
 
   <!-- ═══ フッター ═══ -->
