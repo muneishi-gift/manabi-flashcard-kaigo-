@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JLPT 対策｜学びアプリ｜一般社団法人GIFT協会</title>
+  <meta name="description" content="JLPT N1・N2の読解・語彙を徹底対策。外国人介護福祉士志望者向け日本語能力試験対策アプリ。">
+  <link rel="icon" href="../gift-icon.png">
+  <link rel="apple-touch-icon" href="../gift-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    /* ─── 設定の即時適用（フラッシュ防止） ─── */
+    (function(){
+      const theme    = localStorage.getItem('gift_theme')    || 'dark';
+      const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+      const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-fontsize', fontsize);
+      document.documentElement.setAttribute('data-ruby', ruby);
+    })();
+  </script>
+
+  <style>
+    /* ═══════════════════════════════════════
+       CSS変数（ダーク／ライト切替）
+    ═══════════════════════════════════════ */
+    :root { --font-scale: 1; }
+    html[data-fontsize="normal"] { --font-scale: 1; }
+    html[data-fontsize="large"]  { --font-scale: 1.125; }
+    html[data-fontsize="xlarge"] { --font-scale: 1.25; }
+
+    /* ── ダークモード ── */
+    html[data-theme="dark"] {
+      --bg-start:#0e0d1a; --bg-mid:#1a1830; --bg-end:#0e0d1a;
+      --surface:rgba(255,255,255,0.05); --surface-hover:rgba(255,255,255,0.09);
+      --border:rgba(255,255,255,0.10);
+      --text-primary:#f0ece0; --text-secondary:rgba(240,236,224,0.65); --text-muted:rgba(240,236,224,0.40);
+      --accent:#c9973a; --accent-glow:rgba(201,151,58,0.25);
+      --panel-bg:rgba(20,18,35,0.85); --panel-border:rgba(201,151,58,0.30);
+      --btn-inactive:rgba(255,255,255,0.07); --btn-inactive-text:rgba(240,236,224,0.55);
+      --btn-active-bg:linear-gradient(135deg,#b8863a,#c9973a); --btn-active-text:#fff;
+      --divider-color:rgba(201,151,58,0.50);
+      --tag-bg:rgba(255,255,255,0.10); --tag-text:rgba(240,236,224,0.75);
+      --card-n1:linear-gradient(135deg,rgba(130,90,20,0.60),rgba(100,65,10,0.45));
+      --card-n1-border:rgba(200,155,50,0.40);
+      --card-n2:linear-gradient(135deg,rgba(60,60,80,0.50),rgba(40,40,60,0.35));
+      --card-n2-border:rgba(120,120,150,0.25);
+      --back-btn-bg:rgba(255,255,255,0.07); --back-btn-border:rgba(255,255,255,0.15);
+    }
+
+    /* ── ライトモード ── */
+    html[data-theme="light"] {
+      --bg-start:#f2ede4; --bg-mid:#ede6d8; --bg-end:#e8dfd0;
+      --surface:rgba(255,255,255,0.60); --surface-hover:rgba(255,255,255,0.80);
+      --border:rgba(150,120,70,0.18);
+      --text-primary:#3a2e1e; --text-secondary:rgba(58,46,30,0.72); --text-muted:rgba(58,46,30,0.45);
+      --accent:#9a6c1e; --accent-glow:rgba(154,108,30,0.20);
+      --panel-bg:rgba(245,240,230,0.92); --panel-border:rgba(154,108,30,0.30);
+      --btn-inactive:rgba(180,150,100,0.15); --btn-inactive-text:rgba(58,46,30,0.55);
+      --btn-active-bg:linear-gradient(135deg,#9a6c1e,#b8863a); --btn-active-text:#fff;
+      --divider-color:rgba(154,108,30,0.45);
+      --tag-bg:rgba(154,108,30,0.12); --tag-text:rgba(58,46,30,0.80);
+      --card-n1:linear-gradient(135deg,rgba(240,220,170,0.75),rgba(230,205,145,0.60));
+      --card-n1-border:rgba(180,140,40,0.35);
+      --card-n2:linear-gradient(135deg,rgba(210,210,220,0.70),rgba(195,195,210,0.55));
+      --card-n2-border:rgba(140,140,160,0.30);
+      --back-btn-bg:rgba(150,120,70,0.12); --back-btn-border:rgba(150,120,70,0.25);
+    }
+
+    /* ═══════════════════════════════════════
+       ベースリセット
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: calc(16px * var(--font-scale));
+      background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      transition: background 0.4s, color 0.4s;
+      padding-bottom: 60px;
+    }
+
+    /* ふりがな制御 */
+    html[data-ruby="off"] ruby rt { display: none; }
+
+    /* ═══════════════════════════════════════
+       ヘッダー
+    ═══════════════════════════════════════ */
+    .site-header {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 20px 16px; gap: 4px;
+    }
+    .header-logo-row { display: flex; align-items: center; gap: 10px; }
+    .header-logo-row img.logo { width: 36px; height: 36px; object-fit: contain; }
+    .header-title {
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(1.1rem * var(--font-scale));
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .header-sub { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); letter-spacing: .08em; }
+
+    /* ═══════════════════════════════════════
+       設定パネル（トップと同じ）
+    ═══════════════════════════════════════ */
+    .settings-panel {
+      width: calc(100% - 32px); max-width: 560px; margin: 0 auto 20px;
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: 18px; padding: 10px 16px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .settings-panel::-webkit-scrollbar { display: none; }
+    .sp-group { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sp-label { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+    .sp-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+
+    /* ふりがなスイッチ */
+    .ruby-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+    .ruby-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .ruby-track {
+      width: 44px; height: 24px; background: var(--btn-inactive);
+      border: 1.5px solid var(--border); border-radius: 12px; position: relative;
+      transition: background 0.3s, border-color 0.3s; flex-shrink: 0;
+    }
+    .ruby-thumb {
+      position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+      background: var(--btn-inactive-text); border-radius: 50%;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .ruby-switch input:checked ~ .ruby-track { background: linear-gradient(135deg,#b8863a,#c9973a); border-color: var(--accent); }
+    .ruby-switch input:checked ~ .ruby-track .ruby-thumb { transform: translateX(20px); background: #fff; }
+
+    .sp-btn-group { display: flex; gap: 4px; flex-shrink: 0; }
+    .sp-btn {
+      padding: 4px 9px; border-radius: 9px; border: 1.5px solid transparent;
+      background: var(--btn-inactive); color: var(--btn-inactive-text);
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(0.68rem * var(--font-scale)); font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+    }
+    .sp-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); border-color: var(--accent); box-shadow: 0 2px 8px var(--accent-glow); }
+
+    /* ═══════════════════════════════════════
+       メインコンテンツ
+    ═══════════════════════════════════════ */
+    .main-section {
+      width: calc(100% - 32px);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ── ページタイトル ── */
+    .page-title-block {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .page-title-en {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(0.68rem * var(--font-scale));
+      font-weight: 700;
+      letter-spacing: .25em;
+      color: var(--accent);
+      opacity: .7;
+      margin-bottom: 6px;
+    }
+    .page-title-ja {
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(1.6rem * var(--font-scale));
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .page-title-desc {
+      font-size: calc(0.78rem * var(--font-scale));
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ── セクション見出し ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 32px 0 18px;
+    }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--divider-color), transparent); }
+    .divider-ornament { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
+    .divider-stars { color: var(--accent); font-size: .60rem; letter-spacing: .18em; opacity: .7; }
+    .divider-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(0.60rem * var(--font-scale));
+      font-style: italic; font-weight: 700; color: var(--accent);
+      letter-spacing: .18em; white-space: nowrap;
+    }
+    .divider-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: .6; }
+
+    /* ── レベルカード ── */
+    .level-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+
+    .level-card {
+      display: flex; align-items: center; gap: 18px;
+      border-radius: 24px; padding: 22px 22px;
+      text-decoration: none; color: var(--text-primary);
+      border: 1px solid transparent;
+      position: relative; overflow: hidden;
+      transition: transform .25s, box-shadow .25s;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .level-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.28); }
+
+    /* N1カード：ゴールド系 */
+    .level-card-n1 { background: var(--card-n1); border-color: var(--card-n1-border); }
+
+    /* N2カード：グレー系（準備中） */
+    .level-card-n2 {
+      background: var(--card-n2); border-color: var(--card-n2-border);
+      opacity: 0.65; cursor: not-allowed; pointer-events: none;
+    }
+
+    /* NEWバッジ */
+    .card-badge-new {
+      position: absolute; top: 14px; right: 14px;
+      background: linear-gradient(90deg,#f59e0b,#ef4444);
+      color: #fff; font-size: .56rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px; letter-spacing: .05em;
+    }
+    /* 準備中バッジ */
+    .card-badge-soon {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(150,150,170,0.40);
+      color: rgba(255,255,255,0.60); font-size: .56rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px; letter-spacing: .05em;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* アイコン枠 */
+    .card-icon-wrap {
+      width: 64px; height: 64px; border-radius: 18px;
+      background: rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; flex-shrink: 0;
+    }
+
+    /* カード本文 */
+    .card-body { flex: 1; min-width: 0; }
+
+    /* レベルラベル（N1・N2） */
+    .card-level-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(2rem * var(--font-scale));
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .card-level-label-n1 {
+      background: linear-gradient(90deg, var(--accent), #f0d080);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .card-level-label-n2 { color: rgba(200,200,220,0.60); }
+
+    .card-subtitle {
+      font-size: calc(0.82rem * var(--font-scale));
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: calc(0.73rem * var(--font-scale));
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag {
+      background: var(--tag-bg); color: var(--tag-text);
+      font-size: calc(0.63rem * var(--font-scale));
+      padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    }
+    .tag-muted {
+      background: rgba(150,150,170,0.15); color: rgba(200,200,220,0.50);
+      font-size: calc(0.63rem * var(--font-scale));
+      padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    }
+    .card-arrow { font-size: 1.3rem; color: var(--text-muted); flex-shrink: 0; }
+    .card-arrow-muted { font-size: 1.3rem; color: rgba(200,200,220,0.25); flex-shrink: 0; }
+
+    /* ── 情報ボックス（試験情報） ── */
+    .info-box {
+      margin-top: 28px;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+    .info-box-title {
+      font-size: calc(0.72rem * var(--font-scale));
+      font-weight: 700; color: var(--accent);
+      letter-spacing: .08em; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: calc(0.75rem * var(--font-scale));
+    }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row-label { color: var(--text-muted); }
+    .info-row-value { color: var(--text-primary); font-weight: 600; }
+
+    /* ── 戻るボタン ── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin: 28px 0 0;
+      padding: 10px 18px;
+      background: var(--back-btn-bg);
+      border: 1px solid var(--back-btn-border);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      font-size: calc(0.78rem * var(--font-scale));
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .back-btn:hover { opacity: .75; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══ ヘッダー ═══ -->
+  <header class="site-header">
+    <div class="header-logo-row">
+      <img src="../gift-logo.png" alt="GIFT協会ロゴ" class="logo">
+      <div>
+        <div class="header-title">Manabi App</div>
+      </div>
+    </div>
+    <div class="header-sub">一般社団法人 GIFT 協会</div>
+  </header>
+
+  <!-- ═══ 設定パネル ═══ -->
+  <div class="settings-panel" role="toolbar" aria-label="表示設定">
+    <div class="sp-group">
+      <span class="sp-label">ふりがな</span>
+      <label class="ruby-switch">
+        <input type="checkbox" id="ruby-toggle" checked>
+        <div class="ruby-track"><div class="ruby-thumb"></div></div>
+      </label>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-group">
+      <span class="sp-label">文字</span>
+      <div class="sp-btn-group">
+        <button class="sp-btn" data-size="normal" onclick="setFontSize('normal')">S</button>
+        <button class="sp-btn" data-size="large"  onclick="setFontSize('large')">M</button>
+        <button class="sp-btn" data-size="xlarge" onclick="setFontSize('xlarge')">L</button>
+      </div>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-group">
+      <span class="sp-label">テーマ</span>
+      <div class="sp-btn-group">
+        <button class="sp-btn" data-theme="dark"  onclick="setTheme('dark')">🌙</button>
+        <button class="sp-btn" data-theme="light" onclick="setTheme('light')">☀️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ メインコンテンツ ═══ -->
+  <div class="main-section">
+
+    <!-- ページタイトル -->
+    <div class="page-title-block">
+      <div class="page-title-en">JLPT STUDY</div>
+      <div class="page-title-ja">🎌 日本語<ruby>能力<rt>のうりょく</rt></ruby><ruby>試験<rt>しけん</rt></ruby> 対策</div>
+      <div class="page-title-desc">
+        レベルを<ruby>選<rt>えら</rt></ruby>んでスタート！
+      </div>
+    </div>
+
+    <!-- セクション見出し -->
+    <div class="section-divider">
+      <div class="divider-line"></div>
+      <div class="divider-ornament">
+        <div class="divider-stars">✦ ✦ ✦</div>
+        <div class="divider-text">Level Select</div>
+        <div class="divider-dot"></div>
+      </div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- レベル選択カード -->
+    <ul class="level-list">
+
+      <!-- N1カード -->
+      <li>
+        <a href="./n1/index.html" class="level-card level-card-n1">
+          <div class="card-badge-new">NEW</div>
+          <div class="card-icon-wrap">🏆</div>
+          <div class="card-body">
+            <div class="card-level-label card-level-label-n1">N1</div>
+            <div class="card-subtitle"><ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N1</div>
+            <div class="card-desc">
+              <ruby>最上級<rt>さいじょうきゅう</rt></ruby>レベル。<ruby>介護福祉士<rt>かいごふくしし</rt></ruby><ruby>試験<rt>しけん</rt></ruby>に<ruby>必要<rt>ひつよう</rt></ruby>な<ruby>読解力<rt>どっかいりょく</rt></ruby>を<ruby>徹底<rt>てってい</rt></ruby>トレーニング。
+            </div>
+            <div class="card-tags">
+              <span class="tag"><ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
+              <span class="tag">6カテゴリ</span>
+              <span class="tag"><ruby>言語知識<rt>げんごちしき</rt></ruby> <ruby>準備中<rt>じゅんびちゅう</rt></ruby></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
+
+      <!-- N2カード（準備中） -->
+      <li>
+        <div class="level-card level-card-n2">
+          <div class="card-badge-soon">準備中</div>
+          <div class="card-icon-wrap">📘</div>
+          <div class="card-body">
+            <div class="card-level-label card-level-label-n2">N2</div>
+            <div class="card-subtitle" style="color:rgba(200,200,220,0.45);">
+              <ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby> N2
+            </div>
+            <div class="card-desc" style="color:rgba(200,200,220,0.40);">
+              N1の<ruby>次<rt>つぎ</rt></ruby>のレベル。<ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>を<ruby>対策<rt>たいさく</rt></ruby>。<ruby>現在<rt>げんざい</rt></ruby><ruby>準備中<rt>じゅんびちゅう</rt></ruby>です。
+            </div>
+            <div class="card-tags">
+              <span class="tag-muted">Coming Soon</span>
+            </div>
+          </div>
+          <div class="card-arrow-muted">›</div>
+        </div>
+      </li>
+
+    </ul>
+
+    <!-- 試験情報ボックス -->
+    <div class="info-box">
+      <div class="info-box-title">📋 JLPT N1 <ruby>試験<rt>しけん</rt></ruby><ruby>概要<rt>がいよう</rt></ruby></div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>試験時間<rt>しけんじかん</rt></ruby></span>
+        <span class="info-row-value">110<ruby>分<rt>ふん</rt></ruby>（<ruby>言語知識<rt>げんごちしき</rt></ruby>＋<ruby>読解<rt>どっかい</rt></ruby>）</span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>読解問題数<rt>どっかいもんだいすう</rt></ruby></span>
+        <span class="info-row-value"><ruby>問題<rt>もんだい</rt></ruby>8〜13（6カテゴリ）</span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>短文<rt>たんぶん</rt></ruby>）</span>
+        <span class="info-row-value">50<ruby>問<rt>もん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>中文<rt>ちゅうぶん</rt></ruby>）</span>
+        <span class="info-row-value">27<ruby>問<rt>もん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>内容理解<rt>ないようりかい</rt></ruby>（<ruby>長文<rt>ちょうぶん</rt></ruby>）</span>
+        <span class="info-row-value">20<ruby>問<rt>もん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>統合理解<rt>とうごうりかい</rt></ruby></span>
+        <span class="info-row-value">18<ruby>問<rt>もん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>主張理解<rt>しゅちょうりかい</rt></ruby></span>
+        <span class="info-row-value">20<ruby>問<rt>もん</rt></ruby></span>
+      </div>
+      <div class="info-row">
+        <span class="info-row-label"><ruby>情報検索<rt>じょうほうけんさく</rt></ruby></span>
+        <span class="info-row-value">12<ruby>問<rt>もん</rt></ruby></span>
+      </div>
+    </div>
+
+    <!-- 戻るボタン -->
+    <a href="../index.html" class="back-btn">← <ruby>トップ<rt></rt></ruby>にもどる</a>
+
+  </div><!-- /main-section -->
+
+  <!-- ═══ JavaScript ═══ -->
+  <script>
+    /* ── 設定初期化 ── */
+    function applySettings() {
+      const theme    = localStorage.getItem('gift_theme')    || 'dark';
+      const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+      const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-fontsize', fontsize);
+      document.documentElement.setAttribute('data-ruby', ruby);
+      document.querySelectorAll('.sp-btn[data-size]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.size === fontsize);
+      });
+      document.querySelectorAll('.sp-btn[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+      });
+      const rubyToggle = document.getElementById('ruby-toggle');
+      if (rubyToggle) rubyToggle.checked = (ruby === 'on');
+    }
+
+    /* ふりがなスイッチ */
+    document.getElementById('ruby-toggle').addEventListener('change', function() {
+      const val = this.checked ? 'on' : 'off';
+      localStorage.setItem('gift_ruby', val);
+      document.documentElement.setAttribute('data-ruby', val);
+    });
+
+    /* フォントサイズ */
+    function setFontSize(size) {
+      localStorage.setItem('gift_fontsize', size);
+      document.documentElement.setAttribute('data-fontsize', size);
+      document.querySelectorAll('.sp-btn[data-size]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.size === size);
+      });
+    }
+
+    /* テーマ */
+    function setTheme(theme) {
+      localStorage.setItem('gift_theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      document.querySelectorAll('.sp-btn[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+      });
+    }
+
+    /* 初回適用 */
+    applySettings();
+  </script>
+
+</body>
+</html>
