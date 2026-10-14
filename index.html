@@ -303,6 +303,14 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
+      overflow: hidden;
+    }
+    .countdown-number-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: nowrap;
     }
     .countdown-label {
       font-size: calc(0.72rem * var(--font-scale));
@@ -323,6 +331,17 @@
       font-size: calc(0.75rem * var(--font-scale));
       color: var(--text-secondary);
       margin-top: 2px;
+    }
+    .countdown-message {
+      margin-top: 10px;
+      font-size: calc(0.78rem * var(--font-scale));
+      color: var(--accent);
+      font-style: italic;
+      font-weight: 500;
+      letter-spacing: .03em;
+      line-height: 1.5;
+      min-height: 1.5em;
+      opacity: 0.85;
     }
 
     /* ═══════════════════════════════════════
@@ -531,6 +550,13 @@
       border-radius: 22px;
       backdrop-filter: blur(10px);
       text-align: center;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .request-form input,
+    .request-form textarea,
+    .request-form button {
+      max-width: 100%;
     }
     .request-title {
       font-family: 'Poppins', 'Noto Sans JP', sans-serif;
@@ -673,8 +699,11 @@
     <div class="countdown-label">
       第39回 <ruby>介護福祉士<rt>かいごふくしし</rt></ruby> <ruby>国家試験<rt>こっかしけん</rt></ruby> まで
     </div>
-    <div class="countdown-number" id="countdown-num">—</div>
-    <div class="countdown-unit">日</div>
+    <div class="countdown-number-row">
+      <div class="countdown-number" id="countdown-num">—</div>
+      <div class="countdown-unit">日</div>
+    </div>
+    <div class="countdown-message" id="countdown-msg"></div>
   </div>
 
   <!-- ═══ メニュー ═══ -->
@@ -894,14 +923,33 @@
     /* ── 初回適用 ── */
     applySettings();
 
-    /* ── カウントダウン（日のみ） ── */
+    /* ── カウントダウン（日のみ）＋応援メッセージ ── */
     (function() {
       const examDate = new Date('2027-01-31T00:00:00+09:00');
       const now      = new Date();
       const diffMs   = examDate - now;
       const diffDays = diffMs > 0 ? Math.ceil(diffMs / (1000 * 60 * 60 * 24)) : 0;
-      const el = document.getElementById('countdown-num');
+      const el  = document.getElementById('countdown-num');
+      const msg = document.getElementById('countdown-msg');
       if (el) el.textContent = diffDays > 0 ? diffDays : '本日！';
+
+      const messages = [
+        '「千里の道も一歩から。」今日の一問が合格への一歩。',
+        '「努力は必ず報われる。」毎日の積み重ねが力になる。',
+        '「学ぶことに遅すぎることはない。」今この瞬間が最善のタイミング。',
+        '「継続は力なり。」今日も一緒にがんばろう！',
+        '「成功とは、諦めなかった人に訪れる。」あなたならできる。',
+        '「どんな小さな前進も、前進は前進だ。」今日の学習を誇りに思って。',
+        '「知識は、使うほど輝く。」覚えた言葉を声に出してみよう。',
+        '「夢は逃げない。逃げるのはいつも自分だ。」さあ、始めよう！',
+        '「準備した人だけが、チャンスをつかめる。」試験当日に笑顔になるために。',
+        '「一日一歩、三日で三歩、三歩進んで二歩さがる。」それでも前に進んでいる！',
+        '「花は咲くまでに時間がかかる。」あなたの努力は必ず花開く。',
+        '「今日の自分は、昨日の自分より強い。」毎日が成長の証。',
+      ];
+      const today = new Date();
+      const idx = (today.getFullYear() * 366 + today.getMonth() * 31 + today.getDate()) % messages.length;
+      if (msg) msg.textContent = messages[idx];
     })();
 
     /* ── リクエストフォーム ── */
