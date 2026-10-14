@@ -140,13 +140,13 @@
       gap: 12px;
     }
     .header-logo-row img.logo {
-      width: 44px;
-      height: 44px;
+      width: 88px;
+      height: 88px;
       object-fit: contain;
     }
     .header-title {
       font-family: 'Poppins', 'Noto Sans JP', sans-serif;
-      font-size: calc(1.5rem * var(--font-scale));
+      font-size: calc(2.55rem * var(--font-scale));
       font-weight: 800;
       background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
       -webkit-background-clip: text;
@@ -816,13 +816,11 @@
   <!-- ═══ リクエストボックス ═══ -->
   <div class="request-box">
     <div class="request-title">
-      📝 あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<br><ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる
+      📝 あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる
     </div>
-    <div class="request-desc">
       <ruby>覚<rt>おぼ</rt></ruby>えたい<ruby>用語<rt>ようご</rt></ruby>や <ruby>質問<rt>しつもん</rt></ruby>をリクエストしてください
     </div>
     <form class="request-form" id="req-form">
-      <input type="text" id="req-name" placeholder="お名前（任意）">
       <textarea id="req-text" rows="3" placeholder="用語・質問・ご要望など" required></textarea>
       <button type="submit">送信する</button>
     </form>
@@ -909,7 +907,6 @@
     /* ── リクエストフォーム ── */
     document.getElementById('req-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const name = document.getElementById('req-name').value.trim();
       const text = document.getElementById('req-text').value.trim();
       const msg  = document.getElementById('req-msg');
       if (!text) { msg.textContent = '内容を入力してください'; return; }
@@ -920,12 +917,11 @@
           method: 'POST',
           mode:   'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, text, page: 'index', ts: new Date().toISOString() })
+          body: JSON.stringify({ text, page: 'index', ts: new Date().toISOString() })
         });
         msg.style.color = '#4ade80';
         msg.textContent = '✅ 送信しました！ありがとうございます';
         document.getElementById('req-text').value = '';
-        document.getElementById('req-name').value = '';
       } catch(err) {
         msg.style.color = '#f87171';
         msg.textContent = '❌ 送信に失敗しました。再度お試しください。';
