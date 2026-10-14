@@ -12,7 +12,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <script>
-    /* ─── 設定の即時適用（フラッシュ防止） ─── */
     (function(){
       const theme    = localStorage.getItem('gift_theme')    || 'dark';
       const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
@@ -24,91 +23,48 @@
   </script>
 
   <style>
-    /* ═══════════════════════════════════════
-       CSS変数（ダーク／ライト切替）
-    ═══════════════════════════════════════ */
-    :root {
-      --font-scale: 1;
-    }
+    :root { --font-scale: 1; }
     html[data-fontsize="normal"] { --font-scale: 1; }
     html[data-fontsize="large"]  { --font-scale: 1.125; }
     html[data-fontsize="xlarge"] { --font-scale: 1.25; }
 
-    /* ── ダークモード（デフォルト） ── */
     html[data-theme="dark"] {
-      --bg-start:   #0e0d1a;
-      --bg-mid:     #1a1830;
-      --bg-end:     #0e0d1a;
-      --surface:    rgba(255,255,255,0.05);
-      --surface-hover: rgba(255,255,255,0.09);
-      --border:     rgba(255,255,255,0.10);
-      --text-primary:   #f0ece0;
-      --text-secondary: rgba(240,236,224,0.65);
-      --text-muted:     rgba(240,236,224,0.40);
-      --accent:     #c9973a;
-      --accent-glow: rgba(201,151,58,0.25);
-      --panel-bg:   rgba(20,18,35,0.85);
-      --panel-border: rgba(201,151,58,0.30);
-      --btn-inactive: rgba(255,255,255,0.07);
-      --btn-inactive-text: rgba(240,236,224,0.55);
-      --btn-active-bg: linear-gradient(135deg,#b8863a,#c9973a);
-      --btn-active-text: #fff;
-      --card-1: linear-gradient(135deg,rgba(59,76,156,0.55),rgba(41,55,120,0.40));
-      --card-1-border: rgba(100,120,220,0.35);
-      --card-2: linear-gradient(135deg,rgba(40,110,80,0.55),rgba(25,80,55,0.40));
-      --card-2-border: rgba(60,180,120,0.35);
-      --card-3: linear-gradient(135deg,rgba(130,90,20,0.55),rgba(100,65,10,0.40));
-      --card-3-border: rgba(200,155,50,0.35);
-      --card-4: linear-gradient(135deg,rgba(100,40,130,0.55),rgba(75,25,100,0.40));
-      --card-4-border: rgba(170,90,210,0.35);
-      --card-jlpt: linear-gradient(135deg,rgba(130,90,20,0.55),rgba(100,65,10,0.40));
-      --card-jlpt-border: rgba(200,155,50,0.35);
-      --divider-color: rgba(201,151,58,0.50);
-      --tag-bg: rgba(255,255,255,0.10);
-      --tag-text: rgba(240,236,224,0.75);
-      --request-bg: rgba(255,255,255,0.04);
-      --request-border: rgba(201,151,58,0.20);
+      --bg-start:#0e0d1a; --bg-mid:#1a1830; --bg-end:#0e0d1a;
+      --surface:rgba(255,255,255,0.05); --surface-hover:rgba(255,255,255,0.09);
+      --border:rgba(255,255,255,0.10);
+      --text-primary:#f0ece0; --text-secondary:rgba(240,236,224,0.65); --text-muted:rgba(240,236,224,0.40);
+      --accent:#c9973a; --accent-glow:rgba(201,151,58,0.25);
+      --panel-bg:rgba(20,18,35,0.85); --panel-border:rgba(201,151,58,0.30);
+      --btn-inactive:rgba(255,255,255,0.07); --btn-inactive-text:rgba(240,236,224,0.55);
+      --btn-active-bg:linear-gradient(135deg,#b8863a,#c9973a); --btn-active-text:#fff;
+      --card-1:linear-gradient(135deg,rgba(59,76,156,0.55),rgba(41,55,120,0.40)); --card-1-border:rgba(100,120,220,0.35);
+      --card-2:linear-gradient(135deg,rgba(40,110,80,0.55),rgba(25,80,55,0.40));  --card-2-border:rgba(60,180,120,0.35);
+      --card-3:linear-gradient(135deg,rgba(130,90,20,0.55),rgba(100,65,10,0.40)); --card-3-border:rgba(200,155,50,0.35);
+      --card-4:linear-gradient(135deg,rgba(100,40,130,0.55),rgba(75,25,100,0.40));--card-4-border:rgba(170,90,210,0.35);
+      --card-jlpt:linear-gradient(135deg,rgba(130,90,20,0.55),rgba(100,65,10,0.40)); --card-jlpt-border:rgba(200,155,50,0.35);
+      --divider-color:rgba(201,151,58,0.50);
+      --tag-bg:rgba(255,255,255,0.10); --tag-text:rgba(240,236,224,0.75);
+      --request-bg:rgba(255,255,255,0.04); --request-border:rgba(201,151,58,0.20);
     }
-
-    /* ── ライトモード（ボサノバ・クリーム） ── */
     html[data-theme="light"] {
-      --bg-start:   #f2ede4;
-      --bg-mid:     #ede6d8;
-      --bg-end:     #e8dfd0;
-      --surface:    rgba(255,255,255,0.60);
-      --surface-hover: rgba(255,255,255,0.80);
-      --border:     rgba(150,120,70,0.18);
-      --text-primary:   #3a2e1e;
-      --text-secondary: rgba(58,46,30,0.72);
-      --text-muted:     rgba(58,46,30,0.45);
-      --accent:     #9a6c1e;
-      --accent-glow: rgba(154,108,30,0.20);
-      --panel-bg:   rgba(245,240,230,0.92);
-      --panel-border: rgba(154,108,30,0.30);
-      --btn-inactive: rgba(180,150,100,0.15);
-      --btn-inactive-text: rgba(58,46,30,0.55);
-      --btn-active-bg: linear-gradient(135deg,#9a6c1e,#b8863a);
-      --btn-active-text: #fff;
-      --card-1: linear-gradient(135deg,rgba(200,210,240,0.70),rgba(180,195,230,0.55));
-      --card-1-border: rgba(100,120,200,0.30);
-      --card-2: linear-gradient(135deg,rgba(190,230,210,0.70),rgba(160,215,190,0.55));
-      --card-2-border: rgba(60,160,110,0.30);
-      --card-3: linear-gradient(135deg,rgba(240,220,170,0.70),rgba(230,205,145,0.55));
-      --card-3-border: rgba(180,140,40,0.30);
-      --card-4: linear-gradient(135deg,rgba(225,200,240,0.70),rgba(210,180,235,0.55));
-      --card-4-border: rgba(150,80,200,0.30);
-      --card-jlpt: linear-gradient(135deg,rgba(240,220,170,0.70),rgba(230,205,145,0.55));
-      --card-jlpt-border: rgba(180,140,40,0.30);
-      --divider-color: rgba(154,108,30,0.45);
-      --tag-bg: rgba(154,108,30,0.12);
-      --tag-text: rgba(58,46,30,0.80);
-      --request-bg: rgba(255,255,255,0.50);
-      --request-border: rgba(154,108,30,0.25);
+      --bg-start:#f2ede4; --bg-mid:#ede6d8; --bg-end:#e8dfd0;
+      --surface:rgba(255,255,255,0.60); --surface-hover:rgba(255,255,255,0.80);
+      --border:rgba(150,120,70,0.18);
+      --text-primary:#3a2e1e; --text-secondary:rgba(58,46,30,0.72); --text-muted:rgba(58,46,30,0.45);
+      --accent:#9a6c1e; --accent-glow:rgba(154,108,30,0.20);
+      --panel-bg:rgba(245,240,230,0.92); --panel-border:rgba(154,108,30,0.30);
+      --btn-inactive:rgba(180,150,100,0.15); --btn-inactive-text:rgba(58,46,30,0.55);
+      --btn-active-bg:linear-gradient(135deg,#9a6c1e,#b8863a); --btn-active-text:#fff;
+      --card-1:linear-gradient(135deg,rgba(200,210,240,0.70),rgba(180,195,230,0.55)); --card-1-border:rgba(100,120,200,0.30);
+      --card-2:linear-gradient(135deg,rgba(190,230,210,0.70),rgba(160,215,190,0.55)); --card-2-border:rgba(60,160,110,0.30);
+      --card-3:linear-gradient(135deg,rgba(240,220,170,0.70),rgba(230,205,145,0.55)); --card-3-border:rgba(180,140,40,0.30);
+      --card-4:linear-gradient(135deg,rgba(225,200,240,0.70),rgba(210,180,235,0.55)); --card-4-border:rgba(150,80,200,0.30);
+      --card-jlpt:linear-gradient(135deg,rgba(240,220,170,0.70),rgba(230,205,145,0.55)); --card-jlpt-border:rgba(180,140,40,0.30);
+      --divider-color:rgba(154,108,30,0.45);
+      --tag-bg:rgba(154,108,30,0.12); --tag-text:rgba(58,46,30,0.80);
+      --request-bg:rgba(255,255,255,0.50); --request-border:rgba(154,108,30,0.25);
     }
 
-    /* ═══════════════════════════════════════
-       ベースリセット
-    ═══════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -117,429 +73,147 @@
       background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
       min-height: 100vh;
       color: var(--text-primary);
-      transition: background 0.4s ease, color 0.4s ease;
+      transition: background 0.4s, color 0.4s;
       padding-bottom: 60px;
     }
 
-    /* ふりがな制御 */
     html[data-ruby="off"] ruby rt { display: none; }
 
-    /* ═══════════════════════════════════════
-       ヘッダー
-    ═══════════════════════════════════════ */
+    /* ── ヘッダー ── */
     .site-header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 32px 20px 20px;
-      gap: 6px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 20px 20px; gap: 6px;
     }
-    .header-logo-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .header-logo-row img.logo {
-      width: 88px;
-      height: 88px;
-      object-fit: contain;
-    }
+    .header-logo-row { display: flex; align-items: center; gap: 12px; }
+    .header-logo-row img.logo { width: 88px; height: 88px; object-fit: contain; }
     .header-title {
-      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
       font-size: calc(2.55rem * var(--font-scale));
       font-weight: 800;
       background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       letter-spacing: .04em;
     }
-    .header-sub {
-      font-size: calc(0.72rem * var(--font-scale));
-      color: var(--text-muted);
-      letter-spacing: .08em;
-    }
+    .header-sub { font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); letter-spacing: .08em; }
 
-    /* ═══════════════════════════════════════
-       設定パネル（ヘッダー下・横並び完全固定）
-    ═══════════════════════════════════════ */
+    /* ── 設定パネル ── */
     .settings-panel {
-      width: calc(100% - 32px);
-      max-width: 560px;
-      margin: 0 auto 24px;
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 18px;
-      padding: 12px 16px;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
-      gap: 10px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      width: calc(100% - 32px); max-width: 560px; margin: 0 auto 24px;
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: 18px; padding: 12px 16px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
     .settings-panel::-webkit-scrollbar { display: none; }
+    .sp-group { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sp-label { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); white-space: nowrap; letter-spacing: .05em; flex-shrink: 0; }
+    .sp-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
 
-    /* グループラベル */
-    .sp-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    .sp-label {
-      font-size: calc(0.65rem * var(--font-scale));
-      color: var(--text-muted);
-      white-space: nowrap;
-      letter-spacing: .05em;
-      flex-shrink: 0;
-    }
-
-    /* 区切り */
-    .sp-divider {
-      width: 1px;
-      height: 28px;
-      background: var(--border);
-      flex-shrink: 0;
-    }
-
-    /* ─── ふりがなスイッチ ─── */
-    .ruby-switch {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    .ruby-switch input[type="checkbox"] {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    /* ふりがなスイッチ */
+    .ruby-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; gap: 6px; flex-shrink: 0; }
+    .ruby-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .ruby-track {
-      width: 48px;
-      height: 26px;
-      background: var(--btn-inactive);
-      border: 1.5px solid var(--border);
-      border-radius: 13px;
-      position: relative;
-      transition: background 0.3s, border-color 0.3s;
-      flex-shrink: 0;
+      width: 48px; height: 26px; background: var(--btn-inactive);
+      border: 1.5px solid var(--border); border-radius: 13px; position: relative;
+      transition: background 0.3s, border-color 0.3s; flex-shrink: 0;
     }
     .ruby-thumb {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
-      background: var(--btn-inactive-text);
-      border-radius: 50%;
+      position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+      background: var(--btn-inactive-text); border-radius: 50%;
       transition: transform 0.3s, background 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      font-weight: 700;
-      color: #fff;
     }
-    .ruby-switch input:checked ~ .ruby-track {
-      background: linear-gradient(135deg,#b8863a,#c9973a);
-      border-color: var(--accent);
-    }
-    .ruby-switch input:checked ~ .ruby-track .ruby-thumb {
-      transform: translateX(22px);
-      background: #fff;
-    }
-    .ruby-switch-label {
-      font-size: calc(0.65rem * var(--font-scale));
-      color: var(--text-secondary);
-      white-space: nowrap;
-      letter-spacing: .03em;
-    }
+    .ruby-switch input:checked ~ .ruby-track { background: linear-gradient(135deg,#b8863a,#c9973a); border-color: var(--accent); }
+    .ruby-switch input:checked ~ .ruby-track .ruby-thumb { transform: translateX(22px); background: #fff; }
 
-    /* ─── フォントサイズ・テーマボタン ─── */
-    .sp-btn-group {
-      display: flex;
-      gap: 4px;
-      flex-shrink: 0;
-    }
+    /* フォント・テーマボタン */
+    .sp-btn-group { display: flex; gap: 4px; flex-shrink: 0; }
     .sp-btn {
-      padding: 5px 10px;
-      border-radius: 10px;
-      border: 1.5px solid transparent;
-      background: var(--btn-inactive);
-      color: var(--btn-inactive-text);
-      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
-      font-size: calc(0.70rem * var(--font-scale));
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-      flex-shrink: 0;
-      letter-spacing: .02em;
+      padding: 5px 10px; border-radius: 10px; border: 1.5px solid transparent;
+      background: var(--btn-inactive); color: var(--btn-inactive-text);
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(0.70rem * var(--font-scale)); font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
     }
     .sp-btn:hover { background: var(--surface-hover); }
-    .sp-btn.active {
-      background: var(--btn-active-bg);
-      color: var(--btn-active-text);
-      border-color: var(--accent);
-      box-shadow: 0 2px 8px var(--accent-glow);
-    }
+    .sp-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); border-color: var(--accent); box-shadow: 0 2px 8px var(--accent-glow); }
 
-    /* ═══════════════════════════════════════
-       カウントダウン
-    ═══════════════════════════════════════ */
+    /* ── カウントダウン ── */
     .countdown-box {
-      width: calc(100% - 32px);
-      max-width: 560px;
-      margin: 0 auto 24px;
-      text-align: center;
-      padding: 14px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      width: calc(100% - 32px); max-width: 560px; margin: 0 auto 24px;
+      text-align: center; padding: 14px 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
     }
-    .countdown-number-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: nowrap;
-    }
-    .countdown-label {
-      font-size: calc(0.72rem * var(--font-scale));
-      color: var(--text-muted);
-      margin-bottom: 4px;
-      letter-spacing: .06em;
-    }
+    .countdown-label { font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); margin-bottom: 4px; letter-spacing: .06em; }
+    .countdown-number-row { display: flex; align-items: baseline; justify-content: center; gap: 6px; flex-wrap: nowrap; }
     .countdown-number {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(2rem * var(--font-scale));
-      font-weight: 800;
+      font-family: 'Poppins', sans-serif; font-size: calc(2rem * var(--font-scale)); font-weight: 800;
       background: linear-gradient(90deg, var(--accent), #f0d080);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .countdown-unit {
-      font-size: calc(0.75rem * var(--font-scale));
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
+    .countdown-unit { font-size: calc(0.75rem * var(--font-scale)); color: var(--text-secondary); }
     .countdown-message {
-      margin-top: 10px;
-      font-size: calc(0.78rem * var(--font-scale));
-      color: var(--accent);
-      font-style: italic;
-      font-weight: 500;
-      letter-spacing: .03em;
-      line-height: 1.5;
-      min-height: 1.5em;
-      opacity: 0.85;
+      margin-top: 10px; font-size: calc(0.78rem * var(--font-scale));
+      color: var(--accent); font-style: italic; font-weight: 500;
+      letter-spacing: .03em; line-height: 1.5; opacity: 0.85;
     }
 
-    /* ═══════════════════════════════════════
-       メニューリスト
-    ═══════════════════════════════════════ */
+    /* ── メニュー共通コンテナ ── */
     .menu-section {
       width: calc(100% - 32px);
       max-width: 560px;
       margin: 0 auto;
     }
 
-    /* ─── セクションタイトル（統一デザイン） ─── */
-    .section-heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 28px 0 16px;
-    }
-    .section-heading-line {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--divider-color), transparent);
-    }
-    .section-heading-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      flex-shrink: 0;
-    }
-    .section-heading-ornament {
-      font-size: .7rem;
-      color: var(--accent);
-      letter-spacing: .15em;
-      opacity: .7;
-    }
-    .section-heading-text {
-      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
-      font-size: calc(0.68rem * var(--font-scale));
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: .20em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .section-heading-sub {
-      font-size: calc(0.60rem * var(--font-scale));
-      color: var(--text-muted);
-      letter-spacing: .10em;
-      white-space: nowrap;
-    }
-
-    /* ─── メニューカード ─── */
-    .menu-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .menu-card {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      border-radius: 22px;
-      padding: 18px 20px;
-      text-decoration: none;
-      color: var(--text-primary);
-      border: 1px solid transparent;
-      position: relative;
-      overflow: hidden;
-      transition: transform .2s, box-shadow .2s;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    .menu-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-    }
-    .menu-card-1  { background: var(--card-1);    border-color: var(--card-1-border); }
-    .menu-card-2  { background: var(--card-2);    border-color: var(--card-2-border); }
-    .menu-card-3  { background: var(--card-3);    border-color: var(--card-3-border); }
-    .menu-card-4  { background: var(--card-4);    border-color: var(--card-4-border); }
-    .menu-card-jlpt{ background: var(--card-jlpt); border-color: var(--card-jlpt-border); }
-
-    .card-badge {
-      position: absolute;
-      top: 12px;
-      right: 14px;
-      background: linear-gradient(90deg,#f59e0b,#ef4444);
-      color: #fff;
-      font-size: .58rem;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 20px;
-      letter-spacing: .05em;
-    }
-
-    .card-icon-wrap {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.10);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      flex-shrink: 0;
-    }
-
-    .card-body { flex: 1; min-width: 0; }
-    .card-title {
-      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
-      font-size: calc(1.0rem * var(--font-scale));
-      font-weight: 800;
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-    .card-desc {
-      font-size: calc(0.75rem * var(--font-scale));
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-    .tag {
-      background: var(--tag-bg);
-      color: var(--tag-text);
-      font-size: calc(0.65rem * var(--font-scale));
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 600;
-      letter-spacing: .03em;
-    }
-    .card-arrow {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      flex-shrink: 0;
-    }
-
-    /* JLPT カードのタイトルはグラデーション */
-    .card-title-gold {
-      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* ═══════════════════════════════════════
-       JLPTセパレーター（装飾線）
-    ═══════════════════════════════════════ */
-    .jlpt-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 32px 0 18px;
-    }
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--divider-color), transparent);
-    }
-    .divider-ornament {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      flex-shrink: 0;
-    }
-    .divider-stars {
-      color: var(--accent);
-      font-size: .65rem;
-      letter-spacing: .18em;
-      opacity: .8;
-    }
+    /* ── セクション見出し（共通） ── */
+    .jlpt-divider { display: flex; align-items: center; gap: 10px; margin: 28px 0 18px; }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--divider-color), transparent); }
+    .divider-ornament { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
+    .divider-stars { color: var(--accent); font-size: .65rem; letter-spacing: .18em; opacity: .8; }
     .divider-text {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(0.62rem * var(--font-scale));
-      font-style: italic;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: .18em;
-      white-space: nowrap;
+      font-family: 'Poppins', sans-serif; font-size: calc(0.62rem * var(--font-scale));
+      font-style: italic; font-weight: 700; color: var(--accent);
+      letter-spacing: .18em; white-space: nowrap;
     }
-    .divider-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: .6;
-    }
+    .divider-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: .6; }
 
-    /* ═══════════════════════════════════════
-       リクエストボックス
-    ═══════════════════════════════════════ */
+    /* ── メニューカード ── */
+    .menu-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .menu-card {
+      display: flex; align-items: center; gap: 16px;
+      border-radius: 22px; padding: 18px 20px;
+      text-decoration: none; color: var(--text-primary);
+      border: 1px solid transparent; position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .menu-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+    .menu-card-1   { background: var(--card-1);    border-color: var(--card-1-border); }
+    .menu-card-2   { background: var(--card-2);    border-color: var(--card-2-border); }
+    .menu-card-3   { background: var(--card-3);    border-color: var(--card-3-border); }
+    .menu-card-4   { background: var(--card-4);    border-color: var(--card-4-border); }
+    .menu-card-jlpt{ background: var(--card-jlpt); border-color: var(--card-jlpt-border); }
+    .card-badge {
+      position: absolute; top: 12px; right: 14px;
+      background: linear-gradient(90deg,#f59e0b,#ef4444);
+      color: #fff; font-size: .58rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px; letter-spacing: .05em;
+    }
+    .card-icon-wrap {
+      width: 54px; height: 54px; border-radius: 16px;
+      background: rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; flex-shrink: 0;
+    }
+    .card-body { flex: 1; min-width: 0; }
+    .card-title { font-family: 'Poppins','Noto Sans JP',sans-serif; font-size: calc(1.0rem * var(--font-scale)); font-weight: 800; margin-bottom: 4px; line-height: 1.3; }
+    .card-title-gold { background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .card-desc { font-size: calc(0.75rem * var(--font-scale)); color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag { background: var(--tag-bg); color: var(--tag-text); font-size: calc(0.65rem * var(--font-scale)); padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+    .card-arrow { font-size: 1.2rem; color: var(--text-muted); flex-shrink: 0; }
+
+    /* ── リクエストボックス ── */
     .request-box {
       width: 100%;
       margin: 24px 0 0;
@@ -551,99 +225,39 @@
       text-align: center;
       box-sizing: border-box;
     }
-    .request-form input,
-    .request-form textarea,
-    .request-form button {
-      max-width: 100%;
-    }
-    .request-title {
-      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
-      font-size: calc(1.0rem * var(--font-scale));
-      font-weight: 800;
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .request-desc {
-      font-size: calc(0.75rem * var(--font-scale));
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
+    .request-title { font-family: 'Poppins','Noto Sans JP',sans-serif; font-size: calc(1.0rem * var(--font-scale)); font-weight: 800; margin-bottom: 6px; line-height: 1.4; }
+    .request-desc { font-size: calc(0.75rem * var(--font-scale)); color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; }
     .request-form { display: flex; flex-direction: column; gap: 10px; }
-    .request-form input,
     .request-form textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text-primary);
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: calc(0.85rem * var(--font-scale));
-      resize: vertical;
-      outline: none;
-      transition: border-color .2s;
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-primary); font-family: 'Noto Sans JP',sans-serif;
+      font-size: calc(0.85rem * var(--font-scale)); resize: vertical; outline: none;
+      transition: border-color .2s; box-sizing: border-box;
     }
-    .request-form input:focus,
     .request-form textarea:focus { border-color: var(--accent); }
     .request-form button {
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
+      width: 100%; padding: 12px; border-radius: 12px; border: none;
       background: linear-gradient(135deg, var(--accent), #d4a840);
-      color: #fff;
-      font-weight: 700;
-      font-size: calc(0.9rem * var(--font-scale));
-      cursor: pointer;
-      transition: opacity .2s, transform .2s;
+      color: #fff; font-weight: 700; font-size: calc(0.9rem * var(--font-scale));
+      cursor: pointer; transition: opacity .2s, transform .2s; box-sizing: border-box;
     }
     .request-form button:hover { opacity: .9; transform: translateY(-1px); }
     #req-msg { font-size: calc(0.8rem * var(--font-scale)); margin-top: 6px; }
 
-    /* ═══════════════════════════════════════
-       フッター
-    ═══════════════════════════════════════ */
+    /* ── フッター ── */
     .site-footer {
-      width: calc(100% - 32px);
-      max-width: 560px;
-      margin: 40px auto 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      padding-bottom: 20px;
+      width: calc(100% - 32px); max-width: 560px; margin: 40px auto 0;
+      display: flex; flex-direction: column; align-items: center; gap: 14px; padding-bottom: 20px;
     }
-
-   /* ★修正：アイコン全身表示 */
-    .footer-icon {
-      width: 90px;
-      height: auto;
-      max-height: 240px;
-      object-fit: contain;
-      object-position: center center;
-      border-radius: 0;
-      display: block;
-    }
-
-    .footer-name {
-      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
-      font-size: calc(0.8rem * var(--font-scale));
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-align: center;
-      line-height: 1.7;
-    }
-    .footer-copy {
-      font-size: calc(0.65rem * var(--font-scale));
-      color: var(--text-muted);
-      text-align: center;
-    }
+    .footer-icon { width: 90px; height: auto; max-height: 240px; object-fit: contain; object-position: center center; border-radius: 0; display: block; }
+    .footer-name { font-family: 'Poppins','Noto Sans JP',sans-serif; font-size: calc(0.8rem * var(--font-scale)); font-weight: 700; color: var(--text-secondary); text-align: center; line-height: 1.7; }
+    .footer-copy { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); text-align: center; }
   </style>
 </head>
 
 <body>
 
-  <!-- ═══ ヘッダー ═══ -->
   <header class="site-header">
     <div class="header-logo-row">
       <img src="./gift-logo.png" alt="GIFT協会ロゴ" class="logo">
@@ -654,23 +268,15 @@
     </div>
   </header>
 
-  <!-- ═══ 設定パネル ═══ -->
   <div class="settings-panel" role="toolbar" aria-label="表示設定">
-
-    <!-- ふりがなスイッチ -->
     <div class="sp-group">
       <span class="sp-label">ふりがな</span>
-      <label class="ruby-switch" title="ふりがな ON/OFF">
+      <label class="ruby-switch">
         <input type="checkbox" id="ruby-toggle" checked>
-        <div class="ruby-track">
-          <div class="ruby-thumb"></div>
-        </div>
+        <div class="ruby-track"><div class="ruby-thumb"></div></div>
       </label>
     </div>
-
     <div class="sp-divider"></div>
-
-    <!-- フォントサイズ -->
     <div class="sp-group">
       <span class="sp-label">文字</span>
       <div class="sp-btn-group">
@@ -679,10 +285,7 @@
         <button class="sp-btn" data-size="xlarge" onclick="setFontSize('xlarge')">L</button>
       </div>
     </div>
-
     <div class="sp-divider"></div>
-
-    <!-- テーマ -->
     <div class="sp-group">
       <span class="sp-label">テーマ</span>
       <div class="sp-btn-group">
@@ -692,11 +295,8 @@
     </div>
   </div>
 
-  <!-- ═══ カウントダウン ═══ -->
   <div class="countdown-box">
-    <div class="countdown-label">
-      第39回 <ruby>介護福祉士<rt>かいごふくしし</rt></ruby> <ruby>国家試験<rt>こっかしけん</rt></ruby> まで
-    </div>
+    <div class="countdown-label">第39回 <ruby>介護福祉士<rt>かいごふくしし</rt></ruby> <ruby>国家試験<rt>こっかしけん</rt></ruby> まで</div>
     <div class="countdown-number-row">
       <div class="countdown-number" id="countdown-num">—</div>
       <div class="countdown-unit">日</div>
@@ -704,205 +304,162 @@
     <div class="countdown-message" id="countdown-msg"></div>
   </div>
 
-  <!-- ═══ メニュー ═══ -->
-  <nav class="menu-section">
-
-   <!-- ── 介護福祉士セクション見出し ── -->
-    <div class="jlpt-divider">
-      <div class="divider-line"></div>
-      <div class="divider-ornament">
-        <div class="divider-stars">✦ ✦ ✦</div>
-        <div class="divider-text">介護福祉士 国家試験 対策</div>
-        <div class="divider-dot"></div>
-      </div>
-      <div class="divider-line"></div>
-    </div>
-
-    <ul class="menu-list">
-      <li>
-        <a href="./flashcard.html" class="menu-card menu-card-1">
-          <div class="card-icon-wrap">📚</div>
-          <div class="card-body">
-            <div class="card-title">
-              <ruby>介護<rt>かいご</rt></ruby> <ruby>用語<rt>ようご</rt></ruby>フラッシュカード
-            </div>
-            <div class="card-desc">
-              <ruby>単語<rt>たんご</rt></ruby>をカードで <ruby>楽<rt>たの</rt></ruby>しく <ruby>覚<rt>おぼ</rt></ruby>えよう
-            </div>
-            <div class="card-tags">
-              <span class="tag"><ruby>日本語<rt>にほんご</rt></ruby></span>
-              <span class="tag"><ruby>英語<rt>えいご</rt></ruby></span>
-              <span class="tag">Indonesia</span>
-              <span class="tag">Tiếng Việt</span>
-              <span class="tag">ภาษาไทย</span>
-              <span class="tag">မြန်မာဘာသာ</span>
-              <span class="tag">नेपाली</span>
-              <span class="tag">Монгол</span>
-            </div>
-          </div>
-          <div class="card-arrow">›</div>
-        </a>
-      </li>
-
-      <li>
-        <a href="./exam/index.html" class="menu-card menu-card-2">
-          <div class="card-icon-wrap">📝</div>
-          <div class="card-body">
-            <div class="card-title">
-              <ruby>過去問<rt>かこもん</rt></ruby>に <ruby>挑戦<rt>ちょうせん</rt></ruby>
-            </div>
-            <div class="card-desc">
-              <ruby>介護<rt>かいご</rt></ruby> <ruby>福祉士<rt>ふくしし</rt></ruby> <ruby>国家<rt>こっか</rt></ruby> <ruby>試験<rt>しけん</rt></ruby>の <ruby>過去問<rt>かこもん</rt></ruby>を <ruby>解<rt>と</rt></ruby>こう
-            </div>
-            <div class="card-tags">
-              <span class="tag"><ruby>科目別<rt>かもくべつ</rt></ruby></span>
-              <span class="tag">パート<ruby>別<rt>べつ</rt></ruby></span>
-            </div>
-          </div>
-          <div class="card-arrow">›</div>
-        </a>
-      </li>
-
-      <li>
-        <a href="./youten/index.html" class="menu-card menu-card-3">
-          <div class="card-badge">NEW</div>
-          <div class="card-icon-wrap">📖</div>
-          <div class="card-body">
-            <div class="card-title">
-              <ruby>各科目<rt>かくかもく</rt></ruby>ごと <ruby>要点集<rt>ようてんしゅう</rt></ruby>
-            </div>
-            <div class="card-desc">
-              13<ruby>科目<rt>かもく</rt></ruby>のポイントをまとめて <ruby>確認<rt>かくにん</rt></ruby>
-            </div>
-            <div class="card-tags">
-              <span class="tag">NEW</span>
-              <span class="tag"><ruby>全<rt>ぜん</rt></ruby>13<ruby>科目<rt>かもく</rt></ruby></span>
-              <span class="tag">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
-            </div>
-          </div>
-          <div class="card-arrow">›</div>
-        </a>
-      </li>
-
-      <li>
-        <a href="./houkaisei/index.html" class="menu-card menu-card-4">
-          <div class="card-badge">NEW</div>
-          <div class="card-icon-wrap">⚖️</div>
-          <div class="card-body">
-            <div class="card-title">
-              <ruby>法改正<rt>ほうかいせい</rt></ruby>まるわかりノート
-            </div>
-            <div class="card-desc">
-              <ruby>新<rt>あたら</rt></ruby>しい <ruby>制度<rt>せいど</rt></ruby>をまとめて <ruby>確認<rt>かくにん</rt></ruby>
-            </div>
-            <div class="card-tags">
-              <span class="tag">NEW</span>
-              <span class="tag"><ruby>全<rt>ぜん</rt></ruby>9<ruby>章<rt>しょう</rt></ruby></span>
-              <span class="tag"><ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby></span>
-              <span class="tag">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
-            </div>
-          </div>
-          <div class="card-arrow">›</div>
-        </a>
-      </li>
-    </ul>
-
-    <!-- ── JLPTセパレーター ── -->
-    <div class="jlpt-divider">
-      <div class="divider-line"></div>
-      <div class="divider-ornament">
-        <div class="divider-stars">✦ ✦ ✦</div>
-        <div class="divider-text">JLPT — 日本語能力試験 対策</div>
-        <div class="divider-dot"></div>
-      </div>
-      <div class="divider-line"></div>
-    </div>
-
-    <ul class="menu-list">
-      <li>
-        <a href="./jlpt/index.html" class="menu-card menu-card-jlpt">
-          <div class="card-badge">NEW</div>
-          <div class="card-icon-wrap">🎌</div>
-          <div class="card-body">
-            <div class="card-title card-title-gold">JLPT N1 / N2 対策</div>
-            <div class="card-desc">
-              <ruby>日本語<rt>にほんご</rt></ruby> <ruby>能力<rt>のうりょく</rt></ruby> <ruby>試験<rt>しけん</rt></ruby>の <ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>を <ruby>徹底<rt>てってい</rt></ruby> <ruby>対策<rt>たいさく</rt></ruby>
-            </div>
-            <div class="card-tags">
-              <span class="tag">N1 <ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
-              <span class="tag">N2 <ruby>準備中<rt>じゅんびちゅう</rt></ruby></span>
-            </div>
-          </div>
-          <div class="card-arrow">›</div>
-        </a>
-      </li>
-    </ul>
-
-  </nav>
-
-  <!-- ═══ リクエストボックス ═══ -->
+  <!-- ★ menu-section が nav・request-box・footer 以外すべてを包む ★ -->
   <div class="menu-section">
-  <div class="request-box">
-    <div class="request-title">
-      📝 あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる
-    </div>
-      <ruby>覚<rt>おぼ</rt></ruby>えたい<ruby>用語<rt>ようご</rt></ruby>や <ruby>質問<rt>しつもん</rt></ruby>をリクエストしてください
-    </div>
-    <form class="request-form" id="req-form">
-      <textarea id="req-text" rows="3" placeholder="用語・質問・ご要望など" required></textarea>
-      <button type="submit">送信する</button>
-    </form>
-    <div id="req-msg"></div>
-  </div>
-  </div>
 
-  <!-- ═══ フッター ═══ -->
-  <footer class="site-footer">
-    <img
-      src="./muneishi-icon.png"
-      alt="宗石光英"
-      class="footer-icon"
-    >
-    <div class="footer-name">
-      一般社団法人 GIFT 協会<br>
-      宗石 光英
+    <nav>
+      <div class="jlpt-divider">
+        <div class="divider-line"></div>
+        <div class="divider-ornament">
+          <div class="divider-stars">✦ ✦ ✦</div>
+          <div class="divider-text">介護福祉士 国家試験 対策</div>
+          <div class="divider-dot"></div>
+        </div>
+        <div class="divider-line"></div>
+      </div>
+
+      <ul class="menu-list">
+        <li>
+          <a href="./flashcard.html" class="menu-card menu-card-1">
+            <div class="card-icon-wrap">📚</div>
+            <div class="card-body">
+              <div class="card-title"><ruby>介護<rt>かいご</rt></ruby> <ruby>用語<rt>ようご</rt></ruby>フラッシュカード</div>
+              <div class="card-desc"><ruby>単語<rt>たんご</rt></ruby>をカードで <ruby>楽<rt>たの</rt></ruby>しく <ruby>覚<rt>おぼ</rt></ruby>えよう</div>
+              <div class="card-tags">
+                <span class="tag"><ruby>日本語<rt>にほんご</rt></ruby></span>
+                <span class="tag"><ruby>英語<rt>えいご</rt></ruby></span>
+                <span class="tag">Indonesia</span>
+                <span class="tag">Tiếng Việt</span>
+                <span class="tag">ภาษาไทย</span>
+                <span class="tag">မြန်မာဘာသာ</span>
+                <span class="tag">नेपाली</span>
+                <span class="tag">Монгол</span>
+              </div>
+            </div>
+            <div class="card-arrow">›</div>
+          </a>
+        </li>
+        <li>
+          <a href="./exam/index.html" class="menu-card menu-card-2">
+            <div class="card-icon-wrap">📝</div>
+            <div class="card-body">
+              <div class="card-title"><ruby>過去問<rt>かこもん</rt></ruby>に <ruby>挑戦<rt>ちょうせん</rt></ruby></div>
+              <div class="card-desc"><ruby>介護<rt>かいご</rt></ruby> <ruby>福祉士<rt>ふくしし</rt></ruby> <ruby>国家<rt>こっか</rt></ruby> <ruby>試験<rt>しけん</rt></ruby>の <ruby>過去問<rt>かこもん</rt></ruby>を <ruby>解<rt>と</rt></ruby>こう</div>
+              <div class="card-tags">
+                <span class="tag"><ruby>科目別<rt>かもくべつ</rt></ruby></span>
+                <span class="tag">パート<ruby>別<rt>べつ</rt></ruby></span>
+              </div>
+            </div>
+            <div class="card-arrow">›</div>
+          </a>
+        </li>
+        <li>
+          <a href="./youten/index.html" class="menu-card menu-card-3">
+            <div class="card-badge">NEW</div>
+            <div class="card-icon-wrap">📖</div>
+            <div class="card-body">
+              <div class="card-title"><ruby>各科目<rt>かくかもく</rt></ruby>ごと <ruby>要点集<rt>ようてんしゅう</rt></ruby></div>
+              <div class="card-desc">13<ruby>科目<rt>かもく</rt></ruby>のポイントをまとめて <ruby>確認<rt>かくにん</rt></ruby></div>
+              <div class="card-tags">
+                <span class="tag">NEW</span>
+                <span class="tag"><ruby>全<rt>ぜん</rt></ruby>13<ruby>科目<rt>かもく</rt></ruby></span>
+                <span class="tag">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
+              </div>
+            </div>
+            <div class="card-arrow">›</div>
+          </a>
+        </li>
+        <li>
+          <a href="./houkaisei/index.html" class="menu-card menu-card-4">
+            <div class="card-badge">NEW</div>
+            <div class="card-icon-wrap">⚖️</div>
+            <div class="card-body">
+              <div class="card-title"><ruby>法改正<rt>ほうかいせい</rt></ruby>まるわかりノート</div>
+              <div class="card-desc"><ruby>新<rt>あたら</rt></ruby>しい <ruby>制度<rt>せいど</rt></ruby>をまとめて <ruby>確認<rt>かくにん</rt></ruby></div>
+              <div class="card-tags">
+                <span class="tag">NEW</span>
+                <span class="tag"><ruby>全<rt>ぜん</rt></ruby>9<ruby>章<rt>しょう</rt></ruby></span>
+                <span class="tag"><ruby>予想<rt>よそう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>29<ruby>問<rt>もん</rt></ruby></span>
+                <span class="tag">ふりがな<ruby>切<rt>き</rt></ruby>りかえ</span>
+              </div>
+            </div>
+            <div class="card-arrow">›</div>
+          </a>
+        </li>
+      </ul>
+
+      <div class="jlpt-divider">
+        <div class="divider-line"></div>
+        <div class="divider-ornament">
+          <div class="divider-stars">✦ ✦ ✦</div>
+          <div class="divider-text">JLPT — 日本語能力試験 対策</div>
+          <div class="divider-dot"></div>
+        </div>
+        <div class="divider-line"></div>
+      </div>
+
+      <ul class="menu-list">
+        <li>
+          <a href="./jlpt/index.html" class="menu-card menu-card-jlpt">
+            <div class="card-badge">NEW</div>
+            <div class="card-icon-wrap">🎌</div>
+            <div class="card-body">
+              <div class="card-title card-title-gold">JLPT N1 / N2 対策</div>
+              <div class="card-desc"><ruby>日本語<rt>にほんご</rt></ruby> <ruby>能力<rt>のうりょく</rt></ruby> <ruby>試験<rt>しけん</rt></ruby>の <ruby>読解<rt>どっかい</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>を <ruby>徹底<rt>てってい</rt></ruby> <ruby>対策<rt>たいさく</rt></ruby></div>
+              <div class="card-tags">
+                <span class="tag">N1 <ruby>読解<rt>どっかい</rt></ruby> 147<ruby>問<rt>もん</rt></ruby></span>
+                <span class="tag">N2 <ruby>準備中<rt>じゅんびちゅう</rt></ruby></span>
+              </div>
+            </div>
+            <div class="card-arrow">›</div>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- リクエストボックス：menu-section の中に入れることで幅が揃う -->
+    <div class="request-box">
+      <div class="request-title">📝 あなたの<ruby>疑問<rt>ぎもん</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>かの<ruby>為<rt>ため</rt></ruby>になる</div>
+      <div class="request-desc"><ruby>覚<rt>おぼ</rt></ruby>えたい<ruby>用語<rt>ようご</rt></ruby>や <ruby>質問<rt>しつもん</rt></ruby>をリクエストしてください</div>
+      <form class="request-form" id="req-form">
+        <textarea id="req-text" rows="3" placeholder="用語・質問・ご要望など" required></textarea>
+        <button type="submit">送信する</button>
+      </form>
+      <div id="req-msg"></div>
     </div>
+
+  </div><!-- /menu-section -->
+
+  <footer class="site-footer">
+    <img src="./muneishi-icon.png" alt="宗石光英" class="footer-icon">
+    <div class="footer-name">一般社団法人 GIFT 協会<br>宗石 光英</div>
     <div class="footer-copy">Created by Mitsuhide Muneishi</div>
   </footer>
 
-  <!-- ═══ JavaScript ═══ -->
   <script>
-    /* ── 設定初期化 ── */
     function applySettings() {
       const theme    = localStorage.getItem('gift_theme')    || 'dark';
       const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
       const ruby     = localStorage.getItem('gift_ruby')     || 'on';
-
       document.documentElement.setAttribute('data-theme', theme);
       document.documentElement.setAttribute('data-fontsize', fontsize);
       document.documentElement.setAttribute('data-ruby', ruby);
-
-      // フォントサイズボタンのactive
       document.querySelectorAll('.sp-btn[data-size]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.size === fontsize);
       });
-      // テーマボタンのactive
       document.querySelectorAll('.sp-btn[data-theme]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.theme === theme);
       });
-      // ふりがなスイッチ
       const rubyToggle = document.getElementById('ruby-toggle');
       if (rubyToggle) rubyToggle.checked = (ruby === 'on');
     }
 
-    /* ── ふりがなスイッチ ── */
     document.getElementById('ruby-toggle').addEventListener('change', function() {
       const val = this.checked ? 'on' : 'off';
       localStorage.setItem('gift_ruby', val);
       document.documentElement.setAttribute('data-ruby', val);
     });
 
-    /* ── フォントサイズ ── */
     function setFontSize(size) {
       localStorage.setItem('gift_fontsize', size);
       document.documentElement.setAttribute('data-fontsize', size);
@@ -911,7 +468,6 @@
       });
     }
 
-    /* ── テーマ ── */
     function setTheme(theme) {
       localStorage.setItem('gift_theme', theme);
       document.documentElement.setAttribute('data-theme', theme);
@@ -920,10 +476,9 @@
       });
     }
 
-    /* ── 初回適用 ── */
     applySettings();
 
-    /* ── カウントダウン（日のみ）＋応援メッセージ ── */
+    /* カウントダウン＋応援メッセージ */
     (function() {
       const examDate = new Date('2027-01-31T00:00:00+09:00');
       const now      = new Date();
@@ -943,7 +498,7 @@
         '「知識は、使うほど輝く。」覚えた言葉を声に出してみよう。',
         '「夢は逃げない。逃げるのはいつも自分だ。」さあ、始めよう！',
         '「準備した人だけが、チャンスをつかめる。」試験当日に笑顔になるために。',
-        '「一日一歩、三日で三歩、三歩進んで二歩さがる。」それでも前に進んでいる！',
+        '「一日一歩、三日で三歩。」それでも着実に前に進んでいる！',
         '「花は咲くまでに時間がかかる。」あなたの努力は必ず花開く。',
         '「今日の自分は、昨日の自分より強い。」毎日が成長の証。',
       ];
@@ -952,7 +507,7 @@
       if (msg) msg.textContent = messages[idx];
     })();
 
-    /* ── リクエストフォーム ── */
+    /* リクエストフォーム */
     document.getElementById('req-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const text = document.getElementById('req-text').value.trim();
@@ -962,8 +517,7 @@
       try {
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
         await fetch(GAS_URL, {
-          method: 'POST',
-          mode:   'no-cors',
+          method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, page: 'index', ts: new Date().toISOString() })
         });
@@ -976,7 +530,6 @@
       }
     });
 
-    /* ── Service Worker ── */
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
