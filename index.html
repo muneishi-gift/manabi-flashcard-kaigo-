@@ -11,9 +11,9 @@
 <meta name="apple-mobile-web-app-title" content="Kaigo.V.F">
 <link rel="apple-touch-icon" href="gift-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Poppins:wght@300;400;600;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-<!-- ===== 共通設定：ページ読み込み時に即座に設定を反映（画面チラつき防止） ===== -->
+<!-- ===== 画面チラつき防止：ページ読み込み直後に設定を反映 ===== -->
 <script>
 (function(){
   var theme    = localStorage.getItem('gift_theme')    || 'dark';
@@ -31,113 +31,161 @@ html{scroll-behavior:smooth}
 
 /* ===== 文字サイズ ===== */
 html[data-fontsize="normal"]{font-size:100%}
-html[data-fontsize="large"]{font-size:112.5%}
-html[data-fontsize="xlarge"]{font-size:125%}
+html[data-fontsize="large"]  {font-size:112.5%}
+html[data-fontsize="xlarge"] {font-size:125%}
 
 /* ===== ふりがな ===== */
 ruby{ruby-position:over;-webkit-ruby-position:before}
 rt{
   font-size:.5em;font-weight:400;letter-spacing:0;
-  line-height:1;opacity:.8;user-select:none;
-  transform:translateY(.1em);transition:opacity .2s;
+  line-height:1;opacity:.75;user-select:none;
 }
 html[data-ruby="off"] rt{display:none}
 
-/* ===== ダークモード（デフォルト・少し明るめに調整） ===== */
+/* =====================================================
+   ダークモード：深夜のジャズバー / ボサノバカフェ
+   深いインディゴ × アンバー × テラコッタ
+   ===================================================== */
 html[data-theme="dark"] body{
-  background:linear-gradient(135deg,#1a1650 0%,#3d3580 50%,#2d2b5a 100%);
-  color:#fff;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(180,140,80,.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(100,80,160,.09) 0%, transparent 55%),
+    linear-gradient(160deg, #0e0d1a 0%, #16142a 40%, #1a1528 70%, #120f1e 100%);
+  color:#e8e0d0;
 }
 html[data-theme="dark"] body::before{
   background:
-    radial-gradient(ellipse at 30% 20%,rgba(140,120,255,.2) 0%,transparent 60%),
-    radial-gradient(ellipse at 70% 80%,rgba(255,140,210,.13) 0%,transparent 60%);
+    radial-gradient(ellipse at 20% 25%, rgba(200,160,80,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(120,90,180,.07) 0%, transparent 50%);
 }
 html[data-theme="dark"] .countdown{
-  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.07));
-  border-color:rgba(255,255,255,.2);
+  background:linear-gradient(160deg, rgba(255,220,150,.06) 0%, rgba(180,140,80,.04) 100%);
+  border-color:rgba(200,170,100,.2);
 }
-html[data-theme="dark"] .menu-card{
-  border-color:rgba(255,255,255,.16);
+html[data-theme="dark"] .countdown::after{
+  background:linear-gradient(90deg, transparent, rgba(200,170,100,.5), transparent);
 }
+html[data-theme="dark"] .cd-num{
+  color:#d4a855;
+  text-shadow:0 0 28px rgba(212,168,85,.35);
+}
+html[data-theme="dark"] .cd-title{color:rgba(232,224,208,.55)}
+html[data-theme="dark"] .cd-msg  {color:rgba(232,224,208,.5)}
+html[data-theme="dark"] .menu-card{border-color:rgba(255,255,255,.1)}
 html[data-theme="dark"] .request-box{
-  background:rgba(255,255,255,.09);
-  border-color:rgba(255,255,255,.18);
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.1);
 }
 html[data-theme="dark"] .request-input{
-  background:rgba(255,255,255,.12);
-  border-color:rgba(255,255,255,.25);
-  color:#fff;
+  background:rgba(255,255,255,.07);
+  border-color:rgba(255,255,255,.15);
+  color:#e8e0d0;
 }
 html[data-theme="dark"] .settings-panel{
-  background:rgba(40,35,80,0.95);
-  border-color:rgba(255,255,255,.18);
-  color:#fff;
+  background:rgba(18,15,30,.94);
+  border-color:rgba(200,170,100,.2);
+  color:#e8e0d0;
 }
-html[data-theme="dark"] .cd-title{color:rgba(255,255,255,.7)}
-html[data-theme="dark"] .cd-msg{color:rgba(255,255,255,.65)}
+html[data-theme="dark"] .s-btn{background:rgba(200,170,100,.1);color:#e8e0d0}
+html[data-theme="dark"] .s-btn.active{
+  background:linear-gradient(135deg,#8b6914,#c49a2a);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(180,140,50,.4);
+}
+html[data-theme="dark"] .menu-section-label{color:rgba(200,170,100,.6)}
+html[data-theme="dark"] .menu-section-label-accent{color:#d4a855}
+html[data-theme="dark"] .divider-line{background:rgba(200,170,100,.2)}
+html[data-theme="dark"] .divider-text{color:rgba(200,170,100,.45)}
+html[data-theme="dark"] .brand-sub{color:rgba(232,224,208,.45)}
+html[data-theme="dark"] .footer-credit{color:rgba(232,224,208,.35)}
 
-/* ===== ライトモード ===== */
+/* =====================================================
+   ライトモード：昼下がりのボサノバカフェ
+   心理学的根拠：
+   ・クリーム×ウォームグレーは目の疲れを抑え集中力を持続させる
+   ・彩度を抑えたアンバーアクセントは学習意欲（成長感）を刺激する
+   ・高コントラスト白を避けることで認知負荷を低減する
+   ===================================================== */
 html[data-theme="light"] body{
-  background:linear-gradient(135deg,#e8eeff 0%,#f0f4ff 50%,#f5f0ff 100%);
-  color:#1a1a2e;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(220,190,130,.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(160,140,200,.1) 0%, transparent 55%),
+    linear-gradient(160deg, #f5f0e8 0%, #ede8dc 40%, #f0ebe0 70%, #f7f2ea 100%);
+  color:#2c2416;
 }
 html[data-theme="light"] body::before{
   background:
-    radial-gradient(ellipse at 30% 20%,rgba(120,100,255,.08) 0%,transparent 60%),
-    radial-gradient(ellipse at 70% 80%,rgba(200,100,255,.06) 0%,transparent 60%);
+    radial-gradient(ellipse at 25% 30%, rgba(200,160,80,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 65%, rgba(140,120,180,.05) 0%, transparent 50%);
 }
 html[data-theme="light"] .brand h1{
-  background:linear-gradient(90deg,#6d28d9,#2563eb,#059669);
+  background:linear-gradient(90deg,#7c5c1e,#5a4a8a,#2d6a4f);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-html[data-theme="light"] .brand-sub{color:#4b5563}
+html[data-theme="light"] .brand-sub{color:rgba(44,36,22,.45)}
 html[data-theme="light"] .countdown{
-  background:rgba(255,255,255,.82);
-  border-color:rgba(100,100,200,.28);
-  box-shadow:0 10px 28px rgba(100,100,200,.13);
+  background:linear-gradient(160deg, rgba(255,240,200,.7) 0%, rgba(240,220,170,.5) 100%);
+  border-color:rgba(160,120,50,.25);
+  box-shadow:0 8px 28px rgba(160,120,50,.1);
 }
-html[data-theme="light"] .cd-title{color:#4b5563}
-html[data-theme="light"] .cd-msg{color:#4b5563}
-html[data-theme="light"] .menu-section-title{color:#3730a3}
-html[data-theme="light"] .menu-card{
-  border-color:rgba(100,100,200,.2);
-  box-shadow:0 4px 20px rgba(100,100,200,.1);
+html[data-theme="light"] .countdown::after{
+  background:linear-gradient(90deg, transparent, rgba(160,120,50,.4), transparent);
 }
-html[data-theme="light"] .menu-card .card-desc{color:#374151}
-html[data-theme="light"] .menu-card .card-tags span{
-  background:rgba(0,0,0,.09);color:#374151;
+html[data-theme="light"] .cd-num{
+  color:#8b5e1a;
+  text-shadow:0 0 20px rgba(139,94,26,.2);
+}
+html[data-theme="light"] .cd-title{color:rgba(44,36,22,.55)}
+html[data-theme="light"] .cd-msg  {color:rgba(44,36,22,.5)}
+html[data-theme="light"] .menu-card{border-color:rgba(100,80,40,.12)}
+html[data-theme="light"] .card-desc{color:rgba(44,36,22,.65) !important}
+html[data-theme="light"] .card-tags span{
+  background:rgba(100,80,40,.1) !important;
+  color:rgba(44,36,22,.75) !important;
 }
 html[data-theme="light"] .request-box{
-  background:rgba(255,255,255,.85);
-  border-color:rgba(100,100,200,.22);
+  background:rgba(255,248,235,.75);
+  border-color:rgba(160,130,70,.2);
 }
-html[data-theme="light"] .request-box h2{color:#1a1a2e}
-html[data-theme="light"] .request-box p{color:#374151}
+html[data-theme="light"] .request-box h2{color:#2c2416}
+html[data-theme="light"] .request-box p{color:rgba(44,36,22,.6)}
 html[data-theme="light"] .request-input{
-  background:rgba(255,255,255,.95);
-  border-color:rgba(100,100,200,.32);
-  color:#1a1a2e;
+  background:rgba(255,252,245,.9);
+  border-color:rgba(160,130,70,.25);
+  color:#2c2416;
 }
-html[data-theme="light"] .request-input::placeholder{color:#9ca3af}
-html[data-theme="light"] .footer-credit{color:#6b7280}
+html[data-theme="light"] .request-input::placeholder{color:rgba(44,36,22,.35)}
+html[data-theme="light"] .footer-credit{color:rgba(44,36,22,.4)}
 html[data-theme="light"] .settings-panel{
-  background:rgba(240,244,255,0.97);
-  border-color:rgba(100,100,200,.28);
-  color:#1a1a2e;
+  background:rgba(245,240,228,.97);
+  border-color:rgba(160,130,70,.25);
+  color:#2c2416;
 }
-html[data-theme="light"] .settings-label{color:#4b5563}
-html[data-theme="light"] .s-btn{background:rgba(100,100,200,.12)}
-html[data-theme="light"] .jlpt-separator-text{color:rgba(30,30,80,.45)}
-html[data-theme="light"] .jlpt-separator-line{background:rgba(30,30,80,.15)}
-html[data-theme="light"] .menu-section-label{color:rgba(30,30,80,.5)}
+html[data-theme="light"] .s-btn{background:rgba(160,130,70,.12);color:#2c2416}
+html[data-theme="light"] .s-btn.active{
+  background:linear-gradient(135deg,#8b5e1a,#a87828);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(139,94,26,.3);
+}
+html[data-theme="light"] .menu-section-label{color:rgba(100,80,30,.55)}
+html[data-theme="light"] .menu-section-label-accent{color:#8b5e1a}
+html[data-theme="light"] .divider-line{background:rgba(100,80,30,.18)}
+html[data-theme="light"] .divider-text{color:rgba(100,80,30,.4)}
+html[data-theme="light"] .jlpt-card-title{
+  background:linear-gradient(90deg,#8b5e1a,#c49a2a) !important;
+  -webkit-background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  background-clip:text !important;
+}
 
 /* ===== ベース ===== */
 body{
   font-family:'Noto Sans JP','Noto Sans',sans-serif;
-  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
   overflow-x:hidden;-webkit-tap-highlight-color:transparent;
   user-select:none;position:relative;
+  transition:background .4s, color .3s;
 }
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
@@ -146,224 +194,278 @@ body>*{position:relative;z-index:1}
 
 .top-container{
   display:flex;flex-direction:column;align-items:center;
-  min-height:100dvh;gap:0;padding:28px 18px 40px;
+  min-height:100dvh;gap:0;
+  padding:28px 18px 48px;
   text-align:center;width:100%;max-width:560px;
 }
 
-/* ===== ブランドエリア ===== */
+/* ===== ブランド ===== */
 .brand{display:flex;flex-direction:column;align-items:center;gap:4px}
-.brand-logo{animation:float 3.4s ease-in-out infinite}
+.brand-logo{animation:float 4s ease-in-out infinite}
 .brand-logo img{
-  width:clamp(96px,23vw,150px);height:auto;border-radius:20px;
-  filter:drop-shadow(0 6px 20px rgba(255,255,255,.22));object-fit:contain;
+  width:clamp(90px,22vw,140px);height:auto;
+  border-radius:18px;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.28));
+  object-fit:contain;
 }
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .brand h1{
-  font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(1.4rem,4.6vw,2.1rem);font-weight:800;letter-spacing:-.02em;
-  background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
+  font-family:'Poppins',sans-serif;
+  font-size:clamp(1.35rem,4.4vw,2rem);font-weight:800;letter-spacing:-.01em;
+  background:linear-gradient(90deg,#b09060,#8878c0,#60a888);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-top:6px;
 }
 .brand-sub{
-  font-size:clamp(.78rem,2.2vw,.9rem);opacity:.55;
-  font-weight:400;letter-spacing:.04em;
+  font-size:clamp(.72rem,2vw,.84rem);font-weight:300;
+  letter-spacing:.12em;margin-top:2px;
+  font-family:'Poppins',sans-serif;
 }
 
-/* ===== 設定パネル（ロゴ下・横幅いっぱい） ===== */
+/* ===== 設定パネル ===== */
 .settings-panel{
-  width:100%;margin-top:14px;
-  border-radius:16px;border:1px solid;
-  padding:10px 16px;
-  backdrop-filter:blur(16px);
-  display:flex;flex-direction:row;
-  align-items:center;
-  gap:0;
-  box-shadow:0 4px 20px rgba(0,0,0,.2);
-  flex-wrap:wrap;
-  row-gap:8px;
-}
-.settings-label{
-  font-size:.6rem;font-weight:700;letter-spacing:.08em;
-  opacity:.55;white-space:nowrap;margin-right:10px;
-  display:none; /* 横並びでは省略 */
+  width:100%;margin-top:16px;
+  border-radius:14px;border:1px solid;
+  padding:10px 14px;
+  backdrop-filter:blur(20px);
+  display:flex;flex-direction:row;align-items:center;
+  gap:0;flex-wrap:wrap;row-gap:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+  transition:background .3s, border-color .3s;
 }
 .settings-row{
   display:flex;align-items:center;gap:6px;
-  flex:1;justify-content:center;
-  min-width:100px;
+  flex:1;justify-content:center;min-width:100px;
 }
 .settings-row-label{
-  font-size:.65rem;font-weight:700;white-space:nowrap;opacity:.7;
+  font-size:.62rem;font-weight:700;
+  white-space:nowrap;opacity:.65;letter-spacing:.04em;
 }
-.settings-btns{display:flex;gap:4px;}
+.settings-btns{display:flex;gap:4px}
 .s-btn{
-  border:none;border-radius:8px;cursor:pointer;
-  font-size:.65rem;font-weight:700;padding:5px 9px;
-  transition:all .18s;opacity:.5;
-  background:rgba(128,128,200,.18);color:inherit;
+  border:none;border-radius:7px;cursor:pointer;
+  font-size:.63rem;font-weight:700;padding:5px 9px;
+  transition:all .2s;opacity:.5;
   font-family:'Noto Sans JP',sans-serif;
 }
-.s-btn.active{
-  opacity:1;
-  background:linear-gradient(135deg,#7c3aed,#2563eb);
-  color:#fff;
-  box-shadow:0 2px 8px rgba(124,58,237,.4);
-}
+.s-btn.active{opacity:1}
 
 /* ===== カウントダウン ===== */
 .countdown{
-  width:100%;margin-top:20px;padding:15px 18px 16px;border-radius:20px;
+  width:100%;margin-top:20px;
+  padding:18px 20px 20px;border-radius:18px;
   border:1px solid;
-  backdrop-filter:blur(10px);
-  display:flex;flex-direction:column;align-items:center;gap:2px;
+  backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
   position:relative;overflow:hidden;
-  box-shadow:0 10px 28px rgba(0,0,0,.22);
-  --cd-accent:#60a5fa;--cd-glow:rgba(96,165,250,.45);
+  box-shadow:0 8px 28px rgba(0,0,0,.15);
+  transition:background .3s, border-color .3s;
 }
 .countdown::after{
-  content:'';position:absolute;left:0;right:0;top:0;height:3px;
-  background:linear-gradient(90deg,transparent,var(--cd-accent),transparent);
+  content:'';position:absolute;left:0;right:0;top:0;height:2px;
 }
 .cd-title{
-  font-size:.7rem;font-weight:700;letter-spacing:.02em;line-height:2;
+  font-size:.68rem;font-weight:400;letter-spacing:.1em;
+  font-family:'Poppins',sans-serif;
+  transition:color .3s;
 }
 .cd-main{
   display:flex;align-items:baseline;gap:6px;
-  justify-content:center;line-height:1.9;
+  justify-content:center;
 }
 .cd-num{
   font-family:'Poppins',sans-serif;font-weight:800;
-  font-size:clamp(2.8rem,11vw,4rem);line-height:1;
-  color:var(--cd-accent);text-shadow:0 0 20px var(--cd-glow);
+  font-size:clamp(3rem,12vw,4.5rem);line-height:1;
+  transition:color .3s;
 }
-.cd-unit{font-size:1rem;font-weight:700;opacity:.85}
+.cd-unit{
+  font-size:.95rem;font-weight:400;opacity:.8;
+  font-family:'Poppins',sans-serif;letter-spacing:.06em;
+}
 .cd-msg{
-  font-size:.76rem;font-weight:700;line-height:2;text-align:center;
+  font-size:.72rem;font-weight:300;letter-spacing:.06em;
+  font-family:'Poppins','Noto Sans JP',sans-serif;
+  transition:color .3s;margin-top:2px;
 }
 
-/* ===== メニューセクション ===== */
-.menu-section{width:100%;margin-top:26px}
-
-/* セクションラベル（◆ タイトル形式） */
+/* ===== セクションラベル ===== */
+.menu-section{width:100%;margin-top:28px}
 .menu-section-label{
   display:flex;align-items:center;gap:8px;
-  font-size:.72rem;font-weight:700;letter-spacing:.06em;
-  color:rgba(255,255,255,.5);
-  margin-bottom:12px;padding-left:2px;
+  font-size:.68rem;font-weight:700;letter-spacing:.1em;
+  margin-bottom:14px;padding-left:2px;
+  transition:color .3s;
 }
 .menu-section-label-accent{
-  color:#a78bfa;font-size:.85rem;
+  font-size:.9rem;margin-right:2px;
+  transition:color .3s;
 }
 
-.menu-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+/* ===== JLPT セクション区切り（装飾線デザイン） ===== */
+.jlpt-divider{
+  width:100%;margin:28px 0 20px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.jlpt-divider-inner{
+  display:flex;align-items:center;gap:12px;width:100%;
+}
+.divider-line{
+  flex:1;height:1px;
+  transition:background .3s;
+}
+/* 中央の装飾テキスト */
+.divider-center{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.divider-ornament{
+  font-size:.75rem;letter-spacing:.3em;
+  opacity:.5;line-height:1;
+}
+.divider-text{
+  font-family:'Cormorant Garamond','Poppins',serif;
+  font-size:.72rem;font-weight:600;letter-spacing:.18em;
+  font-style:italic;white-space:nowrap;
+  transition:color .3s;
+}
+/* 区切り下の細線ペア */
+.divider-sub{
+  display:flex;align-items:center;gap:6px;margin-top:5px;width:60%;
+}
+.divider-sub-line{
+  flex:1;height:1px;opacity:.4;
+}
+html[data-theme="dark"]  .divider-sub-line{background:rgba(200,170,100,.3)}
+html[data-theme="light"] .divider-sub-line{background:rgba(100,80,30,.2)}
+.divider-dot{
+  width:4px;height:4px;border-radius:50%;opacity:.5;flex-shrink:0;
+}
+html[data-theme="dark"]  .divider-dot{background:#d4a855}
+html[data-theme="light"] .divider-dot{background:#8b5e1a}
 
 /* ===== メニューカード ===== */
+.menu-list{list-style:none;display:flex;flex-direction:column;gap:11px}
 .menu-card{
   display:grid;grid-template-columns:auto 1fr auto;
   align-items:center;gap:14px;
-  border-radius:22px;padding:16px 18px;
-  text-decoration:none;color:#fff;
+  border-radius:20px;padding:15px 18px;
+  text-decoration:none;color:inherit;
   border:1px solid;
-  backdrop-filter:blur(10px);
-  box-shadow:0 4px 20px rgba(0,0,0,.18);
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;
+  backdrop-filter:blur(12px);
+  box-shadow:0 3px 18px rgba(0,0,0,.15);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1),
+             box-shadow .22s, border-color .3s;
   position:relative;overflow:hidden;
 }
 .menu-card::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 60%);
+  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 60%);
   pointer-events:none;
 }
 .menu-card:active{transform:scale(.97)}
 @media(hover:hover){
-  .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(0,0,0,.28)}
+  .menu-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 28px rgba(0,0,0,.22);
+  }
 }
 .card-icon{
-  font-size:1.9rem;width:50px;height:50px;
+  font-size:1.75rem;width:48px;height:48px;
   display:flex;align-items:center;justify-content:center;
-  border-radius:14px;background:rgba(255,255,255,.13);flex-shrink:0;
+  border-radius:13px;background:rgba(255,255,255,.1);flex-shrink:0;
 }
 .card-body{text-align:left}
 .card-title{
-  font-size:clamp(.95rem,2.8vw,1.05rem);font-weight:700;
-  line-height:1.35;margin-bottom:3px;
+  font-size:clamp(.92rem,2.7vw,1.02rem);font-weight:700;
+  line-height:1.35;margin-bottom:3px;color:#fff;
 }
+html[data-theme="light"] .card-title{color:#2c2416}
 .card-desc{
-  font-size:clamp(.72rem,2vw,.8rem);
-  opacity:.7;line-height:1.45;margin-bottom:5px;
+  font-size:clamp(.7rem,1.9vw,.78rem);
+  opacity:.68;line-height:1.45;margin-bottom:5px;color:#fff;
 }
 .card-tags{display:flex;flex-wrap:wrap;gap:4px}
 .card-tags span{
-  font-size:.6rem;font-weight:700;padding:2px 7px;
-  border-radius:20px;background:rgba(255,255,255,.16);
-  letter-spacing:.02em;
+  font-size:.58rem;font-weight:700;padding:2px 7px;
+  border-radius:20px;background:rgba(255,255,255,.15);
+  letter-spacing:.02em;color:#fff;
 }
-.card-arrow{font-size:1.3rem;opacity:.55;flex-shrink:0}
+.card-arrow{font-size:1.2rem;opacity:.45;flex-shrink:0;color:#fff}
+html[data-theme="light"] .card-arrow{color:#2c2416}
 .card-badge{
-  position:absolute;top:10px;right:34px;
-  font-size:.58rem;font-weight:800;padding:2px 7px;
+  position:absolute;top:10px;right:32px;
+  font-size:.56rem;font-weight:800;padding:2px 7px;
   border-radius:20px;letter-spacing:.04em;
 }
 
-/* ===== カード色 ===== */
-.flashcard {background:linear-gradient(135deg,rgba(99,102,241,.38),rgba(79,70,229,.22))}
-.exam      {background:linear-gradient(135deg,rgba(16,185,129,.38),rgba(5,150,105,.22))}
-.youten    {background:linear-gradient(135deg,rgba(245,158,11,.38),rgba(217,119,6,.22))}
-.houkaisei {background:linear-gradient(135deg,rgba(168,85,247,.38),rgba(239,68,68,.22))}
-.jlpt      {background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(245,158,11,.14))}
+/* ===== カード色：ダーク時はやや深め、ライト時も品良く ===== */
+.flashcard {background:linear-gradient(135deg,rgba(90,95,210,.45),rgba(70,60,190,.28))}
+.exam      {background:linear-gradient(135deg,rgba(20,160,110,.42),rgba(10,130,85,.25))}
+.youten    {background:linear-gradient(135deg,rgba(200,140,30,.42),rgba(170,110,15,.25))}
+.houkaisei {background:linear-gradient(135deg,rgba(150,70,220,.42),rgba(210,55,55,.25))}
+.jlpt      {background:linear-gradient(135deg,rgba(180,140,40,.28),rgba(140,110,20,.16))}
 
-/* ===== JLPTセパレーター ===== */
-.jlpt-separator{
-  display:flex;align-items:center;gap:10px;
-  margin:10px 0 4px;padding:0 2px;
-}
-.jlpt-separator-text{
-  font-size:.68rem;font-weight:700;letter-spacing:.08em;
-  color:rgba(255,255,255,.38);white-space:nowrap;
-}
-.jlpt-separator-line{
-  flex:1;height:1px;background:rgba(255,255,255,.15);
+html[data-theme="light"] .flashcard {background:linear-gradient(135deg,rgba(90,95,210,.3),rgba(70,60,190,.18))}
+html[data-theme="light"] .exam      {background:linear-gradient(135deg,rgba(20,160,110,.28),rgba(10,130,85,.16))}
+html[data-theme="light"] .youten    {background:linear-gradient(135deg,rgba(200,140,30,.3),rgba(170,110,15,.18))}
+html[data-theme="light"] .houkaisei {background:linear-gradient(135deg,rgba(150,70,220,.28),rgba(210,55,55,.18))}
+html[data-theme="light"] .jlpt      {background:linear-gradient(135deg,rgba(160,120,30,.2),rgba(120,90,10,.12))}
+
+/* ===== JLPTカードタイトル（金色グラデ） ===== */
+.jlpt-card-title{
+  background:linear-gradient(90deg,#d4a855,#f0d080);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  font-size:clamp(.92rem,2.7vw,1.02rem);font-weight:700;
+  line-height:1.35;margin-bottom:3px;
 }
 
 /* ===== リクエストボックス ===== */
 .request-box{
-  width:100%;margin-top:30px;padding:22px 20px;border-radius:20px;
-  border:1px solid;backdrop-filter:blur(10px);text-align:center;
+  width:100%;margin-top:30px;padding:22px 20px;border-radius:18px;
+  border:1px solid;backdrop-filter:blur(12px);text-align:center;
+  transition:background .3s, border-color .3s;
 }
-.request-box h2{font-size:.9rem;font-weight:700;line-height:1.9;margin-bottom:6px}
+.request-box h2{font-size:.88rem;font-weight:700;line-height:1.9;margin-bottom:6px}
 .request-box p{font-size:.72rem;opacity:.6;margin-bottom:14px;line-height:1.7}
 .request-form{display:flex;gap:8px}
 .request-input{
-  flex:1;border:1px solid;border-radius:12px;
+  flex:1;border:1px solid;border-radius:10px;
   padding:10px 13px;font-size:.85rem;
   font-family:'Noto Sans JP',sans-serif;
   outline:none;min-width:0;
+  transition:background .3s, border-color .3s, color .3s;
 }
 .request-btn{
-  background:linear-gradient(135deg,#7c3aed,#2563eb);
-  color:#fff;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#8b6914,#c49a2a);
+  color:#fff;border:none;border-radius:10px;
   padding:10px 16px;font-size:.85rem;font-weight:700;
   cursor:pointer;white-space:nowrap;
   font-family:'Noto Sans JP',sans-serif;
   transition:opacity .2s;
 }
 .request-btn:hover{opacity:.85}
-.request-feedback{font-size:.75rem;margin-top:8px;min-height:1.2em;font-weight:700}
-.request-feedback.success{color:#34d399}
-.request-feedback.error{color:#f87171}
+.request-feedback{font-size:.74rem;margin-top:8px;min-height:1.2em;font-weight:700}
+.request-feedback.success{color:#48bb78}
+.request-feedback.error  {color:#fc8181}
 
 /* ===== フッター ===== */
 .footer-profile{
-  width:100%;margin-top:36px;padding:20px;
-  display:flex;flex-direction:column;align-items:center;gap:10px;
+  width:100%;margin-top:40px;padding:20px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
 }
-/* ★修正⑤：丸枠なし・シンプルな表示 */
+/* ★修正①：全身が見えるよう object-position を center に、角丸正方形 */
 .footer-profile img{
-  width:80px;height:80px;
+  width:88px;height:88px;
   border-radius:16px;
-  object-fit:cover;object-position:top center;
+  object-fit:cover;
+  object-position:center center;
+  display:block;
 }
-.footer-credit{font-size:.7rem;opacity:.45;margin-top:4px;line-height:1.8}
+.footer-credit{
+  font-size:.68rem;letter-spacing:.06em;line-height:1.9;
+  font-family:'Poppins',sans-serif;font-weight:300;
+  transition:color .3s;
+}
 </style>
 </head>
 <body>
@@ -373,16 +475,14 @@ body>*{position:relative;z-index:1}
   <!-- ===== ブランド ===== -->
   <div class="brand">
     <div class="brand-logo">
-      <img src="gift-logo.png" alt="GIFT協会ロゴ" width="120" height="120">
+      <img src="gift-logo.png" alt="GIFT協会ロゴ" width="130" height="130">
     </div>
     <h1>Manabi App</h1>
-    <div class="brand-sub">一般社団法人GIFT協会</div>
+    <div class="brand-sub">一般社団法人 GIFT 協会</div>
   </div>
 
-  <!-- ===== 設定パネル（ロゴ・タイトルの直下） ===== -->
+  <!-- ===== 設定パネル ===== -->
   <div class="settings-panel" id="settingsPanel">
-
-    <!-- ふりがな -->
     <div class="settings-row">
       <span class="settings-row-label">ふりがな</span>
       <div class="settings-btns">
@@ -390,8 +490,6 @@ body>*{position:relative;z-index:1}
         <button class="s-btn" id="rubyOff" onclick="setRuby('off')">なし</button>
       </div>
     </div>
-
-    <!-- 文字サイズ -->
     <div class="settings-row">
       <span class="settings-row-label">文字</span>
       <div class="settings-btns">
@@ -400,8 +498,6 @@ body>*{position:relative;z-index:1}
         <button class="s-btn" id="fsXlarge" onclick="setFontsize('xlarge')">特大</button>
       </div>
     </div>
-
-    <!-- テーマ -->
     <div class="settings-row">
       <span class="settings-row-label">テーマ</span>
       <div class="settings-btns">
@@ -409,14 +505,13 @@ body>*{position:relative;z-index:1}
         <button class="s-btn" id="themeLight" onclick="setTheme('light')">☀️ ライト</button>
       </div>
     </div>
-
   </div>
 
-  <!-- ===== カウントダウン（日数のみ） ===== -->
-  <div class="countdown" id="countdown">
+  <!-- ===== カウントダウン ===== -->
+  <div class="countdown">
     <div class="cd-title" id="cdTitle"></div>
-    <div class="cd-main" id="cdMain"></div>
-    <div class="cd-msg"  id="cdMsg"></div>
+    <div class="cd-main"  id="cdMain"></div>
+    <div class="cd-msg"   id="cdMsg"></div>
   </div>
 
   <!-- ===== メニュー：介護福祉士 ===== -->
@@ -428,7 +523,6 @@ body>*{position:relative;z-index:1}
     </div>
     <ul class="menu-list">
 
-      <!-- 介護用語フラッシュカード -->
       <li>
         <a href="./flashcard.html" class="menu-card flashcard">
           <div class="card-icon">📚</div>
@@ -445,19 +539,15 @@ body>*{position:relative;z-index:1}
             <div class="card-tags">
               <span><ruby>日本語<rt>にほんご</rt></ruby></span>
               <span><ruby>英語<rt>えいご</rt></ruby></span>
-              <span>Indonesia</span>
-              <span>Tiếng Việt</span>
-              <span>ภาษาไทย</span>
-              <span>မြန်မာဘာသာ</span>
-              <span>नेपाली</span>
-              <span>Монгол</span>
+              <span>Indonesia</span><span>Tiếng Việt</span>
+              <span>ภาษาไทย</span><span>မြန်မာဘာသာ</span>
+              <span>नेपाली</span><span>Монгол</span>
             </div>
           </div>
           <div class="card-arrow">›</div>
         </a>
       </li>
 
-      <!-- 過去問 -->
       <li>
         <a href="./exam/index.html" class="menu-card exam">
           <div class="card-icon">📝</div>
@@ -483,10 +573,9 @@ body>*{position:relative;z-index:1}
         </a>
       </li>
 
-      <!-- 要点集 -->
       <li>
         <a href="./youten/index.html" class="menu-card youten">
-          <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
+          <span class="card-badge" style="background:linear-gradient(90deg,#c49a2a,#e05050);color:#fff;">NEW</span>
           <div class="card-icon">📖</div>
           <div class="card-body">
             <div class="card-title">
@@ -507,10 +596,9 @@ body>*{position:relative;z-index:1}
         </a>
       </li>
 
-      <!-- 法改正ノート -->
       <li>
         <a href="./houkaisei/index.html" class="menu-card houkaisei">
-          <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
+          <span class="card-badge" style="background:linear-gradient(90deg,#c49a2a,#e05050);color:#fff;">NEW</span>
           <div class="card-icon">⚖️</div>
           <div class="card-body">
             <div class="card-title">
@@ -535,25 +623,34 @@ body>*{position:relative;z-index:1}
     </ul>
   </nav>
 
-  <!-- ===== メニュー：JLPT ===== -->
-  <nav class="menu-section" style="margin-top:10px;" aria-label="JLPT対策メニュー">
-    <div class="menu-section-label">
-      <span class="menu-section-label-accent">◆</span>
-      JLPT　<ruby>日本語能力試験<rt>にほんごのうりょくしけん</rt></ruby>　対策
+  <!-- ===== ★JLPT 区切り装飾（修正②） ===== -->
+  <div class="jlpt-divider">
+    <div class="jlpt-divider-inner">
+      <div class="divider-line"></div>
+      <div class="divider-center">
+        <div class="divider-ornament">✦ ✦ ✦</div>
+        <div class="divider-text">JLPT — 日本語能力試験 対策</div>
+      </div>
+      <div class="divider-line"></div>
     </div>
-    <ul class="menu-list">
+    <div class="divider-sub">
+      <div class="divider-sub-line"></div>
+      <div class="divider-dot"></div>
+      <div class="divider-sub-line"></div>
+    </div>
+  </div>
 
-      <!-- JLPTカード -->
+  <!-- ===== メニュー：JLPT ===== -->
+  <nav class="menu-section" style="margin-top:0;" aria-label="JLPT対策メニュー">
+    <ul class="menu-list">
       <li>
         <a href="./jlpt/index.html" class="menu-card jlpt">
-          <span class="card-badge" style="background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff;">NEW</span>
-          <div class="card-icon" style="background:rgba(251,191,36,.2);">🎌</div>
+          <span class="card-badge" style="background:linear-gradient(90deg,#c49a2a,#e05050);color:#fff;">NEW</span>
+          <div class="card-icon" style="background:rgba(200,160,50,.18);">🎌</div>
           <div class="card-body">
-            <div class="card-title" style="
-              background:linear-gradient(90deg,#fbbf24,#fde68a);
-              -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-              background-clip:text;
-            ">JLPT N1 / N2 <ruby>対策<rt>たいさく</rt></ruby></div>
+            <div class="jlpt-card-title">
+              JLPT N1 / N2 <ruby>対策<rt>たいさく</rt></ruby>
+            </div>
             <div class="card-desc">
               <ruby>日本語<rt>にほんご</rt></ruby>
               <ruby>能力<rt>のうりょく</rt></ruby>
@@ -571,7 +668,6 @@ body>*{position:relative;z-index:1}
           <div class="card-arrow">›</div>
         </a>
       </li>
-
     </ul>
   </nav>
 
@@ -595,15 +691,16 @@ body>*{position:relative;z-index:1}
 
   <!-- ===== フッター ===== -->
   <div class="footer-profile">
-    <img src="muneishi-icon.png" alt="宗石光英" width="80" height="80">
+    <!-- ★修正①：全身表示・object-position:center center・角丸正方形 -->
+    <img src="muneishi-icon.png" alt="宗石光英" width="88" height="88">
     <div class="footer-credit">
-      一般社団法人 GIFT協会<br>
+      一般社団法人 GIFT 協会<br>
       宗石 光英<br>
       Created by Mitsuhide Muneishi
     </div>
   </div>
 
-</div><!-- /top-container -->
+</div>
 
 <script>
 /* ===== GAS URL ===== */
@@ -617,71 +714,63 @@ function syncSettingsBtns(){
   var theme    = localStorage.getItem('gift_theme')    || 'dark';
   var fontsize = localStorage.getItem('gift_fontsize') || 'normal';
   var ruby     = localStorage.getItem('gift_ruby')     || 'on';
-
-  document.getElementById('themeDark').classList.toggle('active',  theme === 'dark');
-  document.getElementById('themeLight').classList.toggle('active', theme === 'light');
-  document.getElementById('fsNormal').classList.toggle('active',   fontsize === 'normal');
-  document.getElementById('fsLarge').classList.toggle('active',    fontsize === 'large');
-  document.getElementById('fsXlarge').classList.toggle('active',   fontsize === 'xlarge');
-  document.getElementById('rubyOn').classList.toggle('active',     ruby === 'on');
-  document.getElementById('rubyOff').classList.toggle('active',    ruby === 'off');
+  document.getElementById('themeDark').classList.toggle('active',  theme==='dark');
+  document.getElementById('themeLight').classList.toggle('active', theme==='light');
+  document.getElementById('fsNormal').classList.toggle('active',   fontsize==='normal');
+  document.getElementById('fsLarge').classList.toggle('active',    fontsize==='large');
+  document.getElementById('fsXlarge').classList.toggle('active',   fontsize==='xlarge');
+  document.getElementById('rubyOn').classList.toggle('active',     ruby==='on');
+  document.getElementById('rubyOff').classList.toggle('active',    ruby==='off');
 }
 
-/* ===== ふりがな切り替え ===== */
+/* ===== 設定変更関数 ===== */
 function setRuby(val){
   localStorage.setItem('gift_ruby', val);
   document.documentElement.setAttribute('data-ruby', val);
   syncSettingsBtns();
 }
-
-/* ===== 文字サイズ切り替え ===== */
 function setFontsize(val){
   localStorage.setItem('gift_fontsize', val);
   document.documentElement.setAttribute('data-fontsize', val);
   syncSettingsBtns();
 }
-
-/* ===== テーマ切り替え ===== */
 function setTheme(val){
   localStorage.setItem('gift_theme', val);
   document.documentElement.setAttribute('data-theme', val);
   syncSettingsBtns();
 }
 
-/* ===== カウントダウン（日数のみ表示） ===== */
+/* ===== カウントダウン（日数のみ） ===== */
 function renderCountdown(){
   var now  = new Date();
   var exam = new Date(EXAM_INFO.date + 'T00:00:00+09:00');
   var diff = exam - now;
-
   var title = document.getElementById('cdTitle');
   var main  = document.getElementById('cdMain');
   var msg   = document.getElementById('cdMsg');
 
   if(diff <= 0){
     title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験';
-    main.innerHTML    = '<span class="cd-num" style="font-size:2rem;">お疲れ様でした！</span>';
-    msg.textContent   = '試験当日です。全力を出し切ろう！';
+    main.innerHTML    = '<span class="cd-num" style="font-size:1.8rem;">お疲れ様でした</span>';
+    msg.textContent   = '全力を出し切ろう。';
     return;
   }
 
-  /* ★修正③：日数のみ表示 */
   var days = Math.floor(diff / 86400000);
-
   var msgs = [
-    '今日の積み重ねが合格への道。',
+    '今日の積み重ねが、合格への道。',
     '毎日少しずつ。それが一番の近道。',
     'あなたの努力は必ず報われる。',
     '一問一問、丁寧に取り組もう。',
-    '合格まであと' + days + '日！頑張れ！',
     '継続は力なり。今日も一歩前へ。',
-    '苦手な問題こそ、伸びしろだ！'
+    '苦手な問題こそ、伸びしろだ。',
+    '合格まであと' + days + '日。今日も頑張ろう。'
   ];
 
   title.textContent = '第' + EXAM_INFO.round + '回 介護福祉士国家試験まで';
   main.innerHTML =
     '<span class="cd-num">' + days + '</span>' +
-    '<span class="cd-unit">日</span>';
+    '<span class="cd-unit">days</span>';
   msg.textContent = msgs[days % msgs.length];
 }
 
@@ -701,45 +790,36 @@ function sendRequest(){
   var btn   = document.getElementById('requestSendBtn');
   var fb    = document.getElementById('requestFeedback');
   var word  = input.value.trim();
-
   if(!word){
-    fb.textContent = '⚠ 用語を入力してください';
-    fb.className   = 'request-feedback error';
-    return;
+    fb.textContent='⚠ 用語を入力してください';
+    fb.className='request-feedback error';return;
   }
-  btn.disabled    = true;
-  btn.textContent = '送信中…';
-  fb.textContent  = '';
-  fb.className    = 'request-feedback';
-
+  btn.disabled=true;btn.textContent='送信中…';
+  fb.textContent='';fb.className='request-feedback';
   fetch(GAS_URL,{
-    method:'POST', mode:'no-cors',
+    method:'POST',mode:'no-cors',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({word:word, from:'top'})
+    body:JSON.stringify({word:word,from:'top'})
   })
   .then(function(){
-    fb.textContent = '✅ ありがとうございます！リクエストを受け付けました';
-    fb.className   = 'request-feedback success';
-    input.value    = '';
-    setTimeout(function(){ fb.textContent=''; fb.className='request-feedback'; }, 4000);
+    fb.textContent='✅ ありがとうございます！リクエストを受け付けました';
+    fb.className='request-feedback success';
+    input.value='';
+    setTimeout(function(){fb.textContent='';fb.className='request-feedback';},4000);
   })
   .catch(function(){
-    fb.textContent = '❌ 送信に失敗しました。もう一度お試しください';
-    fb.className   = 'request-feedback error';
+    fb.textContent='❌ 送信に失敗しました。もう一度お試しください';
+    fb.className='request-feedback error';
   })
-  .finally(function(){
-    btn.disabled    = false;
-    btn.textContent = '送信';
-  });
+  .finally(function(){btn.disabled=false;btn.textContent='送信';});
 }
-
-document.getElementById('requestInput').addEventListener('keydown', function(e){
-  if(e.key === 'Enter'){ e.preventDefault(); sendRequest(); }
+document.getElementById('requestInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();sendRequest();}
 });
 
 /* ===== Service Worker ===== */
 if('serviceWorker' in navigator){
-  window.addEventListener('load', function(){
+  window.addEventListener('load',function(){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
 }
