@@ -1095,3 +1095,175 @@
     document.getElementById('btn-next').textContent =
       currentIndex === currentQuestions.length - 1 ? '結果を見る' : '次へ →';
   }
+
+  /* ════════════════════════════════════════════════
+     タイマー
+  ════════════════════════════════════════════════ */
+  function startTimer() {
+    clearInterval(timerInterval);
+    elapsedSec = 0;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      elapsedSec++;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(elapsedSec / 60);
+    const s = elapsedSec % 60;
+    document.getElementById('timer-display').textContent =
+      m + ':' + String(s).padStart(2, '0');
+  }
+
+  function showTimeLabel(sec) {
+    const cat   = CATEGORIES.find(c => c.key === currentCatKey);
+    const base  = cat ? cat.baseTimeSec : 120;
+    const label = document.getElementById('time-label');
+
+    if (sec <= base * 0.7) {
+      label.textContent = '⚡ 速い';
+      label.className   = 'time-label show time-label-fast';
+    } else if (sec <= base * 1.3) {
+      label.textContent = '✅ 普通';
+      label.className   = 'time-label show time-label-mid';
+    } else {
+      label.textContent = '🐢 もう少し';
+      label.className   = 'time-label show time-label-slow';
+    }
+  }
+
+  /* ════════════════════════════════════════════════
+     選択肢タップ
+  ════════════════════════════════════════════════ */
+  function selectChoice(chosen, btnEl) {
+    if (answered) return;
+    answered = true;
+    stopTimer();
+    showTimeLabel(elapsedSec);
+
+    const q       = currentQuestions[currentIndex];
+    const correct = chosen === q.answer;
+
+    /* 正誤ハイライト */
+    document.querySelectorAll('.choice-btn').forEach((b, i) => {
+      b.disabled = true;
+      if (i + 1 === q.answer) b.classList.add('correct');
+      if (b === btnEl && !correct) b.classList.add('wrong');
+    });
+
+    /* 応援メッセージ */
+    const cheer = document.getElementById('cheer-msg');
+    if (correct) {
+      streak++;
+      saveStreak(streak);
+      cheer.textContent = ['正解！すばらしい！', '正解！その調子！', '完璧！', '正解！', 'やった！正解！'][Math.floor(Math.random()*5)];
+      cheer.className   = 'cheer-msg cheer-correct';
+      /* 3の倍数でストリークアニメーション */
+      if (streak % 3 === 0) {
+        const anim = document.getElementById('streak-anim');
+        anim.textContent = `🔥 ${streak}問連続正解！すごい！`;
+        setTimeout(() => { anim.textContent = ''; }, 2500);
+      }
+    } else {
+      streak = 0;
+      saveStreak(0);
+      cheer.textContent = ['惜しい！解説を確認しよう', 'ドンマイ！次は大丈夫！', 'もう少し！解説を読もう'][Math.floor(Math.random()*3)];
+      cheer.className   = 'cheer-msg cheer-wrong';
+    }
+
+    document.getElementById('streak-num').textContent = streak;
+
+    /* 解説表示 */
+    document.getElementById('explain-text').textContent = q.kaisetsu || '解説はありません。';
+    document.getElementById('explain-box').classList.add('show');
+
+    /* localStorage に保存 */
+    saveResult(currentCatKey, q.id, correct, elapsedSec);
+    sessionResults.push({ correct, sec: elapsedSec });
+  }
+
+  /* ════════════════════════════════════════════════
+     ナビゲーション
+  ════════════════════════════════════════════════ */
+  function moveNext() {
+    if (currentIndex < currentQuestions.length - 1) {
+      currentIndex++;
+      showQuestion();
+    } else {
+      showResultScreen();
+    }
+  }
+
+  function movePrev() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showQuestion();
+    }
+  }
+
+  /* ════════════════════════════════════════════════
+     結果画面
+  ════════════════════════════════════════════════ */
+  function showResultScreen() {
+    stopTimer();
+    const total   = sessionResults.length;
+    const correct = sessionResults.filter(r => r.correct).length;
+    const rate    = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const avgSec  = total > 0
+      ? Math.round(sessionResults.reduce((s,r)=>s+r.sec,0) / total)
+      : 0;
+    const cat = CATEGORIES.find(c => c.key === currentCatKey);
+
+    document.getElementById('result-score').textContent = rate + '%';
+    document.getElementById('result-label').textContent =
+      `${cat ? cat.label : ''} — ${correct} / ${total} 問正解`;
+
+    const m = Math.floor(avgSec/60), s = avgSec%60;
+    document.getElementById('result-stats').innerHTML =
+      `<span>平均タイム: ${m}:${String(s).padStart(2,'0')}</span>`;
+
+    let comment = '';
+    if      (rate >= 80) comment = '🏆 素晴らしい！この調子で続けよう！';
+    else if (rate >= 60) comment = '👍 いい感じ！解説を復習してさらに上を目指そう！';
+    else if (rate >= 40) comment = '💪 惜しい！解説をじっくり読んで再挑戦しよう！';
+    else                 comment = '📖 解説を読んで、もう一度チャレンジしよう！';
+    document.getElementById('result-comment').textContent = comment;
+
+    showScreen('result');
+    refreshChart();
+  }
+
+  function retryCategory() {
+    startCategory(currentCatKey);
+    showScreen('quiz');
+  }
+
+  /* ════════════════════════════════════════════════
+     画面切替
+  ════════════════════════════════════════════════ */
+  function showScreen(name) {
+    document.getElementById('screen-category').style.display = name==='category' ? 'block' : 'none';
+    document.getElementById('screen-quiz').style.display     = name==='quiz'     ? 'block' : 'none';
+    document.getElementById('screen-result').style.display   = name==='result'   ? 'block' : 'none';
+  }
+
+  function showCategoryScreen() {
+    stopTimer();
+    buildCategoryScreen();
+    refreshChart();
+    showScreen('category');
+  }
+
+  /* ════════════════════════════════════════════════
+     初期化
+  ════════════════════════════════════════════════ */
+  loadCSV();
+  </script>
+
+</body>
+</html>
