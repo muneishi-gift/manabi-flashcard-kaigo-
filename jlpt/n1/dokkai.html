@@ -8,7 +8,6 @@
   <link rel="icon" href="../../gift-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- Chart.js（レーダーチャート用） -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script>
@@ -24,9 +23,6 @@
   </script>
 
   <style>
-    /* ═══════════════════════════════════════
-       CSS変数
-    ═══════════════════════════════════════ */
     :root { --font-scale: 1; }
     html[data-fontsize="normal"] { --font-scale: 1; }
     html[data-fontsize="large"]  { --font-scale: 1.125; }
@@ -44,13 +40,13 @@
       --tab-active-bg:linear-gradient(135deg,#b8863a,#c9973a);
       --choice-bg:rgba(255,255,255,0.06); --choice-hover:rgba(255,255,255,0.11);
       --choice-correct:rgba(74,222,128,0.20); --choice-correct-border:rgba(74,222,128,0.60);
-      --choice-wrong:rgba(248,113,113,0.20);  --choice-wrong-border:rgba(248,113,113,0.60);
+      --choice-wrong:rgba(248,113,113,0.20); --choice-wrong-border:rgba(248,113,113,0.60);
       --explain-bg:rgba(201,151,58,0.10); --explain-border:rgba(201,151,58,0.30);
       --progress-bg:rgba(255,255,255,0.08); --progress-fill:linear-gradient(90deg,#b8863a,#c9973a);
       --streak-bg:rgba(201,151,58,0.15); --streak-border:rgba(201,151,58,0.35);
       --back-btn-bg:rgba(255,255,255,0.07); --back-btn-border:rgba(255,255,255,0.15);
+      --result-bg:rgba(255,255,255,0.04);
     }
-
     html[data-theme="light"] {
       --bg-start:#f2ede4; --bg-mid:#ede6d8; --bg-end:#e8dfd0;
       --surface:rgba(255,255,255,0.65); --surface-2:rgba(255,255,255,0.85);
@@ -63,15 +59,15 @@
       --tab-active-bg:linear-gradient(135deg,#9a6c1e,#b8863a);
       --choice-bg:rgba(255,255,255,0.70); --choice-hover:rgba(255,255,255,0.90);
       --choice-correct:rgba(74,222,128,0.18); --choice-correct-border:rgba(34,197,94,0.55);
-      --choice-wrong:rgba(248,113,113,0.18);  --choice-wrong-border:rgba(239,68,68,0.55);
+      --choice-wrong:rgba(248,113,113,0.18); --choice-wrong-border:rgba(239,68,68,0.55);
       --explain-bg:rgba(154,108,30,0.08); --explain-border:rgba(154,108,30,0.30);
       --progress-bg:rgba(150,120,70,0.12); --progress-fill:linear-gradient(90deg,#9a6c1e,#b8863a);
       --streak-bg:rgba(154,108,30,0.10); --streak-border:rgba(154,108,30,0.30);
       --back-btn-bg:rgba(150,120,70,0.12); --back-btn-border:rgba(150,120,70,0.25);
+      --result-bg:rgba(0,0,0,0.03);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Noto Sans JP', sans-serif;
       font-size: calc(16px * var(--font-scale));
@@ -81,12 +77,9 @@
       transition: background 0.4s, color 0.4s;
       padding-bottom: 80px;
     }
-
     html[data-ruby="off"] ruby rt { display: none; }
 
-    /* ═══════════════════════════════════════
-       ヘッダー
-    ═══════════════════════════════════════ */
+    /* ── ヘッダー ── */
     .site-header {
       display: flex; flex-direction: column; align-items: center;
       padding: 20px 20px 12px; gap: 3px;
@@ -101,9 +94,7 @@
     }
     .header-sub { font-size: calc(0.60rem * var(--font-scale)); color: var(--text-muted); }
 
-    /* ═══════════════════════════════════════
-       設定パネル
-    ═══════════════════════════════════════ */
+    /* ── 設定パネル ── */
     .settings-panel {
       width: calc(100% - 32px); max-width: 640px; margin: 0 auto 16px;
       background: var(--panel-bg); border: 1px solid var(--panel-border);
@@ -116,6 +107,8 @@
     .sp-group { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .sp-label { font-size: calc(0.62rem * var(--font-scale)); color: var(--text-muted); white-space: nowrap; }
     .sp-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+    /* ふりがなスイッチ */
     .ruby-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
     .ruby-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .ruby-track {
@@ -130,6 +123,7 @@
     }
     .ruby-switch input:checked ~ .ruby-track { background: linear-gradient(135deg,#b8863a,#c9973a); border-color: var(--accent); }
     .ruby-switch input:checked ~ .ruby-track .ruby-thumb { transform: translateX(20px); background: #fff; }
+
     .sp-btn-group { display: flex; gap: 4px; flex-shrink: 0; }
     .sp-btn {
       padding: 3px 8px; border-radius: 8px; border: 1.5px solid transparent;
@@ -140,1130 +134,828 @@
     }
     .sp-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); border-color: var(--accent); box-shadow: 0 2px 8px var(--accent-glow); }
 
-    /* ═══════════════════════════════════════
-       メインラッパー
-    ═══════════════════════════════════════ */
-    .main-wrap {
-      width: calc(100% - 32px);
-      max-width: 640px;
-      margin: 0 auto;
-    }
+    /* ── メインラッパー ── */
+    .main-wrap { width: calc(100% - 32px); max-width: 640px; margin: 0 auto; }
 
-    /* ═══════════════════════════════════════
-       カテゴリ選択画面
-    ═══════════════════════════════════════ */
+    /* ── カテゴリ選択画面 ── */
     #screen-category { display: block; }
     #screen-quiz     { display: none; }
     #screen-result   { display: none; }
 
-    .screen-title {
-      text-align: center; margin-bottom: 24px; padding-top: 8px;
-    }
+    /* タイトル：ふりがな見切れ対策で3段分離 */
+    .screen-title { text-align: center; margin-bottom: 24px; padding-top: 8px; }
     .screen-title-en {
       font-family: 'Poppins', sans-serif;
       font-size: calc(0.65rem * var(--font-scale));
       font-weight: 700; letter-spacing: .22em;
-      color: var(--accent); opacity: .7; margin-bottom: 4px;
+      color: var(--accent); opacity: .7; margin-bottom: 6px;
     }
+    .screen-title-ruby {
+      font-size: calc(0.72rem * var(--font-scale));
+      color: var(--text-muted); letter-spacing: .08em;
+      margin-bottom: 2px; line-height: 1.4;
+    }
+    /* ふりがなOFF時はruby行ごと非表示 */
+    html[data-ruby="off"] .screen-title-ruby { display: none; }
     .screen-title-ja {
       font-family: 'Poppins','Noto Sans JP',sans-serif;
-      font-size: clamp(1.2rem, 5vw, calc(1.5rem * var(--font-scale)));
-      font-weight: 800;
+      font-size: clamp(1.3rem, 5vw, calc(1.6rem * var(--font-scale)));
+      font-weight: 800; line-height: 1.3;
       background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
 
-    /* カテゴリカード */
-    .cat-grid {
-      display: flex; flex-direction: column; gap: 12px;
-      margin-bottom: 28px;
+    /* ── プロフィールボックス ── */
+    .profile-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 20px 18px; margin-bottom: 20px;
     }
+    .profile-box-title {
+      font-size: calc(0.80rem * var(--font-scale)); font-weight: 700;
+      color: var(--accent); text-align: center; margin-bottom: 14px;
+    }
+    .profile-empty {
+      text-align: center; color: var(--text-muted);
+      font-size: calc(0.78rem * var(--font-scale)); padding: 8px 0;
+    }
+    .radar-wrap { position: relative; width: 100%; max-width: 280px; margin: 0 auto 12px; }
+
+    /* ── カテゴリカード ── */
+    .cat-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
     .cat-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 18px; padding: 16px 20px;
-      cursor: pointer; transition: transform .2s, box-shadow .2s, border-color .2s;
-      backdrop-filter: blur(10px);
+      border-radius: 18px; padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      text-decoration: none; color: inherit;
     }
-    .cat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.20); border-color: var(--accent); }
-    .cat-card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 10px;
-    }
+    .cat-card:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-2px); }
+    .cat-card-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .cat-card-body { flex: 1; min-width: 0; }
     .cat-card-name {
-      font-size: calc(1.0rem * var(--font-scale));
-      font-weight: 800;
-      background: linear-gradient(90deg, var(--accent), #f0d080);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      font-size: calc(0.92rem * var(--font-scale)); font-weight: 700;
+      color: var(--text-primary); margin-bottom: 4px;
     }
     .cat-card-meta {
-      display: flex; align-items: center; gap: 8px;
+      font-size: calc(0.72rem * var(--font-scale)); color: var(--text-secondary);
     }
-    .cat-card-total {
-      font-size: calc(0.68rem * var(--font-scale));
-      color: var(--text-muted);
+    .cat-card-badge {
+      flex-shrink: 0; font-size: calc(0.72rem * var(--font-scale));
+      font-weight: 700; padding: 3px 10px; border-radius: 20px;
+      background: var(--surface-2); color: var(--text-muted);
+      border: 1px solid var(--border);
     }
-    /* 正答率バッジ */
-    .rate-badge {
-      font-size: calc(0.65rem * var(--font-scale));
-      font-weight: 700; padding: 2px 10px; border-radius: 20px;
-    }
-    .rate-badge-high   { background:rgba(74,222,128,0.18); color:#4ade80; border:1px solid rgba(74,222,128,0.40); }
-    .rate-badge-mid    { background:rgba(250,204,21,0.18); color:#facc15; border:1px solid rgba(250,204,21,0.40); }
-    .rate-badge-low    { background:rgba(248,113,113,0.18); color:#f87171; border:1px solid rgba(248,113,113,0.40); }
-    .rate-badge-none   { background:var(--btn-inactive); color:var(--text-muted); border:1px solid var(--border); }
-    /* 制覇バッジ */
-    .master-badge {
-      font-size: calc(0.62rem * var(--font-scale));
-      font-weight: 800; padding: 2px 8px; border-radius: 20px;
-      background: linear-gradient(90deg,#c9973a,#f0d080); color: #fff;
-    }
-    /* 進捗バー */
-    .cat-progress-bar {
-      width: 100%; height: 4px;
-      background: var(--progress-bg); border-radius: 10px; overflow: hidden;
-    }
-    .cat-progress-fill {
-      height: 100%; background: var(--progress-fill);
-      border-radius: 10px; transition: width .5s ease;
+    .cat-card-badge.good  { background: rgba(74,222,128,0.15); color:#4ade80; border-color:rgba(74,222,128,0.40); }
+    .cat-card-badge.weak  { background: rgba(248,113,113,0.15); color:#f87171; border-color:rgba(248,113,113,0.40); }
+    .cat-card-badge.new   { background: rgba(201,151,58,0.15);  color:var(--accent); border-color:rgba(201,151,58,0.35); }
+
+    /* ── ローディング ── */
+    #loading-msg {
+      text-align: center; padding: 32px 0;
+      font-size: calc(0.88rem * var(--font-scale)); color: var(--text-muted);
     }
 
-    /* ═══════════════════════════════════════
-       レーダーチャートエリア
-    ═══════════════════════════════════════ */
-    .chart-section {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 18px; padding: 20px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-    }
-    .chart-title {
-      font-size: calc(0.72rem * var(--font-scale));
-      font-weight: 700; color: var(--accent);
-      letter-spacing: .06em; margin-bottom: 4px; text-align: center;
-    }
-    .chart-comment {
-      font-size: calc(0.70rem * var(--font-scale));
-      color: var(--text-secondary); text-align: center;
-      margin-bottom: 14px; line-height: 1.5;
-    }
-    .chart-wrap {
-      max-width: 260px; margin: 0 auto;
-    }
-
-    /* ═══════════════════════════════════════
-       問題画面（quiz）
-    ═══════════════════════════════════════ */
-
-    /* カテゴリタブ（横スクロール） */
-    .tab-bar {
-      display: flex; gap: 8px;
-      overflow-x: auto; scrollbar-width: none;
-      padding-bottom: 4px; margin-bottom: 16px;
-    }
-    .tab-bar::-webkit-scrollbar { display: none; }
-    .tab-btn {
-      flex-shrink: 0; padding: 6px 14px;
-      border-radius: 20px; border: 1.5px solid var(--border);
-      background: var(--btn-inactive); color: var(--btn-inactive-text);
-      font-family: 'Noto Sans JP',sans-serif;
-      font-size: calc(0.70rem * var(--font-scale)); font-weight: 700;
-      cursor: pointer; white-space: nowrap; transition: all .2s;
-    }
-    .tab-btn.active {
-      background: var(--tab-active-bg); color: #fff;
-      border-color: var(--accent); box-shadow: 0 2px 10px var(--accent-glow);
-    }
-
-    /* 問題ヘッダー（番号・タイマー・ストリーク） */
+    /* ── クイズ画面 ── */
     .quiz-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
     }
-    .quiz-num {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(0.78rem * var(--font-scale));
-      font-weight: 700; color: var(--text-muted);
+    .quiz-cat-label {
+      font-size: calc(0.72rem * var(--font-scale)); font-weight: 700;
+      color: var(--accent); letter-spacing: .08em;
     }
-    .quiz-num span { color: var(--accent); font-size: calc(1.0rem * var(--font-scale)); }
-
-    /* タイマー */
-    .timer-wrap {
-      display: flex; align-items: center; gap: 6px;
+    .quiz-counter {
+      font-family: 'Poppins',sans-serif;
+      font-size: calc(0.78rem * var(--font-scale)); color: var(--text-muted);
     }
-    .timer-icon { font-size: .9rem; }
-    .timer-display {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(0.82rem * var(--font-scale));
-      font-weight: 700; color: var(--text-secondary);
-      min-width: 48px;
+    .progress-bar-wrap {
+      width: 100%; height: 5px; background: var(--progress-bg);
+      border-radius: 3px; margin-bottom: 16px; overflow: hidden;
     }
-    /* タイムラベル（速い/普通/もう少し） */
-    .time-label {
-      font-size: calc(0.65rem * var(--font-scale));
-      font-weight: 700; padding: 2px 8px; border-radius: 20px;
-      opacity: 0; transition: opacity .3s;
-    }
-    .time-label.show { opacity: 1; }
-    .time-label-fast { background:rgba(74,222,128,0.20); color:#4ade80; }
-    .time-label-mid  { background:rgba(250,204,21,0.18); color:#facc15; }
-    .time-label-slow { background:rgba(248,113,113,0.18); color:#f87171; }
-
-    /* ストリーク */
-    .streak-wrap {
-      display: flex; align-items: center; gap: 4px;
-      background: var(--streak-bg); border: 1px solid var(--streak-border);
-      border-radius: 20px; padding: 3px 10px;
-    }
-    .streak-icon { font-size: .85rem; }
-    .streak-num {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(0.75rem * var(--font-scale));
-      font-weight: 800; color: var(--accent);
-    }
-
-    /* 全体進捗バー（問題画面上部） */
-    .quiz-progress-bar {
-      width: 100%; height: 4px;
-      background: var(--progress-bg); border-radius: 10px;
-      overflow: hidden; margin-bottom: 16px;
-    }
-    .quiz-progress-fill {
+    .progress-bar-fill {
       height: 100%; background: var(--progress-fill);
-      border-radius: 10px; transition: width .4s ease;
+      border-radius: 3px; transition: width 0.4s ease;
+      width: 0%;
+    }
+    .timer-streak-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .timer-box {
+      font-family: 'Poppins',sans-serif;
+      font-size: calc(0.82rem * var(--font-scale)); color: var(--text-secondary);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 4px 12px;
+    }
+    .timer-label { font-size: calc(0.85rem * var(--font-scale)); }
+    .speed-badge {
+      font-size: calc(0.72rem * var(--font-scale)); font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid;
+      display: none;
+    }
+    .speed-badge.fast   { background:rgba(74,222,128,0.15); color:#4ade80; border-color:rgba(74,222,128,0.40); }
+    .speed-badge.normal { background:rgba(201,151,58,0.15); color:var(--accent); border-color:rgba(201,151,58,0.35); }
+    .speed-badge.slow   { background:rgba(248,113,113,0.15); color:#f87171; border-color:rgba(248,113,113,0.40); }
+    .streak-box {
+      margin-left: auto;
+      font-size: calc(0.82rem * var(--font-scale)); font-weight: 700;
+      background: var(--streak-bg); border: 1px solid var(--streak-border);
+      border-radius: 10px; padding: 4px 12px; color: var(--accent);
     }
 
     /* 問題カード */
     .question-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 20px;
-      margin-bottom: 14px;
-      backdrop-filter: blur(10px);
+      border-radius: 20px; padding: 22px 18px; margin-bottom: 16px;
     }
-    .question-theme {
-      font-size: calc(0.65rem * var(--font-scale));
-      color: var(--accent); font-weight: 700;
-      letter-spacing: .08em; margin-bottom: 10px;
-    }
-    /* 本文テキスト */
-    .question-body {
-      font-size: calc(0.88rem * var(--font-scale));
-      line-height: 1.85; color: var(--text-primary);
-      margin-bottom: 14px;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    /* 本文と設問の区切り */
-    .question-divider {
-      border: none; border-top: 1px dashed var(--border-strong);
-      margin: 14px 0;
-    }
-    /* 設問テキスト */
-    .question-text {
-      font-size: calc(0.88rem * var(--font-scale));
-      font-weight: 700; line-height: 1.65;
+    .question-passage {
+      font-size: calc(0.88rem * var(--font-scale)); line-height: 1.85;
       color: var(--text-primary); margin-bottom: 16px;
+      white-space: pre-wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px;
+    }
+    .question-stem {
+      font-size: calc(0.90rem * var(--font-scale)); font-weight: 700;
+      color: var(--text-primary); line-height: 1.6;
     }
 
     /* 選択肢 */
-    .choices { display: flex; flex-direction: column; gap: 10px; }
+    .choices-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
     .choice-btn {
-      width: 100%; text-align: left;
+      width: 100%; text-align: left; padding: 13px 16px;
       background: var(--choice-bg); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 14px 16px;
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: calc(0.85rem * var(--font-scale));
-      color: var(--text-primary); cursor: pointer;
-      transition: background .2s, border-color .2s, transform .15s;
-      display: flex; align-items: flex-start; gap: 12px;
+      border-radius: 14px; cursor: pointer;
+      font-family: 'Noto Sans JP',sans-serif;
+      font-size: calc(0.88rem * var(--font-scale)); color: var(--text-primary);
+      line-height: 1.6; transition: background 0.2s, border-color 0.2s;
     }
-    .choice-btn:hover:not(:disabled) {
-      background: var(--choice-hover);
-      border-color: var(--accent);
-      transform: translateX(3px);
-    }
+    .choice-btn:hover:not(:disabled) { background: var(--choice-hover); }
     .choice-btn:disabled { cursor: default; }
-    /* 正解 */
-    .choice-btn.correct {
-      background: var(--choice-correct);
-      border-color: var(--choice-correct-border);
-      animation: correct-flash .4s ease;
-    }
-    /* 不正解 */
-    .choice-btn.wrong {
-      background: var(--choice-wrong);
-      border-color: var(--choice-wrong-border);
-    }
-    @keyframes correct-flash {
-      0%   { transform: scale(1); }
-      40%  { transform: scale(1.02); }
-      100% { transform: scale(1); }
-    }
-    /* 選択肢番号 */
-    .choice-num {
-      flex-shrink: 0; width: 24px; height: 24px;
-      border-radius: 50%; border: 1.5px solid var(--border-strong);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(0.70rem * var(--font-scale)); font-weight: 700;
-      color: var(--text-muted);
-    }
-    .choice-btn.correct .choice-num { border-color: #4ade80; color: #4ade80; }
-    .choice-btn.wrong   .choice-num { border-color: #f87171; color: #f87171; }
+    .choice-btn.correct { background: var(--choice-correct); border-color: var(--choice-correct-border); }
+    .choice-btn.wrong   { background: var(--choice-wrong);   border-color: var(--choice-wrong-border); }
 
-    /* 解説エリア */
+    /* 解説 */
     .explain-box {
       background: var(--explain-bg); border: 1px solid var(--explain-border);
-      border-radius: 16px; padding: 16px;
-      margin-top: 14px; display: none;
+      border-radius: 16px; padding: 16px 18px; margin-bottom: 16px; display: none;
     }
-    .explain-box.show { display: block; animation: fadeIn .3s ease; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
     .explain-label {
-      font-size: calc(0.65rem * var(--font-scale));
-      font-weight: 700; color: var(--accent);
-      letter-spacing: .08em; margin-bottom: 8px;
+      font-size: calc(0.72rem * var(--font-scale)); font-weight: 700;
+      color: var(--accent); margin-bottom: 8px;
     }
     .explain-text {
-      font-size: calc(0.82rem * var(--font-scale));
-      line-height: 1.75; color: var(--text-secondary);
-      white-space: pre-wrap;
+      font-size: calc(0.85rem * var(--font-scale)); line-height: 1.75;
+      color: var(--text-secondary); white-space: pre-wrap;
     }
 
-    /* 応援メッセージ */
-    .cheer-msg {
-      text-align: center; font-size: calc(0.80rem * var(--font-scale));
-      font-weight: 700; margin: 10px 0 4px;
-      min-height: 1.4em;
+    /* 次へボタン */
+    .next-btn {
+      width: 100%; padding: 14px;
+      background: var(--btn-active-bg); color: var(--btn-active-text);
+      border: none; border-radius: 14px; font-weight: 700;
+      font-size: calc(0.92rem * var(--font-scale));
+      cursor: pointer; display: none;
+      font-family: 'Noto Sans JP',sans-serif;
+      transition: opacity 0.2s;
     }
-    .cheer-correct { color: #4ade80; }
-    .cheer-wrong   { color: var(--text-secondary); }
+    .next-btn:hover { opacity: 0.85; }
 
-    /* ストリークアニメーション */
-    .streak-animation {
-      text-align: center; font-size: calc(0.88rem * var(--font-scale));
-      font-weight: 800; color: var(--accent);
-      min-height: 1.4em; transition: opacity .3s;
-    }
-
-    /* ナビゲーションボタン */
-    .nav-btns {
-      display: flex; gap: 10px; margin-top: 16px;
-    }
-    .nav-btn {
-      flex: 1; padding: 13px;
-      border-radius: 14px; border: 1.5px solid var(--border);
-      background: var(--btn-inactive); color: var(--btn-inactive-text);
-      font-family: 'Poppins','Noto Sans JP',sans-serif;
-      font-size: calc(0.82rem * var(--font-scale)); font-weight: 700;
-      cursor: pointer; transition: all .2s; text-align: center;
-    }
-    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .nav-btn-primary {
-      background: var(--btn-active-bg); color: #fff;
-      border-color: var(--accent); box-shadow: 0 3px 12px var(--accent-glow);
-    }
-    .nav-btn-primary:hover { opacity: .88; }
-    .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
-
-    /* ═══════════════════════════════════════
-       カテゴリ結果画面
-    ═══════════════════════════════════════ */
+    /* ── 結果画面 ── */
     .result-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 24px 20px;
-      text-align: center; margin-bottom: 16px;
-      backdrop-filter: blur(10px);
+      background: var(--result-bg); border: 1px solid var(--border);
+      border-radius: 24px; padding: 28px 20px; text-align: center;
     }
-    .result-score {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(3.5rem * var(--font-scale));
-      font-weight: 800; line-height: 1;
-      background: linear-gradient(90deg, var(--accent), #f0d080);
+    .result-title {
+      font-family: 'Poppins',sans-serif;
+      font-size: calc(1.2rem * var(--font-scale)); font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .result-label {
-      font-size: calc(0.78rem * var(--font-scale));
-      color: var(--text-muted); margin-top: 4px; margin-bottom: 16px;
+      margin-bottom: 20px;
     }
     .result-stats {
-      display: flex; justify-content: center; gap: 24px;
-      font-size: calc(0.78rem * var(--font-scale));
-      color: var(--text-secondary); margin-bottom: 12px;
+      display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .result-stat { text-align: center; }
+    .result-stat-num {
+      font-family: 'Poppins',sans-serif;
+      font-size: calc(1.6rem * var(--font-scale)); font-weight: 800; color: var(--accent);
+    }
+    .result-stat-label {
+      font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); margin-top: 2px;
     }
     .result-comment {
-      font-size: calc(0.85rem * var(--font-scale));
-      font-weight: 700; color: var(--text-primary);
-      margin-bottom: 8px;
+      font-size: calc(0.88rem * var(--font-scale)); color: var(--text-secondary);
+      line-height: 1.7; margin-bottom: 24px;
+    }
+    .result-btn {
+      padding: 12px 28px; border-radius: 14px; border: none; cursor: pointer;
+      font-family: 'Noto Sans JP',sans-serif;
+      font-size: calc(0.88rem * var(--font-scale)); font-weight: 700;
+      margin: 6px; transition: opacity 0.2s;
+    }
+    .result-btn:hover { opacity: 0.85; }
+    .result-btn-primary { background: var(--btn-active-bg); color: var(--btn-active-text); }
+    .result-btn-secondary {
+      background: var(--back-btn-bg); color: var(--text-secondary);
+      border: 1px solid var(--back-btn-border);
     }
 
-    /* 戻るボタン */
+    /* ── 戻るボタン ── */
     .back-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 18px; margin-top: 8px;
+      margin-top: 28px;
+      padding: 11px 22px; border-radius: 14px;
       background: var(--back-btn-bg); border: 1px solid var(--back-btn-border);
-      border-radius: 12px; color: var(--text-secondary);
-      font-size: calc(0.78rem * var(--font-scale)); font-weight: 600;
-      cursor: pointer; transition: opacity .2s; text-decoration: none;
+      color: var(--text-secondary); font-size: calc(0.85rem * var(--font-scale));
+      font-weight: 600; text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .back-btn:hover { opacity: .70; }
+    .back-btn:hover { background: var(--surface-2); border-color: var(--border-strong); }
 
-    /* ローディング */
-    .loading-msg {
-      text-align: center; padding: 60px 20px;
-      color: var(--text-muted); font-size: calc(0.88rem * var(--font-scale));
+    /* ── コンボアニメーション ── */
+    @keyframes combo-pop {
+      0%   { transform: scale(0.5); opacity: 0; }
+      60%  { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .combo-msg {
+      text-align: center; font-size: calc(1.1rem * var(--font-scale));
+      font-weight: 900; color: var(--accent);
+      animation: combo-pop 0.45s ease; margin-bottom: 10px; display: none;
     }
   </style>
 </head>
-
 <body>
 
-  <!-- ═══ ヘッダー ═══ -->
+  <!-- ── ヘッダー ── -->
   <header class="site-header">
     <div class="header-logo-row">
-      <img src="../../gift-logo.png" alt="GIFT協会ロゴ" class="logo">
-      <div class="header-title">Manabi App</div>
+      <img src="../../gift-logo.png" alt="GIFTロゴ" class="logo">
+      <span class="header-title">Manabi App</span>
     </div>
-    <div class="header-sub">一般社団法人 GIFT 協会</div>
+    <div class="header-sub">一般社団法人GIFT協会</div>
   </header>
 
-  <!-- ═══ 設定パネル ═══ -->
-  <div class="settings-panel" role="toolbar" aria-label="表示設定">
+  <!-- ── 設定パネル ── -->
+  <div class="settings-panel">
     <div class="sp-group">
       <span class="sp-label">ふりがな</span>
       <label class="ruby-switch">
-        <input type="checkbox" id="ruby-toggle" checked>
-        <div class="ruby-track"><div class="ruby-thumb"></div></div>
+        <input type="checkbox" id="ruby-toggle" checked onchange="setRuby(this.checked)">
+        <span class="ruby-track"><span class="ruby-thumb"></span></span>
       </label>
     </div>
     <div class="sp-divider"></div>
     <div class="sp-group">
       <span class="sp-label">文字</span>
       <div class="sp-btn-group">
-        <button class="sp-btn" data-size="normal" onclick="setFontSize('normal')">S</button>
-        <button class="sp-btn" data-size="large"  onclick="setFontSize('large')">M</button>
-        <button class="sp-btn" data-size="xlarge" onclick="setFontSize('xlarge')">L</button>
+        <button class="sp-btn" id="fs-s" onclick="setFontSize('normal')">S</button>
+        <button class="sp-btn" id="fs-m" onclick="setFontSize('large')">M</button>
+        <button class="sp-btn" id="fs-l" onclick="setFontSize('xlarge')">L</button>
       </div>
     </div>
     <div class="sp-divider"></div>
     <div class="sp-group">
       <span class="sp-label">テーマ</span>
       <div class="sp-btn-group">
-        <button class="sp-btn" data-theme="dark"  onclick="setTheme('dark')">🌙</button>
-        <button class="sp-btn" data-theme="light" onclick="setTheme('light')">☀️</button>
+        <button class="sp-btn" id="theme-dark"  onclick="setTheme('dark')">🌙</button>
+        <button class="sp-btn" id="theme-light" onclick="setTheme('light')">☀️</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ メインラッパー ═══ -->
-  <div class="main-wrap">
+  <!-- ── メインコンテンツ ── -->
+  <main class="main-wrap">
 
-    <!-- ══════════════════════════════
-         画面①: カテゴリ選択
-    ══════════════════════════════ -->
+    <!-- ═══ カテゴリ選択画面 ═══ -->
     <div id="screen-category">
       <div class="screen-title">
         <div class="screen-title-en">N1 DOKKAI</div>
-        <div class="screen-title-ja">📖 N1 <ruby>読解<rt>どっかい</rt></ruby> — カテゴリ<ruby>選択<rt>せんたく</rt></ruby></div>
+        <!-- ふりがなは別行で管理（見切れ防止） -->
+        <div class="screen-title-ruby">どっかい　　　　　　　　　せんたく</div>
+        <div class="screen-title-ja">📖 N1 読解 ー カテゴリ選択</div>
       </div>
 
-      <!-- レーダーチャート -->
-      <div class="chart-section">
-        <div class="chart-title">📊 あなたの<ruby>読解<rt>どっかい</rt></ruby>プロフィール</div>
-        <div class="chart-comment" id="chart-comment">問題を解くと得意・苦手が見えてきます</div>
-        <div class="chart-wrap">
-          <canvas id="radar-chart"></canvas>
+      <!-- プロフィール＋レーダーチャート -->
+      <div class="profile-box">
+        <div class="profile-box-title">
+          📊 あなたの<ruby>読解<rt>どっかい</rt></ruby>プロフィール
+        </div>
+        <div id="profile-content">
+          <div class="profile-empty">問題を解くと得意・苦手が見えてきます</div>
         </div>
       </div>
 
-      <!-- カテゴリカード一覧 -->
-      <div class="cat-grid" id="cat-grid">
-        <div class="loading-msg">⏳ 問題データを読み込み中...</div>
-      </div>
+      <!-- ローディング -->
+      <div id="loading-msg">⏳ <strong>問題</strong>データを読み込み中...</div>
 
-      <a href="./index.html" class="back-btn">← N1 科目<ruby>選択<rt>せんたく</rt></ruby>にもどる</a>
+      <!-- カテゴリカード一覧（CSVロード後に動的生成） -->
+      <div class="cat-grid" id="cat-grid"></div>
     </div>
 
-    <!-- ══════════════════════════════
-         画面②: 問題
-    ══════════════════════════════ -->
+    <!-- ═══ クイズ画面 ═══ -->
     <div id="screen-quiz">
-
-      <!-- カテゴリタブ -->
-      <div class="tab-bar" id="tab-bar"></div>
-
-      <!-- 問題ヘッダー -->
       <div class="quiz-header">
-        <div class="quiz-num">
-          <span id="q-current">1</span> / <span id="q-total">—</span>
-        </div>
-        <div class="timer-wrap">
-          <span class="timer-icon">⏱</span>
-          <span class="timer-display" id="timer-display">0:00</span>
-          <span class="time-label" id="time-label"></span>
-        </div>
-        <div class="streak-wrap">
-          <span class="streak-icon">🔥</span>
-          <span class="streak-num" id="streak-num">0</span>
-        </div>
+        <span class="quiz-cat-label" id="quiz-cat-label"></span>
+        <span class="quiz-counter" id="quiz-counter">1 / —</span>
       </div>
-
-      <!-- 全体進捗バー -->
-      <div class="quiz-progress-bar">
-        <div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
       </div>
-
-      <!-- 問題カード -->
+      <div class="timer-streak-row">
+        <div class="timer-box">⏱ <span class="timer-label" id="timer-disp">0:00</span></div>
+        <span class="speed-badge" id="speed-badge"></span>
+        <div class="streak-box">🔥 <span id="streak-disp">0</span></div>
+      </div>
+      <div class="combo-msg" id="combo-msg">🎉 3問連続正解！</div>
       <div class="question-card">
-        <div class="question-theme" id="q-theme"></div>
-        <div class="question-body"  id="q-body"></div>
-        <hr class="question-divider" id="q-divider">
-        <div class="question-text"  id="q-text"></div>
-        <div class="choices" id="choices"></div>
-        <div class="cheer-msg" id="cheer-msg"></div>
-        <div class="streak-animation" id="streak-anim"></div>
-        <div class="explain-box" id="explain-box">
-          <div class="explain-label">💡 解説</div>
-          <div class="explain-text" id="explain-text"></div>
-        </div>
+        <div class="question-passage" id="question-passage"></div>
+        <div class="question-stem" id="question-stem"></div>
       </div>
-
-      <!-- ナビゲーション -->
-      <div class="nav-btns">
-        <button class="nav-btn" id="btn-prev" onclick="movePrev()">← 前へ</button>
-        <button class="nav-btn nav-btn-primary" id="btn-next" onclick="moveNext()">次へ →</button>
+      <ul class="choices-list" id="choices-list"></ul>
+      <div class="explain-box" id="explain-box">
+        <div class="explain-label">💡 解説</div>
+        <div class="explain-text" id="explain-text"></div>
       </div>
-
-      <div style="margin-top:16px;">
-        <button class="back-btn" onclick="showCategoryScreen()">← カテゴリ選択にもどる</button>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題へ →</button>
+      <div style="text-align:center;">
+        <a href="./index.html" class="back-btn">← N1 科目<ruby>選択<rt>せんたく</rt></ruby>にもどる</a>
       </div>
     </div>
 
-    <!-- ══════════════════════════════
-         画面③: カテゴリ結果
-    ══════════════════════════════ -->
+    <!-- ═══ 結果画面 ═══ -->
     <div id="screen-result">
       <div class="result-card">
-        <div class="result-score" id="result-score">—</div>
-        <div class="result-label" id="result-label"></div>
-        <div class="result-stats" id="result-stats"></div>
-        <div class="result-comment" id="result-comment"></div>
+        <div class="result-title">📊 セッション結果</div>
+        <div class="result-stats">
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-correct">—</div>
+            <div class="result-stat-label">正解</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-total">—</div>
+            <div class="result-stat-label">問題数</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-rate">—</div>
+            <div class="result-stat-label">正答率</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-avg-time">—</div>
+            <div class="result-stat-label">平均タイム</div>
+          </div>
+        </div>
+        <div class="result-comment" id="res-comment"></div>
+        <div>
+          <button class="result-btn result-btn-primary" onclick="retryCategory()">もう一度</button>
+          <button class="result-btn result-btn-secondary" onclick="showCategory()">カテゴリ選択へ</button>
+        </div>
       </div>
-      <div style="display:flex; flex-direction:column; gap:10px; align-items:stretch;">
-        <button class="nav-btn nav-btn-primary" onclick="retryCategory()">
-          🔄 もう一度このカテゴリ
-        </button>
-        <button class="back-btn" onclick="showCategoryScreen()" style="justify-content:center;">
-          ← カテゴリ選択にもどる
-        </button>
+      <div style="text-align:center;">
+        <a href="./index.html" class="back-btn">← N1 科目<ruby>選択<rt>せんたく</rt></ruby>にもどる</a>
       </div>
     </div>
 
-  </div><!-- /main-wrap -->
+  </main>
 
-
-  <!-- ═══ JavaScript ═══ -->
   <script>
-  /* ════════════════════════════════════════════════
-     設定パネル
-  ════════════════════════════════════════════════ */
-  function applySettings() {
-    const theme    = localStorage.getItem('gift_theme')    || 'dark';
-    const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
-    const ruby     = localStorage.getItem('gift_ruby')     || 'on';
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.setAttribute('data-fontsize', fontsize);
-    document.documentElement.setAttribute('data-ruby', ruby);
-    document.querySelectorAll('.sp-btn[data-size]').forEach(b =>
-      b.classList.toggle('active', b.dataset.size === fontsize));
-    document.querySelectorAll('.sp-btn[data-theme]').forEach(b =>
-      b.classList.toggle('active', b.dataset.theme === theme));
-    const rt = document.getElementById('ruby-toggle');
-    if (rt) rt.checked = (ruby === 'on');
-    /* チャートの色もテーマに合わせて更新 */
-    if (window.radarChart) updateChartTheme();
-  }
-  document.getElementById('ruby-toggle').addEventListener('change', function() {
-    const val = this.checked ? 'on' : 'off';
-    localStorage.setItem('gift_ruby', val);
-    document.documentElement.setAttribute('data-ruby', val);
-  });
-  function setFontSize(size) {
-    localStorage.setItem('gift_fontsize', size);
-    document.documentElement.setAttribute('data-fontsize', size);
-    document.querySelectorAll('.sp-btn[data-size]').forEach(b =>
-      b.classList.toggle('active', b.dataset.size === size));
-  }
-  function setTheme(t) {
-    localStorage.setItem('gift_theme', t);
-    document.documentElement.setAttribute('data-theme', t);
-    document.querySelectorAll('.sp-btn[data-theme]').forEach(b =>
-      b.classList.toggle('active', b.dataset.theme === t));
-    if (window.radarChart) updateChartTheme();
-  }
-  applySettings();
+    /* ════════════════════════════════════════════
+       定数・カテゴリ設定
+    ════════════════════════════════════════════ */
+    const CATEGORIES = [
+      { key:'tanbun',  name:'内容理解（短文）', emoji:'📄', count:50, baseTimeSec:90,  icon:'📄' },
+      { key:'chubun',  name:'内容理解（中文）', emoji:'📃', count:27, baseTimeSec:180, icon:'📃' },
+      { key:'chobun',  name:'内容理解（長文）', emoji:'📜', count:20, baseTimeSec:240, icon:'📜' },
+      { key:'togo',    name:'統合理解',         emoji:'🔗', count:18, baseTimeSec:210, icon:'🔗' },
+      { key:'shucho',  name:'主張理解',         emoji:'💬', count:20, baseTimeSec:240, icon:'💬' },
+      { key:'joho',    name:'情報検索',         emoji:'🔍', count:12, baseTimeSec:120, icon:'🔍' },
+    ];
 
-  /* ════════════════════════════════════════════════
-     定数・カテゴリ定義
-     key は localStorage のキー末尾と CSV の大問名に対応
-  ════════════════════════════════════════════════ */
-  const CATEGORIES = [
-    { key:'tanbun', label:'内容理解（短文）', short:'短文',  total:50, baseTimeSec:90  },
-    { key:'chubun', label:'内容理解（中文）', short:'中文',  total:27, baseTimeSec:180 },
-    { key:'chobun', label:'内容理解（長文）', short:'長文',  total:20, baseTimeSec:240 },
-    { key:'togo',   label:'統合理解',         short:'統合',  total:18, baseTimeSec:210 },
-    { key:'shucho', label:'主張理解（長文）', short:'主張',  total:20, baseTimeSec:240 },
-    { key:'joho',   label:'情報検索',         short:'情報',  total:12, baseTimeSec:120 },
-  ];
+    /* カテゴリキー → CATEGORIES オブジェクトの対応マップ */
+    const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c]));
 
-  /* CSV の大問名 → カテゴリキー のマッピング */
-  const DAIMON_TO_KEY = {
-    '内容理解（短文）': 'tanbun',
-    '内容理解（中文）': 'chubun',
-    '内容理解（長文）': 'chobun',
-    '統合理解':         'togo',
-    '主張理解（長文）': 'shucho',
-    '情報検索':         'joho',
-  };
+    /* CSVの列名インデックス（0始まり） */
+    const COL = { daimon:0, theme:1, num:2, question:3, c1:4, c2:5, c3:6, c4:7, answer:8, explain:9 };
 
-  /* ════════════════════════════════════════════════
-     状態変数
-  ════════════════════════════════════════════════ */
-  let allQuestions    = {};   /* { tanbun:[...], chubun:[...], ... } */
-  let currentCatKey   = '';
-  let currentQuestions= [];
-  let currentIndex    = 0;
-  let answered        = false;
-  let timerInterval   = null;
-  let elapsedSec      = 0;
-  let streak          = 0;
-  let sessionResults  = []; /* { correct:bool, sec:int } の配列（今セッション分） */
-
-  /* ════════════════════════════════════════════════
-     CSV 読み込み・パース
-  ════════════════════════════════════════════════ */
-  async function loadCSV() {
-    try {
-      const res  = await fetch('./n1-dokkai.csv');
-      if (!res.ok) throw new Error('CSV not found');
-      const text = await res.text();
-      parseCSV(text);
-    } catch(e) {
-      document.getElementById('cat-grid').innerHTML =
-        '<div class="loading-msg">⚠️ 問題データが見つかりません。<br>n1-dokkai.csv をアップロードしてください。</div>';
-    }
-  }
-
-  function parseCSV(text) {
-    /* BOM除去 */
-    const clean = text.replace(/^\uFEFF/, '');
-    const lines = clean.split(/\r?\n/).filter(l => l.trim());
-    /* 1行目はヘッダーなのでスキップ */
-    const rows  = lines.slice(1);
-
-    /* カテゴリ別に振り分け */
-    CATEGORIES.forEach(c => { allQuestions[c.key] = []; });
-
-    rows.forEach(line => {
-      const cols = parseCSVLine(line);
-      if (cols.length < 10) return;
-      const [daimon, theme, num, mondai, c1, c2, c3, c4, answer, kaisetsu] = cols;
-      const key = DAIMON_TO_KEY[daimon.trim()];
-      if (!key) return;
-
-      /* 本文と設問の分割
-         「問題」列に本文と【問】設問が含まれる場合は改行で分離
-         【問】がない場合は問題列全体を設問として扱う */
-      let body = '';
-      let qText = mondai.trim();
-      const mondaiMarker = /【問】|問　|問\s/;
-      const splitIdx = mondai.search(mondaiMarker);
-      if (splitIdx > 0) {
-        body  = mondai.slice(0, splitIdx).trim();
-        qText = mondai.slice(splitIdx).trim();
-      }
-
-      allQuestions[key].push({
-        id:      key + '_' + num.trim(),
-        theme:   theme.trim(),
-        body:    body,
-        text:    qText,
-        choices: [c1.trim(), c2.trim(), c3.trim(), c4.trim()],
-        answer:  parseInt(answer.trim(), 10), /* 1〜4 */
-        kaisetsu:kaisetsu.trim(),
-      });
-    });
-
-    /* カテゴリ選択画面を構築 */
-    buildCategoryScreen();
-    buildRadarChart();
-  }
-
-  /* CSVの1行をダブルクォート対応でパース */
-  function parseCSVLine(line) {
-    const result = [];
-    let cur = '';
-    let inQ  = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-        else { inQ = !inQ; }
-      } else if (ch === ',' && !inQ) {
-        result.push(cur); cur = '';
-      } else {
-        cur += ch;
-      }
-    }
-    result.push(cur);
-    return result;
-  }
-
-  /* ════════════════════════════════════════════════
-     localStorage ヘルパー
-  ════════════════════════════════════════════════ */
-  function getResults(key) {
-    const raw = localStorage.getItem('jlpt_n1_results_' + key);
-    return raw ? JSON.parse(raw) : {};
-  }
-  function saveResult(key, qId, correct, sec) {
-    const results = getResults(key);
-    results[qId] = { correct, sec, ts: Date.now() };
-    localStorage.setItem('jlpt_n1_results_' + key, JSON.stringify(results));
-  }
-  function getStreak() {
-    return parseInt(localStorage.getItem('jlpt_n1_streak') || '0', 10);
-  }
-  function saveStreak(n) {
-    localStorage.setItem('jlpt_n1_streak', String(n));
-  }
-
-  /* ════════════════════════════════════════════════
-     カテゴリ選択画面 構築
-  ════════════════════════════════════════════════ */
-  function buildCategoryScreen() {
-    const grid = document.getElementById('cat-grid');
-    grid.innerHTML = '';
-    streak = getStreak();
-
-    CATEGORIES.forEach(cat => {
-      const results  = getResults(cat.key);
-      const attempted= Object.keys(results).length;
-      const correct  = Object.values(results).filter(r => r.correct).length;
-      const rate     = attempted > 0 ? Math.round((correct / attempted) * 100) : -1;
-      const mastered = attempted >= cat.total;
-      const pct      = Math.min(100, Math.round((attempted / cat.total) * 100));
-
-      /* 正答率バッジ */
-      let badgeHtml = '';
-      if (mastered) {
-        badgeHtml = '<span class="master-badge">👑 制覇</span>';
-      } else if (rate >= 70) {
-        badgeHtml = `<span class="rate-badge rate-badge-high">${rate}%</span>`;
-      } else if (rate >= 40) {
-        badgeHtml = `<span class="rate-badge rate-badge-mid">${rate}%</span>`;
-      } else if (rate >= 0) {
-        badgeHtml = `<span class="rate-badge rate-badge-low">${rate}%</span>`;
-      } else {
-        badgeHtml = '<span class="rate-badge rate-badge-none">未挑戦</span>';
-      }
-
-      const card = document.createElement('div');
-      card.className = 'cat-card';
-      card.innerHTML = `
-        <div class="cat-card-header">
-          <span class="cat-card-name">${cat.label}</span>
-          <div class="cat-card-meta">
-            <span class="cat-card-total">${attempted}/${cat.total}問</span>
-            ${badgeHtml}
-          </div>
-        </div>
-        <div class="cat-progress-bar">
-          <div class="cat-progress-fill" style="width:${pct}%"></div>
-        </div>
-      `;
-      card.addEventListener('click', () => startCategory(cat.key));
-      grid.appendChild(card);
-    });
-  }
-
-  /* ════════════════════════════════════════════════
-     レーダーチャート
-  ════════════════════════════════════════════════ */
-  let radarChart = null;
-
-  function getChartColors() {
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    return {
-      line:  dark ? 'rgba(201,151,58,0.80)' : 'rgba(154,108,30,0.80)',
-      fill:  dark ? 'rgba(201,151,58,0.18)' : 'rgba(154,108,30,0.15)',
-      grid:  dark ? 'rgba(255,255,255,0.10)' : 'rgba(100,80,40,0.15)',
-      tick:  dark ? 'rgba(240,236,224,0.45)' : 'rgba(58,46,30,0.50)',
-      point: dark ? '#c9973a' : '#9a6c1e',
+    /* 大問名キーワード → カテゴリキー のマッピング */
+    const DAIMON_TO_KEY = {
+      '短文': 'tanbun',
+      '中文': 'chubun',
+      '長文': 'chobun',
+      '統合': 'togo',
+      '主張': 'shucho',
+      '情報': 'joho',
     };
-  }
 
-  function buildRadarChart() {
-    const labels = CATEGORIES.map(c => c.short);
-    const data   = CATEGORIES.map(cat => {
-      const results  = getResults(cat.key);
-      const attempted= Object.keys(results).length;
-      const correct  = Object.values(results).filter(r => r.correct).length;
-      return attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
-    });
+    /* ════════════════════════════════════════════
+       状態変数
+    ════════════════════════════════════════════ */
+    let allData      = {};   // { catKey: [rowObj, ...] }
+    let currentCat   = null;
+    let questions    = [];   // 現在セッションの問題配列
+    let qIndex       = 0;
+    let streak       = 0;
+    let timerInterval= null;
+    let startTime    = 0;
+    let sessionResults = []; // { correct, sec }
+    let radarChart   = null;
 
-    const colors = getChartColors();
-    const ctx    = document.getElementById('radar-chart').getContext('2d');
+    /* ════════════════════════════════════════════
+       設定パネル関数（①②修正済み）
+    ════════════════════════════════════════════ */
+    function applySettings() {
+      const fs    = localStorage.getItem('gift_fontsize') || 'normal';
+      const theme = localStorage.getItem('gift_theme')    || 'dark';
+      const ruby  = localStorage.getItem('gift_ruby')     || 'on';
 
-    radarChart = new Chart(ctx, {
-      type: 'radar',
-      data: {
-        labels,
-        datasets: [{
-          label: '正答率 (%)',
-          data,
-          borderColor:     colors.line,
-          backgroundColor: colors.fill,
-          pointBackgroundColor: colors.point,
-          pointRadius: 4,
-          borderWidth: 2,
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          r: {
-            min: 0, max: 100, ticks: { stepSize: 25, display: false },
-            grid:        { color: colors.grid },
-            pointLabels: { color: colors.tick, font: { size: 11, weight: '700' } },
-            angleLines:  { color: colors.grid },
-          }
-        },
-        plugins: { legend: { display: false } },
-        animation: { duration: 600 },
+      /* フォントサイズ */
+      document.documentElement.setAttribute('data-fontsize', fs);
+      document.querySelectorAll('.sp-btn[id^="fs-"]').forEach(b => b.classList.remove('active'));
+      const fsMap = { normal:'fs-s', large:'fs-m', xlarge:'fs-l' };
+      document.getElementById(fsMap[fs])?.classList.add('active');
+
+      /* テーマ */
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('theme-dark') ?.classList.toggle('active', theme === 'dark');
+      document.getElementById('theme-light')?.classList.toggle('active', theme === 'light');
+
+      /* ふりがな */
+      const cb = document.getElementById('ruby-toggle');
+      if (cb) cb.checked = (ruby === 'on');
+    }
+
+    function setFontSize(size) {
+      localStorage.setItem('gift_fontsize', size);
+      applySettings();
+    }
+
+    function setTheme(theme) {
+      localStorage.setItem('gift_theme', theme);
+      applySettings();
+    }
+
+    function setRuby(on) {
+      localStorage.setItem('gift_ruby', on ? 'on' : 'off');
+      document.documentElement.setAttribute('data-ruby', on ? 'on' : 'off');
+    }
+
+    /* ════════════════════════════════════════════
+       CSV 読み込み・パース
+    ════════════════════════════════════════════ */
+    async function loadCSV() {
+      try {
+        const res = await fetch('./n1-dokkai.csv');
+        if (!res.ok) throw new Error('fetch failed');
+        const text = await res.text();
+        parseCSV(text);
+      } catch(e) {
+        document.getElementById('loading-msg').textContent =
+          '⚠️ 問題データが見つかりません。n1-dokkai.csv をアップロードしてください。';
       }
-    });
-
-    updateChartComment(data);
-  }
-
-  function updateChartTheme() {
-    if (!radarChart) return;
-    const colors = getChartColors();
-    radarChart.data.datasets[0].borderColor     = colors.line;
-    radarChart.data.datasets[0].backgroundColor = colors.fill;
-    radarChart.data.datasets[0].pointBackgroundColor = colors.point;
-    radarChart.options.scales.r.grid.color        = colors.grid;
-    radarChart.options.scales.r.pointLabels.color = colors.tick;
-    radarChart.options.scales.r.angleLines.color  = colors.grid;
-    radarChart.update();
-  }
-
-  function refreshChart() {
-    if (!radarChart) return;
-    const data = CATEGORIES.map(cat => {
-      const results  = getResults(cat.key);
-      const attempted= Object.keys(results).length;
-      const correct  = Object.values(results).filter(r => r.correct).length;
-      return attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
-    });
-    radarChart.data.datasets[0].data = data;
-    radarChart.update();
-    updateChartComment(data);
-  }
-
-  function updateChartComment(data) {
-    const totalAttempted = CATEGORIES.reduce((s, cat) => {
-      return s + Object.keys(getResults(cat.key)).length;
-    }, 0);
-
-    const el = document.getElementById('chart-comment');
-    if (totalAttempted === 0) {
-      el.textContent = '問題を解くと得意・苦手が見えてきます';
-      return;
     }
 
-    /* 最高・最低カテゴリ */
-    const withData = CATEGORIES.map((cat, i) => ({ label: cat.short, val: data[i] }))
-                               .filter(d => d.val > 0);
-    if (withData.length === 0) { el.textContent = ''; return; }
+    function parseCSV(raw) {
+      /* BOM除去 */
+      const text = raw.replace(/^\uFEFF/, '');
+      const lines = splitCSVLines(text);
+      if (lines.length < 2) return;
 
-    const best  = withData.reduce((a, b) => a.val >= b.val ? a : b);
-    const worst = withData.reduce((a, b) => a.val <= b.val ? a : b);
+      /* ヘッダー行をスキップ（行0） */
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        if (cols.length < 9) continue;
 
-    if (withData.length === 1) {
-      el.textContent = `${best.label} の正答率: ${best.val}%`;
-    } else {
-      el.textContent = `得意: ${best.label} (${best.val}%)　苦手: ${worst.label} (${worst.val}%)`;
+        const daimon = cols[COL.daimon].trim();
+        /* 大問名からカテゴリキーを決定 */
+        let catKey = null;
+        for (const [kw, k] of Object.entries(DAIMON_TO_KEY)) {
+          if (daimon.includes(kw)) { catKey = k; break; }
+        }
+        if (!catKey) continue;
+
+        if (!allData[catKey]) allData[catKey] = [];
+        allData[catKey].push({
+          daimon,
+          theme:   cols[COL.theme],
+          num:     cols[COL.num],
+          question:cols[COL.question],
+          choices: [cols[COL.c1], cols[COL.c2], cols[COL.c3], cols[COL.c4]],
+          answer:  parseInt(cols[COL.answer], 10),
+          explain: cols[COL.explain] || '',
+        });
+      }
+
+      document.getElementById('loading-msg').style.display = 'none';
+      renderCategoryCards();
+      renderProfile();
     }
-  }
 
-  /* ════════════════════════════════════════════════
-     カテゴリ開始
-  ════════════════════════════════════════════════ */
-  function startCategory(key) {
-    currentCatKey    = key;
-    currentQuestions = [...(allQuestions[key] || [])];
-    currentIndex     = 0;
-    sessionResults   = [];
-    streak           = getStreak();
-
-    if (currentQuestions.length === 0) {
-      alert('このカテゴリの問題データがありません。');
-      return;
+    /* CSV行分割（改行を含むダブルクォートフィールド対応） */
+    function splitCSVLines(text) {
+      const lines = []; let cur = ''; let inQ = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === '"') { inQ = !inQ; cur += ch; }
+        else if (ch === '\n' && !inQ) { lines.push(cur); cur = ''; }
+        else { cur += ch; }
+      }
+      if (cur) lines.push(cur);
+      return lines;
     }
 
-    buildTabBar();
-    showQuestion();
-    showScreen('quiz');
-  }
+    /* 1行のCSVをフィールド配列に分割 */
+    function parseCSVLine(line) {
+      const fields = []; let cur = ''; let inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+          else { inQ = !inQ; }
+        } else if (ch === ',' && !inQ) {
+          fields.push(cur.trim()); cur = '';
+        } else { cur += ch; }
+      }
+      fields.push(cur.trim());
+      return fields;
+    }
 
-  /* ════════════════════════════════════════════════
-     カテゴリタブ構築
-  ════════════════════════════════════════════════ */
-  function buildTabBar() {
-    const bar = document.getElementById('tab-bar');
-    bar.innerHTML = '';
-    CATEGORIES.forEach(cat => {
-      const btn = document.createElement('button');
-      btn.className = 'tab-btn' + (cat.key === currentCatKey ? ' active' : '');
-      btn.textContent = cat.short;
-      btn.addEventListener('click', () => {
-        if (cat.key !== currentCatKey) startCategory(cat.key);
+    /* ════════════════════════════════════════════
+       カテゴリカード描画
+    ════════════════════════════════════════════ */
+    function renderCategoryCards() {
+      const grid = document.getElementById('cat-grid');
+      grid.innerHTML = '';
+      CATEGORIES.forEach(cat => {
+        const rows = allData[cat.key] || [];
+        const results = loadResults(cat.key);
+        const { rate, badge, badgeClass } = calcBadge(results, rows.length);
+
+        const card = document.createElement('div');
+        card.className = 'cat-card';
+        card.onclick = () => startCategory(cat.key);
+        card.innerHTML = `
+          <div class="cat-card-icon">${cat.emoji}</div>
+          <div class="cat-card-body">
+            <div class="cat-card-name">${cat.name}</div>
+            <div class="cat-card-meta">${rows.length}問 ／ 目安 ${formatSec(cat.baseTimeSec)}/問</div>
+          </div>
+          <div class="cat-card-badge ${badgeClass}">${badge}</div>
+        `;
+        grid.appendChild(card);
       });
-      bar.appendChild(btn);
-    });
-  }
-
-  /* ════════════════════════════════════════════════
-     問題表示
-  ════════════════════════════════════════════════ */
-  function showQuestion() {
-    const q = currentQuestions[currentIndex];
-    if (!q) return;
-
-    answered = false;
-    elapsedSec = 0;
-    startTimer();
-
-    /* ヘッダー更新 */
-    document.getElementById('q-current').textContent = currentIndex + 1;
-    document.getElementById('q-total').textContent   = currentQuestions.length;
-    document.getElementById('q-theme').textContent   = q.theme ? `📌 ${q.theme}` : '';
-    document.getElementById('streak-num').textContent = streak;
-
-    /* 進捗バー */
-    const pct = Math.round(((currentIndex) / currentQuestions.length) * 100);
-    document.getElementById('quiz-progress-fill').style.width = pct + '%';
-
-    /* 本文 */
-    const bodyEl   = document.getElementById('q-body');
-    const dividerEl= document.getElementById('q-divider');
-    if (q.body) {
-      bodyEl.textContent    = q.body;
-      bodyEl.style.display  = 'block';
-      dividerEl.style.display = 'block';
-    } else {
-      bodyEl.style.display  = 'none';
-      dividerEl.style.display = 'none';
     }
 
-    /* 設問 */
-    document.getElementById('q-text').textContent = q.text;
-
-    /* 選択肢 */
-    const choicesEl = document.getElementById('choices');
-    choicesEl.innerHTML = '';
-    q.choices.forEach((c, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'choice-btn';
-      btn.innerHTML = `<span class="choice-num">${i+1}</span><span>${c}</span>`;
-      btn.addEventListener('click', () => selectChoice(i + 1, btn));
-      choicesEl.appendChild(btn);
-    });
-
-    /* 応援メッセージ・解説クリア */
-    document.getElementById('cheer-msg').textContent  = '';
-    document.getElementById('cheer-msg').className    = 'cheer-msg';
-    document.getElementById('streak-anim').textContent = '';
-    document.getElementById('explain-box').classList.remove('show');
-    document.getElementById('time-label').className  = 'time-label';
-    document.getElementById('time-label').textContent = '';
-
-    /* ナビゲーション */
-    document.getElementById('btn-prev').disabled =
-      currentIndex === 0;
-    document.getElementById('btn-next').textContent =
-      currentIndex === currentQuestions.length - 1 ? '結果を見る' : '次へ →';
-  }
-
-  /* ════════════════════════════════════════════════
-     タイマー
-  ════════════════════════════════════════════════ */
-  function startTimer() {
-    clearInterval(timerInterval);
-    elapsedSec = 0;
-    updateTimerDisplay();
-    timerInterval = setInterval(() => {
-      elapsedSec++;
-      updateTimerDisplay();
-    }, 1000);
-  }
-
-  function stopTimer() {
-    clearInterval(timerInterval);
-  }
-
-  function updateTimerDisplay() {
-    const m = Math.floor(elapsedSec / 60);
-    const s = elapsedSec % 60;
-    document.getElementById('timer-display').textContent =
-      m + ':' + String(s).padStart(2, '0');
-  }
-
-  function showTimeLabel(sec) {
-    const cat   = CATEGORIES.find(c => c.key === currentCatKey);
-    const base  = cat ? cat.baseTimeSec : 120;
-    const label = document.getElementById('time-label');
-
-    if (sec <= base * 0.7) {
-      label.textContent = '⚡ 速い';
-      label.className   = 'time-label show time-label-fast';
-    } else if (sec <= base * 1.3) {
-      label.textContent = '✅ 普通';
-      label.className   = 'time-label show time-label-mid';
-    } else {
-      label.textContent = '🐢 もう少し';
-      label.className   = 'time-label show time-label-slow';
+    function calcBadge(results, total) {
+      const answered = Object.keys(results).length;
+      if (answered === 0) return { rate: null, badge: 'NEW', badgeClass: 'new' };
+      const correct = Object.values(results).filter(r => r.correct).length;
+      const rate = Math.round(correct / answered * 100);
+      if (rate >= 70) return { rate, badge: `${rate}% 😊`, badgeClass: 'good' };
+      if (rate >= 40) return { rate, badge: `${rate}% 📝`, badgeClass: '' };
+      return { rate, badge: `${rate}% 💪`, badgeClass: 'weak' };
     }
-  }
 
-  /* ════════════════════════════════════════════════
-     選択肢タップ
-  ════════════════════════════════════════════════ */
-  function selectChoice(chosen, btnEl) {
-    if (answered) return;
-    answered = true;
-    stopTimer();
-    showTimeLabel(elapsedSec);
+    /* ════════════════════════════════════════════
+       プロフィール（レーダーチャート）
+    ════════════════════════════════════════════ */
+    function renderProfile() {
+      const profileEl = document.getElementById('profile-content');
+      const labels = [], data = [], hasAny = CATEGORIES.some(c => Object.keys(loadResults(c.key)).length > 0);
 
-    const q       = currentQuestions[currentIndex];
-    const correct = chosen === q.answer;
+      if (!hasAny) return; /* 未解答なら何もしない */
 
-    /* 正誤ハイライト */
-    document.querySelectorAll('.choice-btn').forEach((b, i) => {
-      b.disabled = true;
-      if (i + 1 === q.answer) b.classList.add('correct');
-      if (b === btnEl && !correct) b.classList.add('wrong');
-    });
+      CATEGORIES.forEach(cat => {
+        const results = loadResults(cat.key);
+        const answered = Object.keys(results).length;
+        const correct  = Object.values(results).filter(r => r.correct).length;
+        labels.push(cat.name.replace('内容理解', '').replace('（','').replace('）','') || cat.name);
+        data.push(answered > 0 ? Math.round(correct / answered * 100) : 0);
+      });
 
-    /* 応援メッセージ */
-    const cheer = document.getElementById('cheer-msg');
-    if (correct) {
-      streak++;
-      saveStreak(streak);
-      cheer.textContent = ['正解！すばらしい！', '正解！その調子！', '完璧！', '正解！', 'やった！正解！'][Math.floor(Math.random()*5)];
-      cheer.className   = 'cheer-msg cheer-correct';
-      /* 3の倍数でストリークアニメーション */
-      if (streak % 3 === 0) {
-        const anim = document.getElementById('streak-anim');
-        anim.textContent = `🔥 ${streak}問連続正解！すごい！`;
-        setTimeout(() => { anim.textContent = ''; }, 2500);
+      profileEl.innerHTML = '<div class="radar-wrap"><canvas id="radar-chart"></canvas></div>';
+      const ctx = document.getElementById('radar-chart').getContext('2d');
+      if (radarChart) radarChart.destroy();
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels,
+          datasets: [{
+            label: '正答率(%)',
+            data,
+            backgroundColor: 'rgba(201,151,58,0.20)',
+            borderColor: 'rgba(201,151,58,0.80)',
+            pointBackgroundColor: 'rgba(201,151,58,1)',
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { r: { min:0, max:100, ticks: { stepSize:20, display:false }, grid:{ color:'rgba(255,255,255,0.1)' }, pointLabels:{ font:{ size:10 }, color:'rgba(240,236,224,0.70)' } } },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    /* ════════════════════════════════════════════
+       クイズ開始
+    ════════════════════════════════════════════ */
+    function startCategory(catKey) {
+      currentCat    = catKey;
+      questions     = shuffle([...(allData[catKey] || [])]);
+      qIndex        = 0;
+      streak        = 0;
+      sessionResults= [];
+      showScreen('quiz');
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (qIndex >= questions.length) { showResult(); return; }
+      const q = questions[qIndex];
+      const cat = CAT_MAP[currentCat];
+
+      /* カウンター・プログレス */
+      document.getElementById('quiz-cat-label').textContent = cat.name;
+      document.getElementById('quiz-counter').textContent = `${qIndex + 1} / ${questions.length}`;
+      document.getElementById('progress-fill').style.width = `${(qIndex / questions.length) * 100}%`;
+
+      /* ストリーク */
+      document.getElementById('streak-disp').textContent = streak;
+
+      /* コンボメッセージ */
+      const comboEl = document.getElementById('combo-msg');
+      comboEl.style.display = 'none';
+
+      /* 問題本文の分割（【問】マーカーで本文と設問に分ける） */
+      const raw = q.question;
+      const markerIdx = raw.indexOf('【問】');
+      let passage = '', stem = '';
+      if (markerIdx !== -1) {
+        passage = raw.slice(0, markerIdx).trim();
+        stem    = raw.slice(markerIdx).trim();
+      } else {
+        stem = raw.trim();
       }
-    } else {
-      streak = 0;
-      saveStreak(0);
-      cheer.textContent = ['惜しい！解説を確認しよう', 'ドンマイ！次は大丈夫！', 'もう少し！解説を読もう'][Math.floor(Math.random()*3)];
-      cheer.className   = 'cheer-msg cheer-wrong';
+      document.getElementById('question-passage').textContent = passage;
+      document.getElementById('question-stem').textContent    = stem;
+
+      /* 選択肢 */
+      const list = document.getElementById('choices-list');
+      list.innerHTML = '';
+      q.choices.forEach((text, i) => {
+        const li  = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = `${i + 1}．${text}`;
+        btn.onclick = () => selectAnswer(i + 1, q, btn, list);
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+
+      /* 解説・次へ を初期非表示 */
+      document.getElementById('explain-box').style.display = 'none';
+      document.getElementById('next-btn').style.display    = 'none';
+      document.getElementById('speed-badge').style.display = 'none';
+
+      /* タイマー開始 */
+      clearInterval(timerInterval);
+      startTime = Date.now();
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
     }
 
-    document.getElementById('streak-num').textContent = streak;
+    /* ════════════════════════════════════════════
+       回答処理
+    ════════════════════════════════════════════ */
+    function selectAnswer(chosen, q, clickedBtn, list) {
+      clearInterval(timerInterval);
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+      const correct = (chosen === q.answer);
 
-    /* 解説表示 */
-    document.getElementById('explain-text').textContent = q.kaisetsu || '解説はありません。';
-    document.getElementById('explain-box').classList.add('show');
+      /* 正誤ハイライト */
+      list.querySelectorAll('.choice-btn').forEach((b, i) => {
+        b.disabled = true;
+        if (i + 1 === q.answer) b.classList.add('correct');
+        else if (b === clickedBtn && !correct) b.classList.add('wrong');
+      });
 
-    /* localStorage に保存 */
-    saveResult(currentCatKey, q.id, correct, elapsedSec);
-    sessionResults.push({ correct, sec: elapsedSec });
-  }
+      /* ストリーク更新 */
+      if (correct) {
+        streak++;
+        if (streak % 3 === 0) {
+          const comboEl = document.getElementById('combo-msg');
+          comboEl.textContent = `🎉 ${streak}問連続正解！`;
+          comboEl.style.display = 'block';
+          setTimeout(() => { comboEl.style.display = 'none'; }, 2000);
+        }
+      } else { streak = 0; }
+      document.getElementById('streak-disp').textContent = streak;
 
-  /* ════════════════════════════════════════════════
-     ナビゲーション
-  ════════════════════════════════════════════════ */
-  function moveNext() {
-    if (currentIndex < currentQuestions.length - 1) {
-      currentIndex++;
+      /* スピードバッジ */
+      const cat = CAT_MAP[currentCat];
+      const badge = document.getElementById('speed-badge');
+      badge.style.display = 'inline-block';
+      if (elapsed <= cat.baseTimeSec * 0.7) {
+        badge.className = 'speed-badge fast';   badge.textContent = `⚡ ${elapsed}秒 速い！`;
+      } else if (elapsed <= cat.baseTimeSec * 1.3) {
+        badge.className = 'speed-badge normal'; badge.textContent = `✅ ${elapsed}秒 普通`;
+      } else {
+        badge.className = 'speed-badge slow';   badge.textContent = `🐢 ${elapsed}秒 もう少し`;
+      }
+
+      /* 解説表示 */
+      document.getElementById('explain-text').textContent = q.explain || '（解説なし）';
+      document.getElementById('explain-box').style.display = 'block';
+      document.getElementById('next-btn').style.display    = 'block';
+
+      /* 学習記録を保存 */
+      saveResult(currentCat, q.num, correct, elapsed);
+      sessionResults.push({ correct, sec: elapsed });
+    }
+
+    /* ════════════════════════════════════════════
+       タイマー
+    ════════════════════════════════════════════ */
+    function updateTimer() {
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+      document.getElementById('timer-disp').textContent = formatSec(elapsed);
+    }
+    function formatSec(s) {
+      return `${Math.floor(s / 60)}:${String(s % 60).padStart(2,'0')}`;
+    }
+
+    /* ════════════════════════════════════════════
+       次の問題
+    ════════════════════════════════════════════ */
+    function nextQuestion() {
+      qIndex++;
       showQuestion();
-    } else {
-      showResultScreen();
     }
-  }
 
-  function movePrev() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      showQuestion();
+    /* ════════════════════════════════════════════
+       結果画面
+    ════════════════════════════════════════════ */
+    function showResult() {
+      showScreen('result');
+      const total   = sessionResults.length;
+      const correct = sessionResults.filter(r => r.correct).length;
+      const rate    = total > 0 ? Math.round(correct / total * 100) : 0;
+      const avgTime = total > 0 ? Math.round(sessionResults.reduce((a,r) => a + r.sec, 0) / total) : 0;
+
+      document.getElementById('res-correct').textContent  = correct;
+      document.getElementById('res-total').textContent    = total;
+      document.getElementById('res-rate').textContent     = `${rate}%`;
+      document.getElementById('res-avg-time').textContent = formatSec(avgTime);
+
+      let comment = '';
+      if      (rate >= 80) comment = '🌟 素晴らしい！このカテゴリはかなり得意ですね。';
+      else if (rate >= 60) comment = '📈 着実に力がついています。あと少しで安定圏内！';
+      else if (rate >= 40) comment = '💪 まだ伸びしろがあります。解説を読んで復習しましょう。';
+      else                 comment = '📖 焦らず、まず本文をゆっくり読む練習をしましょう。';
+      document.getElementById('res-comment').textContent = comment;
     }
-  }
 
-  /* ════════════════════════════════════════════════
-     結果画面
-  ════════════════════════════════════════════════ */
-  function showResultScreen() {
-    stopTimer();
-    const total   = sessionResults.length;
-    const correct = sessionResults.filter(r => r.correct).length;
-    const rate    = total > 0 ? Math.round((correct / total) * 100) : 0;
-    const avgSec  = total > 0
-      ? Math.round(sessionResults.reduce((s,r)=>s+r.sec,0) / total)
-      : 0;
-    const cat = CATEGORIES.find(c => c.key === currentCatKey);
+    function retryCategory() { startCategory(currentCat); }
+    function showCategory()  { showScreen('category'); renderCategoryCards(); renderProfile(); }
 
-    document.getElementById('result-score').textContent = rate + '%';
-    document.getElementById('result-label').textContent =
-      `${cat ? cat.label : ''} — ${correct} / ${total} 問正解`;
+    /* ════════════════════════════════════════════
+       画面切替
+    ════════════════════════════════════════════ */
+    function showScreen(name) {
+      document.getElementById('screen-category').style.display = name === 'category' ? 'block' : 'none';
+      document.getElementById('screen-quiz')    .style.display = name === 'quiz'     ? 'block' : 'none';
+      document.getElementById('screen-result')  .style.display = name === 'result'   ? 'block' : 'none';
+    }
 
-    const m = Math.floor(avgSec/60), s = avgSec%60;
-    document.getElementById('result-stats').innerHTML =
-      `<span>平均タイム: ${m}:${String(s).padStart(2,'0')}</span>`;
+    /* ════════════════════════════════════════════
+       localStorage ユーティリティ
+    ════════════════════════════════════════════ */
+    function saveResult(catKey, qNum, correct, sec) {
+      const key  = `jlpt_n1_results_${catKey}`;
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      data[qNum] = { correct, sec, ts: Date.now() };
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+    function loadResults(catKey) {
+      return JSON.parse(localStorage.getItem(`jlpt_n1_results_${catKey}`) || '{}');
+    }
 
-    let comment = '';
-    if      (rate >= 80) comment = '🏆 素晴らしい！この調子で続けよう！';
-    else if (rate >= 60) comment = '👍 いい感じ！解説を復習してさらに上を目指そう！';
-    else if (rate >= 40) comment = '💪 惜しい！解説をじっくり読んで再挑戦しよう！';
-    else                 comment = '📖 解説を読んで、もう一度チャレンジしよう！';
-    document.getElementById('result-comment').textContent = comment;
+    /* ════════════════════════════════════════════
+       シャッフル（Fisher-Yates）
+    ════════════════════════════════════════════ */
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-    showScreen('result');
-    refreshChart();
-  }
-
-  function retryCategory() {
-    startCategory(currentCatKey);
-    showScreen('quiz');
-  }
-
-  /* ════════════════════════════════════════════════
-     画面切替
-  ════════════════════════════════════════════════ */
-  function showScreen(name) {
-    document.getElementById('screen-category').style.display = name==='category' ? 'block' : 'none';
-    document.getElementById('screen-quiz').style.display     = name==='quiz'     ? 'block' : 'none';
-    document.getElementById('screen-result').style.display   = name==='result'   ? 'block' : 'none';
-  }
-
-  function showCategoryScreen() {
-    stopTimer();
-    buildCategoryScreen();
-    refreshChart();
-    showScreen('category');
-  }
-
-  /* ════════════════════════════════════════════════
-     初期化
-  ════════════════════════════════════════════════ */
-  loadCSV();
+    /* ════════════════════════════════════════════
+       初期化
+    ════════════════════════════════════════════ */
+    document.addEventListener('DOMContentLoaded', () => {
+      applySettings(); /* ① ② 設定ボタンのハイライト同期 */
+      loadCSV();
+    });
   </script>
-
 </body>
 </html>
