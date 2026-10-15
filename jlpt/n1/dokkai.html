@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- テーマ・フォント・ルビの即時適用（フラッシュ防止） -->
   <script>
     (function(){
       const t = localStorage.getItem('gift_theme')    || 'dark';
@@ -20,13 +19,11 @@
     })();
   </script>
   <style>
-    /* ── フォントスケール ── */
     :root { --font-scale: 1; }
     html[data-fontsize="normal"] { --font-scale: 1; }
     html[data-fontsize="large"]  { --font-scale: 1.125; }
     html[data-fontsize="xlarge"] { --font-scale: 1.25; }
 
-    /* ── ダークテーマ ── */
     html[data-theme="dark"] {
       --bg-start:       #0f0f1a;
       --bg-mid:         #1a1a2e;
@@ -39,15 +36,18 @@
       --accent-soft:    rgba(201,151,58,0.15);
       --correct-bg:     rgba(40,180,100,0.18);
       --correct-border: #28b464;
+      --correct-text:   #28b464;
       --wrong-bg:       rgba(220,60,60,0.18);
       --wrong-border:   #dc3c3c;
+      --wrong-text:     #dc3c3c;
       --btn-next-bg:    #c9973a;
       --btn-next-text:  #0f0f1a;
       --btn-quit-bg:    rgba(255,255,255,0.08);
       --btn-quit-text:  #a0a0b8;
       --progress-bg:    rgba(255,255,255,0.1);
+      --choice-review-normal-bg: rgba(255,255,255,0.04);
+      --choice-review-normal-border: rgba(255,255,255,0.1);
     }
-    /* ── ライトテーマ ── */
     html[data-theme="light"] {
       --bg-start:       #f5f0e8;
       --bg-mid:         #ede8dc;
@@ -60,13 +60,17 @@
       --accent-soft:    rgba(154,108,30,0.12);
       --correct-bg:     rgba(40,180,100,0.12);
       --correct-border: #1a9050;
+      --correct-text:   #1a9050;
       --wrong-bg:       rgba(220,60,60,0.12);
       --wrong-border:   #c02020;
+      --wrong-text:     #c02020;
       --btn-next-bg:    #9a6c1e;
       --btn-next-text:  #ffffff;
       --btn-quit-bg:    rgba(0,0,0,0.06);
       --btn-quit-text:  #666666;
       --progress-bg:    rgba(0,0,0,0.08);
+      --choice-review-normal-bg: rgba(0,0,0,0.03);
+      --choice-review-normal-border: rgba(0,0,0,0.1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -80,33 +84,24 @@
       transition: background .4s, color .4s;
       padding-bottom: 80px;
     }
-
-    /* ふりがなOFF */
     html[data-ruby="off"] ruby rt { display: none; }
 
     /* ── ヘッダー ── */
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px;
       background: var(--card-bg);
       border-bottom: 1px solid var(--card-border);
       backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
     }
     .header-left { display: flex; align-items: center; gap: 8px; }
     .header-left img { width: 30px; height: 30px; border-radius: 8px; }
     .header-title {
       font-family: 'Poppins', sans-serif;
       font-size: calc(0.95rem * var(--font-scale));
-      font-weight: 700;
-      color: var(--accent);
+      font-weight: 700; color: var(--accent);
     }
-
-    /* ── 設定パネル ── */
     .settings-panel { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .ruby-toggle-wrap { display: flex; align-items: center; gap: 4px; }
     .ruby-label { font-size: calc(0.68rem * var(--font-scale)); color: var(--text-secondary); white-space: nowrap; }
@@ -114,100 +109,63 @@
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
       position: absolute; inset: 0;
-      background: rgba(128,128,128,0.3);
-      border-radius: 20px;
-      transition: background .3s;
+      background: rgba(128,128,128,0.3); border-radius: 20px; transition: background .3s;
     }
     .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 14px; height: 14px;
-      left: 3px; top: 3px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform .3s;
+      content: ''; position: absolute;
+      width: 14px; height: 14px; left: 3px; top: 3px;
+      background: #fff; border-radius: 50%; transition: transform .3s;
     }
     .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
     .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
     .font-btns { display: flex; gap: 3px; }
     .font-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-secondary);
-      border-radius: 6px;
-      padding: 3px 6px;
-      font-size: calc(0.7rem * var(--font-scale));
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: background .2s, color .2s;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text-secondary); border-radius: 6px; padding: 3px 6px;
+      font-size: calc(0.7rem * var(--font-scale)); cursor: pointer;
+      white-space: nowrap; flex-shrink: 0; transition: background .2s, color .2s;
     }
     .font-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .theme-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-primary);
-      border-radius: 8px;
-      padding: 4px 7px;
-      font-size: calc(0.8rem * var(--font-scale));
-      cursor: pointer;
-      flex-shrink: 0;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text-primary); border-radius: 8px; padding: 4px 7px;
+      font-size: calc(0.8rem * var(--font-scale)); cursor: pointer; flex-shrink: 0;
     }
 
-    /* ── コンテナ ── */
+    /* ── コンテナ・画面切替 ── */
     .container { max-width: 680px; margin: 0 auto; padding: 20px 16px; }
-
-    /* ── 画面表示切替 ── */
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* ── タイトル3段組 ── */
+    /* ── タイトル3段 ── */
     .screen-title-en {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(0.75rem * var(--font-scale));
-      font-weight: 600;
-      letter-spacing: .15em;
-      color: var(--accent);
-      text-align: center;
-      margin-bottom: 2px;
+      font-family: 'Poppins', sans-serif; font-size: calc(0.75rem * var(--font-scale));
+      font-weight: 600; letter-spacing: .15em; color: var(--accent);
+      text-align: center; margin-bottom: 2px;
     }
     .screen-title-ruby {
-      font-size: calc(0.65rem * var(--font-scale));
-      color: var(--text-secondary);
-      text-align: center;
-      margin-bottom: 2px;
+      font-size: calc(0.65rem * var(--font-scale)); color: var(--text-secondary);
+      text-align: center; margin-bottom: 2px;
     }
     .screen-title-ja {
-      font-size: calc(1.25rem * var(--font-scale));
-      font-weight: 900;
-      text-align: center;
-      margin-bottom: 20px;
+      font-size: calc(1.25rem * var(--font-scale)); font-weight: 900;
+      text-align: center; margin-bottom: 20px;
     }
 
     /* ── レーダーチャート ── */
     .chart-area {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 16px;
-      text-align: center;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 20px; padding: 18px; margin-bottom: 16px; text-align: center;
     }
     .chart-area h3 { font-size: calc(0.82rem * var(--font-scale)); color: var(--text-secondary); margin-bottom: 10px; }
     .chart-wrap { max-width: 240px; margin: 0 auto; }
 
     /* ── カテゴリカード ── */
     .cat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 14px 18px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: transform .2s, border-color .2s, background .2s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 14px 18px; margin-bottom: 10px;
+      cursor: pointer; transition: transform .2s, border-color .2s, background .2s;
+      display: flex; align-items: center; gap: 12px;
     }
     .cat-card:hover { transform: translateY(-2px); border-color: var(--accent); background: var(--accent-soft); }
     .cat-icon { font-size: 1.5rem; flex-shrink: 0; }
@@ -215,11 +173,8 @@
     .cat-name { font-size: calc(0.95rem * var(--font-scale)); font-weight: 700; margin-bottom: 3px; }
     .cat-sub  { font-size: calc(0.72rem * var(--font-scale)); color: var(--text-secondary); }
     .cat-badge {
-      font-size: calc(0.7rem * var(--font-scale));
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      flex-shrink: 0;
+      font-size: calc(0.7rem * var(--font-scale)); font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; flex-shrink: 0;
     }
     .badge-ok   { background: rgba(40,180,100,0.2);  color: #28b464; }
     .badge-more { background: rgba(201,151,58,0.2);  color: var(--accent); }
@@ -227,25 +182,16 @@
 
     /* ── バックアップ ── */
     .backup-section {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px 18px;
-      margin-top: 20px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 16px 18px; margin-top: 20px;
     }
     .backup-section h3 { font-size: calc(0.82rem * var(--font-scale)); font-weight: 700; margin-bottom: 6px; }
     .backup-section p  { font-size: calc(0.73rem * var(--font-scale)); color: var(--text-secondary); margin-bottom: 12px; line-height: 1.6; }
     .backup-btns { display: flex; gap: 10px; }
     .backup-btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      font-size: calc(0.78rem * var(--font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      transition: opacity .2s;
+      flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--card-border);
+      font-size: calc(0.78rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; text-align: center; transition: opacity .2s;
     }
     .backup-btn:hover { opacity: .8; }
     .backup-btn-save { background: var(--accent); color: var(--btn-next-text); border-color: var(--accent); }
@@ -253,130 +199,76 @@
 
     /* ── 問題画面ヘッダー ── */
     .quiz-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; gap: 8px;
     }
     .quiz-meta      { font-size: calc(0.75rem * var(--font-scale)); color: var(--text-secondary); }
     .quiz-cat-label {
-      font-size: calc(0.7rem * var(--font-scale));
-      background: var(--accent-soft);
-      color: var(--accent);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 700;
+      font-size: calc(0.7rem * var(--font-scale)); background: var(--accent-soft);
+      color: var(--accent); padding: 3px 10px; border-radius: 20px; font-weight: 700;
     }
     .timer-display {
-      font-family: 'Poppins', sans-serif;
-      font-size: calc(1rem * var(--font-scale));
-      font-weight: 700;
-      color: var(--accent);
-      min-width: 44px;
-      text-align: right;
+      font-family: 'Poppins', sans-serif; font-size: calc(1rem * var(--font-scale));
+      font-weight: 700; color: var(--accent); min-width: 44px; text-align: right;
     }
     .progress-bar-wrap {
-      height: 4px;
-      background: var(--progress-bg);
-      border-radius: 4px;
-      margin-bottom: 14px;
-      overflow: hidden;
+      height: 4px; background: var(--progress-bg); border-radius: 4px;
+      margin-bottom: 14px; overflow: hidden;
     }
     .progress-bar-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 4px;
-      transition: width .4s;
+      height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s;
     }
 
     /* ── 問題カード ── */
     .question-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 20px 18px;
-      margin-bottom: 14px;
-      line-height: 1.85;
-      font-size: calc(0.93rem * var(--font-scale));
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 20px 18px; margin-bottom: 14px;
+      line-height: 1.85; font-size: calc(0.93rem * var(--font-scale));
     }
-    .question-body   { white-space: pre-wrap; margin-bottom: 12px; }
+    .question-body    { white-space: pre-wrap; margin-bottom: 12px; }
     .question-divider { border: none; border-top: 1px dashed var(--card-border); margin: 12px 0; }
-    .question-stem   { font-weight: 700; font-size: calc(0.93rem * var(--font-scale)); }
+    .question-stem    { font-weight: 700; font-size: calc(0.93rem * var(--font-scale)); }
 
-    /* ── 選択肢 ── */
+    /* ── 選択肢（問題画面） ── */
     .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
     .choice-btn {
-      background: var(--card-bg);
-      border: 1.5px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      text-align: left;
-      font-size: calc(0.88rem * var(--font-scale));
-      color: var(--text-primary);
-      cursor: pointer;
-      line-height: 1.6;
+      background: var(--card-bg); border: 1.5px solid var(--card-border);
+      border-radius: 14px; padding: 14px 16px; text-align: left;
+      font-size: calc(0.88rem * var(--font-scale)); color: var(--text-primary);
+      cursor: pointer; line-height: 1.6;
       transition: border-color .2s, background .2s, transform .1s;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
+      display: flex; gap: 10px; align-items: flex-start;
     }
     .choice-btn:hover:not(:disabled) {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      transform: translateX(3px);
+      border-color: var(--accent); background: var(--accent-soft); transform: translateX(3px);
     }
     .choice-btn:disabled { cursor: default; }
     .choice-num { font-weight: 700; color: var(--accent); flex-shrink: 0; min-width: 18px; }
 
-    /* ── 結果画面（ページ切り替え方式） ── */
-    /* 正解アニメーション */
+    /* ── 結果画面 ── */
     @keyframes popIn {
-      0%   { transform: scale(0.4); opacity: 0; }
-      70%  { transform: scale(1.1); }
-      100% { transform: scale(1);   opacity: 1; }
+      0%  { transform: scale(0.4); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100%{ transform: scale(1);   opacity: 1; }
     }
     .result-circle {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin: 0 auto 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
+      width: 100px; height: 100px; border-radius: 50%;
+      margin: 0 auto 14px; display: flex; align-items: center;
+      justify-content: center; font-size: 3rem;
       animation: popIn .45s cubic-bezier(.175,.885,.32,1.275);
     }
-    .correct-circle {
-      background: radial-gradient(circle, rgba(40,180,100,0.15), transparent);
-      border: 4px solid #28b464;
-    }
-    .wrong-circle {
-      background: radial-gradient(circle, rgba(220,60,60,0.15), transparent);
-      border: 4px solid #dc3c3c;
-    }
-    .result-label {
-      font-size: calc(1.6rem * var(--font-scale));
-      font-weight: 900;
-      text-align: center;
-      margin-bottom: 8px;
-    }
+    .correct-circle { background: radial-gradient(circle, rgba(40,180,100,0.15), transparent); border: 4px solid #28b464; }
+    .wrong-circle   { background: radial-gradient(circle, rgba(220,60,60,0.15),  transparent); border: 4px solid #dc3c3c; }
+    .result-label { font-size: calc(1.6rem * var(--font-scale)); font-weight: 900; text-align: center; margin-bottom: 8px; }
     .correct-text { color: #28b464; }
     .wrong-text   { color: #dc3c3c; }
-
     .result-time-row {
-      text-align: center;
-      font-size: calc(0.8rem * var(--font-scale));
-      color: var(--text-secondary);
-      margin-bottom: 16px;
+      text-align: center; font-size: calc(0.8rem * var(--font-scale));
+      color: var(--text-secondary); margin-bottom: 16px;
     }
     .speed-badge {
-      display: inline-block;
-      font-size: calc(0.73rem * var(--font-scale));
-      font-weight: 700;
-      padding: 2px 10px;
-      border-radius: 20px;
-      margin-left: 6px;
+      display: inline-block; font-size: calc(0.73rem * var(--font-scale));
+      font-weight: 700; padding: 2px 10px; border-radius: 20px; margin-left: 6px;
     }
     .speed-fast   { background: rgba(100,200,255,0.2); color: #64c8ff; }
     .speed-normal { background: rgba(100,255,150,0.2); color: #64ff96; }
@@ -387,195 +279,167 @@
     .confidence-label   { font-size: calc(0.78rem * var(--font-scale)); color: var(--text-secondary); margin-bottom: 10px; }
     .confidence-btns    { display: flex; justify-content: center; gap: 10px; }
     .conf-btn {
-      flex: 1;
-      max-width: 100px;
-      padding: 10px 6px;
-      border-radius: 12px;
-      border: 1.5px solid var(--card-border);
-      background: var(--card-bg);
-      color: var(--text-primary);
-      font-size: calc(0.82rem * var(--font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      line-height: 1.4;
-      transition: all .2s;
+      flex: 1; max-width: 100px; padding: 10px 6px; border-radius: 12px;
+      border: 1.5px solid var(--card-border); background: var(--card-bg);
+      color: var(--text-primary); font-size: calc(0.82rem * var(--font-scale));
+      font-weight: 700; cursor: pointer; line-height: 1.4; transition: all .2s;
     }
-    .conf-btn:hover    { border-color: var(--accent); background: var(--accent-soft); }
+    .conf-btn:hover     { border-color: var(--accent); background: var(--accent-soft); }
     .conf-btn.selected-conf { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
-    /* 問題文を見返すアコーディオン */
-    .review-question-toggle {
-      width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 11px 16px;
-      font-size: calc(0.82rem * var(--font-scale));
-      color: var(--text-secondary);
-      cursor: pointer;
-      text-align: left;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background .2s, border-color .2s;
+    /* ── 問題ふりかえりアコーディオン ── */
+    .review-toggle {
+      width: 100%; background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 12px 16px;
+      font-size: calc(0.82rem * var(--font-scale)); color: var(--text-secondary);
+      cursor: pointer; text-align: left; margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .2s, border-color .2s, border-radius .3s;
     }
-    .review-question-toggle:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
-    .review-question-toggle .arrow { transition: transform .3s; font-style: normal; }
-    .review-question-toggle.open .arrow { transform: rotate(180deg); }
-    .review-question-body {
+    .review-toggle:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+    .review-toggle.open  { border-radius: 14px 14px 0 0; border-color: var(--accent); color: var(--accent); }
+    .review-toggle .arrow { transition: transform .3s; }
+    .review-toggle.open .arrow { transform: rotate(180deg); }
+
+    /* アコーディオン本体 */
+    .review-accordion-body {
       display: none;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      font-size: calc(0.88rem * var(--font-scale));
-      line-height: 1.85;
-      white-space: pre-wrap;
+      background: var(--card-bg); border: 1px solid var(--accent);
+      border-top: none; border-radius: 0 0 14px 14px;
+      padding: 16px; margin-bottom: 12px;
     }
-    .review-question-body.open { display: block; }
-    .review-question-stem {
-      font-weight: 700;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed var(--card-border);
+    .review-accordion-body.open { display: block; }
+
+    /* 問題本文エリア */
+    .review-passage {
+      font-size: calc(0.88rem * var(--font-scale)); line-height: 1.85;
+      white-space: pre-wrap; margin-bottom: 12px; color: var(--text-primary);
+    }
+    .review-divider { border: none; border-top: 1px dashed var(--card-border); margin: 10px 0; }
+    .review-stem    { font-weight: 700; font-size: calc(0.88rem * var(--font-scale)); margin-bottom: 14px; }
+
+    /* 選択肢ふりかえりリスト */
+    .review-choices-label {
+      font-size: calc(0.72rem * var(--font-scale)); color: var(--text-secondary);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .review-choices-list { display: flex; flex-direction: column; gap: 8px; }
+
+    /* 各選択肢ふりかえり行 */
+    .review-choice-item {
+      border-radius: 10px; padding: 11px 14px;
+      display: flex; flex-direction: column; gap: 4px;
+      background: var(--choice-review-normal-bg);
+      border: 1px solid var(--choice-review-normal-border);
+      font-size: calc(0.86rem * var(--font-scale)); line-height: 1.6;
+    }
+    /* 正解 */
+    .review-choice-item.is-correct {
+      background: var(--correct-bg); border: 1.5px solid var(--correct-border);
+    }
+    /* 自分の回答（不正解） */
+    .review-choice-item.is-mine-wrong {
+      background: var(--wrong-bg); border: 1.5px solid var(--wrong-border);
     }
 
-    /* 正解ボックス */
-    .correct-answer-box {
-      background: var(--correct-bg);
+    /* ラベル行（「✅ 正解」「✔ あなたの答え」） */
+    .review-choice-labels {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 2px;
+    }
+    .lbl-correct {
+      font-size: calc(0.68rem * var(--font-scale)); font-weight: 700;
+      color: var(--correct-text); background: var(--correct-bg);
       border: 1px solid var(--correct-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 12px;
-      font-size: calc(0.88rem * var(--font-scale));
-      color: var(--correct-border);
-      font-weight: 700;
+      padding: 1px 8px; border-radius: 20px;
     }
-    /* 不正解時：自分が選んだ選択肢表示 */
-    .wrong-answer-box {
-      background: var(--wrong-bg);
+    .lbl-mine {
+      font-size: calc(0.68rem * var(--font-scale)); font-weight: 700;
+      color: var(--wrong-text); background: var(--wrong-bg);
       border: 1px solid var(--wrong-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 8px;
-      font-size: calc(0.88rem * var(--font-scale));
-      color: var(--wrong-border);
-      font-weight: 700;
+      padding: 1px 8px; border-radius: 20px;
+    }
+    /* 正解かつ自分の答えのとき「あなたの答え」ラベルは緑 */
+    .review-choice-item.is-correct .lbl-mine {
+      color: var(--correct-text); background: var(--correct-bg); border-color: var(--correct-border);
     }
 
-    /* 解説 */
+    .review-choice-row {
+      display: flex; gap: 8px; align-items: flex-start;
+    }
+    .review-choice-num {
+      font-weight: 700; flex-shrink: 0; min-width: 18px;
+      color: var(--text-secondary);
+    }
+    .review-choice-item.is-correct    .review-choice-num { color: var(--correct-text); }
+    .review-choice-item.is-mine-wrong .review-choice-num { color: var(--wrong-text); }
+
+    /* ── 解説 ── */
     .explain-box {
-      background: var(--accent-soft);
-      border-left: 3px solid var(--accent);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
-      font-size: calc(0.85rem * var(--font-scale));
-      line-height: 1.8;
-      color: var(--text-primary);
-      white-space: pre-wrap;
+      background: var(--accent-soft); border-left: 3px solid var(--accent);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 18px;
+      font-size: calc(0.85rem * var(--font-scale)); line-height: 1.8;
+      color: var(--text-primary); white-space: pre-wrap;
     }
     .explain-title { font-weight: 700; color: var(--accent); margin-bottom: 6px; font-size: calc(0.78rem * var(--font-scale)); }
 
-    /* アクションボタン */
+    /* ── アクションボタン ── */
     .action-btns { display: flex; gap: 10px; margin-top: 4px; }
     .btn-next {
-      flex: 2;
-      padding: 15px;
-      border-radius: 14px;
-      border: none;
-      background: var(--btn-next-bg);
-      color: var(--btn-next-text);
-      font-size: calc(0.95rem * var(--font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .2s, transform .1s;
+      flex: 2; padding: 15px; border-radius: 14px; border: none;
+      background: var(--btn-next-bg); color: var(--btn-next-text);
+      font-size: calc(0.95rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; transition: opacity .2s, transform .1s;
     }
     .btn-next:hover { opacity: .85; transform: translateY(-1px); }
     .btn-quit {
-      flex: 1;
-      padding: 15px;
-      border-radius: 14px;
-      border: 1px solid var(--card-border);
-      background: var(--btn-quit-bg);
-      color: var(--btn-quit-text);
-      font-size: calc(0.82rem * var(--font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .2s;
+      flex: 1; padding: 15px; border-radius: 14px;
+      border: 1px solid var(--card-border); background: var(--btn-quit-bg);
+      color: var(--btn-quit-text); font-size: calc(0.82rem * var(--font-scale));
+      font-weight: 700; cursor: pointer; transition: opacity .2s;
     }
     .btn-quit:hover { opacity: .7; }
 
-    /* ── サマリー画面 ── */
+    /* ── サマリー ── */
     .summary-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 28px 20px;
-      margin-bottom: 16px;
-      text-align: center;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 20px; padding: 28px 20px; margin-bottom: 16px; text-align: center;
     }
     .summary-emoji { font-size: 3rem; margin-bottom: 10px; }
     .summary-title { font-size: calc(1.4rem * var(--font-scale)); font-weight: 900; margin-bottom: 4px; color: var(--accent); }
     .summary-sub   { font-size: calc(0.78rem * var(--font-scale)); color: var(--text-secondary); margin-bottom: 20px; }
-    .summary-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-    .stat-box { background: var(--accent-soft); border-radius: 12px; padding: 14px 10px; }
-    .stat-num   { font-family: 'Poppins', sans-serif; font-size: calc(1.6rem * var(--font-scale)); font-weight: 800; color: var(--accent); }
+    .summary-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 18px; }
+    .stat-box   { background: var(--accent-soft); border-radius: 12px; padding: 14px 10px; }
+    .stat-num   { font-family: 'Poppins',sans-serif; font-size: calc(1.6rem * var(--font-scale)); font-weight: 800; color: var(--accent); }
     .stat-label { font-size: calc(0.7rem * var(--font-scale)); color: var(--text-secondary); margin-top: 2px; }
     .summary-conf-row { display: flex; justify-content: center; gap: 16px; margin-bottom: 14px; }
-    .conf-stat { text-align: center; font-size: calc(0.78rem * var(--font-scale)); }
+    .conf-stat     { text-align: center; font-size: calc(0.78rem * var(--font-scale)); }
     .conf-stat-num { font-size: calc(1.1rem * var(--font-scale)); font-weight: 700; }
     .speed-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
     .review-notice {
-      background: rgba(255,100,100,0.12);
-      border: 1px solid rgba(255,100,100,0.3);
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: calc(0.8rem * var(--font-scale));
-      color: #ff8080;
-      margin-bottom: 16px;
-      text-align: left;
-      line-height: 1.6;
+      background: rgba(255,100,100,0.12); border: 1px solid rgba(255,100,100,0.3);
+      border-radius: 12px; padding: 12px 16px;
+      font-size: calc(0.8rem * var(--font-scale)); color: #ff8080;
+      margin-bottom: 16px; text-align: left; line-height: 1.6;
     }
     .btn-back-cat {
-      width: 100%;
-      padding: 14px;
-      border-radius: 14px;
-      border: none;
-      background: var(--accent);
-      color: var(--btn-next-text);
-      font-size: calc(0.95rem * var(--font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .2s;
+      width: 100%; padding: 14px; border-radius: 14px; border: none;
+      background: var(--accent); color: var(--btn-next-text);
+      font-size: calc(0.95rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; transition: opacity .2s;
     }
     .btn-back-cat:hover { opacity: .85; }
 
-    /* 戻るリンク */
     .back-link {
-      display: block;
-      text-align: center;
-      margin-top: 18px;
-      color: var(--text-secondary);
-      text-decoration: none;
+      display: block; text-align: center; margin-top: 18px;
+      color: var(--text-secondary); text-decoration: none;
       font-size: calc(0.78rem * var(--font-scale));
     }
     .back-link:hover { color: var(--accent); }
-
-    /* ローディング */
     .loading-msg { text-align: center; padding: 40px; color: var(--text-secondary); font-size: calc(0.9rem * var(--font-scale)); }
   </style>
 </head>
 <body>
 
-<!-- ヘッダー -->
 <header class="header">
   <div class="header-left">
     <img src="../../gift-logo.png" alt="GIFTロゴ">
@@ -600,9 +464,7 @@
 
 <div class="container">
 
-  <!-- ══════════════════════════════
-       画面1: カテゴリ選択
-  ══════════════════════════════ -->
+  <!-- 画面1: カテゴリ選択 -->
   <div id="screen-cat" class="screen active">
     <div class="screen-title-en">N1 DOKKAI</div>
     <div class="screen-title-ruby">えぬいち　どっかい　れんしゅう</div>
@@ -615,11 +477,9 @@
         問題を解くと得意・苦手が見えてきます
       </p>
     </div>
-
     <div id="cat-list">
       <div class="loading-msg">⏳ 問題データを読み込み中...</div>
     </div>
-
     <div class="backup-section">
       <h3>💾 記録のバックアップ</h3>
       <p>学習記録はこの端末のブラウザに保存されています。機種変更のときはファイルに保存しておくと、新しい端末でも記録を引き継げます。</p>
@@ -631,13 +491,10 @@
         </label>
       </div>
     </div>
-
     <a href="../index.html" class="back-link">← N1 科目選択にもどる</a>
   </div>
 
-  <!-- ══════════════════════════════
-       画面2: 問題
-  ══════════════════════════════ -->
+  <!-- 画面2: 問題 -->
   <div id="screen-quiz" class="screen">
     <div class="quiz-header">
       <span class="quiz-meta" id="quiz-progress">1 / —</span>
@@ -647,21 +504,16 @@
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
     </div>
-
     <div class="question-card">
       <div class="question-body" id="q-body"></div>
       <hr class="question-divider" id="q-divider">
       <div class="question-stem" id="q-stem"></div>
     </div>
-
     <div class="choices" id="choices"></div>
   </div>
 
-  <!-- ══════════════════════════════
-       画面3: 1問ごとの結果（ページ切り替え）
-  ══════════════════════════════ -->
+  <!-- 画面3: 1問ごとの結果 -->
   <div id="screen-result" class="screen">
-    <!-- 進捗バー（結果画面にも表示） -->
     <div class="quiz-header">
       <span class="quiz-meta" id="result-progress">1 / —</span>
       <span class="quiz-cat-label" id="result-cat-label">カテゴリ</span>
@@ -677,7 +529,7 @@
       <div class="result-time-row" id="result-time-row"></div>
     </div>
 
-    <!-- 手ごたえ選択 -->
+    <!-- 手ごたえ -->
     <div class="confidence-section">
       <div class="confidence-label">この問題の手ごたえは？</div>
       <div class="confidence-btns">
@@ -687,19 +539,20 @@
       </div>
     </div>
 
-    <!-- 問題文を見返すアコーディオン -->
-    <button class="review-question-toggle" id="review-toggle" onclick="toggleReviewQuestion()">
-      <span>📖 問題文を確認する</span>
+    <!-- 問題ふりかえりアコーディオン -->
+    <button class="review-toggle" id="review-toggle" onclick="toggleReview()">
+      <span>🔍 選択肢をふりかえる</span>
       <span class="arrow">▼</span>
     </button>
-    <div class="review-question-body" id="review-question-body">
-      <div id="review-body-text"></div>
-      <div class="review-question-stem" id="review-stem-text"></div>
+    <div class="review-accordion-body" id="review-accordion-body">
+      <!-- 問題文 -->
+      <div class="review-passage" id="review-passage"></div>
+      <hr class="review-divider" id="review-divider">
+      <div class="review-stem" id="review-stem"></div>
+      <!-- 選択肢一覧 -->
+      <div class="review-choices-label">🔎 選択肢をふりかえる</div>
+      <div class="review-choices-list" id="review-choices-list"></div>
     </div>
-
-    <!-- 自分の回答・正解 -->
-    <div id="wrong-answer-box" class="wrong-answer-box" style="display:none;"></div>
-    <div id="correct-answer-box" class="correct-answer-box"></div>
 
     <!-- 解説 -->
     <div class="explain-box">
@@ -714,66 +567,42 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════
-       画面4: セッションサマリー
-  ══════════════════════════════ -->
+  <!-- 画面4: サマリー -->
   <div id="screen-summary" class="screen">
     <div class="summary-card">
       <div class="summary-emoji" id="summary-emoji">🎉</div>
       <div class="summary-title" id="summary-title">お疲れさまでした！</div>
       <div class="summary-sub"   id="summary-sub">今日のセッション結果</div>
-
       <div class="summary-stats">
-        <div class="stat-box">
-          <div class="stat-num"   id="s-count">0</div>
-          <div class="stat-label">解いた問題数</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num"   id="s-rate">0%</div>
-          <div class="stat-label">正答率</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num"   id="s-avg">0秒</div>
-          <div class="stat-label">平均タイム</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num"   id="s-review">0問</div>
-          <div class="stat-label">復習キュー</div>
-        </div>
+        <div class="stat-box"><div class="stat-num" id="s-count">0</div><div class="stat-label">解いた問題数</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-rate">0%</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-avg">0秒</div><div class="stat-label">平均タイム</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-review">0問</div><div class="stat-label">復習キュー</div></div>
       </div>
-
       <div class="summary-conf-row">
         <div class="conf-stat"><div class="conf-stat-num" id="s-good">0</div><div>◎ 自信あり</div></div>
         <div class="conf-stat"><div class="conf-stat-num" id="s-maybe">0</div><div>△ なんとなく</div></div>
         <div class="conf-stat"><div class="conf-stat-num" id="s-no">0</div><div>？ わからなかった</div></div>
       </div>
-
       <div class="speed-row">
         <span class="speed-badge speed-fast"   id="s-fast">⚡ 0問</span>
         <span class="speed-badge speed-normal" id="s-normal">✅ 0問</span>
         <span class="speed-badge speed-slow"   id="s-slow">🐢 0問</span>
       </div>
-
       <div class="review-notice" id="review-notice" style="display:none;"></div>
-
       <button class="btn-back-cat" onclick="backToCategory()">カテゴリ選択にもどる</button>
     </div>
     <a href="../index.html" class="back-link">← N1 科目選択にもどる</a>
   </div>
 
-</div><!-- /container -->
+</div>
 
 <script>
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    定数
-══════════════════════════════════════════════ */
-// スプレッドシート公開CSV（修正すると自動反映）
+══════════════════════════════════════════ */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQICFkiQroLHl4oJGUHtp_tfTwOFAO_IDKBJf6FkmsaD5_o7RNcTBv0thoZ4RlM2Cv1QCXeikHkYfow/pub?output=csv';
-
-// CSV列インデックス（大問名,テーマ,問題番号,問題,選択肢1〜4,解答,解答解説）
 const COL = { daimon:0, theme:1, num:2, question:3, c1:4, c2:5, c3:6, c4:7, answer:8, explain:9 };
-
-// カテゴリ定義（基準タイム秒）
 const CATEGORIES = [
   { key:'tanbun', label:'内容理解（短文）', icon:'📄', base:90  },
   { key:'chubun', label:'内容理解（中文）', icon:'📃', base:180 },
@@ -782,8 +611,6 @@ const CATEGORIES = [
   { key:'shucho', label:'主張理解（長文）', icon:'💬', base:240 },
   { key:'joho',   label:'情報検索',         icon:'🔍', base:120 },
 ];
-
-// 大問名 → カテゴリキー（長い表記を先に評価）
 const DAIMON_MAP = [
   ['主張理解', 'shucho'],
   ['統合理解', 'togo'],
@@ -793,31 +620,27 @@ const DAIMON_MAP = [
   ['内容理解（短文）', 'tanbun'],
 ];
 
-/* ══════════════════════════════════════════════
-   状態変数
-══════════════════════════════════════════════ */
-let allQuestions     = {};  // { catKey: [q, ...] }
-let sessionQuestions = [];  // 現在のセッション問題リスト
-let sessionIdx       = 0;
-let currentCatKey    = '';
-let currentCatBase   = 90;
-let timerInterval    = null;
-let timerSec         = 0;
+/* ══════════════════════════════════════════
+   状態
+══════════════════════════════════════════ */
+let allQuestions      = {};
+let sessionQuestions  = [];
+let sessionIdx        = 0;
+let currentCatKey     = '';
+let currentCatBase    = 90;
+let timerInterval     = null;
+let timerSec          = 0;
 let currentConfidence = null;
-let lastSelectedNum  = null; // 今の問題で選んだ番号
-let lastQuestion     = null; // 今の問題オブジェクト
-let lastIsCorrect    = false;
-let lastElapsed      = 0;
-
-// セッション集計
+let lastQuestion      = null;
+let lastSelectedNum   = null;
+let lastIsCorrect     = false;
+let lastElapsed       = 0;
 let ss = { count:0, correct:0, totalSec:0, fast:0, normal:0, slow:0, good:0, maybe:0, no:0 };
-
-// Chartインスタンス
 let radarChart = null;
 
-/* ══════════════════════════════════════════════
-   設定パネル
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   設定
+══════════════════════════════════════════ */
 function applySettings() {
   const theme    = localStorage.getItem('gift_theme')    || 'dark';
   const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
@@ -828,554 +651,409 @@ function applySettings() {
   const tb = document.getElementById('theme-btn');
   if (tb) tb.textContent = theme === 'dark' ? '🌙' : '☀️';
   document.querySelectorAll('.font-btn').forEach(b => {
-    const sizeMap = { S:'normal', M:'large', L:'xlarge' };
-    b.classList.toggle('active', sizeMap[b.textContent] === fontsize);
+    const map = { S:'normal', M:'large', L:'xlarge' };
+    b.classList.toggle('active', map[b.textContent] === fontsize);
   });
   const chk = document.getElementById('ruby-chk');
   if (chk) chk.checked = ruby === 'on';
 }
-function setFontSize(size) { localStorage.setItem('gift_fontsize', size); applySettings(); }
+function setFontSize(s) { localStorage.setItem('gift_fontsize', s); applySettings(); }
 function setTheme() {
   const cur = localStorage.getItem('gift_theme') || 'dark';
   localStorage.setItem('gift_theme', cur === 'dark' ? 'light' : 'dark');
   applySettings();
-  // テーマ変更後にチャートも再描画
   if (radarChart) buildRadarChart();
 }
 function setRuby(on) { localStorage.setItem('gift_ruby', on ? 'on' : 'off'); applySettings(); }
 
-/* ══════════════════════════════════════════════
-   CSV 読み込み・パース
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   CSV
+══════════════════════════════════════════ */
 function parseCSV(text) {
   text = text.replace(/^\uFEFF/, '');
-  const rows = [];
-  let cur = '', inQ = false, row = [];
+  const rows = []; let cur = '', inQ = false, row = [];
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
-    if (c === '"') {
-      if (inQ && text[i+1] === '"') { cur += '"'; i++; }
-      else inQ = !inQ;
-    } else if (c === ',' && !inQ) {
-      row.push(cur); cur = '';
-    } else if ((c === '\n' || c === '\r') && !inQ) {
-      if (c === '\r' && text[i+1] === '\n') i++;
-      row.push(cur); cur = '';
-      if (row.some(x => x !== '')) rows.push(row);
-      row = [];
-    } else { cur += c; }
+    if (c === '"') { if (inQ && text[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
+    else if (c === ',' && !inQ) { row.push(cur); cur = ''; }
+    else if ((c==='\n'||c==='\r') && !inQ) {
+      if (c==='\r'&&text[i+1]==='\n') i++;
+      row.push(cur); cur='';
+      if (row.some(x=>x!=='')) rows.push(row);
+      row=[];
+    } else cur+=c;
   }
-  if (row.length) { row.push(cur); if (row.some(x => x !== '')) rows.push(row); }
+  if (row.length) { row.push(cur); if (row.some(x=>x!=='')) rows.push(row); }
   return rows;
 }
-
-function catKeyFromDaimon(daimon) {
-  for (const [prefix, key] of DAIMON_MAP) {
-    if (daimon.includes(prefix)) return key;
-  }
+function catKeyFromDaimon(d) {
+  for (const [p,k] of DAIMON_MAP) if (d.includes(p)) return k;
   return null;
 }
-
 async function loadCSV() {
   try {
-    const res  = await fetch(CSV_URL + '&t=' + Date.now());
-    const text = await res.text();
+    const text = await (await fetch(CSV_URL+'&t='+Date.now())).text();
     const rows = parseCSV(text);
     allQuestions = {};
-    CATEGORIES.forEach(c => allQuestions[c.key] = []);
-    for (let i = 1; i < rows.length; i++) {
-      const r = rows[i];
-      if (!r[COL.question]) continue;
-      const key = catKeyFromDaimon(r[COL.daimon] || '');
-      if (!key) continue;
+    CATEGORIES.forEach(c => allQuestions[c.key]=[]);
+    for (let i=1;i<rows.length;i++) {
+      const r=rows[i]; if (!r[COL.question]) continue;
+      const key=catKeyFromDaimon(r[COL.daimon]||''); if (!key) continue;
       allQuestions[key].push({
-        daimon:  r[COL.daimon]   || '',
-        theme:   r[COL.theme]    || '',
-        num:     r[COL.num]      || String(i),
-        question:r[COL.question] || '',
-        choices: [r[COL.c1]||'', r[COL.c2]||'', r[COL.c3]||'', r[COL.c4]||''],
-        answer:  parseInt(r[COL.answer]) || 1,
-        explain: r[COL.explain]  || '',
+        daimon:r[COL.daimon]||'', theme:r[COL.theme]||'', num:r[COL.num]||String(i),
+        question:r[COL.question]||'',
+        choices:[r[COL.c1]||'',r[COL.c2]||'',r[COL.c3]||'',r[COL.c4]||''],
+        answer:parseInt(r[COL.answer])||1, explain:r[COL.explain]||'',
       });
     }
-    buildCatList();
-    buildRadarChart();
-  } catch(e) {
-    document.getElementById('cat-list').innerHTML =
-      '<div class="loading-msg">⚠️ データ読み込みに失敗しました。時間をおいて再度お試しください。</div>';
+    buildCatList(); buildRadarChart();
+  } catch {
+    document.getElementById('cat-list').innerHTML='<div class="loading-msg">⚠️ データ読み込みに失敗しました。時間をおいて再度お試しください。</div>';
   }
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    カテゴリ一覧
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function getCatStats(key) {
-  const stored = localStorage.getItem('jlpt_n1_results_' + key);
-  if (!stored) return null;
-  const results = JSON.parse(stored);
-  const ids = Object.keys(results);
-  if (!ids.length) return null;
-  const total   = ids.length;
-  const correct = ids.filter(id => results[id].correct).length;
-  return { total, correct, rate: Math.round(correct / total * 100) };
+  const s=localStorage.getItem('jlpt_n1_results_'+key); if (!s) return null;
+  const r=JSON.parse(s); const ids=Object.keys(r); if (!ids.length) return null;
+  const total=ids.length, correct=ids.filter(id=>r[id].correct).length;
+  return { total, correct, rate:Math.round(correct/total*100) };
 }
-
 function buildCatList() {
-  const el = document.getElementById('cat-list');
-  el.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const qs    = allQuestions[cat.key] || [];
-    const stats = getCatStats(cat.key);
-    let badgeClass = 'badge-new', badgeText = '未着手';
-    if (stats) {
-      badgeClass = stats.rate >= 80 ? 'badge-ok' : 'badge-more';
-      badgeText  = stats.rate + '%';
-    }
-    const subText = stats
-      ? stats.total + '問学習・正解' + stats.correct + '問 ／ 全' + qs.length + '問'
-      : 'まだ解いていません ／ 全' + qs.length + '問';
-    const card = document.createElement('div');
-    card.className = 'cat-card';
-    card.innerHTML = `
-      <div class="cat-icon">${cat.icon}</div>
-      <div class="cat-info">
-        <div class="cat-name">${cat.label}</div>
-        <div class="cat-sub">${subText}</div>
-      </div>
-      <div class="cat-badge ${badgeClass}">${badgeText}</div>
-    `;
-    card.addEventListener('click', () => startSession(cat.key));
+  const el=document.getElementById('cat-list'); el.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const qs=allQuestions[cat.key]||[], stats=getCatStats(cat.key);
+    let bc='badge-new', bt='未着手';
+    if (stats) { bc=stats.rate>=80?'badge-ok':'badge-more'; bt=stats.rate+'%'; }
+    const sub=stats?stats.total+'問学習・正解'+stats.correct+'問 ／ 全'+qs.length+'問':'まだ解いていません ／ 全'+qs.length+'問';
+    const card=document.createElement('div'); card.className='cat-card';
+    card.innerHTML=`<div class="cat-icon">${cat.icon}</div><div class="cat-info"><div class="cat-name">${cat.label}</div><div class="cat-sub">${sub}</div></div><div class="cat-badge ${bc}">${bt}</div>`;
+    card.addEventListener('click',()=>startSession(cat.key));
     el.appendChild(card);
   });
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    レーダーチャート
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function buildRadarChart() {
-  const shortLabels = ['短文','中文','長文','統合','主張','情報検索'];
-  const data = CATEGORIES.map(c => {
-    const s = getCatStats(c.key);
-    return s ? s.rate : 0;
-  });
-  const hasData = data.some(v => v > 0);
-  const ph = document.getElementById('chart-placeholder');
-  if (ph) ph.style.display = hasData ? 'none' : 'block';
-
-  const ctx     = document.getElementById('radar-chart').getContext('2d');
-  const isDark  = (localStorage.getItem('gift_theme') || 'dark') === 'dark';
-  const gridC   = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-  const labelC  = isDark ? '#a0a0b8' : '#666666';
-  const accentC = isDark ? '#c9973a' : '#9a6c1e';
-
-  if (radarChart) radarChart.destroy();
-  radarChart = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: shortLabels,
-      datasets: [{
-        label: '正答率',
-        data,
-        backgroundColor: accentC + '33',
-        borderColor:     accentC,
-        pointBackgroundColor: accentC,
-        pointRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        r: {
-          min: 0, max: 100,
-          ticks: { stepSize: 25, color: labelC, backdropColor: 'transparent', font: { size: 10 } },
-          grid:        { color: gridC },
-          angleLines:  { color: gridC },
-          pointLabels: { color: labelC, font: { size: 10 } },
-        }
-      }
-    }
+  const labels=['短文','中文','長文','統合','主張','情報検索'];
+  const data=CATEGORIES.map(c=>{ const s=getCatStats(c.key); return s?s.rate:0; });
+  const hasData=data.some(v=>v>0);
+  const ph=document.getElementById('chart-placeholder'); if(ph) ph.style.display=hasData?'none':'block';
+  const ctx=document.getElementById('radar-chart').getContext('2d');
+  const dark=(localStorage.getItem('gift_theme')||'dark')==='dark';
+  const gc=dark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)';
+  const lc=dark?'#a0a0b8':'#666666';
+  const ac=dark?'#c9973a':'#9a6c1e';
+  if(radarChart) radarChart.destroy();
+  radarChart=new Chart(ctx,{
+    type:'radar',
+    data:{ labels, datasets:[{ label:'正答率', data, backgroundColor:ac+'33', borderColor:ac, pointBackgroundColor:ac, pointRadius:4 }] },
+    options:{ responsive:true, plugins:{legend:{display:false}},
+      scales:{ r:{ min:0, max:100, ticks:{stepSize:25,color:lc,backdropColor:'transparent',font:{size:10}},
+        grid:{color:gc}, angleLines:{color:gc}, pointLabels:{color:lc,font:{size:10}} } } }
   });
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    セッション開始
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function startSession(catKey) {
-  currentCatKey  = catKey;
-  const cat      = CATEGORIES.find(c => c.key === catKey);
-  currentCatBase = cat ? cat.base : 120;
-
-  const qs = (allQuestions[catKey] || []).slice();
-  shuffle(qs);
-  sessionQuestions = qs;
-  sessionIdx       = 0;
-  ss = { count:0, correct:0, totalSec:0, fast:0, normal:0, slow:0, good:0, maybe:0, no:0 };
-
-  showScreen('screen-quiz');
-  showQuestion();
+  currentCatKey=catKey;
+  const cat=CATEGORIES.find(c=>c.key===catKey);
+  currentCatBase=cat?cat.base:120;
+  const qs=(allQuestions[catKey]||[]).slice(); shuffle(qs);
+  sessionQuestions=qs; sessionIdx=0;
+  ss={count:0,correct:0,totalSec:0,fast:0,normal:0,slow:0,good:0,maybe:0,no:0};
+  showScreen('screen-quiz'); showQuestion();
 }
+function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
-
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    問題表示
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
+function splitQuestion(text) {
+  const idx=text.indexOf('【問】');
+  if(idx>=0) return { body:text.slice(0,idx).trim(), stem:'【問】'+text.slice(idx+3).trim() };
+  return { body:text, stem:'' };
+}
 function showQuestion() {
-  if (sessionIdx >= sessionQuestions.length) {
-    showSummary();
-    return;
-  }
-  const q   = sessionQuestions[sessionIdx];
-  const cat = CATEGORIES.find(c => c.key === currentCatKey);
-  const total = sessionQuestions.length;
-
-  // ヘッダー
-  document.getElementById('quiz-progress').textContent  = (sessionIdx + 1) + ' / ' + total;
-  document.getElementById('quiz-cat-label').textContent = cat ? cat.label : '';
-  document.getElementById('progress-fill').style.width  = (sessionIdx / total * 100) + '%';
-
-  // 問題文を本文・設問に分割
-  const { body, stem } = splitQuestion(q.question);
-  document.getElementById('q-body').textContent = body;
-  document.getElementById('q-stem').textContent = stem;
-  const divider = document.getElementById('q-divider');
-  const stemEl  = document.getElementById('q-stem');
-  divider.style.display = stem ? 'block' : 'none';
-  stemEl.style.display  = stem ? 'block' : 'none';
-
-  // 選択肢
-  const choicesEl = document.getElementById('choices');
-  choicesEl.innerHTML = '';
-  q.choices.forEach((text, i) => {
-    if (!text) return;
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-num">${i + 1}</span><span>${text}</span>`;
-    btn.addEventListener('click', () => selectAnswer(i + 1, q));
-    choicesEl.appendChild(btn);
+  if(sessionIdx>=sessionQuestions.length){ showSummary(); return; }
+  const q=sessionQuestions[sessionIdx];
+  const cat=CATEGORIES.find(c=>c.key===currentCatKey);
+  const total=sessionQuestions.length;
+  document.getElementById('quiz-progress').textContent=(sessionIdx+1)+' / '+total;
+  document.getElementById('quiz-cat-label').textContent=cat?cat.label:'';
+  document.getElementById('progress-fill').style.width=(sessionIdx/total*100)+'%';
+  const {body,stem}=splitQuestion(q.question);
+  document.getElementById('q-body').textContent=body;
+  document.getElementById('q-stem').textContent=stem;
+  document.getElementById('q-divider').style.display=stem?'block':'none';
+  document.getElementById('q-stem').style.display=stem?'block':'none';
+  const ce=document.getElementById('choices'); ce.innerHTML='';
+  q.choices.forEach((text,i)=>{
+    if(!text) return;
+    const btn=document.createElement('button'); btn.className='choice-btn';
+    btn.innerHTML=`<span class="choice-num">${i+1}</span><span>${text}</span>`;
+    btn.addEventListener('click',()=>selectAnswer(i+1,q));
+    ce.appendChild(btn);
   });
-
   startTimer();
 }
 
-function splitQuestion(text) {
-  const idx = text.indexOf('【問】');
-  if (idx >= 0) {
-    return {
-      body: text.slice(0, idx).trim(),
-      stem: '【問】' + text.slice(idx + 3).trim(),
-    };
-  }
-  return { body: text, stem: '' };
-}
-
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    タイマー
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function startTimer() {
-  clearInterval(timerInterval);
-  timerSec = 0;
-  updateTimerDisp();
-  timerInterval = setInterval(() => { timerSec++; updateTimerDisp(); }, 1000);
+  clearInterval(timerInterval); timerSec=0; updateTimerDisp();
+  timerInterval=setInterval(()=>{ timerSec++; updateTimerDisp(); },1000);
 }
 function updateTimerDisp() {
-  const m = Math.floor(timerSec / 60);
-  const s = timerSec % 60;
-  document.getElementById('timer-disp').textContent = m + ':' + String(s).padStart(2, '0');
+  const m=Math.floor(timerSec/60), s=timerSec%60;
+  document.getElementById('timer-disp').textContent=m+':'+String(s).padStart(2,'0');
 }
 function stopTimer() { clearInterval(timerInterval); }
 
-/* ══════════════════════════════════════════════
-   回答処理 → 結果画面へ切り替え
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   回答処理
+══════════════════════════════════════════ */
 function selectAnswer(selected, q) {
   stopTimer();
-  const isCorrect = selected === q.answer;
-  const elapsed   = timerSec;
-
-  // 状態を保存（次へボタン用）
-  lastQuestion    = q;
-  lastSelectedNum = selected;
-  lastIsCorrect   = isCorrect;
-  lastElapsed     = elapsed;
-  currentConfidence = null;
-
-  // セッション集計（手ごたえは後から加算）
-  ss.count++;
-  if (isCorrect) ss.correct++;
-  ss.totalSec += elapsed;
-  const spd = getSpeedInfo(elapsed, currentCatBase);
-  if (spd.key === 'fast') ss.fast++;
-  else if (spd.key === 'normal') ss.normal++;
-  else ss.slow++;
-
-  // localStorageに記録（review=trueで仮保存、手ごたえ確定後に更新）
-  saveResult(q, isCorrect, elapsed, null);
-
-  // 結果画面を組み立てて表示
-  buildResultScreen(q, selected, isCorrect, elapsed, spd);
+  const isCorrect=selected===q.answer, elapsed=timerSec;
+  lastQuestion=q; lastSelectedNum=selected; lastIsCorrect=isCorrect; lastElapsed=elapsed;
+  currentConfidence=null;
+  ss.count++; if(isCorrect) ss.correct++; ss.totalSec+=elapsed;
+  const spd=getSpeedInfo(elapsed,currentCatBase);
+  if(spd.key==='fast') ss.fast++; else if(spd.key==='normal') ss.normal++; else ss.slow++;
+  saveResult(q,isCorrect,elapsed,null);
+  buildResultScreen(q,selected,isCorrect,elapsed,spd);
   showScreen('screen-result');
 }
-
-function getSpeedInfo(sec, base) {
-  if (sec <= base * 0.6) return { key:'fast',   cls:'speed-fast',   icon:'⚡', label:'速い！'    };
-  if (sec <= base)       return { key:'normal',  cls:'speed-normal', icon:'✅', label:'いいペース' };
-  return                        { key:'slow',    cls:'speed-slow',   icon:'🐢', label:'もう少し'   };
+function getSpeedInfo(sec,base) {
+  if(sec<=base*0.6) return {key:'fast',  cls:'speed-fast',  icon:'⚡',label:'速い！'   };
+  if(sec<=base)     return {key:'normal',cls:'speed-normal',icon:'✅',label:'いいペース'};
+  return                   {key:'slow',  cls:'speed-slow',  icon:'🐢',label:'もう少し'  };
 }
 
-/* ══════════════════════════════════════════════
-   結果画面を構築
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   結果画面を組み立て
+══════════════════════════════════════════ */
 function buildResultScreen(q, selected, isCorrect, elapsed, spd) {
-  const total = sessionQuestions.length;
-  const isLast = sessionIdx + 1 >= total;
-
+  const total=sessionQuestions.length, isLast=sessionIdx+1>=total;
   // 進捗
-  document.getElementById('result-progress').textContent      = (sessionIdx + 1) + ' / ' + total;
-  document.getElementById('result-cat-label').textContent     = (CATEGORIES.find(c => c.key === currentCatKey) || {}).label || '';
-  document.getElementById('result-progress-fill').style.width = ((sessionIdx + 1) / total * 100) + '%';
-
-  // サークル・ラベル
-  const circle = document.getElementById('result-circle');
-  const label  = document.getElementById('result-label');
-  circle.className   = 'result-circle ' + (isCorrect ? 'correct-circle' : 'wrong-circle');
-  circle.textContent = isCorrect ? '⭕' : '❌';
-  // アニメーション再発火
-  circle.style.animation = 'none';
-  circle.offsetHeight;
-  circle.style.animation = '';
-  label.className   = 'result-label ' + (isCorrect ? 'correct-text' : 'wrong-text');
-  label.textContent = isCorrect ? '正解！' : '不正解';
-
-  // タイム＋スピードバッジ
-  document.getElementById('result-time-row').innerHTML =
+  document.getElementById('result-progress').textContent=(sessionIdx+1)+' / '+total;
+  document.getElementById('result-cat-label').textContent=(CATEGORIES.find(c=>c.key===currentCatKey)||{}).label||'';
+  document.getElementById('result-progress-fill').style.width=((sessionIdx+1)/total*100)+'%';
+  // サークル
+  const circle=document.getElementById('result-circle');
+  circle.className='result-circle '+(isCorrect?'correct-circle':'wrong-circle');
+  circle.textContent=isCorrect?'⭕':'❌';
+  circle.style.animation='none'; circle.offsetHeight; circle.style.animation='';
+  const lbl=document.getElementById('result-label');
+  lbl.className='result-label '+(isCorrect?'correct-text':'wrong-text');
+  lbl.textContent=isCorrect?'正解！':'不正解';
+  // タイム
+  document.getElementById('result-time-row').innerHTML=
     `かかった時間　<strong>${elapsed}秒</strong>　<span class="speed-badge ${spd.cls}">${spd.icon} ${spd.label}</span>`;
-
   // 手ごたえリセット
-  document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected-conf'));
-
-  // 問題文アコーディオンをリセット（閉じた状態）
-  const toggle = document.getElementById('review-toggle');
-  const revBody = document.getElementById('review-question-body');
-  toggle.classList.remove('open');
-  revBody.classList.remove('open');
-  const { body, stem } = splitQuestion(q.question);
-  document.getElementById('review-body-text').textContent = body;
-  const stemEl = document.getElementById('review-stem-text');
-  stemEl.textContent    = stem;
-  stemEl.style.display  = stem ? 'block' : 'none';
-
-  // 自分の回答（不正解時のみ表示）
-  const wrongBox = document.getElementById('wrong-answer-box');
-  if (!isCorrect) {
-    wrongBox.style.display = 'block';
-    wrongBox.textContent   = '❌ あなたの回答：' + selected + '　' + (q.choices[selected - 1] || '');
-  } else {
-    wrongBox.style.display = 'none';
-  }
-
-  // 正解
-  document.getElementById('correct-answer-box').textContent =
-    '✅ 正解：' + q.answer + '　' + (q.choices[q.answer - 1] || '');
-
+  document.querySelectorAll('.conf-btn').forEach(b=>b.classList.remove('selected-conf'));
+  // アコーディオンを閉じてセット
+  const toggle=document.getElementById('review-toggle');
+  const body=document.getElementById('review-accordion-body');
+  toggle.classList.remove('open'); body.classList.remove('open');
+  buildReviewAccordion(q, selected, isCorrect);
   // 解説
-  document.getElementById('explain-text').textContent = q.explain;
-
-  // 次へボタン文言
-  document.getElementById('btn-next').textContent = isLast ? '結果を見る' : '次の問題へ →';
+  document.getElementById('explain-text').textContent=q.explain;
+  // 次へボタン
+  document.getElementById('btn-next').textContent=isLast?'結果を見る':'次の問題へ →';
 }
 
-/* ══════════════════════════════════════════════
-   問題文アコーディオン
-══════════════════════════════════════════════ */
-function toggleReviewQuestion() {
-  const toggle  = document.getElementById('review-toggle');
-  const revBody = document.getElementById('review-question-body');
+/* ══════════════════════════════════════════
+   アコーディオン内容を組み立て
+══════════════════════════════════════════ */
+function buildReviewAccordion(q, selected, isCorrect) {
+  const {body, stem}=splitQuestion(q.question);
+  // 問題文
+  document.getElementById('review-passage').textContent=body;
+  const divider=document.getElementById('review-divider');
+  const stemEl=document.getElementById('review-stem');
+  if(stem) {
+    divider.style.display='block';
+    stemEl.style.display='block';
+    stemEl.textContent=stem;
+  } else {
+    divider.style.display='none';
+    stemEl.style.display='none';
+  }
+  // 選択肢リスト
+  const list=document.getElementById('review-choices-list');
+  list.innerHTML='';
+  q.choices.forEach((text,i)=>{
+    if(!text) return;
+    const num=i+1;
+    const isAns  = num===q.answer;   // 正解
+    const isMine = num===selected;   // 自分の回答
+
+    const item=document.createElement('div');
+    item.className='review-choice-item';
+    if(isAns)            item.classList.add('is-correct');
+    if(isMine && !isAns) item.classList.add('is-mine-wrong');
+
+    // ラベル行
+    let labelsHtml='';
+    if(isAns)  labelsHtml+=`<span class="lbl-correct">✅ 正解</span>`;
+    if(isMine) labelsHtml+=`<span class="lbl-mine">✔ あなたの答え</span>`;
+
+    item.innerHTML=`
+      ${labelsHtml ? `<div class="review-choice-labels">${labelsHtml}</div>` : ''}
+      <div class="review-choice-row">
+        <span class="review-choice-num">${num}</span>
+        <span>${text}</span>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+/* ══════════════════════════════════════════
+   アコーディオン開閉
+══════════════════════════════════════════ */
+function toggleReview() {
+  const toggle=document.getElementById('review-toggle');
+  const body=document.getElementById('review-accordion-body');
   toggle.classList.toggle('open');
-  revBody.classList.toggle('open');
+  body.classList.toggle('open');
 }
 
-/* ══════════════════════════════════════════════
-   手ごたえ選択
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   手ごたえ
+══════════════════════════════════════════ */
 function setConfidence(conf) {
-  // 同じボタンを押したときは解除しない（一度選んだら確定）
-  if (currentConfidence === conf) return;
-
-  // 前の選択を統計から戻す
-  if (currentConfidence === '◎') ss.good--;
-  else if (currentConfidence === '△') ss.maybe--;
-  else if (currentConfidence === '？') ss.no--;
-
-  currentConfidence = conf;
-  if (conf === '◎') ss.good++;
-  else if (conf === '△') ss.maybe++;
-  else ss.no++;
-
-  document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected-conf'));
-  const map = { '◎':'conf-good', '△':'conf-maybe', '？':'conf-no' };
+  if(currentConfidence===conf) return;
+  if(currentConfidence==='◎') ss.good--;
+  else if(currentConfidence==='△') ss.maybe--;
+  else if(currentConfidence==='？') ss.no--;
+  currentConfidence=conf;
+  if(conf==='◎') ss.good++; else if(conf==='△') ss.maybe++; else ss.no++;
+  document.querySelectorAll('.conf-btn').forEach(b=>b.classList.remove('selected-conf'));
+  const map={'◎':'conf-good','△':'conf-maybe','？':'conf-no'};
   document.getElementById(map[conf]).classList.add('selected-conf');
-
-  // localStorage更新：◎かつ正解 → review=false、それ以外 → review=true
-  if (lastQuestion) {
-    const stored  = localStorage.getItem('jlpt_n1_results_' + currentCatKey);
-    const results = stored ? JSON.parse(stored) : {};
-    const qId     = lastQuestion.num;
-    if (results[qId]) {
-      results[qId].confidence = conf;
-      results[qId].review     = !(lastIsCorrect && conf === '◎');
-      localStorage.setItem('jlpt_n1_results_' + currentCatKey, JSON.stringify(results));
+  if(lastQuestion) {
+    const stored=localStorage.getItem('jlpt_n1_results_'+currentCatKey);
+    const results=stored?JSON.parse(stored):{};
+    const qId=lastQuestion.num;
+    if(results[qId]) {
+      results[qId].confidence=conf;
+      results[qId].review=!(lastIsCorrect&&conf==='◎');
+      localStorage.setItem('jlpt_n1_results_'+currentCatKey,JSON.stringify(results));
     }
   }
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    localStorage 保存
-══════════════════════════════════════════════ */
-function saveResult(q, isCorrect, sec, conf) {
-  const stored  = localStorage.getItem('jlpt_n1_results_' + currentCatKey);
-  const results = stored ? JSON.parse(stored) : {};
-  results[q.num] = {
-    correct:    isCorrect,
-    sec:        sec,
-    confidence: conf,
-    review:     true,   // 手ごたえ選択後に上書き
-    ts:         new Date().toISOString(),
-  };
-  localStorage.setItem('jlpt_n1_results_' + currentCatKey, JSON.stringify(results));
+══════════════════════════════════════════ */
+function saveResult(q,isCorrect,sec,conf) {
+  const stored=localStorage.getItem('jlpt_n1_results_'+currentCatKey);
+  const results=stored?JSON.parse(stored):{};
+  results[q.num]={ correct:isCorrect, sec, confidence:conf, review:true, ts:new Date().toISOString() };
+  localStorage.setItem('jlpt_n1_results_'+currentCatKey,JSON.stringify(results));
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    次の問題
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function nextQuestion() {
-  // 手ごたえ未選択 → デフォルト「？」
-  if (!currentConfidence) setConfidence('？');
+  if(!currentConfidence) setConfidence('？');
   sessionIdx++;
   showScreen('screen-quiz');
   showQuestion();
 }
 
-/* ══════════════════════════════════════════════
-   サマリー画面
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   サマリー
+══════════════════════════════════════════ */
 function showSummary() {
   stopTimer();
-  if (!currentConfidence && lastQuestion) setConfidence('？');
-
-  const rate   = ss.count > 0 ? Math.round(ss.correct / ss.count * 100) : 0;
-  const avgSec = ss.count > 0 ? Math.round(ss.totalSec / ss.count)      : 0;
-
-  // 全カテゴリの復習キュー数
-  let reviewCount = 0;
-  CATEGORIES.forEach(cat => {
-    const stored = localStorage.getItem('jlpt_n1_results_' + cat.key);
-    if (!stored) return;
-    reviewCount += Object.values(JSON.parse(stored)).filter(v => v.review).length;
+  if(!currentConfidence&&lastQuestion) setConfidence('？');
+  const rate=ss.count>0?Math.round(ss.correct/ss.count*100):0;
+  const avg=ss.count>0?Math.round(ss.totalSec/ss.count):0;
+  let reviewCount=0;
+  CATEGORIES.forEach(cat=>{
+    const s=localStorage.getItem('jlpt_n1_results_'+cat.key); if(!s) return;
+    reviewCount+=Object.values(JSON.parse(s)).filter(v=>v.review).length;
   });
-
-  // 絵文字・メッセージ
-  let emoji = '🎉', title = 'お疲れさまでした！';
-  if (ss.count === 0)  { emoji = '📖'; title = '次は問題を解いてみましょう！'; }
-  else if (rate >= 90) { emoji = '🏆'; title = '素晴らしい！'; }
-  else if (rate >= 70) { emoji = '✨'; title = 'いい調子です！'; }
-  else if (rate >= 50) { emoji = '💪'; title = 'もう少し！'; }
-  else                  { emoji = '📚'; title = '復習で伸ばそう！'; }
-
-  document.getElementById('summary-emoji').textContent  = emoji;
-  document.getElementById('summary-title').textContent  = title;
-  document.getElementById('summary-sub').textContent    = '今日のセッション結果';
-  document.getElementById('s-count').textContent  = ss.count + '問';
-  document.getElementById('s-rate').textContent   = rate + '%';
-  document.getElementById('s-avg').textContent    = avgSec + '秒';
-  document.getElementById('s-review').textContent = reviewCount + '問';
-  document.getElementById('s-good').textContent   = ss.good;
-  document.getElementById('s-maybe').textContent  = ss.maybe;
-  document.getElementById('s-no').textContent     = ss.no;
-  document.getElementById('s-fast').textContent   = '⚡ ' + ss.fast + '問';
-  document.getElementById('s-normal').textContent = '✅ ' + ss.normal + '問';
-  document.getElementById('s-slow').textContent   = '🐢 ' + ss.slow + '問';
-
-  const rn = document.getElementById('review-notice');
-  if (reviewCount > 0) {
-    rn.style.display = 'block';
-    rn.textContent   = '📌 ' + reviewCount + '問が復習キューにたまっています。';
-  } else {
-    rn.style.display = 'none';
-  }
-
+  let emoji='🎉',title='お疲れさまでした！';
+  if(ss.count===0)  {emoji='📖';title='次は問題を解いてみましょう！';}
+  else if(rate>=90) {emoji='🏆';title='素晴らしい！';}
+  else if(rate>=70) {emoji='✨';title='いい調子です！';}
+  else if(rate>=50) {emoji='💪';title='もう少し！';}
+  else              {emoji='📚';title='復習で伸ばそう！';}
+  document.getElementById('summary-emoji').textContent=emoji;
+  document.getElementById('summary-title').textContent=title;
+  document.getElementById('summary-sub').textContent='今日のセッション結果';
+  document.getElementById('s-count').textContent=ss.count+'問';
+  document.getElementById('s-rate').textContent=rate+'%';
+  document.getElementById('s-avg').textContent=avg+'秒';
+  document.getElementById('s-review').textContent=reviewCount+'問';
+  document.getElementById('s-good').textContent=ss.good;
+  document.getElementById('s-maybe').textContent=ss.maybe;
+  document.getElementById('s-no').textContent=ss.no;
+  document.getElementById('s-fast').textContent='⚡ '+ss.fast+'問';
+  document.getElementById('s-normal').textContent='✅ '+ss.normal+'問';
+  document.getElementById('s-slow').textContent='🐢 '+ss.slow+'問';
+  const rn=document.getElementById('review-notice');
+  if(reviewCount>0){ rn.style.display='block'; rn.textContent='📌 '+reviewCount+'問が復習キューにたまっています。'; }
+  else rn.style.display='none';
   showScreen('screen-summary');
 }
+function backToCategory() { buildCatList(); buildRadarChart(); showScreen('screen-cat'); }
 
-function backToCategory() {
-  buildCatList();
-  buildRadarChart();
-  showScreen('screen-cat');
-}
-
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    画面切替
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    バックアップ
-══════════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function saveBackup() {
-  const data = {};
-  CATEGORIES.forEach(cat => {
-    const stored = localStorage.getItem('jlpt_n1_results_' + cat.key);
-    data['jlpt_n1_results_' + cat.key] = stored ? JSON.parse(stored) : {};
+  const data={};
+  CATEGORIES.forEach(cat=>{
+    const s=localStorage.getItem('jlpt_n1_results_'+cat.key);
+    data['jlpt_n1_results_'+cat.key]=s?JSON.parse(s):{};
   });
-  const json = JSON.stringify({ version:1, ts: new Date().toISOString(), data }, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'manabi_n1_backup_' + new Date().toISOString().slice(0, 10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  const json=JSON.stringify({version:1,ts:new Date().toISOString(),data},null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url;
+  a.download='manabi_n1_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
 }
-
 function loadBackup(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
+  const file=event.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
     try {
-      const obj = JSON.parse(e.target.result);
-      if (!obj.data) throw new Error('invalid');
-      Object.keys(obj.data).forEach(key => {
-        localStorage.setItem(key, JSON.stringify(obj.data[key]));
-      });
-      alert('✅ 記録を読み込みました！');
-      buildCatList();
-      buildRadarChart();
-    } catch {
-      alert('❌ ファイルの読み込みに失敗しました。正しいバックアップファイルを選んでください。');
-    }
+      const obj=JSON.parse(e.target.result); if(!obj.data) throw new Error();
+      Object.keys(obj.data).forEach(key=>localStorage.setItem(key,JSON.stringify(obj.data[key])));
+      alert('✅ 記録を読み込みました！'); buildCatList(); buildRadarChart();
+    } catch { alert('❌ 読み込みに失敗しました。'); }
   };
-  reader.readAsText(file);
-  event.target.value = '';
+  reader.readAsText(file); event.target.value='';
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    初期化
-══════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  applySettings();
-  loadCSV();
-});
+══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{ applySettings(); loadCSV(); });
 </script>
 </body>
 </html>
