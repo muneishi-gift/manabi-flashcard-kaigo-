@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JLPT N1 対策｜学びアプリ｜一般社団法人GIFT協会</title>
+  <meta name="description" content="JLPT N1の読解・語彙・文法を徹底対策。">
+  <link rel="icon" href="../../gift-icon.png">
+  <link rel="apple-touch-icon" href="../../gift-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    /* ─── 設定の即時適用（フラッシュ防止） ─── */
+    (function(){
+      const theme    = localStorage.getItem('gift_theme')    || 'dark';
+      const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+      const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-fontsize', fontsize);
+      document.documentElement.setAttribute('data-ruby', ruby);
+    })();
+  </script>
+
+  <style>
+    /* ═══════════════════════════════════════
+       CSS変数（ダーク／ライト切替）
+    ═══════════════════════════════════════ */
+    :root { --font-scale: 1; }
+    html[data-fontsize="normal"] { --font-scale: 1; }
+    html[data-fontsize="large"]  { --font-scale: 1.125; }
+    html[data-fontsize="xlarge"] { --font-scale: 1.25; }
+
+    /* ── ダークモード ── */
+    html[data-theme="dark"] {
+      --bg-start:#0e0d1a; --bg-mid:#1a1830; --bg-end:#0e0d1a;
+      --surface:rgba(255,255,255,0.05);
+      --border:rgba(255,255,255,0.10);
+      --text-primary:#f0ece0; --text-secondary:rgba(240,236,224,0.65); --text-muted:rgba(240,236,224,0.40);
+      --accent:#c9973a; --accent-glow:rgba(201,151,58,0.25);
+      --panel-bg:rgba(20,18,35,0.85); --panel-border:rgba(201,151,58,0.30);
+      --btn-inactive:rgba(255,255,255,0.07); --btn-inactive-text:rgba(240,236,224,0.55);
+      --btn-active-bg:linear-gradient(135deg,#b8863a,#c9973a); --btn-active-text:#fff;
+      --divider-color:rgba(201,151,58,0.50);
+      --tag-bg:rgba(255,255,255,0.10); --tag-text:rgba(240,236,224,0.75);
+      --card-active:linear-gradient(135deg,rgba(130,90,20,0.60),rgba(100,65,10,0.45));
+      --card-active-border:rgba(200,155,50,0.40);
+      --card-disabled:linear-gradient(135deg,rgba(50,50,70,0.50),rgba(35,35,55,0.35));
+      --card-disabled-border:rgba(120,120,150,0.20);
+      --back-btn-bg:rgba(255,255,255,0.07); --back-btn-border:rgba(255,255,255,0.15);
+      --badge-master-bg:linear-gradient(90deg,#c9973a,#f0d080);
+      --progress-bg:rgba(255,255,255,0.08);
+      --progress-fill:linear-gradient(90deg,#b8863a,#c9973a);
+    }
+
+    /* ── ライトモード ── */
+    html[data-theme="light"] {
+      --bg-start:#f2ede4; --bg-mid:#ede6d8; --bg-end:#e8dfd0;
+      --surface:rgba(255,255,255,0.60);
+      --border:rgba(150,120,70,0.18);
+      --text-primary:#3a2e1e; --text-secondary:rgba(58,46,30,0.72); --text-muted:rgba(58,46,30,0.45);
+      --accent:#9a6c1e; --accent-glow:rgba(154,108,30,0.20);
+      --panel-bg:rgba(245,240,230,0.92); --panel-border:rgba(154,108,30,0.30);
+      --btn-inactive:rgba(180,150,100,0.15); --btn-inactive-text:rgba(58,46,30,0.55);
+      --btn-active-bg:linear-gradient(135deg,#9a6c1e,#b8863a); --btn-active-text:#fff;
+      --divider-color:rgba(154,108,30,0.45);
+      --tag-bg:rgba(154,108,30,0.12); --tag-text:rgba(58,46,30,0.80);
+      --card-active:linear-gradient(135deg,rgba(240,220,170,0.75),rgba(230,205,145,0.60));
+      --card-active-border:rgba(180,140,40,0.35);
+      --card-disabled:linear-gradient(135deg,rgba(210,210,220,0.60),rgba(195,195,210,0.45));
+      --card-disabled-border:rgba(140,140,160,0.25);
+      --back-btn-bg:rgba(150,120,70,0.12); --back-btn-border:rgba(150,120,70,0.25);
+      --badge-master-bg:linear-gradient(90deg,#9a6c1e,#c9973a);
+      --progress-bg:rgba(150,120,70,0.12);
+      --progress-fill:linear-gradient(90deg,#9a6c1e,#b8863a);
+    }
+
+    /* ═══════════════════════════════════════
+       ベースリセット
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: calc(16px * var(--font-scale));
+      background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      transition: background 0.4s, color 0.4s;
+      padding-bottom: 60px;
+    }
+
+    /* ふりがな制御 */
+    html[data-ruby="off"] ruby rt { display: none; }
+
+    /* ═══════════════════════════════════════
+       ヘッダー
+    ═══════════════════════════════════════ */
+    .site-header {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 20px 16px; gap: 4px;
+    }
+    .header-logo-row { display: flex; align-items: center; gap: 10px; }
+    .header-logo-row img.logo { width: 36px; height: 36px; object-fit: contain; }
+    .header-title {
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(1.1rem * var(--font-scale));
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .header-sub {
+      font-size: calc(0.65rem * var(--font-scale));
+      color: var(--text-muted); letter-spacing: .08em; text-align: center;
+    }
+
+    /* ═══════════════════════════════════════
+       設定パネル
+    ═══════════════════════════════════════ */
+    .settings-panel {
+      width: calc(100% - 32px); max-width: 560px; margin: 0 auto 20px;
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: 18px; padding: 10px 16px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .settings-panel::-webkit-scrollbar { display: none; }
+    .sp-group { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sp-label { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+    .sp-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+
+    /* ふりがなスイッチ */
+    .ruby-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+    .ruby-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .ruby-track {
+      width: 44px; height: 24px; background: var(--btn-inactive);
+      border: 1.5px solid var(--border); border-radius: 12px; position: relative;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .ruby-thumb {
+      position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+      background: var(--btn-inactive-text); border-radius: 50%;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .ruby-switch input:checked ~ .ruby-track { background: linear-gradient(135deg,#b8863a,#c9973a); border-color: var(--accent); }
+    .ruby-switch input:checked ~ .ruby-track .ruby-thumb { transform: translateX(20px); background: #fff; }
+
+    .sp-btn-group { display: flex; gap: 4px; flex-shrink: 0; }
+    .sp-btn {
+      padding: 4px 9px; border-radius: 9px; border: 1.5px solid transparent;
+      background: var(--btn-inactive); color: var(--btn-inactive-text);
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(0.68rem * var(--font-scale)); font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+    }
+    .sp-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); border-color: var(--accent); box-shadow: 0 2px 8px var(--accent-glow); }
+
+    /* ═══════════════════════════════════════
+       メインコンテンツ
+    ═══════════════════════════════════════ */
+    .main-section {
+      width: calc(100% - 32px);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ── ページタイトル ── */
+    .page-title-block {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-top: 8px;
+    }
+    .page-title-en {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(0.68rem * var(--font-scale));
+      font-weight: 700; letter-spacing: .25em;
+      color: var(--accent); opacity: .7; margin-bottom: 6px;
+    }
+    .page-title-level {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2.5rem, 10vw, calc(3.5rem * var(--font-scale)));
+      font-weight: 800; line-height: 1;
+      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 4px;
+    }
+    .page-title-ruby {
+      font-size: calc(0.60rem * var(--font-scale));
+      color: var(--accent); opacity: .65;
+      letter-spacing: .12em; margin-bottom: 2px; line-height: 1;
+    }
+    .page-title-ja {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: calc(0.88rem * var(--font-scale));
+      font-weight: 700; color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    /* ── セクション見出し ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 0 0 16px;
+    }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--divider-color), transparent); }
+    .divider-ornament { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
+    .divider-stars { color: var(--accent); font-size: .60rem; letter-spacing: .18em; opacity: .7; }
+    .divider-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(0.60rem * var(--font-scale));
+      font-style: italic; font-weight: 700; color: var(--accent);
+      letter-spacing: .18em; white-space: nowrap;
+    }
+    .divider-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: .6; }
+
+    /* ═══════════════════════════════════════
+       科目カード
+    ═══════════════════════════════════════ */
+    .subject-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+
+    /* 共通カードベース */
+    .subject-card {
+      display: flex; align-items: center; gap: 16px;
+      border-radius: 22px; padding: 20px;
+      text-decoration: none; color: var(--text-primary);
+      border: 1px solid transparent;
+      position: relative; overflow: hidden;
+      transition: transform .25s, box-shadow .25s;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .subject-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+
+    /* 読解カード（アクティブ・ゴールド） */
+    .subject-card-active {
+      background: var(--card-active);
+      border-color: var(--card-active-border);
+    }
+
+    /* 語彙・文法カード（準備中・グレー） */
+    .subject-card-soon {
+      background: var(--card-disabled);
+      border-color: var(--card-disabled-border);
+      opacity: 0.55; cursor: not-allowed; pointer-events: none;
+    }
+
+    /* 聴解カード（非対応・さらに薄く） */
+    .subject-card-na {
+      background: var(--card-disabled);
+      border-color: var(--card-disabled-border);
+      opacity: 0.40; cursor: not-allowed; pointer-events: none;
+    }
+
+    /* バッジ */
+    .card-badge {
+      position: absolute; top: 12px; right: 12px;
+      font-size: .55rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px; letter-spacing: .05em;
+    }
+    .badge-new  { background: linear-gradient(90deg,#f59e0b,#ef4444); color: #fff; }
+    .badge-soon { background: rgba(150,150,170,0.35); color: rgba(255,255,255,0.50); border: 1px solid rgba(255,255,255,0.12); }
+    .badge-na   { background: rgba(100,100,120,0.30); color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.08); }
+
+    /* アイコン枠 */
+    .card-icon {
+      width: 58px; height: 58px; border-radius: 16px;
+      background: rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; flex-shrink: 0;
+    }
+
+    /* カード本文 */
+    .card-body { flex: 1; min-width: 0; }
+    .card-title {
+      font-size: calc(1.05rem * var(--font-scale));
+      font-weight: 800; margin-bottom: 4px;
+    }
+    .card-title-gold {
+      background: linear-gradient(90deg, var(--accent), #f0d080);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .card-desc {
+      font-size: calc(0.72rem * var(--font-scale));
+      color: var(--text-secondary); line-height: 1.55; margin-bottom: 10px;
+    }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag {
+      background: var(--tag-bg); color: var(--tag-text);
+      font-size: calc(0.62rem * var(--font-scale));
+      padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    }
+    .tag-muted {
+      background: rgba(150,150,170,0.15); color: rgba(200,200,220,0.40);
+      font-size: calc(0.62rem * var(--font-scale));
+      padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    }
+    .card-arrow { font-size: 1.2rem; color: var(--text-muted); flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════
+       読解カード内の進捗エリア
+    ═══════════════════════════════════════ */
+    .progress-area {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .progress-row {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 6px;
+    }
+    .progress-label {
+      font-size: calc(0.62rem * var(--font-scale));
+      color: var(--text-muted);
+    }
+    .progress-value {
+      font-size: calc(0.62rem * var(--font-scale));
+      color: var(--accent); font-weight: 700;
+    }
+    .progress-bar {
+      width: 100%; height: 5px;
+      background: var(--progress-bg);
+      border-radius: 10px; overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--progress-fill);
+      border-radius: 10px;
+      transition: width 0.6s ease;
+    }
+
+    /* カテゴリ別ミニバッジ */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .category-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 5px 10px;
+    }
+    .category-name {
+      font-size: calc(0.60rem * var(--font-scale));
+      color: var(--text-secondary);
+    }
+    .category-rate {
+      font-size: calc(0.60rem * var(--font-scale));
+      font-weight: 700;
+    }
+    /* 正答率に応じた色分け */
+    .rate-high   { color: #4ade80; }  /* 70%以上: 緑 */
+    .rate-mid    { color: #facc15; }  /* 40-69%: 黄 */
+    .rate-low    { color: #f87171; }  /* 39%以下: 赤 */
+    .rate-none   { color: var(--text-muted); } /* 未挑戦 */
+
+    /* 制覇バッジ */
+    .master-badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: var(--badge-master-bg);
+      color: #fff; font-size: .55rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px;
+    }
+
+    /* ═══════════════════════════════════════
+       戻るボタン
+    ═══════════════════════════════════════ */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin: 28px 0 0; padding: 10px 18px;
+      background: var(--back-btn-bg); border: 1px solid var(--back-btn-border);
+      border-radius: 12px; color: var(--text-secondary);
+      font-size: calc(0.78rem * var(--font-scale)); font-weight: 600;
+      text-decoration: none; transition: opacity .2s;
+    }
+    .back-btn:hover { opacity: .70; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══ ヘッダー ═══ -->
+  <header class="site-header">
+    <div class="header-logo-row">
+      <img src="../../gift-logo.png" alt="GIFT協会ロゴ" class="logo">
+      <div class="header-title">Manabi App</div>
+    </div>
+    <div class="header-sub">一般社団法人 GIFT 協会</div>
+  </header>
+
+  <!-- ═══ 設定パネル ═══ -->
+  <div class="settings-panel" role="toolbar" aria-label="表示設定">
+    <div class="sp-group">
+      <span class="sp-label">ふりがな</span>
+      <label class="ruby-switch">
+        <input type="checkbox" id="ruby-toggle" checked>
+        <div class="ruby-track"><div class="ruby-thumb"></div></div>
+      </label>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-group">
+      <span class="sp-label">文字</span>
+      <div class="sp-btn-group">
+        <button class="sp-btn" data-size="normal" onclick="setFontSize('normal')">S</button>
+        <button class="sp-btn" data-size="large"  onclick="setFontSize('large')">M</button>
+        <button class="sp-btn" data-size="xlarge" onclick="setFontSize('xlarge')">L</button>
+      </div>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-group">
+      <span class="sp-label">テーマ</span>
+      <div class="sp-btn-group">
+        <button class="sp-btn" data-theme="dark"  onclick="setTheme('dark')">🌙</button>
+        <button class="sp-btn" data-theme="light" onclick="setTheme('light')">☀️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ メインコンテンツ ═══ -->
+  <div class="main-section">
+
+    <!-- ページタイトル -->
+    <div class="page-title-block">
+      <div class="page-title-en">JLPT N1</div>
+      <div class="page-title-level">N1</div>
+      <div class="page-title-ruby">にほんごのうりょくしけん　えぬわん</div>
+      <div class="page-title-ja">科目を選んでスタート</div>
+    </div>
+
+    <!-- セクション見出し -->
+    <div class="section-divider">
+      <div class="divider-line"></div>
+      <div class="divider-ornament">
+        <div class="divider-stars">✦ ✦ ✦</div>
+        <div class="divider-text">Subject Select</div>
+        <div class="divider-dot"></div>
+      </div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- 科目カードリスト -->
+    <ul class="subject-list">
+
+      <!-- ① 読解カード（アクティブ） -->
+      <li>
+        <a href="./dokkai.html" class="subject-card subject-card-active">
+          <div class="card-badge badge-new">START</div>
+          <div class="card-icon">📖</div>
+          <div class="card-body">
+            <div class="card-title card-title-gold">
+              <ruby>読解<rt>どっかい</rt></ruby>
+            </div>
+            <div class="card-desc">
+              6カテゴリ・147<ruby>問<rt>もん</rt></ruby>の<ruby>練習問題<rt>れんしゅうもんだい</rt></ruby>で
+              <ruby>読解力<rt>どっかいりょく</rt></ruby>を<ruby>鍛<rt>きた</rt></ruby>えよう。
+              <ruby>本文<rt>ほんぶん</rt></ruby>・<ruby>設問<rt>せつもん</rt></ruby>・<ruby>解説<rt>かいせつ</rt></ruby>つき。
+            </div>
+            <div class="card-tags">
+              <span class="tag"><ruby>短文<rt>たんぶん</rt></ruby> 50<ruby>問<rt>もん</rt></ruby></span>
+              <span class="tag"><ruby>中文<rt>ちゅうぶん</rt></ruby> 27<ruby>問<rt>もん</rt></ruby></span>
+              <span class="tag"><ruby>長文<rt>ちょうぶん</rt></ruby> 20<ruby>問<rt>もん</rt></ruby></span>
+              <span class="tag"><ruby>統合<rt>とうごう</rt></ruby> 18<ruby>問<rt>もん</rt></ruby></span>
+              <span class="tag"><ruby>主張<rt>しゅちょう</rt></ruby> 20<ruby>問<rt>もん</rt></ruby></span>
+              <span class="tag"><ruby>情報検索<rt>じょうほうけんさく</rt></ruby> 12<ruby>問<rt>もん</rt></ruby></span>
+            </div>
+
+            <!-- 学習進捗エリア（localStorage から動的生成） -->
+            <div class="progress-area">
+              <div class="progress-row">
+                <span class="progress-label" id="progress-label-total">
+                  <ruby>挑戦済<rt>ちょうせんずみ</rt></ruby>
+                </span>
+                <span class="progress-value" id="progress-value-total">0 / 147問</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill-total" style="width:0%"></div>
+              </div>
+
+              <!-- カテゴリ別正答率グリッド -->
+              <div class="category-grid" id="category-grid">
+                <!-- JavaScript で動的生成 -->
+              </div>
+            </div>
+
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+      </li>
+
+      <!-- ② 語彙・文法カード（準備中） -->
+      <li>
+        <div class="subject-card subject-card-soon">
+          <div class="card-badge badge-soon">準備中</div>
+          <div class="card-icon">📝</div>
+          <div class="card-body">
+            <div class="card-title" style="color:rgba(200,200,220,0.45);">
+              <ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>
+            </div>
+            <div class="card-desc" style="color:rgba(200,200,220,0.35);">
+              <ruby>漢字<rt>かんじ</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>の
+              フラッシュカードと<ruby>練習問題<rt>れんしゅうもんだい</rt></ruby>。
+              Google Sheets から<ruby>自動更新<rt>じどうこうしん</rt></ruby>。
+            </div>
+            <div class="card-tags">
+              <span class="tag-muted">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- ③ 聴解カード（非対応） -->
+      <li>
+        <div class="subject-card subject-card-na">
+          <div class="card-badge badge-na">非対応</div>
+          <div class="card-icon">🔇</div>
+          <div class="card-body">
+            <div class="card-title" style="color:rgba(200,200,220,0.30);">
+              <ruby>聴解<rt>ちょうかい</rt></ruby>
+            </div>
+            <div class="card-desc" style="color:rgba(200,200,220,0.25);">
+              <ruby>現在<rt>げんざい</rt></ruby>このアプリでは<ruby>聴解<rt>ちょうかい</rt></ruby>には
+              <ruby>対応<rt>たいおう</rt></ruby>していません。
+              公式の<ruby>過去問<rt>かこもん</rt></ruby>などをご<ruby>活用<rt>かつよう</rt></ruby>ください。
+            </div>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+
+    <!-- 戻るボタン -->
+    <a href="../index.html" class="back-btn">← N1 / N2 選択にもどる</a>
+
+  </div>
+
+  <!-- ═══ JavaScript ═══ -->
+  <script>
+    /* ══════════════════════════════════════
+       設定パネル
+    ══════════════════════════════════════ */
+    function applySettings() {
+      const theme    = localStorage.getItem('gift_theme')    || 'dark';
+      const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+      const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-fontsize', fontsize);
+      document.documentElement.setAttribute('data-ruby', ruby);
+      document.querySelectorAll('.sp-btn[data-size]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.size === fontsize);
+      });
+      document.querySelectorAll('.sp-btn[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+      });
+      const rubyToggle = document.getElementById('ruby-toggle');
+      if (rubyToggle) rubyToggle.checked = (ruby === 'on');
+    }
+
+    document.getElementById('ruby-toggle').addEventListener('change', function() {
+      const val = this.checked ? 'on' : 'off';
+      localStorage.setItem('gift_ruby', val);
+      document.documentElement.setAttribute('data-ruby', val);
+    });
+
+    function setFontSize(size) {
+      localStorage.setItem('gift_fontsize', size);
+      document.documentElement.setAttribute('data-fontsize', size);
+      document.querySelectorAll('.sp-btn[data-size]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.size === size);
+      });
+    }
+
+    function setTheme(theme) {
+      localStorage.setItem('gift_theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      document.querySelectorAll('.sp-btn[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+      });
+    }
+
+    applySettings();
+
+    /* ══════════════════════════════════════
+       カテゴリ定義
+       ※ key は dokkai.html の localStorage キーと一致させる
+    ══════════════════════════════════════ */
+    const CATEGORIES = [
+      { key: 'tanbun',   label: '短文',    total: 50 },
+      { key: 'chubun',   label: '中文',    total: 27 },
+      { key: 'chobun',   label: '長文',    total: 20 },
+      { key: 'togo',     label: '統合理解', total: 18 },
+      { key: 'shucho',   label: '主張理解', total: 20 },
+      { key: 'joho',     label: '情報検索', total: 12 },
+    ];
+    const TOTAL_QUESTIONS = 147;
+
+    /* ══════════════════════════════════════
+       学習記録を localStorage から読み込んで表示
+    ══════════════════════════════════════ */
+    function loadProgress() {
+      let totalAttempted = 0;
+
+      const grid = document.getElementById('category-grid');
+      grid.innerHTML = '';
+
+      CATEGORIES.forEach(cat => {
+        /* localStorage キー例: jlpt_n1_results_tanbun */
+        const raw = localStorage.getItem('jlpt_n1_results_' + cat.key);
+        const results = raw ? JSON.parse(raw) : {};
+
+        /* 挑戦済み問題数と正答数を集計 */
+        const attempted = Object.keys(results).length;
+        const correct   = Object.values(results).filter(r => r.correct).length;
+        const rate      = attempted > 0 ? Math.round((correct / attempted) * 100) : -1;
+
+        totalAttempted += attempted;
+
+        /* 全問挑戦済みなら制覇バッジ */
+        const mastered = attempted >= cat.total;
+
+        /* 正答率ラベルと色クラス */
+        let rateText  = '未挑戦';
+        let rateClass = 'rate-none';
+        if (rate >= 70)      { rateText = rate + '%'; rateClass = 'rate-high'; }
+        else if (rate >= 40) { rateText = rate + '%'; rateClass = 'rate-mid';  }
+        else if (rate >= 0)  { rateText = rate + '%'; rateClass = 'rate-low';  }
+
+        /* カテゴリミニアイテムを生成 */
+        const item = document.createElement('div');
+        item.className = 'category-item';
+        item.innerHTML = `
+          <span class="category-name">
+            ${cat.label}
+            ${mastered ? '<span class="master-badge">👑 制覇</span>' : ''}
+          </span>
+          <span class="category-rate ${rateClass}">${rateText}</span>
+        `;
+        grid.appendChild(item);
+      });
+
+      /* 全体進捗バー更新 */
+      const pct = Math.round((totalAttempted / TOTAL_QUESTIONS) * 100);
+      document.getElementById('progress-value-total').textContent =
+        totalAttempted + ' / 147問';
+      document.getElementById('progress-fill-total').style.width = pct + '%';
+    }
+
+    /* ページ表示時に進捗を反映 */
+    loadProgress();
+  </script>
+
+</body>
+</html>
