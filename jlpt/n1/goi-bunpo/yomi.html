@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>漢字の読み｜語彙｜JLPT N1｜学びアプリ｜一般社団法人GIFT協会</title>
+  <meta name="description" content="JLPT N1 漢字の読み練習。4択問題・タイマー・復習機能つき。">
+  <link rel="icon" href="../../../gift-icon.png">
+  <link rel="apple-touch-icon" href="../../../gift-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    /* ─── 設定の即時適用（フラッシュ防止） ─── */
+    (function(){
+      const theme    = localStorage.getItem('gift_theme')    || 'dark';
+      const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+      const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-fontsize', fontsize);
+      document.documentElement.setAttribute('data-ruby', ruby);
+    })();
+  </script>
+
+  <style>
+    /* ═══ CSS変数（ダーク／ライト） ═══ */
+    :root { --font-scale: 1; }
+    html[data-fontsize="normal"] { --font-scale: 1; }
+    html[data-fontsize="large"]  { --font-scale: 1.125; }
+    html[data-fontsize="xlarge"] { --font-scale: 1.25; }
+
+    html[data-theme="dark"] {
+      --bg-start:#0e0d1a; --bg-mid:#1a1830; --bg-end:#0e0d1a;
+      --surface:rgba(255,255,255,0.05);
+      --border:rgba(255,255,255,0.10);
+      --text-primary:#f0ece0; --text-secondary:rgba(240,236,224,0.65); --text-muted:rgba(240,236,224,0.40);
+      --accent:#c9973a; --accent-glow:rgba(201,151,58,0.25);
+      --panel-bg:rgba(20,18,35,0.85); --panel-border:rgba(201,151,58,0.30);
+      --btn-inactive:rgba(255,255,255,0.07); --btn-inactive-text:rgba(240,236,224,0.55);
+      --btn-active-bg:linear-gradient(135deg,#b8863a,#c9973a); --btn-active-text:#fff;
+      --divider-color:rgba(201,151,58,0.50);
+      --card-bg:rgba(255,255,255,0.04); --card-border:rgba(255,255,255,0.09);
+      --correct-bg:rgba(34,197,94,0.18); --correct-border:rgba(34,197,94,0.60); --correct-text:#4ade80;
+      --wrong-bg:rgba(239,68,68,0.18);   --wrong-border:rgba(239,68,68,0.60);   --wrong-text:#f87171;
+      --choice-bg:rgba(255,255,255,0.06); --choice-border:rgba(255,255,255,0.12);
+      --choice-hover:rgba(201,151,58,0.15); --choice-hover-border:rgba(201,151,58,0.40);
+      --sure-bg:linear-gradient(135deg,rgba(34,197,94,0.25),rgba(21,128,61,0.20));
+      --sure-border:rgba(34,197,94,0.50);
+      --maybe-bg:linear-gradient(135deg,rgba(251,191,36,0.25),rgba(180,130,20,0.20));
+      --maybe-border:rgba(251,191,36,0.50);
+      --guess-bg:linear-gradient(135deg,rgba(239,68,68,0.25),rgba(185,28,28,0.20));
+      --guess-border:rgba(239,68,68,0.50);
+      --calendar-active:#c9973a; --calendar-bg:rgba(255,255,255,0.05);
+      --summary-bg:rgba(20,18,35,0.90);
+      --tag-bg:rgba(255,255,255,0.10); --tag-text:rgba(240,236,224,0.75);
+      --back-btn-bg:rgba(255,255,255,0.07); --back-btn-border:rgba(255,255,255,0.15);
+      --progress-bg:rgba(255,255,255,0.08);
+      --progress-fill:linear-gradient(90deg,#b8863a,#c9973a);
+    }
+
+    html[data-theme="light"] {
+      --bg-start:#f2ede4; --bg-mid:#ede6d8; --bg-end:#e8dfd0;
+      --surface:rgba(255,255,255,0.60);
+      --border:rgba(150,120,70,0.18);
+      --text-primary:#3a2e1e; --text-secondary:rgba(58,46,30,0.72); --text-muted:rgba(58,46,30,0.45);
+      --accent:#9a6c1e; --accent-glow:rgba(154,108,30,0.20);
+      --panel-bg:rgba(245,240,230,0.92); --panel-border:rgba(154,108,30,0.30);
+      --btn-inactive:rgba(180,150,100,0.15); --btn-inactive-text:rgba(58,46,30,0.55);
+      --btn-active-bg:linear-gradient(135deg,#9a6c1e,#b8863a); --btn-active-text:#fff;
+      --divider-color:rgba(154,108,30,0.45);
+      --card-bg:rgba(255,255,255,0.55); --card-border:rgba(150,120,70,0.15);
+      --correct-bg:rgba(34,197,94,0.15); --correct-border:rgba(34,197,94,0.50); --correct-text:#16a34a;
+      --wrong-bg:rgba(239,68,68,0.12);   --wrong-border:rgba(239,68,68,0.50);   --wrong-text:#dc2626;
+      --choice-bg:rgba(255,255,255,0.70); --choice-border:rgba(150,120,70,0.20);
+      --choice-hover:rgba(154,108,30,0.10); --choice-hover-border:rgba(154,108,30,0.40);
+      --sure-bg:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(21,128,61,0.10));
+      --sure-border:rgba(34,197,94,0.45);
+      --maybe-bg:linear-gradient(135deg,rgba(251,191,36,0.18),rgba(180,130,20,0.12));
+      --maybe-border:rgba(251,191,36,0.45);
+      --guess-bg:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(185,28,28,0.10));
+      --guess-border:rgba(239,68,68,0.45);
+      --calendar-active:#9a6c1e; --calendar-bg:rgba(150,120,70,0.08);
+      --summary-bg:rgba(245,240,230,0.95);
+      --tag-bg:rgba(154,108,30,0.12); --tag-text:rgba(58,46,30,0.80);
+      --back-btn-bg:rgba(150,120,70,0.12); --back-btn-border:rgba(150,120,70,0.25);
+      --progress-bg:rgba(150,120,70,0.12);
+      --progress-fill:linear-gradient(90deg,#9a6c1e,#b8863a);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: calc(16px * var(--font-scale));
+      background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+      min-height: 100vh; color: var(--text-primary);
+      transition: background 0.4s, color 0.4s;
+      padding-bottom: 60px;
+    }
+
+    html[data-ruby="off"] ruby rt { display: none; }
+
+    /* ═══ ヘッダー ═══ */
+    .site-header {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 20px 16px; gap: 4px;
+    }
+    .header-logo-row { display: flex; align-items: center; gap: 10px; }
+    .header-logo-row img.logo { width: 36px; height: 36px; object-fit: contain; }
+    .header-title {
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(1.1rem * var(--font-scale)); font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #f0d080, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .header-sub { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); letter-spacing: .08em; }
+
+    /* ═══ 設定パネル ═══ */
+    .settings-panel {
+      width: calc(100% - 32px); max-width: 560px; margin: 0 auto 20px;
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: 18px; padding: 10px 16px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .settings-panel::-webkit-scrollbar { display: none; }
+    .sp-group { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sp-label { font-size: calc(0.65rem * var(--font-scale)); color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+    .sp-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+    .ruby-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+    .ruby-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .ruby-track {
+      width: 44px; height: 24px; background: var(--btn-inactive);
+      border: 1.5px solid var(--border); border-radius: 12px; position: relative;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .ruby-thumb {
+      position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+      background: var(--btn-inactive-text); border-radius: 50%;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .ruby-switch input:checked ~ .ruby-track { background: linear-gradient(135deg,#b8863a,#c9973a); border-color: var(--accent); }
+    .ruby-switch input:checked ~ .ruby-track .ruby-thumb { transform: translateX(20px); background: #fff; }
+    .sp-btn-group { display: flex; gap: 4px; flex-shrink: 0; }
+    .sp-btn {
+      padding: 4px 9px; border-radius: 9px; border: 1.5px solid transparent;
+      background: var(--btn-inactive); color: var(--btn-inactive-text);
+      font-family: 'Poppins','Noto Sans JP',sans-serif;
+      font-size: calc(0.68rem * var(--font-scale)); font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+    }
+    .sp-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); border-color: var(--accent); box-shadow: 0 2px 8px var(--accent-glow); }
+
+    /* ═══ メインラッパー ═══ */
+    .main-wrap { width: calc(100% - 32px); max-width: 560px; margin: 0 auto; }
+
+    /* ═══ 画面切替（screen） ═══ */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ═══ トップ画面 ═══ */
+    .top-title-block { text-align: center; margin-bottom: 24px; padding-top: 8px; }
+    .top-title-en {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(0.68rem * var(--font-scale));
+      font-weight: 700; letter-spacing: .25em; color: var(--accent); opacity: .7; margin-bottom: 6px;
+    }
+    .top-title-emoji { font-size: 2.2rem; line-height: 1; margin-bottom: 6px; }
+    .top-title-ruby {
+      font-size: calc(0.60rem * var(--font-scale));
+      color: var(--accent); opacity: .65; letter-spacing: .12em; margin-bottom: 2px;
+    }
+    .top-title-ja {
+      font-size: calc(0.95rem * var(--font-scale));
+      font-weight: 700; color: var(--text-secondary); margin-bottom: 10px;
+    }
+
+    /* ─── 統計バー（トップ画面） ─── */
+    .stats-bar {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 16px 20px; margin-bottom: 20px;
+      display: flex; gap: 0; align-items: stretch;
+    }
+    .stat-col { flex: 1; text-align: center; padding: 0 8px; }
+    .stat-col + .stat-col { border-left: 1px solid var(--border); }
+    .stat-val { font-size: calc(1.5rem * var(--font-scale)); font-weight: 900; color: var(--accent); line-height: 1; }
+    .stat-lbl { font-size: calc(0.60rem * var(--font-scale)); color: var(--text-muted); margin-top: 4px; white-space: nowrap; }
+
+    /* ─── 学習ログカレンダー ─── */
+    .calendar-block {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .calendar-header { font-size: calc(0.72rem * var(--font-scale)); font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; }
+    .calendar-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+    .cal-cell {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--calendar-bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .55rem; color: var(--text-muted); cursor: default;
+    }
+    .cal-cell.done { background: var(--calendar-active); border-color: var(--calendar-active); color: #fff; font-weight: 700; }
+    .cal-cell.today { box-shadow: 0 0 0 2px var(--accent); }
+
+    /* ─── モード選択ボタン ─── */
+    .mode-btns { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .mode-btn {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 20px; border-radius: 20px; border: 1.5px solid var(--card-border);
+      background: var(--card-bg); color: var(--text-primary);
+      font-family: 'Noto Sans JP', sans-serif; font-size: calc(0.90rem * var(--font-scale));
+      font-weight: 700; cursor: pointer; text-align: left;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+      backdrop-filter: blur(10px);
+    }
+    .mode-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.20); border-color: var(--accent); }
+    .mode-btn-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .mode-btn-body { flex: 1; }
+    .mode-btn-title { font-size: calc(0.95rem * var(--font-scale)); font-weight: 800; margin-bottom: 3px; }
+    .mode-btn-desc  { font-size: calc(0.70rem * var(--font-scale)); color: var(--text-muted); font-weight: 400; }
+    .mode-btn-badge {
+      background: var(--tag-bg); color: var(--tag-text);
+      font-size: calc(0.62rem * var(--font-scale)); font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; flex-shrink: 0;
+    }
+    .mode-btn.review-mode { border-color: rgba(201,151,58,0.35); }
+    .mode-btn.review-mode .mode-btn-title { color: var(--accent); }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 18px; background: var(--back-btn-bg); border: 1px solid var(--back-btn-border);
+      border-radius: 12px; color: var(--text-secondary);
+      font-size: calc(0.78rem * var(--font-scale)); font-weight: 600;
+      text-decoration: none; cursor: pointer; transition: opacity .2s;
+      background-color: transparent;
+    }
+    .back-btn:hover { opacity: .70; }
+
+    /* ═══ 目標宣言画面 ═══ */
+    .goal-title { text-align: center; margin-bottom: 24px; }
+    .goal-title-main { font-size: calc(1.1rem * var(--font-scale)); font-weight: 800; margin-bottom: 6px; }
+    .goal-title-sub  { font-size: calc(0.75rem * var(--font-scale)); color: var(--text-muted); }
+
+    .goal-btns { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .goal-btn {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px; border-radius: 20px; border: 1.5px solid var(--card-border);
+      background: var(--card-bg); color: var(--text-primary);
+      font-family: 'Noto Sans JP', sans-serif; cursor: pointer; text-align: left;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+      backdrop-filter: blur(10px);
+    }
+    .goal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.20); border-color: var(--accent); }
+    .goal-btn-emoji { font-size: 2rem; flex-shrink: 0; }
+    .goal-btn-body  { flex: 1; }
+    .goal-btn-count { font-size: calc(1.3rem * var(--font-scale)); font-weight: 900; color: var(--accent); line-height: 1; }
+    .goal-btn-voice { font-size: calc(0.75rem * var(--font-scale)); color: var(--text-secondary); margin-top: 3px; }
+
+    /* ═══ 問題画面 ═══ */
+    .q-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .q-progress-text { font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); }
+    .q-timer {
+      font-family: 'Poppins', sans-serif;
+      font-size: calc(1.0rem * var(--font-scale)); font-weight: 700; color: var(--accent);
+    }
+    .q-timer.warn { color: #ef4444; }
+
+    .q-progress-bar {
+      height: 4px; background: var(--progress-bg); border-radius: 2px; margin-bottom: 20px; overflow: hidden;
+    }
+    .q-progress-fill {
+      height: 100%; background: var(--progress-fill); border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .q-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 22px; padding: 24px 20px; margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .q-meta { font-size: calc(0.62rem * var(--font-scale)); color: var(--text-muted); margin-bottom: 10px; }
+    .q-sentence {
+      font-size: calc(1.05rem * var(--font-scale)); font-weight: 500; line-height: 1.85;
+      margin-bottom: 8px;
+    }
+    .q-target {
+      font-weight: 900; font-size: calc(1.15rem * var(--font-scale));
+      color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 1px;
+    }
+    .q-ask {
+      font-size: calc(0.75rem * var(--font-scale)); color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .choice-btn {
+      display: flex; align-items: center; gap: 12px;
+      padding: 15px 18px; border-radius: 16px;
+      border: 1.5px solid var(--choice-border); background: var(--choice-bg);
+      color: var(--text-primary); font-family: 'Noto Sans JP',sans-serif;
+      font-size: calc(0.90rem * var(--font-scale)); font-weight: 500;
+      cursor: pointer; text-align: left; transition: all .2s;
+    }
+    .choice-btn:hover:not(:disabled) { background: var(--choice-hover); border-color: var(--choice-hover-border); transform: translateX(3px); }
+    .choice-btn:disabled { cursor: default; }
+    .choice-num {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-size: calc(0.72rem * var(--font-scale)); font-weight: 700;
+    }
+    .choice-btn.correct-ans { background: var(--correct-bg); border-color: var(--correct-border); }
+    .choice-btn.correct-ans .choice-num { background: var(--correct-border); color: #fff; border-color: transparent; }
+    .choice-btn.wrong-ans { background: var(--wrong-bg); border-color: var(--wrong-border); }
+    .choice-btn.wrong-ans .choice-num { background: var(--wrong-border); color: #fff; border-color: transparent; }
+
+    /* ═══ 結果画面 ═══ */
+    .result-circle {
+      width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .result-circle.correct { background: var(--correct-bg); border: 3px solid var(--correct-border); }
+    .result-circle.wrong   { background: var(--wrong-bg);   border: 3px solid var(--wrong-border); }
+
+    .result-label {
+      text-align: center; font-size: calc(1.3rem * var(--font-scale)); font-weight: 900; margin-bottom: 4px;
+    }
+    .result-label.correct { color: var(--correct-text); }
+    .result-label.wrong   { color: var(--wrong-text); }
+
+    .result-time {
+      text-align: center; font-size: calc(0.78rem * var(--font-scale));
+      color: var(--text-muted); margin-bottom: 16px;
+    }
+    .speed-badge {
+      display: inline-block; font-size: calc(0.68rem * var(--font-scale));
+      font-weight: 700; padding: 2px 10px; border-radius: 20px;
+      background: var(--tag-bg); color: var(--accent); margin-left: 6px;
+    }
+
+    /* ─── 手ごたえ選択 ─── */
+    .confidence-block { margin-bottom: 20px; }
+    .confidence-label {
+      text-align: center; font-size: calc(0.72rem * var(--font-scale));
+      color: var(--text-muted); margin-bottom: 10px;
+    }
+    .confidence-btns { display: flex; gap: 10px; justify-content: center; }
+    .conf-btn {
+      flex: 1; max-width: 140px; padding: 14px 10px; border-radius: 16px;
+      border: 1.5px solid var(--card-border); background: var(--card-bg);
+      color: var(--text-primary); font-family: 'Noto Sans JP', sans-serif;
+      font-size: calc(0.80rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; text-align: center; transition: all .2s;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .conf-btn .conf-icon { font-size: 1.4rem; }
+    .conf-btn:hover { transform: translateY(-2px); }
+    .conf-btn.sel-sure  { background: var(--sure-bg);  border-color: var(--sure-border); }
+    .conf-btn.sel-maybe { background: var(--maybe-bg); border-color: var(--maybe-border); }
+    .conf-btn.sel-guess { background: var(--guess-bg); border-color: var(--guess-border); }
+
+    /* ─── 問題文確認アコーディオン ─── */
+    .accordion {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; margin-bottom: 16px; overflow: hidden;
+    }
+    .accordion-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; cursor: pointer; user-select: none;
+      font-size: calc(0.78rem * var(--font-scale)); font-weight: 700; color: var(--accent);
+    }
+    .accordion-arrow { transition: transform .3s; font-size: .9rem; }
+    .accordion.open .accordion-arrow { transform: rotate(180deg); }
+    .accordion-body { display: none; padding: 0 18px 16px; }
+    .accordion.open .accordion-body { display: block; }
+
+    .review-sentence {
+      font-size: calc(0.90rem * var(--font-scale)); line-height: 1.85;
+      margin-bottom: 14px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .review-choices { display: flex; flex-direction: column; gap: 8px; }
+    .review-choice {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; border-radius: 12px;
+      border: 1.5px solid var(--choice-border); background: var(--choice-bg);
+      font-size: calc(0.82rem * var(--font-scale));
+    }
+    .review-choice.rc-correct { background: var(--correct-bg); border-color: var(--correct-border); }
+    .review-choice.rc-wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border); }
+    .rc-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: calc(0.65rem * var(--font-scale)); font-weight: 700;
+    }
+    .review-choice.rc-correct .rc-num { background: var(--correct-border); color: #fff; border: none; }
+    .review-choice.rc-wrong   .rc-num { background: var(--wrong-border);   color: #fff; border: none; }
+    .rc-label { font-size: calc(0.60rem * var(--font-scale)); font-weight: 700; margin-left: auto; flex-shrink: 0; }
+    .rc-correct-label { color: var(--correct-text); }
+    .rc-wrong-label   { color: var(--wrong-text); }
+    .rc-you-label     { color: var(--accent); }
+
+    /* ─── 解説ブロック ─── */
+    .explain-block {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 16px 18px; margin-bottom: 16px;
+    }
+    .explain-header { font-size: calc(0.72rem * var(--font-scale)); font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .explain-text { font-size: calc(0.82rem * var(--font-scale)); line-height: 1.75; color: var(--text-secondary); }
+    .confusion-word {
+      display: inline-block; margin-top: 8px; padding: 3px 12px;
+      background: rgba(201,151,58,0.15); border: 1px solid var(--accent);
+      border-radius: 20px; font-size: calc(0.70rem * var(--font-scale));
+      color: var(--accent); font-weight: 700;
+    }
+
+    /* ─── 結果画面ナビボタン ─── */
+    .result-nav { display: flex; gap: 10px; margin-top: 4px; }
+    .nav-btn {
+      flex: 1; padding: 16px; border-radius: 16px; border: 1.5px solid transparent;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: calc(0.85rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .nav-btn-primary {
+      background: linear-gradient(135deg, var(--accent), #f0d080);
+      color: #1a1000; border-color: var(--accent);
+    }
+    .nav-btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+    .nav-btn-secondary {
+      background: var(--card-bg); color: var(--text-secondary);
+      border-color: var(--card-border);
+    }
+    .nav-btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ═══ サマリー画面 ═══ */
+    .summary-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 22px; padding: 28px 22px; margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .summary-title { font-size: calc(1.1rem * var(--font-scale)); font-weight: 900; text-align: center; margin-bottom: 20px; }
+    .summary-stats { display: flex; gap: 0; margin-bottom: 20px; }
+    .summary-stat { flex: 1; text-align: center; padding: 0 6px; }
+    .summary-stat + .summary-stat { border-left: 1px solid var(--border); }
+    .summary-stat-val { font-size: calc(1.6rem * var(--font-scale)); font-weight: 900; color: var(--accent); }
+    .summary-stat-lbl { font-size: calc(0.60rem * var(--font-scale)); color: var(--text-muted); margin-top: 3px; }
+
+    .summary-breakdown {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; justify-content: center;
+    }
+    .breakdown-tag {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: calc(0.70rem * var(--font-scale)); font-weight: 700;
+    }
+    .bt-sure  { background: var(--sure-bg);  border: 1px solid var(--sure-border);  color: #4ade80; }
+    .bt-maybe { background: var(--maybe-bg); border: 1px solid var(--maybe-border); color: #fbbf24; }
+    .bt-guess { background: var(--guess-bg); border: 1px solid var(--guess-border); color: #f87171; }
+    .bt-review { background: rgba(201,151,58,0.15); border: 1px solid var(--accent); color: var(--accent); }
+
+    .summary-calendar-note {
+      text-align: center; font-size: calc(0.70rem * var(--font-scale));
+      color: var(--text-muted); margin-bottom: 16px;
+    }
+    .summary-btns { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ─── コンボアニメーション ─── */
+    .combo-popup {
+      position: fixed; top: 30%; left: 50%; transform: translate(-50%,-50%);
+      background: linear-gradient(135deg,#b8863a,#c9973a); color: #1a1000;
+      font-family: 'Poppins',sans-serif; font-size: 1.4rem; font-weight: 900;
+      padding: 12px 28px; border-radius: 40px; box-shadow: 0 8px 32px rgba(201,151,58,0.5);
+      pointer-events: none; opacity: 0; z-index: 9999;
+      transition: opacity .3s;
+    }
+    .combo-popup.show { opacity: 1; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══ ヘッダー ═══ -->
+  <header class="site-header">
+    <div class="header-logo-row">
+      <img src="../../../gift-logo.png" alt="GIFT協会ロゴ" class="logo">
+      <div class="header-title">Manabi App</div>
+    </div>
+    <div class="header-sub">一般社団法人 GIFT 協会</div>
+  </header>
+
+  <!-- ═══ 設定パネル ═══ -->
+  <div class="settings-panel" role="toolbar" aria-label="表示設定">
+    <div class="sp-group">
+      <span class="sp-label">ふりがな</span>
+      <label class="ruby-switch">
+        <input type="checkbox" id="ruby-toggle" checked>
+        <div class="ruby-track"><div class="ruby-thumb"></div></div>
+      </label>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-group">
+      <span class="sp-label">文字</span>
+      <div class="sp-btn-group">
+        <button class="sp-btn" data-size="normal" onclick="setFontSize('normal')">S</button>
+        <button class="sp-btn" data-size="large"  onclick="setFontSize('large')">M</button>
+        <button class="sp-btn" data-size="xlarge" onclick="setFontSize('xlarge')">L</button>
+      </div>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-group">
+      <span class="sp-label">テーマ</span>
+      <div class="sp-btn-group">
+        <button class="sp-btn" data-theme="dark"  onclick="setTheme('dark')">🌙</button>
+        <button class="sp-btn" data-theme="light" onclick="setTheme('light')">☀️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ コンボポップアップ ═══ -->
+  <div class="combo-popup" id="combo-popup"></div>
+
+  <!-- ═══ メインラッパー ═══ -->
+  <div class="main-wrap">
+
+    <!-- ────────────────────────────
+         画面①：トップ（モード選択）
+    ──────────────────────────────── -->
+    <div class="screen active" id="screen-top">
+
+      <div class="top-title-block">
+        <div class="top-title-en">JLPT N1 / 語彙</div>
+        <div class="top-title-emoji">📖</div>
+        <div class="top-title-ruby">かんじのよみ</div>
+        <div class="top-title-ja"><ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み</div>
+      </div>
+
+      <!-- 統計バー -->
+      <div class="stats-bar">
+        <div class="stat-col">
+          <div class="stat-val" id="top-total">0</div>
+          <div class="stat-lbl">これまでに解いた問題</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-val" id="top-rate">0%</div>
+          <div class="stat-lbl">正答率</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-val" id="top-review">0</div>
+          <div class="stat-lbl">復習キュー</div>
+        </div>
+      </div>
+
+      <!-- 学習ログカレンダー -->
+      <div class="calendar-block">
+        <div class="calendar-header">📅 今月の学習ログ</div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+      </div>
+
+      <!-- モード選択 -->
+      <div class="mode-btns">
+        <button class="mode-btn" onclick="goToGoal()">
+          <span class="mode-btn-icon">🎯</span>
+          <span class="mode-btn-body">
+            <div class="mode-btn-title">通常モード</div>
+            <div class="mode-btn-desc">問題数を選んでスタート</div>
+          </span>
+          <span class="mode-btn-badge" id="normal-count">0問</span>
+        </button>
+        <button class="mode-btn review-mode" onclick="startReviewMode()">
+          <span class="mode-btn-icon">🔁</span>
+          <span class="mode-btn-body">
+            <div class="mode-btn-title">復習モード</div>
+            <div class="mode-btn-desc">自信なし・間違えた問題をやり直す</div>
+          </span>
+          <span class="mode-btn-badge" id="review-count">0問</span>
+        </button>
+      </div>
+
+      <a href="./index.html" class="back-btn">← 語彙・文法選択にもどる</a>
+    </div>
+
+    <!-- ────────────────────────────
+         画面②：目標宣言
+    ──────────────────────────────── -->
+    <div class="screen" id="screen-goal">
+      <div class="goal-title">
+        <div class="goal-title-main">今日は何問やる？🔥</div>
+        <div class="goal-title-sub">目標を宣言してからスタート！</div>
+      </div>
+      <div class="goal-btns">
+        <button class="goal-btn" onclick="startNormal(5)">
+          <span class="goal-btn-emoji">⚡</span>
+          <span class="goal-btn-body">
+            <div class="goal-btn-count">5問</div>
+            <div class="goal-btn-voice">スキマ時間に5問だけ！</div>
+          </span>
+        </button>
+        <button class="goal-btn" onclick="startNormal(10)">
+          <span class="goal-btn-emoji">🎯</span>
+          <span class="goal-btn-body">
+            <div class="goal-btn-count">10問</div>
+            <div class="goal-btn-voice">達成感を感じたい10問！</div>
+          </span>
+        </button>
+        <button class="goal-btn" onclick="startNormal(20)">
+          <span class="goal-btn-emoji">📚</span>
+          <span class="goal-btn-body">
+            <div class="goal-btn-count">20問</div>
+            <div class="goal-btn-voice">しっかりやりたい日の20問！</div>
+          </span>
+        </button>
+        <button class="goal-btn" onclick="startNormal(9999)">
+          <span class="goal-btn-emoji">🔥</span>
+          <span class="goal-btn-body">
+            <div class="goal-btn-count">トコトン</div>
+            <div class="goal-btn-voice">今日はやる気MAX！制限なしでいく！</div>
+          </span>
+        </button>
+      </div>
+      <button class="back-btn" onclick="showScreen('screen-top')">← もどる</button>
+    </div>
+
+    <!-- ────────────────────────────
+         画面③：問題
+    ──────────────────────────────── -->
+    <div class="screen" id="screen-question">
+      <div class="q-header">
+        <div class="q-progress-text" id="q-progress-text">1 / 10</div>
+        <div class="q-timer" id="q-timer">0:00</div>
+      </div>
+      <div class="q-progress-bar">
+        <div class="q-progress-fill" id="q-progress-fill" style="width:0%"></div>
+      </div>
+      <div class="q-card">
+        <div class="q-meta" id="q-meta"></div>
+        <div class="q-sentence" id="q-sentence"></div>
+        <div class="q-ask">上の<ruby>太字<rt>ふとじ</rt></ruby>の<ruby>語<rt>ご</rt></ruby>の<ruby>読<rt>よ</rt></ruby>みを<ruby>選<rt>えら</rt></ruby>んでください。</div>
+      </div>
+      <div class="choices" id="choices"></div>
+    </div>
+
+    <!-- ────────────────────────────
+         画面④：結果（1問ごと）
+    ──────────────────────────────── -->
+    <div class="screen" id="screen-result">
+      <div id="result-circle" class="result-circle correct" style="margin-top:12px;">⭕</div>
+      <div id="result-label" class="result-label correct">正解！</div>
+      <div id="result-time" class="result-time"></div>
+
+      <!-- 手ごたえ選択 -->
+      <div class="confidence-block" id="confidence-block">
+        <div class="confidence-label">この問題の手ごたえは？</div>
+        <div class="confidence-btns">
+          <button class="conf-btn" id="conf-sure"  onclick="setConfidence('sure')">
+            <span class="conf-icon">◎</span>
+            <span><ruby>自信<rt>じしん</rt></ruby>あり</span>
+          </button>
+          <button class="conf-btn" id="conf-maybe" onclick="setConfidence('maybe')">
+            <span class="conf-icon">△</span>
+            <span>たぶん</span>
+          </button>
+          <button class="conf-btn" id="conf-guess" onclick="setConfidence('guess')">
+            <span class="conf-icon">？</span>
+            <span>勘</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 問題文確認アコーディオン -->
+      <div class="accordion" id="review-accordion">
+        <div class="accordion-header" onclick="toggleAccordion()">
+          <span>🔍 問題文・選択肢をふりかえる</span>
+          <span class="accordion-arrow">▲</span>
+        </div>
+        <div class="accordion-body">
+          <div class="review-sentence" id="review-sentence"></div>
+          <div class="review-choices" id="review-choices"></div>
+        </div>
+      </div>
+
+      <!-- 解説 -->
+      <div class="explain-block">
+        <div class="explain-header">📘 解説</div>
+        <div class="explain-text" id="explain-text"></div>
+        <div id="confusion-area"></div>
+      </div>
+
+      <!-- ナビボタン -->
+      <div class="result-nav" id="result-nav"></div>
+    </div>
+
+    <!-- ────────────────────────────
+         画面⑤：セッションサマリー
+    ──────────────────────────────── -->
+    <div class="screen" id="screen-summary">
+      <div class="summary-card">
+        <div class="summary-title">📊 今日のセッション結果</div>
+        <div class="summary-stats">
+          <div class="summary-stat">
+            <div class="summary-stat-val" id="sum-count">0</div>
+            <div class="summary-stat-lbl">解いた問題数</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-val" id="sum-rate">0%</div>
+            <div class="summary-stat-lbl">正答率</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-val" id="sum-avg">0秒</div>
+            <div class="summary-stat-lbl">平均タイム</div>
+          </div>
+        </div>
+        <div class="summary-breakdown" id="sum-breakdown"></div>
+        <div class="summary-calendar-note" id="sum-calendar-note"></div>
+      </div>
+      <div class="summary-btns">
+        <button class="nav-btn nav-btn-primary" onclick="showScreen('screen-top')">
+          🏠 トップにもどる
+        </button>
+        <button class="nav-btn nav-btn-secondary" onclick="goToGoal()">
+          🔄 もう一セッションやる
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /.main-wrap -->
+
+  <!-- ═══ JavaScript ═══ */
+  <script>
+  /* ══════════════════════════════════════
+     定数・設定
+  ══════════════════════════════════════ */
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbcM_6pc1O2tz8BbsGr6L8Oc73OxSpHR3U6dSCXBvlofPncHbXS7Wf7BbT7Dbm4vNg2lxVWwSex15T/pub?gid=0&single=true&output=csv';
+
+  /* CSV列インデックス */
+  const COL = { id:0, set:1, num:2, sentence:3, target:4, correct_reading:5, c1:6, c2:7, c3:8, c4:9, correct_num:10, type:11, wrong_type:12, level:13, explain:14, confusion:15 };
+
+  /* localStorage キー */
+  const KEY_RESULTS  = 'jlpt_n1_yomi_results';
+  const KEY_LOG      = 'jlpt_n1_yomi_log';
+  const KEY_TOTAL    = 'jlpt_n1_yomi_total';
+
+  /* タイマー基準（難易度別・秒） */
+  const BASE_TIME = { A: 20, B: 25, C: 35 };
+
+  /* ══════════════════════════════════════
+     セッション変数
+  ══════════════════════════════════════ */
+  let allQuestions  = [];   /* 全問データ */
+  let sessionQueue  = [];   /* 今回出題リスト */
+  let sessionIdx    = 0;    /* 現在の問題インデックス */
+  let sessionGoal   = 10;   /* 目標問題数 */
+  let isReviewMode  = false;
+
+  let currentQ      = null; /* 現在の問題オブジェクト */
+  let timerInterval = null;
+  let startTime     = 0;
+  let elapsedSec    = 0;
+
+  let sessionCorrect = 0;
+  let sessionTimes   = [];
+  let sessionConf    = { sure:0, maybe:0, guess:0 };
+  let comboCount     = 0;
+
+  let confidenceChosen = null; /* 手ごたえ選択値 */
+
+  /* ══════════════════════════════════════
+     設定パネル
+  ══════════════════════════════════════ */
+  function applySettings() {
+    const theme    = localStorage.getItem('gift_theme')    || 'dark';
+    const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
+    const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-fontsize', fontsize);
+    document.documentElement.setAttribute('data-ruby', ruby);
+    document.querySelectorAll('.sp-btn[data-size]').forEach(b => b.classList.toggle('active', b.dataset.size === fontsize));
+    document.querySelectorAll('.sp-btn[data-theme]').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+    const rt = document.getElementById('ruby-toggle');
+    if (rt) rt.checked = (ruby === 'on');
+  }
+  document.getElementById('ruby-toggle').addEventListener('change', function() {
+    const v = this.checked ? 'on' : 'off';
+    localStorage.setItem('gift_ruby', v);
+    document.documentElement.setAttribute('data-ruby', v);
+  });
+  function setFontSize(s) {
+    localStorage.setItem('gift_fontsize', s);
+    document.documentElement.setAttribute('data-fontsize', s);
+    document.querySelectorAll('.sp-btn[data-size]').forEach(b => b.classList.toggle('active', b.dataset.size === s));
+  }
+  function setTheme(t) {
+    localStorage.setItem('gift_theme', t);
+    document.documentElement.setAttribute('data-theme', t);
+    document.querySelectorAll('.sp-btn[data-theme]').forEach(b => b.classList.toggle('active', b.dataset.theme === t));
+  }
+  applySettings();
+
+  /* ══════════════════════════════════════
+     CSV読み込み
+  ══════════════════════════════════════ */
+  function parseCSV(text) {
+    /* BOM除去 */
+    text = text.replace(/^\uFEFF/, '');
+    const rows = [];
+    let cur = '', inQ = false;
+    const cells = [];
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cells.push(cur); cur = ''; }
+      else if ((ch === '\n' || ch === '\r') && !inQ) {
+        cells.push(cur); cur = '';
+        if (cells.some(c => c.trim())) rows.push([...cells]);
+        cells.length = 0;
+        if (ch === '\r' && text[i+1] === '\n') i++;
+      } else { cur += ch; }
+    }
+    if (cur || cells.length) { cells.push(cur); if (cells.some(c => c.trim())) rows.push(cells); }
+    return rows;
+  }
+
+  async function loadCSV() {
+    try {
+      const res  = await fetch(CSV_URL);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      /* 1行目はヘッダーなのでスキップ */
+      allQuestions = rows.slice(1).filter(r => r[COL.id] && r[COL.id].trim()).map(r => ({
+        id:        r[COL.id]?.trim()   || '',
+        sentence:  r[COL.sentence]?.trim() || '',
+        target:    r[COL.target]?.trim()   || '',
+        answer:    r[COL.correct_reading]?.trim() || '',
+        choices: [
+          r[COL.c1]?.trim() || '',
+          r[COL.c2]?.trim() || '',
+          r[COL.c3]?.trim() || '',
+          r[COL.c4]?.trim() || '',
+        ],
+        correctNum: parseInt(r[COL.correct_num]?.trim()) || 1,
+        type:      r[COL.type]?.trim()    || '',
+        level:     r[COL.level]?.trim()   || 'B',
+        explain:   r[COL.explain]?.trim() || '',
+        confusion: r[COL.confusion]?.trim() || '',
+      }));
+      initTopScreen();
+    } catch(e) {
+      console.error('CSV読み込みエラー:', e);
+    }
+  }
+
+  /* ══════════════════════════════════════
+     画面切替
+  ══════════════════════════════════════ */
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  /* ══════════════════════════════════════
+     トップ画面の初期化
+  ══════════════════════════════════════ */
+  function initTopScreen() {
+    const results = getResults();
+    const keys    = Object.keys(results);
+    const total   = keys.length;
+    const correct = keys.filter(k => results[k].correct).length;
+    const rate    = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const review  = keys.filter(k => !(results[k].correct && results[k].confidence === 'sure')).length;
+
+    document.getElementById('top-total').textContent  = total;
+    document.getElementById('top-rate').textContent   = rate + '%';
+    document.getElementById('top-review').textContent = review;
+    document.getElementById('normal-count').textContent = allQuestions.length + '問';
+    document.getElementById('review-count').textContent = review + '問';
+
+    buildCalendar();
+  }
+
+  /* ══════════════════════════════════════
+     カレンダー生成（今月）
+  ══════════════════════════════════════ */
+  function buildCalendar() {
+    const grid  = document.getElementById('calendar-grid');
+    const log   = getLog();
+    const now   = new Date();
+    const year  = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate();
+    const days  = new Date(year, month + 1, 0).getDate();
+
+    grid.innerHTML = '';
+    for (let d = 1; d <= days; d++) {
+      const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      cell.textContent = d;
+      if (log[dateKey]) cell.classList.add('done');
+      if (d === today)  cell.classList.add('today');
+      grid.appendChild(cell);
+    }
+  }
+
+  /* ══════════════════════════════════════
+     通常モード開始
+  ══════════════════════════════════════ */
+  function goToGoal() {
+    showScreen('screen-goal');
+  }
+
+  function startNormal(count) {
+    isReviewMode = false;
+    sessionGoal  = count;
+    /* シャッフルして指定問数を取り出す */
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+    sessionQueue   = count >= 9999 ? shuffled : shuffled.slice(0, count);
+    startSession();
+  }
+
+  /* ══════════════════════════════════════
+     復習モード開始
+  ══════════════════════════════════════ */
+  function startReviewMode() {
+    isReviewMode = true;
+    const results = getResults();
+    /* 復習対象：自信あり＋正解以外 */
+    const reviewIds = Object.keys(results).filter(k => !(results[k].correct && results[k].confidence === 'sure'));
+    const reviewQs  = allQuestions.filter(q => reviewIds.includes(q.id));
+
+    if (reviewQs.length === 0) {
+      alert('復習する問題がありません！\nまず通常モードで問題を解いてみよう。');
+      return;
+    }
+    sessionQueue = [...reviewQs].sort(() => Math.random() - 0.5);
+    startSession();
+  }
+
+  /* ══════════════════════════════════════
+     セッション開始
+  ══════════════════════════════════════ */
+  function startSession() {
+    sessionIdx     = 0;
+    sessionCorrect = 0;
+    sessionTimes   = [];
+    sessionConf    = { sure:0, maybe:0, guess:0 };
+    comboCount     = 0;
+    showNextQuestion();
+  }
+
+  /* ══════════════════════════════════════
+     次の問題へ
+  ══════════════════════════════════════ */
+  function showNextQuestion() {
+    if (sessionIdx >= sessionQueue.length) {
+      showSummary();
+      return;
+    }
+    currentQ = sessionQueue[sessionIdx];
+    confidenceChosen = null;
+
+    /* 進捗表示 */
+    const total = sessionQueue.length;
+    document.getElementById('q-progress-text').textContent = `${sessionIdx + 1} / ${total}`;
+    document.getElementById('q-progress-fill').style.width  = `${(sessionIdx / total) * 100}%`;
+
+    /* 問題文生成（対象語を太字・アクセント色に） */
+    const escaped = currentQ.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const highlighted = currentQ.sentence.replace(
+      new RegExp(`【${escaped}】`),
+      `<span class="q-target">【${currentQ.target}】</span>`
+    ).replace(
+      new RegExp(`（${escaped}）`),
+      `<span class="q-target">（${currentQ.target}）</span>`
+    );
+    /* 【語】形式と普通の語形式両対応 */
+    document.getElementById('q-sentence').innerHTML =
+      highlighted !== currentQ.sentence
+        ? highlighted
+        : currentQ.sentence.replace(
+            new RegExp(escaped),
+            `<span class="q-target">${currentQ.target}</span>`
+          );
+
+    /* メタ情報 */
+    document.getElementById('q-meta').textContent =
+      `難易度: ${currentQ.level}　読み種別: ${currentQ.type}`;
+
+    /* 選択肢生成 */
+    const choicesEl = document.getElementById('choices');
+    choicesEl.innerHTML = '';
+    currentQ.choices.forEach((ch, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<span class="choice-num">${i+1}</span>${ch}`;
+      btn.onclick = () => selectChoice(i + 1, btn);
+      choicesEl.appendChild(btn);
+    });
+
+    /* タイマー開始 */
+    startTimer(currentQ.level);
+
+    showScreen('screen-question');
+  }
+
+  /* ══════════════════════════════════════
+     タイマー
+  ══════════════════════════════════════ */
+  function startTimer(level) {
+    clearInterval(timerInterval);
+    startTime = Date.now();
+    elapsedSec = 0;
+    const timerEl = document.getElementById('q-timer');
+    timerEl.classList.remove('warn');
+    const base = BASE_TIME[level] || 25;
+
+    timerInterval = setInterval(() => {
+      elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+      const m = Math.floor(elapsedSec / 60);
+      const s = elapsedSec % 60;
+      timerEl.textContent = `${m}:${String(s).padStart(2,'0')}`;
+      if (elapsedSec >= base * 1.5) timerEl.classList.add('warn');
+    }, 200);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+  }
+
+  /* ══════════════════════════════════════
+     選択肢タップ
+  ══════════════════════════════════════ */
+  function selectChoice(chosen, btnEl) {
+    stopTimer();
+
+    /* 全ボタン無効化 */
+    document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+    const isCorrect = (chosen === currentQ.correctNum);
+
+    /* 正誤ハイライト */
+    document.querySelectorAll('.choice-btn').forEach((b, i) => {
+      if (i + 1 === currentQ.correctNum) b.classList.add('correct-ans');
+      if (i + 1 === chosen && !isCorrect) b.classList.add('wrong-ans');
+    });
+
+    /* コンボカウント */
+    if (isCorrect) {
+      comboCount++;
+      sessionCorrect++;
+      if (comboCount >= 3) showCombo(comboCount);
+    } else {
+      comboCount = 0;
+    }
+
+    sessionTimes.push(elapsedSec);
+
+    /* 結果画面に遷移 */
+    setTimeout(() => showResult(isCorrect, chosen), 500);
+  }
+
+  /* ══════════════════════════════════════
+     コンボ表示
+  ══════════════════════════════════════ */
+  function showCombo(n) {
+    const el = document.getElementById('combo-popup');
+    el.textContent = `🔥 ${n}問連続正解！`;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 1800);
+  }
+
+  /* ══════════════════════════════════════
+     結果画面表示
+  ══════════════════════════════════════ */
+  function showResult(isCorrect, chosen) {
+    /* 正誤サークル */
+    const circle = document.getElementById('result-circle');
+    const label  = document.getElementById('result-label');
+    circle.className = 'result-circle ' + (isCorrect ? 'correct' : 'wrong');
+    circle.textContent = isCorrect ? '⭕' : '❌';
+    label.className = 'result-label ' + (isCorrect ? 'correct' : 'wrong');
+    label.textContent = isCorrect ? '正解！' : '不正解';
+
+    /* タイム＋スピードバッジ */
+    const base  = BASE_TIME[currentQ.level] || 25;
+    let badge = '';
+    if (elapsedSec <= base * 0.6)   badge = '<span class="speed-badge">⚡ はやい！</span>';
+    else if (elapsedSec <= base * 1.2) badge = '<span class="speed-badge">✅ 標準</span>';
+    else                              badge = '<span class="speed-badge">🐢 じっくり</span>';
+    document.getElementById('result-time').innerHTML =
+      `所要時間: ${elapsedSec}秒 ${badge}`;
+
+    /* 手ごたえリセット */
+    confidenceChosen = null;
+    ['conf-sure','conf-maybe','conf-guess'].forEach(id => {
+      document.getElementById(id).classList.remove('sel-sure','sel-maybe','sel-guess');
+    });
+
+    /* 問題文確認アコーディオン */
+    document.getElementById('review-sentence').innerHTML = currentQ.sentence.replace(
+      new RegExp(`【${currentQ.target}】`),
+      `<strong style="color:var(--accent)">【${currentQ.target}】</strong>`
+    );
+    const rcArea = document.getElementById('review-choices');
+    rcArea.innerHTML = '';
+    currentQ.choices.forEach((ch, i) => {
+      const num = i + 1;
+      const isAns = (num === currentQ.correctNum);
+      const isMe  = (num === chosen);
+      const div   = document.createElement('div');
+      div.className = 'review-choice' +
+        (isAns ? ' rc-correct' : '') +
+        (!isAns && isMe ? ' rc-wrong' : '');
+      let labels = '';
+      if (isAns) labels += '<span class="rc-label rc-correct-label">✅ 正解</span>';
+      if (isMe && !isAns) labels += '<span class="rc-label rc-wrong-label">❌ あなたの答え</span>';
+      if (isMe && isAns)  labels += '<span class="rc-label rc-you-label">✔ あなたの答え</span>';
+      div.innerHTML = `<span class="rc-num">${num}</span>${ch}${labels}`;
+      rcArea.appendChild(div);
+    });
+    /* アコーディオンを閉じた状態でリセット */
+    const acc = document.getElementById('review-accordion');
+    acc.classList.remove('open');
+
+    /* 解説 */
+    document.getElementById('explain-text').textContent = currentQ.explain;
+    const confArea = document.getElementById('confusion-area');
+    confArea.innerHTML = currentQ.confusion
+      ? `<span class="confusion-word">⚠️ 混同注意：${currentQ.confusion}</span>`
+      : '';
+
+    /* ナビボタン */
+    const nav = document.getElementById('result-nav');
+    nav.innerHTML = '';
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'nav-btn nav-btn-primary';
+    nextBtn.textContent = sessionIdx + 1 < sessionQueue.length ? '次の問題へ →' : '結果を見る';
+    nextBtn.onclick = () => {
+      saveResult(isCorrect);
+      sessionIdx++;
+      showNextQuestion();
+    };
+    const stopBtn = document.createElement('button');
+    stopBtn.className = 'nav-btn nav-btn-secondary';
+    stopBtn.textContent = '今日はここまで';
+    stopBtn.onclick = () => {
+      saveResult(isCorrect);
+      sessionIdx++;
+      showSummary();
+    };
+    nav.appendChild(nextBtn);
+    nav.appendChild(stopBtn);
+
+    showScreen('screen-result');
+  }
+
+  /* ══════════════════════════════════════
+     アコーディオン開閉
+  ══════════════════════════════════════ */
+  function toggleAccordion() {
+    document.getElementById('review-accordion').classList.toggle('open');
+  }
+
+  /* ══════════════════════════════════════
+     手ごたえ選択
+  ══════════════════════════════════════ */
+  function setConfidence(val) {
+    confidenceChosen = val;
+    document.getElementById('conf-sure').classList.remove('sel-sure');
+    document.getElementById('conf-maybe').classList.remove('sel-maybe');
+    document.getElementById('conf-guess').classList.remove('sel-guess');
+    if (val === 'sure')  document.getElementById('conf-sure').classList.add('sel-sure');
+    if (val === 'maybe') document.getElementById('conf-maybe').classList.add('sel-maybe');
+    if (val === 'guess') document.getElementById('conf-guess').classList.add('sel-guess');
+    sessionConf[val]++;
+  }
+
+  /* ══════════════════════════════════════
+     結果保存
+  ══════════════════════════════════════ */
+  function saveResult(isCorrect) {
+    const results = getResults();
+    results[currentQ.id] = {
+      correct:    isCorrect,
+      confidence: confidenceChosen || 'guess', /* 未選択は「勘」扱い */
+      sec:        elapsedSec,
+      ts:         new Date().toISOString(),
+    };
+    localStorage.setItem(KEY_RESULTS, JSON.stringify(results));
+
+    /* 学習ログ（今日の日付） */
+    const log     = getLog();
+    const dateKey = todayKey();
+    log[dateKey]  = (log[dateKey] || 0) + 1;
+    localStorage.setItem(KEY_LOG, JSON.stringify(log));
+
+    /* 総問数 */
+    const prev = parseInt(localStorage.getItem(KEY_TOTAL) || '0');
+    localStorage.setItem(KEY_TOTAL, prev + 1);
+  }
+
+  /* ══════════════════════════════════════
+     サマリー表示
+  ══════════════════════════════════════ */
+  function showSummary() {
+    const count   = sessionIdx;
+    const rate    = count > 0 ? Math.round((sessionCorrect / count) * 100) : 0;
+    const avgTime = sessionTimes.length > 0
+      ? Math.round(sessionTimes.reduce((a,b) => a+b, 0) / sessionTimes.length)
+      : 0;
+
+    document.getElementById('sum-count').textContent = count + '問';
+    document.getElementById('sum-rate').textContent  = rate + '%';
+    document.getElementById('sum-avg').textContent   = avgTime + '秒';
+
+    /* 手ごたえ内訳 */
+    const results = getResults();
+    const reviewCount = Object.keys(results).filter(k =>
+      !(results[k].correct && results[k].confidence === 'sure')
+    ).length;
+
+    document.getElementById('sum-breakdown').innerHTML = `
+      <span class="breakdown-tag bt-sure">◎ 自信あり: ${sessionConf.sure}問</span>
+      <span class="breakdown-tag bt-maybe">△ たぶん: ${sessionConf.maybe}問</span>
+      <span class="breakdown-tag bt-guess">？ 勘: ${sessionConf.guess}問</span>
+      <span class="breakdown-tag bt-review">🔁 復習キュー: ${reviewCount}問</span>
+    `;
+
+    /* カレンダーメモ */
+    document.getElementById('sum-calendar-note').textContent =
+      `📅 今日の学習記録をカレンダーに保存しました`;
+
+    showScreen('screen-summary');
+  }
+
+  /* ══════════════════════════════════════
+     ユーティリティ
+  ══════════════════════════════════════ */
+  function getResults() {
+    try { return JSON.parse(localStorage.getItem(KEY_RESULTS) || '{}'); } catch { return {}; }
+  }
+  function getLog() {
+    try { return JSON.parse(localStorage.getItem(KEY_LOG) || '{}'); } catch { return {}; }
+  }
+  function todayKey() {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+  }
+
+  /* ══════════════════════════════════════
+     起動
+  ══════════════════════════════════════ */
+  loadCSV();
+  </script>
+
+</body>
+</html>
