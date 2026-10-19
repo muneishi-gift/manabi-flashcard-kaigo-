@@ -56,6 +56,8 @@
       --back-btn-bg:rgba(255,255,255,0.07); --back-btn-border:rgba(255,255,255,0.15);
       --progress-bg:rgba(255,255,255,0.08);
       --progress-fill:linear-gradient(90deg,#b8863a,#c9973a);
+      --mode-learn-bg:linear-gradient(135deg,#b8863a,#c9973a);
+      --mode-review-bg:linear-gradient(135deg,#3a7bd5,#4a90e2);
     }
 
     html[data-theme="light"] {
@@ -85,6 +87,8 @@
       --back-btn-bg:rgba(150,120,70,0.12); --back-btn-border:rgba(150,120,70,0.25);
       --progress-bg:rgba(150,120,70,0.12);
       --progress-fill:linear-gradient(90deg,#9a6c1e,#b8863a);
+      --mode-learn-bg:linear-gradient(135deg,#9a6c1e,#b8863a);
+      --mode-review-bg:linear-gradient(135deg,#2a5aa0,#3a7bd5);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -175,6 +179,76 @@
       font-weight: 700; color: var(--text-secondary); margin-bottom: 10px;
     }
 
+    /* ─── モード切替バナー ─── */
+    .mode-switch-section {
+      margin-bottom: 20px;
+    }
+    .mode-switch-label {
+      text-align: center; font-size: calc(0.72rem * var(--font-scale));
+      color: var(--text-muted); margin-bottom: 10px; font-weight: 700; letter-spacing: .05em;
+    }
+    .mode-switch-btns {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .mode-btn {
+      padding: 16px 12px; border-radius: 18px; border: 2px solid transparent;
+      text-align: center; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+    }
+    .mode-btn.learn {
+      background: var(--mode-learn-bg);
+      color: #fff; box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .mode-btn.review {
+      background: var(--card-bg);
+      border-color: #3a7bd5; color: #4a90e2;
+    }
+    .mode-btn.review.has-items {
+      background: var(--mode-review-bg); color: #fff;
+      box-shadow: 0 4px 16px rgba(58,123,213,0.30);
+      border-color: transparent;
+    }
+    .mode-btn.review.no-items {
+      opacity: 0.5; cursor: not-allowed;
+    }
+    .mode-btn .mb-emoji { font-size: 1.8rem; margin-bottom: 6px; }
+    .mode-btn .mb-title {
+      font-weight: 800; font-size: calc(0.95rem * var(--font-scale)); margin-bottom: 4px;
+    }
+    .mode-btn .mb-sub {
+      font-size: calc(0.62rem * var(--font-scale)); opacity: 0.85; line-height: 1.4;
+    }
+    .mode-btn .mb-count {
+      display: inline-block; margin-top: 6px; padding: 2px 10px; border-radius: 20px;
+      background: rgba(255,255,255,0.25); font-size: calc(0.65rem * var(--font-scale));
+      font-weight: 700;
+    }
+
+    /* ─── 続きから案内 ─── */
+    .resume-banner {
+      background: var(--card-bg); border: 1.5px solid var(--accent);
+      border-radius: 16px; padding: 14px 18px; margin-bottom: 16px;
+      display: none; /* JSで表示制御 */
+    }
+    .resume-banner.show { display: flex; align-items: center; gap: 14px; }
+    .resume-info { flex: 1; }
+    .resume-title { font-weight: 800; font-size: calc(0.88rem * var(--font-scale)); color: var(--accent); margin-bottom: 4px; }
+    .resume-sub { font-size: calc(0.70rem * var(--font-scale)); color: var(--text-muted); }
+    .resume-btns { display: flex; flex-direction: column; gap: 6px; }
+    .btn-resume {
+      padding: 8px 14px; border-radius: 10px; border: none;
+      background: var(--accent); color: #fff;
+      font-size: calc(0.72rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .btn-resume:hover { opacity: 0.85; }
+    .btn-restart {
+      padding: 6px 14px; border-radius: 10px;
+      background: var(--btn-inactive); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: calc(0.68rem * var(--font-scale));
+      cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
     /* ─── 統計バー ─── */
     .stats-bar {
       background: var(--card-bg); border: 1px solid var(--card-border);
@@ -251,6 +325,16 @@
     .back-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ═══ 問題画面 ═══ */
+    .quiz-mode-badge {
+      text-align: center; margin-bottom: 10px;
+    }
+    .quiz-mode-chip {
+      display: inline-block; padding: 4px 14px; border-radius: 20px;
+      font-size: calc(0.65rem * var(--font-scale)); font-weight: 700; letter-spacing: .06em;
+    }
+    .quiz-mode-chip.learn  { background: var(--mode-learn-bg);  color: #fff; }
+    .quiz-mode-chip.review { background: var(--mode-review-bg); color: #fff; }
+
     .quiz-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 14px; gap: 10px;
@@ -427,10 +511,18 @@
     .review-item-word { font-size: calc(0.90rem * var(--font-scale)); font-weight: 700; color: var(--accent); margin-bottom: 4px; }
     .review-item-info { font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); }
 
+    .summary-action-btns { display: flex; gap: 10px; }
+    .btn-review-mode {
+      flex: 1; padding: 14px; border-radius: 14px; border: none;
+      background: var(--mode-review-bg); color: #fff;
+      font-size: calc(0.85rem * var(--font-scale)); font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-review-mode:hover { opacity: 0.85; transform: translateY(-2px); }
     .btn-home {
-      width: 100%; padding: 16px; border-radius: 16px;
+      flex: 1; padding: 14px; border-radius: 14px;
       background: var(--card-bg); border: 1.5px solid var(--card-border);
-      color: var(--text-secondary); font-size: calc(0.90rem * var(--font-scale));
+      color: var(--text-secondary); font-size: calc(0.85rem * var(--font-scale));
       font-weight: 700; cursor: pointer; transition: all 0.2s;
     }
     .btn-home:hover { border-color: var(--accent); color: var(--accent); }
@@ -477,7 +569,6 @@
   <!-- ── 画面①：トップ（目標宣言） ── -->
   <div class="screen active" id="screen-top">
 
-    <!-- ★ 修正：戻り先を語彙カテゴリ選択ページに変更 -->
     <a class="back-btn" href="./goi/index.html">← 語彙カテゴリ選択にもどる</a>
 
     <div class="top-title-block">
@@ -510,33 +601,63 @@
       </div>
     </div>
 
+    <!-- ★ 続きから再開バナー ★ -->
+    <div class="resume-banner" id="resume-banner">
+      <div class="resume-info">
+        <div class="resume-title">📌 前回の続きがあります</div>
+        <div class="resume-sub" id="resume-sub-text">未解答の問題から続けましょう</div>
+      </div>
+      <div class="resume-btns">
+        <button class="btn-resume" onclick="startSession(10, true)">続きから</button>
+        <button class="btn-restart" onclick="confirmRestart()">最初から</button>
+      </div>
+    </div>
+
+    <!-- ★ 学習モード／復習モード切替 ★ -->
+    <div class="mode-switch-section">
+      <div class="mode-switch-label">🎯 モードを選んでスタート</div>
+      <div class="mode-switch-btns">
+        <div class="mode-btn learn" onclick="selectMode('learn')">
+          <div class="mb-emoji">📚</div>
+          <div class="mb-title">学習モード</div>
+          <div class="mb-sub">まだ解いていない問題<br>優先で出題します</div>
+        </div>
+        <div class="mode-btn review" id="mode-review-btn" onclick="selectMode('review')">
+          <div class="mb-emoji">🔁</div>
+          <div class="mb-title">復習モード</div>
+          <div class="mb-sub">自信なし・不正解の問題<br>だけを集中練習</div>
+          <div class="mb-count" id="review-count-badge">0件</div>
+        </div>
+      </div>
+    </div>
+
     <!-- カレンダー -->
     <div class="calendar-section">
       <div class="calendar-title">📅 今月の学習ログ</div>
       <div class="calendar-grid" id="calendar-grid"></div>
     </div>
 
-    <!-- 目標宣言 -->
-    <div class="goal-section">
-      <div class="goal-title">今日は何問やる？🔥</div>
-      <div class="goal-sub">目標を宣言してからスタート！</div>
-      <div class="goal-cards">
-        <div class="goal-card" onclick="startSession(5)">
+    <!-- 目標宣言（学習モード選択時のみ表示） -->
+    <div class="goal-section" id="goal-section" style="display:none;">
+      <div class="goal-title" id="goal-title-text">今日は何問やる？🔥</div>
+      <div class="goal-sub" id="goal-sub-text">目標を宣言してからスタート！</div>
+      <div class="goal-cards" id="goal-cards-wrap">
+        <div class="goal-card" onclick="startSession(5, false)">
           <div class="gc-emoji">⚡</div>
           <div class="gc-count">5問</div>
           <div class="gc-label">スキマ時間に<br>5問だけ！</div>
         </div>
-        <div class="goal-card" onclick="startSession(10)">
+        <div class="goal-card" onclick="startSession(10, false)">
           <div class="gc-emoji">🎯</div>
           <div class="gc-count">10問</div>
           <div class="gc-label">達成感を<br>感じたい10問！</div>
         </div>
-        <div class="goal-card" onclick="startSession(20)">
+        <div class="goal-card" onclick="startSession(20, false)">
           <div class="gc-emoji">📚</div>
           <div class="gc-count">20問</div>
           <div class="gc-label">しっかりやりたい<br>日の20問！</div>
         </div>
-        <div class="goal-card" onclick="startSession(9999)">
+        <div class="goal-card" onclick="startSession(9999, false)">
           <div class="gc-emoji">🔥</div>
           <div class="gc-count">∞</div>
           <div class="gc-label">今日はやる気MAX！<br>制限なしでいく！</div>
@@ -547,6 +668,10 @@
 
   <!-- ── 画面②：問題 ── -->
   <div class="screen" id="screen-quiz">
+    <!-- ★ モード表示バッジ ★ -->
+    <div class="quiz-mode-badge">
+      <span class="quiz-mode-chip" id="quiz-mode-chip">📚 学習モード</span>
+    </div>
     <div class="quiz-header">
       <span class="quiz-progress-text" id="quiz-prog">1 / 10</span>
       <span class="quiz-timer" id="quiz-timer">0:00</span>
@@ -612,7 +737,10 @@
       <div class="review-section-title">📌 復習しよう（自信なし・不正解）</div>
       <div id="review-list"></div>
     </div>
-    <button class="btn-home" onclick="goHome()">← トップにもどる</button>
+    <div class="summary-action-btns">
+      <button class="btn-review-mode" id="btn-go-review" onclick="goReviewMode()" style="display:none;">🔁 復習モードへ</button>
+      <button class="btn-home" onclick="goHome()">← トップにもどる</button>
+    </div>
   </div>
 
 </div><!-- /.main-wrap -->
@@ -625,374 +753,649 @@ function applySettings() {
   const theme    = localStorage.getItem('gift_theme')    || 'dark';
   const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
   const ruby     = localStorage.getItem('gift_ruby')     || 'on';
+
   document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.setAttribute('data-fontsize', fontsize);
   document.documentElement.setAttribute('data-ruby', ruby);
+
+  // テーマボタン表示
   const tb = document.getElementById('theme-btn');
-  if (tb) tb.textContent = (theme === 'dark') ? '🌙' : '☀️';
-  const map = { normal:'fs-s', large:'fs-m', xlarge:'fs-l' };
-  ['fs-s','fs-m','fs-l'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('active');
-  });
-  const activeEl = document.getElementById(map[fontsize] || 'fs-s');
-  if (activeEl) activeEl.classList.add('active');
+  if (tb) tb.textContent = theme === 'dark' ? '🌙' : '☀️';
+
+  // フォントサイズボタン
+  document.getElementById('fs-s').classList.toggle('active', fontsize === 'normal');
+  document.getElementById('fs-m').classList.toggle('active', fontsize === 'large');
+  document.getElementById('fs-l').classList.toggle('active', fontsize === 'xlarge');
+
+  // ふりがなスイッチ
   const rt = document.getElementById('ruby-toggle');
   if (rt) rt.checked = (ruby === 'on');
 }
-function setFontSize(size) { localStorage.setItem('gift_fontsize', size); applySettings(); }
-function toggleTheme() {
-  const next = (localStorage.getItem('gift_theme') || 'dark') === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('gift_theme', next); applySettings();
+
+function setFontSize(size) {
+  localStorage.setItem('gift_fontsize', size);
+  applySettings();
 }
-function setRuby(checked) { localStorage.setItem('gift_ruby', checked ? 'on' : 'off'); applySettings(); }
+
+function toggleTheme() {
+  const current = localStorage.getItem('gift_theme') || 'dark';
+  localStorage.setItem('gift_theme', current === 'dark' ? 'light' : 'dark');
+  applySettings();
+}
+
+function setRuby(checked) {
+  localStorage.setItem('gift_ruby', checked ? 'on' : 'off');
+  applySettings();
+}
 
 /* ═══════════════════════════════════════════
-   CSV 列インデックス
-   0:ID  1:セット(無視)  2:問番号  3:問題文  4:対象語
-   5:正解の読み  6:選択肢1  7:選択肢2  8:選択肢3  9:選択肢4
-   10:正解番号  11:読み種別  12:誤答タイプ  13:難易度  14:解説  15:混同語
+   定数・グローバル変数
 ═══════════════════════════════════════════ */
+const CSV_URL     = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbcM_6pc1O2tz8BbsGr6L8Oc73OxSpHR3U6dSCXBvlofPncHbXS7Wf7BbT7Dbm4vNg2lxVWwSex15T/pub?gid=0&single=true&output=csv&t=' + Date.now();
+const STORAGE_KEY = 'jlpt_n1_yomi_results';   // 学習記録 { [id]: {correct, confidence, sec, ts} }
+const SESSION_KEY = 'jlpt_n1_yomi_session';    // セッション途中保存 { pool:[], idx:0, mode:'learn' }
+const CALENDAR_KEY= 'jlpt_n1_yomi_calendar';   // 学習日記録 { 'YYYY-MM-DD': count }
+
+// CSV列インデックス（0始まり）
 const COL = {
-  id: 0, set: 1, qnum: 2, sentence: 3, target: 4,
-  answer: 5, c1: 6, c2: 7, c3: 8, c4: 9,
-  correct_no: 10, type: 11, err_type: 12, level: 13,
-  explain: 14, confuse: 15
+  id:         0,
+  set:        1,   // 無視
+  qnum:       2,
+  sentence:   3,
+  target:     4,
+  answer:     5,
+  c1:         6,
+  c2:         7,
+  c3:         8,
+  c4:         9,
+  correct_no: 10,
+  type:       11,
+  err_type:   12,
+  level:      13,
+  explain:    14,
+  confuse:    15
 };
 
-/* ★ GoogleスプレッドシートのCSV公開URL */
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbcM_6pc1O2tz8BbsGr6L8Oc73OxSpHR3U6dSCXBvlofPncHbXS7Wf7BbT7Dbm4vNg2lxVWwSex15T/pub?gid=0&single=true&output=csv';
-const STORAGE_KEY = 'jlpt_n1_yomi_results';
-
-let allQuestions  = [];
-let sessionQueue  = [];
-let currentIdx    = 0;
-let goalCount     = 10;
+let allQuestions  = [];   // CSV全問題データ
+let sessionPool   = [];   // 今セッションの出題順リスト
+let sessionIdx    = 0;    // 現在何問目（0始まり）
+let sessionGoal   = 10;   // 目標問題数
+let sessionMode   = 'learn'; // 'learn' or 'review'
+let currentQ      = null; // 現在の問題オブジェクト
+let timerStart    = 0;    // 問題表示時刻
 let timerInterval = null;
-let elapsedSec    = 0;
-let sessionLog    = [];
-let currentQ      = null;
-let selectedChoice = null;
+let sessionLog    = [];   // セッション内結果ログ [{id, correct, sec, confidence}]
+let pendingConfidence = null; // 手ごたえ未選択の場合のデフォルト
 
-/* ─── CSV パース（ダブルクォート・改行・カンマ対応） ─── */
+/* ═══════════════════════════════════════════
+   CSV読み込み
+═══════════════════════════════════════════ */
 function parseCSV(text) {
-  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-  return lines.map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-        else { inQ = !inQ; }
-      } else if (ch === ',' && !inQ) {
-        cols.push(cur); cur = '';
-      } else {
-        cur += ch;
-      }
+  // BOM除去
+  text = text.replace(/^\uFEFF/, '');
+  const rows = [];
+  let cur = '', inQ = false;
+  const chars = text.split('');
+  const cells = [];
+  let row = [];
+
+  for (let i = 0; i < chars.length; i++) {
+    const c = chars[i];
+    if (c === '"') {
+      if (inQ && chars[i+1] === '"') { cur += '"'; i++; }
+      else { inQ = !inQ; }
+    } else if (c === ',' && !inQ) {
+      row.push(cur); cur = '';
+    } else if ((c === '\n' || c === '\r') && !inQ) {
+      if (c === '\r' && chars[i+1] === '\n') i++;
+      row.push(cur); cur = '';
+      rows.push(row); row = [];
+    } else {
+      cur += c;
     }
-    cols.push(cur);
-    return cols;
-  });
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows;
 }
 
-/* ─── CSV 読み込み ─── */
 async function loadCSV() {
   try {
-    /* キャッシュ回避のためタイムスタンプを付加 */
-    const res = await fetch(CSV_URL + '&t=' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text  = await res.text();
-    const clean = text.replace(/^\uFEFF/, ''); /* BOM除去 */
-    const rows  = parseCSV(clean);
-    /* 1行目はヘッダーなのでスキップ、IDが空の行も除外 */
-    allQuestions = rows.slice(1).filter(r =>
-      r.length > COL.explain && r[COL.id] && r[COL.id].trim() !== ''
-    );
-    if (allQuestions.length === 0) throw new Error('問題データが0件');
-    loadProgress();
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbcM_6pc1O2tz8BbsGr6L8Oc73OxSpHR3U6dSCXBvlofPncHbXS7Wf7BbT7Dbm4vNg2lxVWwSex15T/pub?gid=0&single=true&output=csv&t=' + Date.now();
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('fetch failed: ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    // 1行目はヘッダー、スキップ
+    allQuestions = rows.slice(1).filter(r => r[COL.id] && r[COL.id].trim() !== '').map(r => ({
+      id:        r[COL.id]?.trim()        || '',
+      sentence:  r[COL.sentence]?.trim()  || '',
+      target:    r[COL.target]?.trim()    || '',
+      answer:    r[COL.answer]?.trim()    || '',
+      c1:        r[COL.c1]?.trim()        || '',
+      c2:        r[COL.c2]?.trim()        || '',
+      c3:        r[COL.c3]?.trim()        || '',
+      c4:        r[COL.c4]?.trim()        || '',
+      correct_no:parseInt(r[COL.correct_no]) || 1,
+      type:      r[COL.type]?.trim()      || '',
+      level:     r[COL.level]?.trim()     || '',
+      explain:   r[COL.explain]?.trim()   || '',
+      confuse:   r[COL.confuse]?.trim()   || ''
+    }));
+    updateTopStats();
+    checkResumeBanner();
+    updateReviewBadge();
   } catch(e) {
-    console.error('CSV読込エラー:', e);
-    /* エラーボックスを表示 */
-    const eb = document.getElementById('error-box');
-    if (eb) eb.style.display = 'block';
+    document.getElementById('error-box').style.display = 'block';
+    console.error('CSV読み込みエラー:', e);
   }
 }
 
-/* ─── 進捗読み込み ─── */
-function loadProgress() {
-  const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  const keys    = Object.keys(results);
-  const total   = keys.length;
-  const correct = keys.filter(k => results[k].correct).length;
-  const review  = keys.filter(k => !(results[k].correct && results[k].confidence === 'sure')).length;
+/* ═══════════════════════════════════════════
+   localStorage 操作
+═══════════════════════════════════════════ */
+function getResults() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveResult(id, correct, confidence, sec) {
+  const results = getResults();
+  results[id] = { correct, confidence, sec, ts: Date.now() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+
+  // カレンダー記録
+  const today = todayStr();
+  const cal = getCalendar();
+  cal[today] = (cal[today] || 0) + 1;
+  localStorage.setItem(CALENDAR_KEY, JSON.stringify(cal));
+}
+function getCalendar() {
+  try { return JSON.parse(localStorage.getItem(CALENDAR_KEY) || '{}'); } catch(e) { return {}; }
+}
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+/* ─── セッション状態の保存・復元 ─── */
+function saveSession() {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    pool: sessionPool,
+    idx:  sessionIdx,
+    mode: sessionMode,
+    goal: sessionGoal
+  }));
+}
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+function getSavedSession() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) { return null; }
+}
+
+/* ═══════════════════════════════════════════
+   トップ画面の統計・UI更新
+═══════════════════════════════════════════ */
+function updateTopStats() {
+  const results = getResults();
+  const ids     = Object.keys(results);
+  const total   = ids.length;
+  const correct = ids.filter(id => results[id].correct).length;
+  const rate    = total > 0 ? Math.round(correct / total * 100) : 0;
+  // 復習キュー = 不正解 or confidence が 'sure' 以外
+  const reviewQ = ids.filter(id => !results[id].correct || results[id].confidence !== 'sure').length;
+
   document.getElementById('stat-total').textContent  = total;
-  document.getElementById('stat-rate').textContent   = total ? Math.round(correct/total*100)+'%' : '0%';
-  document.getElementById('stat-review').textContent = review;
+  document.getElementById('stat-rate').textContent   = rate + '%';
+  document.getElementById('stat-review').textContent = reviewQ;
+
   buildCalendar();
 }
 
-/* ─── カレンダー描画 ─── */
+function updateReviewBadge() {
+  const results  = getResults();
+  const reviewQ  = Object.keys(results).filter(id =>
+    !results[id].correct || results[id].confidence !== 'sure'
+  );
+  const btn = document.getElementById('mode-review-btn');
+  const badge = document.getElementById('review-count-badge');
+  badge.textContent = reviewQ.length + '件';
+
+  if (reviewQ.length === 0) {
+    btn.classList.add('no-items');
+    btn.classList.remove('has-items');
+  } else {
+    btn.classList.add('has-items');
+    btn.classList.remove('no-items');
+  }
+}
+
+function checkResumeBanner() {
+  const saved = getSavedSession();
+  const banner = document.getElementById('resume-banner');
+  if (saved && saved.pool && saved.pool.length > 0 && saved.idx < saved.pool.length) {
+    const remaining = saved.pool.length - saved.idx;
+    document.getElementById('resume-sub-text').textContent =
+      `あと ${remaining} 問残っています（${saved.mode === 'review' ? '復習モード' : '学習モード'}）`;
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+    clearSession();
+  }
+}
+
 function buildCalendar() {
-  const grid        = document.getElementById('calendar-grid');
-  const results     = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  const today       = new Date();
-  const year        = today.getFullYear();
-  const month       = today.getMonth();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const studiedDays = new Set();
-  Object.values(results).forEach(r => {
-    if (r.ts) {
-      const d = new Date(r.ts);
-      if (d.getFullYear() === year && d.getMonth() === month) studiedDays.add(d.getDate());
-    }
-  });
+  const grid = document.getElementById('calendar-grid');
   grid.innerHTML = '';
-  for (let d = 1; d <= daysInMonth; d++) {
-    const el = document.createElement('div');
+  const now   = new Date();
+  const year  = now.getFullYear();
+  const month = now.getMonth();
+  const days  = new Date(year, month + 1, 0).getDate();
+  const cal   = getCalendar();
+  const today = todayStr();
+
+  for (let d = 1; d <= days; d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el  = document.createElement('div');
     el.className = 'cal-day';
     el.textContent = d;
-    if (studiedDays.has(d))     el.classList.add('studied');
-    if (d === today.getDate())  el.classList.add('today');
+    if (key === today) el.classList.add('today');
+    if (cal[key])      el.classList.add('studied');
     grid.appendChild(el);
   }
 }
 
-/* ─── セッション開始 ─── */
-function startSession(goal) {
+/* ═══════════════════════════════════════════
+   モード選択
+═══════════════════════════════════════════ */
+function selectMode(mode) {
+  sessionMode = mode;
+  const goalSection = document.getElementById('goal-section');
+
+  if (mode === 'learn') {
+    goalSection.style.display = 'block';
+    document.getElementById('goal-title-text').textContent = '今日は何問やる？🔥';
+    document.getElementById('goal-sub-text').textContent   = '目標を宣言してからスタート！';
+    // 全ゴールカードを学習モード用に戻す
+    const cards = document.querySelectorAll('.goal-card');
+    cards.forEach(c => c.style.display = '');
+  } else {
+    // 復習モード
+    const results  = getResults();
+    const reviewIds = Object.keys(results).filter(id =>
+      !results[id].correct || results[id].confidence !== 'sure'
+    );
+    if (reviewIds.length === 0) {
+      alert('復習キューがありません！\nまず学習モードで問題を解いてみましょう。');
+      return;
+    }
+    goalSection.style.display = 'block';
+    document.getElementById('goal-title-text').textContent = `復習する問題：${reviewIds.length}件 🔁`;
+    document.getElementById('goal-sub-text').textContent   = '何問やる？（自動で復習優先で出します）';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   セッション開始
+═══════════════════════════════════════════ */
+function startSession(goal, resume = false) {
   if (allQuestions.length === 0) {
-    alert('問題データがまだ読み込まれていません。\nページを再読み込みしてお試しください。');
+    alert('問題データが読み込めていません。ページをリロードしてください。');
     return;
   }
-  goalCount  = goal;
-  sessionLog = [];
-  currentIdx = 0;
 
-  const results   = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  const reviewIds = Object.keys(results).filter(k => !(results[k].correct && results[k].confidence === 'sure'));
-  const doneIds   = new Set(Object.keys(results));
-  const untried   = allQuestions.filter(q => !doneIds.has(q[COL.id]));
-  const reviewed  = allQuestions.filter(q => reviewIds.includes(q[COL.id]));
-  const rest      = allQuestions.filter(q => doneIds.has(q[COL.id]) && !reviewIds.includes(q[COL.id]));
+  sessionGoal = goal;
+  sessionLog  = [];
 
-  const shuffle = arr => arr.sort(() => Math.random() - 0.5);
-  const pool    = [...shuffle(reviewed), ...shuffle(untried), ...shuffle(rest)];
-  sessionQueue  = pool.slice(0, goal === 9999 ? pool.length : goal);
+  if (resume) {
+    // 続きから再開
+    const saved = getSavedSession();
+    if (saved && saved.pool && saved.idx < saved.pool.length) {
+      sessionPool = saved.pool;
+      sessionIdx  = saved.idx;
+      sessionMode = saved.mode;
+      sessionGoal = saved.goal;
+      showScreen('screen-quiz');
+      showQuestion();
+      return;
+    }
+  }
+
+  if (sessionMode === 'review') {
+    // ── 復習モード：復習キューの問題のみ ──
+    const results   = getResults();
+    const reviewIds = Object.keys(results).filter(id =>
+      !results[id].correct || results[id].confidence !== 'sure'
+    );
+    // allQuestionsの中でreviewIdsに含まれるものをシャッフル
+    let pool = allQuestions.filter(q => reviewIds.includes(q.id));
+    pool = shuffle(pool);
+    sessionPool = pool.slice(0, goal === 9999 ? pool.length : goal);
+  } else {
+    // ── 学習モード：未解答優先、次に既解答 ──
+    const results = getResults();
+    const answered = Object.keys(results);
+
+    const untried  = allQuestions.filter(q => !answered.includes(q.id));
+    const tried    = allQuestions.filter(q =>  answered.includes(q.id));
+
+    // 未解答をシャッフルして先頭に、解答済みをその後に
+    const pool = [...shuffle(untried), ...shuffle(tried)];
+    sessionPool = pool.slice(0, goal === 9999 ? pool.length : goal);
+  }
+
+  sessionIdx = 0;
+  saveSession(); // セッション状態を保存
 
   showScreen('screen-quiz');
   showQuestion();
 }
 
-/* ─── 問題表示 ─── */
+/* ═══════════════════════════════════════════
+   問題表示
+═══════════════════════════════════════════ */
 function showQuestion() {
-  if (currentIdx >= sessionQueue.length) { showSummary(); return; }
-  currentQ       = sessionQueue[currentIdx];
-  selectedChoice = null;
+  if (sessionIdx >= sessionPool.length) {
+    showSummary();
+    return;
+  }
 
-  const total = sessionQueue.length;
-  document.getElementById('quiz-prog').textContent = `${currentIdx+1} / ${total}`;
-  document.getElementById('quiz-bar').style.width  = Math.round(currentIdx/total*100) + '%';
+  currentQ = sessionPool[sessionIdx];
 
-  /* 【対象語】をゴールド太字に変換・【】は非表示 */
-  const raw      = currentQ[COL.sentence] || '';
-  const rendered = raw.replace(/【([^】]+)】/g, (_, w) => `<span class="target-word">${w}</span>`);
-  document.getElementById('q-sentence').innerHTML = rendered;
+  // モードバッジ
+  const chip = document.getElementById('quiz-mode-chip');
+  if (sessionMode === 'review') {
+    chip.textContent = '🔁 復習モード';
+    chip.className   = 'quiz-mode-chip review';
+  } else {
+    chip.textContent = '📚 学習モード';
+    chip.className   = 'quiz-mode-chip learn';
+  }
 
-  /* 選択肢ボタン生成 */
-  const choices = [currentQ[COL.c1], currentQ[COL.c2], currentQ[COL.c3], currentQ[COL.c4]];
-  const grid    = document.getElementById('choices-grid');
+  // 進捗
+  const total = sessionPool.length;
+  const num   = sessionIdx + 1;
+  document.getElementById('quiz-prog').textContent = `${num} / ${total}`;
+  document.getElementById('quiz-bar').style.width  = `${(num / total) * 100}%`;
+
+  // 問題文：【対象語】を太字ゴールドに
+  const raw = currentQ.sentence;
+  const highlighted = raw.replace(/【([^】]+)】/g, (_, w) =>
+    `<span class="target-word">${w}</span>`
+  );
+  document.getElementById('q-sentence').innerHTML = highlighted;
+
+  // 選択肢
+  const choices = [currentQ.c1, currentQ.c2, currentQ.c3, currentQ.c4];
+  const grid = document.getElementById('choices-grid');
   grid.innerHTML = '';
   choices.forEach((c, i) => {
     const btn = document.createElement('button');
     btn.className   = 'choice-btn';
     btn.textContent = c;
-    btn.onclick     = () => selectAnswer(i+1, choices);
+    btn.onclick     = () => onChoiceClick(i + 1, btn, choices);
     grid.appendChild(btn);
   });
 
-  /* タイマーリセット */
+  // タイマー
   clearInterval(timerInterval);
-  elapsedSec = 0;
-  updateTimerDisplay();
-  timerInterval = setInterval(() => { elapsedSec++; updateTimerDisplay(); }, 1000);
+  timerStart = Date.now();
+  const timerEl = document.getElementById('quiz-timer');
+  timerEl.textContent = '0:00';
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - timerStart) / 1000);
+    timerEl.textContent = `${Math.floor(elapsed/60)}:${String(elapsed%60).padStart(2,'0')}`;
+  }, 1000);
+
+  // セッション保存（問題を表示するたびに最新の状態を保存）
+  saveSession();
 }
 
-function updateTimerDisplay() {
-  const m = Math.floor(elapsedSec/60), s = elapsedSec%60;
-  document.getElementById('quiz-timer').textContent = `${m}:${String(s).padStart(2,'0')}`;
-}
-
-/* ─── 回答処理 ─── */
-function selectAnswer(choiceNo, choices) {
+/* ═══════════════════════════════════════════
+   選択肢タップ
+═══════════════════════════════════════════ */
+function onChoiceClick(selected, clickedBtn, choices) {
   clearInterval(timerInterval);
-  selectedChoice = choiceNo;
-  const correctNo = parseInt(currentQ[COL.correct_no], 10);
-  const isCorrect = (choiceNo === correctNo);
+  const elapsed = Math.floor((Date.now() - timerStart) / 1000);
+  const isCorrect = (selected === currentQ.correct_no);
 
-  document.querySelectorAll('#choices-grid .choice-btn').forEach((b, i) => {
-    b.disabled = true;
-    if (i+1 === correctNo)            b.classList.add('correct');
-    else if (i+1 === choiceNo && !isCorrect) b.classList.add('wrong');
+  // 全ボタン無効化・正誤色
+  const allBtns = document.querySelectorAll('.choice-btn');
+  allBtns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i + 1 === currentQ.correct_no) btn.classList.add('correct');
+    else if (i + 1 === selected && !isCorrect) btn.classList.add('wrong');
   });
 
-  const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  const qid     = currentQ[COL.id];
-  results[qid]  = { correct: isCorrect, sec: elapsedSec, confidence: 'guess', ts: new Date().toISOString() };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-  sessionLog.push({ qid, correct: isCorrect, sec: elapsedSec, confidence: 'guess', q: currentQ });
-
-  setTimeout(() => showResult(isCorrect), 600);
+  // 結果画面構築
+  buildResultScreen(isCorrect, elapsed, selected, choices);
+  pendingConfidence = null;
+  showScreen('screen-result');
 }
 
-/* ─── 結果画面 ─── */
-function showResult(isCorrect) {
-  showScreen('screen-result');
-
+/* ═══════════════════════════════════════════
+   結果画面
+═══════════════════════════════════════════ */
+function buildResultScreen(isCorrect, elapsed, selectedNo, choices) {
+  // 正誤表示
   document.getElementById('verdict-icon').textContent = isCorrect ? '⭕' : '❌';
   const vt = document.getElementById('verdict-text');
-  vt.textContent = isCorrect ? '正解！' : '不正解…';
-  vt.className   = 'verdict-text ' + (isCorrect ? 'correct' : 'wrong');
+  vt.textContent  = isCorrect ? '正解！' : '不正解…';
+  vt.className    = 'verdict-text ' + (isCorrect ? 'correct' : 'wrong');
 
-  const m = Math.floor(elapsedSec/60), s = elapsedSec%60;
-  document.getElementById('verdict-time').textContent = `所要時間：${m > 0 ? m+'分' : ''}${s}秒`;
+  // タイム
+  document.getElementById('verdict-time').textContent = `解答時間：${elapsed}秒`;
 
-  const badgeEl = document.getElementById('speed-badge');
-  let cls, txt;
-  if      (elapsedSec <= 15) { cls='fast';   txt='⚡ 速い！'; }
-  else if (elapsedSec <= 30) { cls='normal'; txt='🎯 普通'; }
-  else                        { cls='slow';   txt='🐢 もう少し！'; }
-  badgeEl.innerHTML = `<span class="speed-badge ${cls}">${txt}</span>`;
+  // スピードバッジ
+  const sb = document.getElementById('speed-badge');
+  if (elapsed <= 10) {
+    sb.innerHTML = '<span class="speed-badge fast">⚡ FAST</span>';
+  } else if (elapsed <= 25) {
+    sb.innerHTML = '<span class="speed-badge normal">🎯 GOOD</span>';
+  } else {
+    sb.innerHTML = '<span class="speed-badge slow">🐢 SLOW</span>';
+  }
 
+  // 手ごたえリセット
   document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected'));
 
-  const rp = document.getElementById('review-panel');
-  rp.classList.remove('open');
-  document.getElementById('review-toggle').textContent = '🔍 問題文・選択肢をふりかえる ▼';
+  // 折りたたみパネル（問題文・選択肢振り返り）
+  const reviewSentence = currentQ.sentence.replace(/【([^】]+)】/g, (_, w) =>
+    `<strong style="color:var(--accent)">${w}</strong>`
+  );
+  document.getElementById('review-sentence').innerHTML = reviewSentence;
 
-  /* 折りたたみ内容 */
-  const raw = currentQ[COL.sentence] || '';
-  document.getElementById('review-sentence').innerHTML =
-    raw.replace(/【([^】]+)】/g, (_, w) => `<strong style="color:var(--accent)">${w}</strong>`);
-
-  const correctNo = parseInt(currentQ[COL.correct_no], 10);
-  const choices   = [currentQ[COL.c1], currentQ[COL.c2], currentQ[COL.c3], currentQ[COL.c4]];
-  const rcDiv     = document.getElementById('review-choices');
-  rcDiv.innerHTML = '';
-  choices.forEach((c, i) => {
-    const no  = i+1;
-    const isC = (no === correctNo);
-    const isS = (no === selectedChoice);
+  const rc = document.getElementById('review-choices');
+  rc.innerHTML = '';
+  [currentQ.c1, currentQ.c2, currentQ.c3, currentQ.c4].forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'review-choice';
-    if (isC)          div.classList.add('is-correct');
-    if (isS && !isC)  div.classList.add('is-selected');
-    if (isC && isS)   div.classList.add('is-correct');
-    div.innerHTML = `<span>${no}. ${c}</span>`
-      + (isC        ? ' <span style="margin-left:auto;font-size:.8em">✅ 正解</span>' : '')
-      + (isS && !isC ? ' <span style="margin-left:auto;font-size:.8em">← あなたの答え</span>' : '');
-    rcDiv.appendChild(div);
+    const no = i + 1;
+    let icon = '';
+    if (no === currentQ.correct_no && no === selectedNo) {
+      div.classList.add('is-correct', 'is-selected');
+      icon = '✅ ';
+    } else if (no === currentQ.correct_no) {
+      div.classList.add('is-correct');
+      icon = '✅ ';
+    } else if (no === selectedNo) {
+      div.classList.add('is-selected');
+      icon = '❌ ';
+    }
+    div.innerHTML = `<span>${icon}${no}．${c}</span>`;
+    rc.appendChild(div);
+  });
+  document.getElementById('review-panel').classList.remove('open');
+
+  // 解説
+  document.getElementById('explain-text').textContent = currentQ.explain || '（解説なし）';
+  const ca = document.getElementById('confuse-area');
+  ca.innerHTML = currentQ.confuse
+    ? `<span class="confuse-word">🔀 混同注意：${currentQ.confuse}</span>`
+    : '';
+
+  // ログに仮記録（手ごたえ確定後に更新）
+  sessionLog.push({ id: currentQ.id, correct: isCorrect, sec: elapsed, confidence: 'maybe' });
+  // ここでlocalStorageに仮保存（デフォルト confidence: 'maybe'）
+  saveResult(currentQ.id, isCorrect, 'maybe', elapsed);
+}
+
+/* ═══════════════════════════════════════════
+   折りたたみ
+═══════════════════════════════════════════ */
+function toggleReview() {
+  const panel = document.getElementById('review-panel');
+  const btn   = document.getElementById('review-toggle');
+  panel.classList.toggle('open');
+  btn.textContent = panel.classList.contains('open')
+    ? '🔍 問題文・選択肢をふりかえる ▲'
+    : '🔍 問題文・選択肢をふりかえる ▼';
+}
+
+/* ═══════════════════════════════════════════
+   手ごたえ選択
+═══════════════════════════════════════════ */
+function setConfidence(conf) {
+  pendingConfidence = conf;
+  document.querySelectorAll('.conf-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.conf === conf);
   });
 
-  document.getElementById('explain-text').textContent = currentQ[COL.explain] || '';
-  const confuseWord = (currentQ[COL.confuse] || '').trim();
-  document.getElementById('confuse-area').innerHTML = confuseWord
-    ? `<span class="confuse-word">💡 混同しやすい語：${confuseWord}</span>` : '';
-
-  const isLast = (currentIdx+1 >= sessionQueue.length);
-  document.getElementById('btn-next').textContent = isLast ? '結果を見る 📊' : '次の問題へ →';
-}
-
-/* ─── 折りたたみ ─── */
-function toggleReview() {
-  const rp  = document.getElementById('review-panel');
-  const btn = document.getElementById('review-toggle');
-  if (rp.classList.contains('open')) {
-    rp.classList.remove('open');
-    btn.textContent = '🔍 問題文・選択肢をふりかえる ▼';
-  } else {
-    rp.classList.add('open');
-    btn.textContent = '🔍 問題文・選択肢をとじる ▲';
-  }
-}
-
-/* ─── 手ごたえ ─── */
-function setConfidence(level) {
-  const last = sessionLog[sessionLog.length-1];
+  // localStorageの記録を更新
+  const last = sessionLog[sessionLog.length - 1];
   if (last) {
-    last.confidence = level;
-    const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (results[last.qid]) {
-      results[last.qid].confidence = level;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-    }
+    last.confidence = conf;
+    saveResult(last.id, last.correct, conf, last.sec);
   }
-  document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected'));
-  const btn = document.querySelector(`.conf-btn[data-conf="${level}"]`);
-  if (btn) btn.classList.add('selected');
 }
 
-/* ─── 次の問題 ─── */
+/* ═══════════════════════════════════════════
+   次の問題
+═══════════════════════════════════════════ */
 function nextQuestion() {
-  currentIdx++;
-  if (currentIdx >= sessionQueue.length) { showSummary(); return; }
-  showScreen('screen-quiz');
-  showQuestion();
+  sessionIdx++;
+  saveSession(); // インデックスを保存
+  if (sessionIdx >= sessionPool.length) {
+    showSummary();
+  } else {
+    showScreen('screen-quiz');
+    showQuestion();
+  }
 }
 
-/* ─── サマリー ─── */
+/* ═══════════════════════════════════════════
+   サマリー画面
+═══════════════════════════════════════════ */
 function showSummary() {
   clearInterval(timerInterval);
-  showScreen('screen-summary');
+  clearSession(); // セッション完了 → 保存データ削除
 
-  const count  = sessionLog.length;
+  const count   = sessionLog.length;
   const correct = sessionLog.filter(l => l.correct).length;
-  const rate   = count ? Math.round(correct/count*100) : 0;
-  const avgSec = count ? Math.round(sessionLog.reduce((a,l) => a+l.sec, 0)/count) : 0;
+  const rate    = count > 0 ? Math.round(correct / count * 100) : 0;
+  const avgSec  = count > 0 ? Math.round(sessionLog.reduce((a, l) => a + l.sec, 0) / count) : 0;
 
-  document.getElementById('sum-count').textContent = count;
+  document.getElementById('sum-count').textContent = count + '問';
   document.getElementById('sum-rate').textContent  = rate + '%';
   document.getElementById('sum-time').textContent  = avgSec + '秒';
 
-  const badges = [];
-  const fast   = sessionLog.filter(l => l.sec <= 15).length;
-  if (fast > 0)       badges.push(`⚡ 速い！×${fast}`);
-  if (rate >= 80)     badges.push('🏆 優秀！');
-  if (rate === 100)   badges.push('🌟 パーフェクト！');
-  if (count >= 10)    badges.push('📚 10問達成！');
-  if (count >= 20)    badges.push('🔥 20問達成！');
-  document.getElementById('badge-list').innerHTML = badges.map(b => `<span class="badge-chip">${b}</span>`).join('');
+  // バッジ
+  const badgeList = document.getElementById('badge-list');
+  badgeList.innerHTML = '';
+  const fastCount = sessionLog.filter(l => l.sec <= 10).length;
+  if (fastCount >= 3) badgeList.innerHTML += `<span class="badge-chip">⚡ スピードスター</span>`;
+  if (rate >= 80)     badgeList.innerHTML += `<span class="badge-chip">🎯 高正答率</span>`;
+  if (count >= 20)    badgeList.innerHTML += `<span class="badge-chip">📚 20問クリア</span>`;
+  if (count >= 10)    badgeList.innerHTML += `<span class="badge-chip">🔥 10問達成</span>`;
 
-  const reviewItems = sessionLog.filter(l => !(l.correct && l.confidence === 'sure'));
-  const rl = document.getElementById('review-list');
-  rl.innerHTML = reviewItems.length === 0
-    ? '<div style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:12px">🎉 今日の問題は全部クリア！</div>'
-    : reviewItems.map(l => `
-        <div class="review-item">
-          <div class="review-item-word">${l.q[COL.target]}（${l.q[COL.answer]}）</div>
-          <div class="review-item-info">
-            ${l.correct ? '⭕ 正解' : '❌ 不正解'}・
-            手ごたえ：${ {sure:'◎自信あり', maybe:'△たぶん', guess:'？勘'}[l.confidence] || '未選択' }・
-            ${l.sec}秒
-          </div>
-        </div>`).join('');
+  // 復習リスト（このセッションで自信なし・不正解）
+  const reviewItems = sessionLog.filter(l => !l.correct || l.confidence !== 'sure');
+  const reviewList  = document.getElementById('review-list');
+  reviewList.innerHTML = '';
+  if (reviewItems.length === 0) {
+    reviewList.innerHTML = '<p style="color:var(--correct-text);text-align:center;font-size:0.85rem;">✨ 全問自信あり正解！完璧です！</p>';
+  } else {
+    reviewItems.forEach(item => {
+      const q   = allQuestions.find(q => q.id === item.id);
+      if (!q) return;
+      const div = document.createElement('div');
+      div.className = 'review-item';
+      div.innerHTML = `
+        <div class="review-item-word">${q.target}（${q.answer}）</div>
+        <div class="review-item-info">
+          ${item.correct ? '⭕ 正解' : '❌ 不正解'} ／ 
+          手ごたえ：${item.confidence === 'sure' ? '◎自信あり' : item.confidence === 'maybe' ? '△たぶん' : '？勘'} ／ 
+          ${item.sec}秒
+        </div>
+      `;
+      reviewList.appendChild(div);
+    });
+  }
 
-  buildCalendar();
+  // 復習モードボタン表示制御
+  const btnGoReview = document.getElementById('btn-go-review');
+  if (reviewItems.length > 0) {
+    btnGoReview.style.display = '';
+    btnGoReview.textContent = `🔁 復習モードへ（${reviewItems.length}件）`;
+  } else {
+    btnGoReview.style.display = 'none';
+  }
+
+  showScreen('screen-summary');
+
+  // トップ統計を更新（非同期的に）
+  updateTopStats();
+  updateReviewBadge();
 }
 
-/* ─── 画面切替 ─── */
+/* 復習モードへ直接遷移（サマリーから） */
+function goReviewMode() {
+  sessionMode = 'review';
+  goHome();
+  // トップに戻った後に復習モードを自動選択
+  setTimeout(() => selectMode('review'), 100);
+}
+
+/* ═══════════════════════════════════════════
+   画面切り替え
+═══════════════════════════════════════════ */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ─── トップに戻る ─── */
 function goHome() {
-  loadProgress();
+  clearInterval(timerInterval);
   showScreen('screen-top');
+  updateTopStats();
+  checkResumeBanner();
+  updateReviewBadge();
 }
 
-/* ─── 初期化 ─── */
+/* ═══════════════════════════════════════════
+   最初からリセット確認
+═══════════════════════════════════════════ */
+function confirmRestart() {
+  if (confirm('本当に最初からやり直しますか？\n（途中の進捗は失われます）')) {
+    clearSession();
+    document.getElementById('resume-banner').classList.remove('show');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ユーティリティ
+═══════════════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ═══════════════════════════════════════════
+   初期化
+═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   applySettings();
   loadCSV();
