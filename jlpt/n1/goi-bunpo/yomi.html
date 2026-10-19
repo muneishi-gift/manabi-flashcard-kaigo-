@@ -232,6 +232,14 @@
       font-size: calc(0.60rem * var(--font-scale)); color: var(--text-secondary); line-height: 1.4;
     }
 
+    /* ─── エラー表示 ─── */
+    .error-box {
+      background: var(--wrong-bg); border: 1px solid var(--wrong-border);
+      border-radius: 14px; padding: 16px; margin-bottom: 20px;
+      font-size: calc(0.82rem * var(--font-scale)); color: var(--wrong-text);
+      line-height: 1.6; display: none;
+    }
+
     /* ─── 戻るボタン ─── */
     .back-btn {
       display: inline-flex; align-items: center; gap: 6px;
@@ -278,7 +286,6 @@
       font-size: calc(1.05rem * var(--font-scale)); line-height: 2.0;
       color: var(--text-primary); font-weight: 500; text-align: center;
     }
-    /* 【】で囲まれた対象語を太字ゴールドにして【】を非表示 */
     .q-sentence .target-word {
       font-weight: 900; color: var(--accent); font-size: 1.15em;
       border-bottom: 2px solid var(--accent);
@@ -296,8 +303,8 @@
     }
     .choice-btn:hover:not(:disabled) { background: var(--choice-hover); border-color: var(--choice-hover-border); transform: translateY(-2px); }
     .choice-btn:disabled { cursor: default; }
-    .choice-btn.correct  { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
-    .choice-btn.wrong    { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+    .choice-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+    .choice-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
 
     /* ═══ 結果画面 ═══ */
     .result-screen { animation: fadeIn 0.35s ease; }
@@ -309,10 +316,7 @@
       border-radius: 22px;
     }
     .verdict-icon { font-size: 3.5rem; line-height: 1; margin-bottom: 8px; }
-    .verdict-text {
-      font-size: calc(1.3rem * var(--font-scale)); font-weight: 900;
-      margin-bottom: 6px;
-    }
+    .verdict-text { font-size: calc(1.3rem * var(--font-scale)); font-weight: 900; margin-bottom: 6px; }
     .verdict-text.correct { color: var(--correct-text); }
     .verdict-text.wrong   { color: var(--wrong-text); }
     .verdict-time {
@@ -325,15 +329,12 @@
       font-weight: 700; letter-spacing: .06em;
     }
     .speed-badge.fast   { background: var(--correct-bg); color: var(--correct-text); border: 1px solid var(--correct-border); }
-    .speed-badge.normal { background: var(--maybe-bg);   color: #f0d080; border: 1px solid var(--maybe-border); }
-    .speed-badge.slow   { background: var(--tag-bg);     color: var(--text-muted); border: 1px solid var(--border); }
+    .speed-badge.normal { background: var(--maybe-bg);   color: #f0d080;             border: 1px solid var(--maybe-border); }
+    .speed-badge.slow   { background: var(--tag-bg);     color: var(--text-muted);   border: 1px solid var(--border); }
 
     /* ─── 手ごたえ ─── */
     .confidence-section { margin-bottom: 16px; }
-    .conf-label {
-      text-align: center; font-size: calc(0.72rem * var(--font-scale));
-      color: var(--text-muted); margin-bottom: 10px;
-    }
+    .conf-label { text-align: center; font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); margin-bottom: 10px; }
     .conf-btns { display: flex; gap: 10px; justify-content: center; }
     .conf-btn {
       flex: 1; max-width: 120px; padding: 12px 8px; border-radius: 14px;
@@ -345,19 +346,17 @@
     .conf-btn[data-conf="guess"] { background: var(--guess-bg); border-color: var(--guess-border); color: var(--wrong-text); }
     .conf-btn.selected { transform: scale(1.08); box-shadow: 0 4px 16px var(--accent-glow); }
 
-    /* ─── 折りたたみ（問題文を見る） ─── */
+    /* ─── 折りたたみ ─── */
     .review-toggle {
       width: 100%; padding: 10px 16px; margin-bottom: 8px;
       background: var(--card-bg); border: 1px solid var(--card-border);
       border-radius: 14px; font-size: calc(0.78rem * var(--font-scale));
-      color: var(--text-secondary); cursor: pointer; text-align: left;
-      transition: all 0.2s;
+      color: var(--text-secondary); cursor: pointer; text-align: left; transition: all 0.2s;
     }
     .review-toggle:hover { border-color: var(--accent); color: var(--accent); }
     .review-panel {
       background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 14px; padding: 16px; margin-bottom: 12px;
-      display: none;
+      border-radius: 14px; padding: 16px; margin-bottom: 12px; display: none;
     }
     .review-panel.open { display: block; }
     .review-sentence {
@@ -370,8 +369,8 @@
       border: 1px solid var(--border); background: var(--btn-inactive);
       display: flex; align-items: center; gap: 8px;
     }
-    .review-choice.is-correct  { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
-    .review-choice.is-selected { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+    .review-choice.is-correct          { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+    .review-choice.is-selected         { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
     .review-choice.is-correct.is-selected { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
 
     /* ─── 解説 ─── */
@@ -379,19 +378,11 @@
       background: var(--card-bg); border: 1px solid var(--card-border);
       border-radius: 14px; padding: 16px; margin-bottom: 16px;
     }
-    .explain-title {
-      font-size: calc(0.68rem * var(--font-scale)); font-weight: 700;
-      color: var(--accent); margin-bottom: 8px; letter-spacing: .06em;
-    }
-    .explain-text {
-      font-size: calc(0.85rem * var(--font-scale)); line-height: 1.8;
-      color: var(--text-secondary);
-    }
+    .explain-title { font-size: calc(0.68rem * var(--font-scale)); font-weight: 700; color: var(--accent); margin-bottom: 8px; letter-spacing: .06em; }
+    .explain-text  { font-size: calc(0.85rem * var(--font-scale)); line-height: 1.8; color: var(--text-secondary); }
     .confuse-word {
-      display: inline-block; margin-top: 8px;
-      padding: 3px 10px; border-radius: 8px;
-      background: var(--tag-bg); color: var(--tag-text);
-      font-size: calc(0.70rem * var(--font-scale));
+      display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 8px;
+      background: var(--tag-bg); color: var(--tag-text); font-size: calc(0.70rem * var(--font-scale));
     }
 
     /* ─── アクションボタン ─── */
@@ -419,18 +410,9 @@
       font-size: calc(1.3rem * var(--font-scale)); font-weight: 800;
       color: var(--accent); margin-bottom: 20px; padding-top: 8px;
     }
-    .summary-stats {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
-      margin-bottom: 20px;
-    }
-    .ss-card {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 16px; padding: 14px 8px; text-align: center;
-    }
-    .ss-num {
-      font-family: 'Poppins',sans-serif; font-size: calc(1.4rem * var(--font-scale));
-      font-weight: 800; color: var(--accent);
-    }
+    .summary-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+    .ss-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px 8px; text-align: center; }
+    .ss-num  { font-family: 'Poppins',sans-serif; font-size: calc(1.4rem * var(--font-scale)); font-weight: 800; color: var(--accent); }
     .ss-label { font-size: calc(0.60rem * var(--font-scale)); color: var(--text-muted); margin-top: 4px; }
 
     .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; justify-content: center; }
@@ -439,26 +421,14 @@
       font-size: calc(0.68rem * var(--font-scale)); font-weight: 700;
       background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--border);
     }
-
     .summary-review-section { margin-bottom: 24px; }
-    .review-section-title {
-      font-size: calc(0.80rem * var(--font-scale)); font-weight: 700;
-      color: var(--text-muted); margin-bottom: 10px;
-    }
-    .review-item {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 14px; padding: 12px 14px; margin-bottom: 8px;
-    }
-    .review-item-word {
-      font-size: calc(0.90rem * var(--font-scale)); font-weight: 700;
-      color: var(--accent); margin-bottom: 4px;
-    }
-    .review-item-info {
-      font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted);
-    }
+    .review-section-title { font-size: calc(0.80rem * var(--font-scale)); font-weight: 700; color: var(--text-muted); margin-bottom: 10px; }
+    .review-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+    .review-item-word { font-size: calc(0.90rem * var(--font-scale)); font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .review-item-info { font-size: calc(0.72rem * var(--font-scale)); color: var(--text-muted); }
 
     .btn-home {
-      width: 100%; padding: 16px; border-radius: 16px; border: none;
+      width: 100%; padding: 16px; border-radius: 16px;
       background: var(--card-bg); border: 1.5px solid var(--card-border);
       color: var(--text-secondary); font-size: calc(0.90rem * var(--font-scale));
       font-weight: 700; cursor: pointer; transition: all 0.2s;
@@ -506,13 +476,22 @@
 
   <!-- ── 画面①：トップ（目標宣言） ── -->
   <div class="screen active" id="screen-top">
-    <a class="back-btn" href="../index.html">← 語彙・文法選択にもどる</a>
+
+    <!-- ★ 修正：戻り先を語彙カテゴリ選択ページに変更 -->
+    <a class="back-btn" href="./goi/index.html">← 語彙カテゴリ選択にもどる</a>
 
     <div class="top-title-block">
       <div class="top-title-en">KANJI READING</div>
       <div class="top-title-emoji">📖</div>
       <div class="top-title-ruby">かんじのよみ</div>
       <div class="top-title-ja">漢字の読み</div>
+    </div>
+
+    <!-- CSVエラー表示（読み込み失敗時のみ表示） -->
+    <div class="error-box" id="error-box">
+      ⚠️ 問題データの読み込みに失敗しました。<br>
+      スプレッドシートの公開設定を確認してください。<br>
+      <small>（スプレッドシート → ファイル → 共有 → ウェブに公開）</small>
     </div>
 
     <!-- 統計バー -->
@@ -575,12 +554,10 @@
     <div class="quiz-progress-bar-wrap">
       <div class="quiz-progress-bar" id="quiz-bar" style="width:0%"></div>
     </div>
-
     <div class="question-card">
       <div class="q-instruction">上の<strong>太字</strong>の語の読みを選んでください。</div>
       <div class="q-sentence" id="q-sentence"></div>
     </div>
-
     <div class="choices-grid" id="choices-grid"></div>
   </div>
 
@@ -626,26 +603,15 @@
   <div class="screen summary-screen" id="screen-summary">
     <div class="summary-title">📊 今日のセッション結果</div>
     <div class="summary-stats">
-      <div class="ss-card">
-        <div class="ss-num" id="sum-count">0</div>
-        <div class="ss-label">解いた問題数</div>
-      </div>
-      <div class="ss-card">
-        <div class="ss-num" id="sum-rate">0%</div>
-        <div class="ss-label">正答率</div>
-      </div>
-      <div class="ss-card">
-        <div class="ss-num" id="sum-time">0秒</div>
-        <div class="ss-label">平均タイム</div>
-      </div>
+      <div class="ss-card"><div class="ss-num" id="sum-count">0</div><div class="ss-label">解いた問題数</div></div>
+      <div class="ss-card"><div class="ss-num" id="sum-rate">0%</div><div class="ss-label">正答率</div></div>
+      <div class="ss-card"><div class="ss-num" id="sum-time">0秒</div><div class="ss-label">平均タイム</div></div>
     </div>
     <div class="badge-list" id="badge-list"></div>
-
-    <div class="summary-review-section" id="summary-review-section">
+    <div class="summary-review-section">
       <div class="review-section-title">📌 復習しよう（自信なし・不正解）</div>
       <div id="review-list"></div>
     </div>
-
     <button class="btn-home" onclick="goHome()">← トップにもどる</button>
   </div>
 
@@ -659,46 +625,27 @@ function applySettings() {
   const theme    = localStorage.getItem('gift_theme')    || 'dark';
   const fontsize = localStorage.getItem('gift_fontsize') || 'normal';
   const ruby     = localStorage.getItem('gift_ruby')     || 'on';
-
   document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.setAttribute('data-fontsize', fontsize);
   document.documentElement.setAttribute('data-ruby', ruby);
-
-  /* テーマボタン */
   const tb = document.getElementById('theme-btn');
   if (tb) tb.textContent = (theme === 'dark') ? '🌙' : '☀️';
-
-  /* 文字サイズボタン */
   const map = { normal:'fs-s', large:'fs-m', xlarge:'fs-l' };
   ['fs-s','fs-m','fs-l'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.remove('active');
   });
-  const activeId = map[fontsize] || 'fs-s';
-  const activeEl = document.getElementById(activeId);
+  const activeEl = document.getElementById(map[fontsize] || 'fs-s');
   if (activeEl) activeEl.classList.add('active');
-
-  /* ふりがなスイッチ */
   const rt = document.getElementById('ruby-toggle');
   if (rt) rt.checked = (ruby === 'on');
 }
-
-function setFontSize(size) {
-  localStorage.setItem('gift_fontsize', size);
-  applySettings();
-}
-
+function setFontSize(size) { localStorage.setItem('gift_fontsize', size); applySettings(); }
 function toggleTheme() {
-  const current = localStorage.getItem('gift_theme') || 'dark';
-  const next = (current === 'dark') ? 'light' : 'dark';
-  localStorage.setItem('gift_theme', next);
-  applySettings();
+  const next = (localStorage.getItem('gift_theme') || 'dark') === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('gift_theme', next); applySettings();
 }
-
-function setRuby(checked) {
-  localStorage.setItem('gift_ruby', checked ? 'on' : 'off');
-  applySettings();
-}
+function setRuby(checked) { localStorage.setItem('gift_ruby', checked ? 'on' : 'off'); applySettings(); }
 
 /* ═══════════════════════════════════════════
    CSV 列インデックス
@@ -713,20 +660,21 @@ const COL = {
   explain: 14, confuse: 15
 };
 
+/* ★ GoogleスプレッドシートのCSV公開URL */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbcM_6pc1O2tz8BbsGr6L8Oc73OxSpHR3U6dSCXBvlofPncHbXS7Wf7BbT7Dbm4vNg2lxVWwSex15T/pub?gid=0&single=true&output=csv';
 const STORAGE_KEY = 'jlpt_n1_yomi_results';
 
-let allQuestions = [];   /* 全問題 */
-let sessionQueue  = [];  /* 今セッションの問題キュー */
+let allQuestions  = [];
+let sessionQueue  = [];
 let currentIdx    = 0;
 let goalCount     = 10;
 let timerInterval = null;
 let elapsedSec    = 0;
-let sessionLog    = [];  /* { qid, correct, sec, confidence } */
+let sessionLog    = [];
 let currentQ      = null;
 let selectedChoice = null;
 
-/* ─── CSV パース（ダブルクォート・カンマ対応） ─── */
+/* ─── CSV パース（ダブルクォート・改行・カンマ対応） ─── */
 function parseCSV(text) {
   const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
   return lines.map(line => {
@@ -751,93 +699,85 @@ function parseCSV(text) {
 /* ─── CSV 読み込み ─── */
 async function loadCSV() {
   try {
+    /* キャッシュ回避のためタイムスタンプを付加 */
     const res = await fetch(CSV_URL + '&t=' + Date.now());
-    if (!res.ok) throw new Error('fetch failed');
-    const text = await res.text();
-    /* BOM除去 */
-    const clean = text.replace(/^\uFEFF/, '');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text  = await res.text();
+    const clean = text.replace(/^\uFEFF/, ''); /* BOM除去 */
     const rows  = parseCSV(clean);
-    /* 1行目はヘッダー → スキップ */
-    allQuestions = rows.slice(1).filter(r => r.length > COL.explain && r[COL.id].trim() !== '');
+    /* 1行目はヘッダーなのでスキップ、IDが空の行も除外 */
+    allQuestions = rows.slice(1).filter(r =>
+      r.length > COL.explain && r[COL.id] && r[COL.id].trim() !== ''
+    );
+    if (allQuestions.length === 0) throw new Error('問題データが0件');
     loadProgress();
   } catch(e) {
     console.error('CSV読込エラー:', e);
+    /* エラーボックスを表示 */
+    const eb = document.getElementById('error-box');
+    if (eb) eb.style.display = 'block';
   }
 }
 
-/* ─── 進捗読み込み（統計バー更新） ─── */
+/* ─── 進捗読み込み ─── */
 function loadProgress() {
   const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
   const keys    = Object.keys(results);
   const total   = keys.length;
   const correct = keys.filter(k => results[k].correct).length;
   const review  = keys.filter(k => !(results[k].correct && results[k].confidence === 'sure')).length;
-
   document.getElementById('stat-total').textContent  = total;
   document.getElementById('stat-rate').textContent   = total ? Math.round(correct/total*100)+'%' : '0%';
   document.getElementById('stat-review').textContent = review;
-
   buildCalendar();
 }
 
 /* ─── カレンダー描画 ─── */
 function buildCalendar() {
-  const grid     = document.getElementById('calendar-grid');
-  const results  = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  const today    = new Date();
-  const year     = today.getFullYear();
-  const month    = today.getMonth();
+  const grid        = document.getElementById('calendar-grid');
+  const results     = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const today       = new Date();
+  const year        = today.getFullYear();
+  const month       = today.getMonth();
   const daysInMonth = new Date(year, month+1, 0).getDate();
-
-  /* 学習した日を収集 */
   const studiedDays = new Set();
   Object.values(results).forEach(r => {
     if (r.ts) {
       const d = new Date(r.ts);
-      if (d.getFullYear() === year && d.getMonth() === month) {
-        studiedDays.add(d.getDate());
-      }
+      if (d.getFullYear() === year && d.getMonth() === month) studiedDays.add(d.getDate());
     }
   });
-
   grid.innerHTML = '';
   for (let d = 1; d <= daysInMonth; d++) {
     const el = document.createElement('div');
     el.className = 'cal-day';
     el.textContent = d;
-    if (studiedDays.has(d)) el.classList.add('studied');
-    if (d === today.getDate()) el.classList.add('today');
+    if (studiedDays.has(d))     el.classList.add('studied');
+    if (d === today.getDate())  el.classList.add('today');
     grid.appendChild(el);
   }
 }
 
 /* ─── セッション開始 ─── */
 function startSession(goal) {
-  goalCount   = goal;
-  sessionLog  = [];
-  currentIdx  = 0;
+  if (allQuestions.length === 0) {
+    alert('問題データがまだ読み込まれていません。\nページを再読み込みしてお試しください。');
+    return;
+  }
+  goalCount  = goal;
+  sessionLog = [];
+  currentIdx = 0;
 
-  const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-  /* 復習キュー（自信なし or 不正解）を優先、次に未挑戦、最後に全体 */
-  const reviewIds = Object.keys(results).filter(k =>
-    !(results[k].correct && results[k].confidence === 'sure')
-  );
+  const results   = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const reviewIds = Object.keys(results).filter(k => !(results[k].correct && results[k].confidence === 'sure'));
   const doneIds   = new Set(Object.keys(results));
   const untried   = allQuestions.filter(q => !doneIds.has(q[COL.id]));
   const reviewed  = allQuestions.filter(q => reviewIds.includes(q[COL.id]));
   const rest      = allQuestions.filter(q => doneIds.has(q[COL.id]) && !reviewIds.includes(q[COL.id]));
 
-  /* シャッフル */
   const shuffle = arr => arr.sort(() => Math.random() - 0.5);
   const pool    = [...shuffle(reviewed), ...shuffle(untried), ...shuffle(rest)];
-
-  sessionQueue = pool.slice(0, goal === 9999 ? pool.length : goal);
-
-  if (sessionQueue.length === 0) {
-    alert('問題データを読み込めませんでした。スプレッドシートの公開設定を確認してください。');
-    return;
-  }
+  sessionQueue  = pool.slice(0, goal === 9999 ? pool.length : goal);
 
   showScreen('screen-quiz');
   showQuestion();
@@ -845,39 +785,28 @@ function startSession(goal) {
 
 /* ─── 問題表示 ─── */
 function showQuestion() {
-  if (currentIdx >= sessionQueue.length) {
-    showSummary();
-    return;
-  }
-
-  currentQ = sessionQueue[currentIdx];
+  if (currentIdx >= sessionQueue.length) { showSummary(); return; }
+  currentQ       = sessionQueue[currentIdx];
   selectedChoice = null;
 
-  /* 進捗バー */
   const total = sessionQueue.length;
-  const pct   = Math.round(currentIdx / total * 100);
   document.getElementById('quiz-prog').textContent = `${currentIdx+1} / ${total}`;
-  document.getElementById('quiz-bar').style.width  = pct + '%';
+  document.getElementById('quiz-bar').style.width  = Math.round(currentIdx/total*100) + '%';
 
-  /* 問題文：【対象語】を装飾して【】を非表示 */
-  const rawSentence = currentQ[COL.sentence] || '';
-  const rendered = rawSentence.replace(/【([^】]+)】/g, (_, word) =>
-    `<span class="target-word">${word}</span>`
-  );
+  /* 【対象語】をゴールド太字に変換・【】は非表示 */
+  const raw      = currentQ[COL.sentence] || '';
+  const rendered = raw.replace(/【([^】]+)】/g, (_, w) => `<span class="target-word">${w}</span>`);
   document.getElementById('q-sentence').innerHTML = rendered;
 
-  /* 選択肢 */
-  const choices = [
-    currentQ[COL.c1], currentQ[COL.c2],
-    currentQ[COL.c3], currentQ[COL.c4]
-  ];
-  const grid = document.getElementById('choices-grid');
+  /* 選択肢ボタン生成 */
+  const choices = [currentQ[COL.c1], currentQ[COL.c2], currentQ[COL.c3], currentQ[COL.c4]];
+  const grid    = document.getElementById('choices-grid');
   grid.innerHTML = '';
   choices.forEach((c, i) => {
     const btn = document.createElement('button');
-    btn.className  = 'choice-btn';
+    btn.className   = 'choice-btn';
     btn.textContent = c;
-    btn.onclick    = () => selectAnswer(i+1, btn, choices);
+    btn.onclick     = () => selectAnswer(i+1, choices);
     grid.appendChild(btn);
   });
 
@@ -885,43 +814,33 @@ function showQuestion() {
   clearInterval(timerInterval);
   elapsedSec = 0;
   updateTimerDisplay();
-  timerInterval = setInterval(() => {
-    elapsedSec++;
-    updateTimerDisplay();
-  }, 1000);
+  timerInterval = setInterval(() => { elapsedSec++; updateTimerDisplay(); }, 1000);
 }
 
 function updateTimerDisplay() {
-  const m = Math.floor(elapsedSec / 60);
-  const s = elapsedSec % 60;
+  const m = Math.floor(elapsedSec/60), s = elapsedSec%60;
   document.getElementById('quiz-timer').textContent = `${m}:${String(s).padStart(2,'0')}`;
 }
 
 /* ─── 回答処理 ─── */
-function selectAnswer(choiceNo, clickedBtn, choices) {
+function selectAnswer(choiceNo, choices) {
   clearInterval(timerInterval);
   selectedChoice = choiceNo;
+  const correctNo = parseInt(currentQ[COL.correct_no], 10);
+  const isCorrect = (choiceNo === correctNo);
 
-  const correctNo  = parseInt(currentQ[COL.correct_no], 10);
-  const isCorrect  = (choiceNo === correctNo);
-
-  /* ボタン色変更 */
-  const btns = document.querySelectorAll('#choices-grid .choice-btn');
-  btns.forEach((b, i) => {
+  document.querySelectorAll('#choices-grid .choice-btn').forEach((b, i) => {
     b.disabled = true;
-    if (i+1 === correctNo) b.classList.add('correct');
+    if (i+1 === correctNo)            b.classList.add('correct');
     else if (i+1 === choiceNo && !isCorrect) b.classList.add('wrong');
   });
 
-  /* localStorageに一時保存（confidenceはあとで更新） */
   const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
   const qid     = currentQ[COL.id];
   results[qid]  = { correct: isCorrect, sec: elapsedSec, confidence: 'guess', ts: new Date().toISOString() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-
   sessionLog.push({ qid, correct: isCorrect, sec: elapsedSec, confidence: 'guess', q: currentQ });
 
-  /* 少し待ってから結果画面へ */
   setTimeout(() => showResult(isCorrect), 600);
 }
 
@@ -929,68 +848,57 @@ function selectAnswer(choiceNo, clickedBtn, choices) {
 function showResult(isCorrect) {
   showScreen('screen-result');
 
-  /* 正誤表示 */
   document.getElementById('verdict-icon').textContent = isCorrect ? '⭕' : '❌';
   const vt = document.getElementById('verdict-text');
   vt.textContent = isCorrect ? '正解！' : '不正解…';
   vt.className   = 'verdict-text ' + (isCorrect ? 'correct' : 'wrong');
 
-  /* タイム */
   const m = Math.floor(elapsedSec/60), s = elapsedSec%60;
-  document.getElementById('verdict-time').textContent =
-    `所要時間：${m > 0 ? m+'分' : ''}${s}秒`;
+  document.getElementById('verdict-time').textContent = `所要時間：${m > 0 ? m+'分' : ''}${s}秒`;
 
-  /* スピードバッジ（閾値：15秒以下=速い、30秒以下=普通、それ以上=ゆっくり） */
   const badgeEl = document.getElementById('speed-badge');
-  let badgeClass, badgeText;
-  if (elapsedSec <= 15)      { badgeClass = 'fast';   badgeText = '⚡ 速い！'; }
-  else if (elapsedSec <= 30) { badgeClass = 'normal'; badgeText = '🎯 普通'; }
-  else                        { badgeClass = 'slow';   badgeText = '🐢 もう少し！'; }
-  badgeEl.innerHTML = `<span class="speed-badge ${badgeClass}">${badgeText}</span>`;
+  let cls, txt;
+  if      (elapsedSec <= 15) { cls='fast';   txt='⚡ 速い！'; }
+  else if (elapsedSec <= 30) { cls='normal'; txt='🎯 普通'; }
+  else                        { cls='slow';   txt='🐢 もう少し！'; }
+  badgeEl.innerHTML = `<span class="speed-badge ${cls}">${txt}</span>`;
 
-  /* 手ごたえボタンリセット */
   document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected'));
 
-  /* 折りたたみリセット */
   const rp = document.getElementById('review-panel');
   rp.classList.remove('open');
   document.getElementById('review-toggle').textContent = '🔍 問題文・選択肢をふりかえる ▼';
 
-  /* 折りたたみ内容（問題文＋選択肢） */
-  const rawSentence = currentQ[COL.sentence] || '';
-  const renderedSent = rawSentence.replace(/【([^】]+)】/g, (_, w) =>
-    `<strong style="color:var(--accent)">${w}</strong>`
-  );
-  document.getElementById('review-sentence').innerHTML = renderedSent;
+  /* 折りたたみ内容 */
+  const raw = currentQ[COL.sentence] || '';
+  document.getElementById('review-sentence').innerHTML =
+    raw.replace(/【([^】]+)】/g, (_, w) => `<strong style="color:var(--accent)">${w}</strong>`);
 
   const correctNo = parseInt(currentQ[COL.correct_no], 10);
   const choices   = [currentQ[COL.c1], currentQ[COL.c2], currentQ[COL.c3], currentQ[COL.c4]];
   const rcDiv     = document.getElementById('review-choices');
   rcDiv.innerHTML = '';
   choices.forEach((c, i) => {
-    const no  = i + 1;
-    const div = document.createElement('div');
-    div.className = 'review-choice';
+    const no  = i+1;
     const isC = (no === correctNo);
     const isS = (no === selectedChoice);
-    if (isC)        div.classList.add('is-correct');
-    if (isS && !isC) div.classList.add('is-selected');
-    if (isC && isS)  div.classList.add('is-correct');
+    const div = document.createElement('div');
+    div.className = 'review-choice';
+    if (isC)          div.classList.add('is-correct');
+    if (isS && !isC)  div.classList.add('is-selected');
+    if (isC && isS)   div.classList.add('is-correct');
     div.innerHTML = `<span>${no}. ${c}</span>`
-      + (isC ? ' <span style="margin-left:auto;font-size:.8em">✅ 正解</span>' : '')
+      + (isC        ? ' <span style="margin-left:auto;font-size:.8em">✅ 正解</span>' : '')
       + (isS && !isC ? ' <span style="margin-left:auto;font-size:.8em">← あなたの答え</span>' : '');
     rcDiv.appendChild(div);
   });
 
-  /* 解説 */
   document.getElementById('explain-text').textContent = currentQ[COL.explain] || '';
-  const confuseArea = document.getElementById('confuse-area');
   const confuseWord = (currentQ[COL.confuse] || '').trim();
-  confuseArea.innerHTML = confuseWord
+  document.getElementById('confuse-area').innerHTML = confuseWord
     ? `<span class="confuse-word">💡 混同しやすい語：${confuseWord}</span>` : '';
 
-  /* 「次の問題へ」ボタンのテキスト */
-  const isLast = (currentIdx + 1 >= sessionQueue.length);
+  const isLast = (currentIdx+1 >= sessionQueue.length);
   document.getElementById('btn-next').textContent = isLast ? '結果を見る 📊' : '次の問題へ →';
 }
 
@@ -1009,8 +917,7 @@ function toggleReview() {
 
 /* ─── 手ごたえ ─── */
 function setConfidence(level) {
-  /* 最後に記録したログを更新 */
-  const last = sessionLog[sessionLog.length - 1];
+  const last = sessionLog[sessionLog.length-1];
   if (last) {
     last.confidence = level;
     const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -1027,12 +934,9 @@ function setConfidence(level) {
 /* ─── 次の問題 ─── */
 function nextQuestion() {
   currentIdx++;
-  if (currentIdx >= sessionQueue.length) {
-    showSummary();
-  } else {
-    showScreen('screen-quiz');
-    showQuestion();
-  }
+  if (currentIdx >= sessionQueue.length) { showSummary(); return; }
+  showScreen('screen-quiz');
+  showQuestion();
 }
 
 /* ─── サマリー ─── */
@@ -1040,50 +944,38 @@ function showSummary() {
   clearInterval(timerInterval);
   showScreen('screen-summary');
 
-  const count   = sessionLog.length;
+  const count  = sessionLog.length;
   const correct = sessionLog.filter(l => l.correct).length;
-  const rate    = count ? Math.round(correct/count*100) : 0;
-  const avgSec  = count ? Math.round(sessionLog.reduce((a,l)=>a+l.sec,0)/count) : 0;
+  const rate   = count ? Math.round(correct/count*100) : 0;
+  const avgSec = count ? Math.round(sessionLog.reduce((a,l) => a+l.sec, 0)/count) : 0;
 
   document.getElementById('sum-count').textContent = count;
   document.getElementById('sum-rate').textContent  = rate + '%';
   document.getElementById('sum-time').textContent  = avgSec + '秒';
 
-  /* バッジ集計 */
-  const badges  = [];
-  const fast    = sessionLog.filter(l => l.sec <= 15).length;
-  const slow    = sessionLog.filter(l => l.sec >  30).length;
-  if (fast > 0) badges.push(`⚡ 速い！×${fast}`);
-  if (rate >= 80) badges.push('🏆 優秀！');
-  if (rate === 100) badges.push('🌟 パーフェクト！');
-  if (count >= 10) badges.push('📚 10問達成！');
-  if (count >= 20) badges.push('🔥 20問達成！');
+  const badges = [];
+  const fast   = sessionLog.filter(l => l.sec <= 15).length;
+  if (fast > 0)       badges.push(`⚡ 速い！×${fast}`);
+  if (rate >= 80)     badges.push('🏆 優秀！');
+  if (rate === 100)   badges.push('🌟 パーフェクト！');
+  if (count >= 10)    badges.push('📚 10問達成！');
+  if (count >= 20)    badges.push('🔥 20問達成！');
+  document.getElementById('badge-list').innerHTML = badges.map(b => `<span class="badge-chip">${b}</span>`).join('');
 
-  const bl = document.getElementById('badge-list');
-  bl.innerHTML = badges.map(b => `<span class="badge-chip">${b}</span>`).join('');
-
-  /* 復習リスト */
-  const reviewItems = sessionLog.filter(l =>
-    !(l.correct && l.confidence === 'sure')
-  );
+  const reviewItems = sessionLog.filter(l => !(l.correct && l.confidence === 'sure'));
   const rl = document.getElementById('review-list');
-  if (reviewItems.length === 0) {
-    rl.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:12px">🎉 今日の問題は全部クリア！</div>';
-  } else {
-    rl.innerHTML = reviewItems.map(l => `
-      <div class="review-item">
-        <div class="review-item-word">${l.q[COL.target]}（${l.q[COL.answer]}）</div>
-        <div class="review-item-info">
-          ${l.correct ? '⭕' : '❌'}
-          ${l.correct ? '正解' : '不正解'}・
-          手ごたえ：${ {sure:'◎自信あり', maybe:'△たぶん', guess:'？勘'}[l.confidence] || '未選択' }・
-          ${l.sec}秒
-        </div>
-      </div>
-    `).join('');
-  }
+  rl.innerHTML = reviewItems.length === 0
+    ? '<div style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:12px">🎉 今日の問題は全部クリア！</div>'
+    : reviewItems.map(l => `
+        <div class="review-item">
+          <div class="review-item-word">${l.q[COL.target]}（${l.q[COL.answer]}）</div>
+          <div class="review-item-info">
+            ${l.correct ? '⭕ 正解' : '❌ 不正解'}・
+            手ごたえ：${ {sure:'◎自信あり', maybe:'△たぶん', guess:'？勘'}[l.confidence] || '未選択' }・
+            ${l.sec}秒
+          </div>
+        </div>`).join('');
 
-  /* カレンダー＆統計を更新（トップ画面に戻ったとき反映させる） */
   buildCalendar();
 }
 
@@ -1103,7 +995,7 @@ function goHome() {
 /* ─── 初期化 ─── */
 document.addEventListener('DOMContentLoaded', () => {
   applySettings();
-  loadCSV().then(() => loadProgress());
+  loadCSV();
 });
 </script>
 </body>
