@@ -294,6 +294,7 @@
 
       <!-- ① 語彙カード（アクティブ） -->
       <li>
+        <!-- ★ 修正箇所：goi.html → yomi.html -->
         <a href="./yomi.html" class="subject-card subject-card-active">
           <div class="card-badge badge-new">NEW</div>
           <div class="card-icon">🔤</div>
@@ -413,14 +414,9 @@
       const results = JSON.parse(raw);
       const keys    = Object.keys(results);
 
-      /* 総問数 */
       const total = keys.length;
-
-      /* 正答率 */
       const correctCount = keys.filter(k => results[k].correct).length;
       const rate = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
-      /* 復習キュー（自信あり＋正解以外） */
       const reviewCount = keys.filter(k => {
         const r = results[k];
         return !(r.correct && r.confidence === 'sure');
