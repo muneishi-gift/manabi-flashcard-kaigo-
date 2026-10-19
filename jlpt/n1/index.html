@@ -487,25 +487,50 @@
         </a>
       </li>
 
-      <!-- ② 語彙・文法カード（準備中） -->
+      <!-- ② 語彙・文法カード（アクティブ） -->
       <li>
-        <div class="subject-card subject-card-soon">
-          <div class="card-badge badge-soon">準備中</div>
+        <a href="./goi-bunpo/index.html" class="subject-card subject-card-active">
+          <div class="card-badge badge-new">NEW</div>
           <div class="card-icon">📝</div>
           <div class="card-body">
-            <div class="card-title" style="color:rgba(200,200,220,0.45);">
+            <div class="card-title card-title-gold">
               <ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>
             </div>
-            <div class="card-desc" style="color:rgba(200,200,220,0.35);">
-              <ruby>漢字<rt>かんじ</rt></ruby>・<ruby>語彙<rt>ごい</rt></ruby>・<ruby>文法<rt>ぶんぽう</rt></ruby>の
-              フラッシュカードと<ruby>練習問題<rt>れんしゅうもんだい</rt></ruby>。
-              Google Sheets から<ruby>自動更新<rt>じどうこうしん</rt></ruby>。
+            <div class="card-desc">
+              <ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み・<ruby>文脈規定<rt>ぶんみゃくきてい</rt></ruby>・
+              <ruby>言<rt>い</rt></ruby>い<ruby>換<rt>か</rt></ruby>え<ruby>類義語<rt>るいぎご</rt></ruby>・<ruby>用法<rt>ようほう</rt></ruby>・
+              <ruby>文法<rt>ぶんぽう</rt></ruby>を<ruby>練習<rt>れんしゅう</rt></ruby>しよう。
             </div>
             <div class="card-tags">
-              <span class="tag-muted">Coming Soon</span>
+              <span class="tag"><ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み</span>
+              <span class="tag-muted"><ruby>文脈規定<rt>ぶんみゃくきてい</rt></ruby>（準備中）</span>
+              <span class="tag-muted"><ruby>類義語<rt>るいぎご</rt></ruby>（準備中）</span>
+              <span class="tag-muted"><ruby>用法<rt>ようほう</rt></ruby>（準備中）</span>
+              <span class="tag-muted"><ruby>文法<rt>ぶんぽう</rt></ruby>（準備中）</span>
+            </div>
+            <!-- 語彙学習統計エリア -->
+            <div class="progress-area">
+              <div class="progress-row">
+                <span class="progress-label">これまでに解いた問題</span>
+                <span class="progress-value" id="goi-total">0問</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="goi-progress-fill" style="width:0%"></div>
+              </div>
+              <div style="display:flex; gap:12px; margin-top:4px;">
+                <div style="flex:1; background:rgba(255,255,255,0.06); border-radius:10px; padding:5px 10px; text-align:center;">
+                  <div style="font-size:calc(0.60rem * var(--font-scale)); color:var(--text-muted);">正答率</div>
+                  <div style="font-size:calc(0.80rem * var(--font-scale)); font-weight:800; color:var(--accent);" id="goi-rate">0%</div>
+                </div>
+                <div style="flex:1; background:rgba(255,255,255,0.06); border-radius:10px; padding:5px 10px; text-align:center;">
+                  <div style="font-size:calc(0.60rem * var(--font-scale)); color:var(--text-muted);">復習キュー</div>
+                  <div style="font-size:calc(0.80rem * var(--font-scale)); font-weight:800; color:var(--accent);" id="goi-review">0問</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+          <div class="card-arrow">›</div>
+        </a>
       </li>
 
       <!-- ③ 聴解カード（非対応） -->
@@ -646,6 +671,32 @@
 
     /* ページ表示時に進捗を反映 */
     loadProgress();
+    /* ══════════════════════════════════════
+       語彙（漢字の読み）統計を読み込んで表示
+    ══════════════════════════════════════ */
+    function loadGoiProgress() {
+      const raw     = localStorage.getItem('jlpt_n1_yomi_results') || '{}';
+      const results = JSON.parse(raw);
+      const keys    = Object.keys(results);
+      const total   = keys.length;
+      const correct = keys.filter(k => results[k].correct).length;
+      const rate    = total > 0 ? Math.round((correct / total) * 100) : 0;
+      const review  = keys.filter(k =>
+        !(results[k].correct && results[k].confidence === 'sure')
+      ).length;
+
+      /* 全問題数は100問（将来600問に増える）→ MAX 100で進捗バー計算 */
+      const maxQ = 100;
+      const pct  = Math.min(Math.round((total / maxQ) * 100), 100);
+
+      document.getElementById('goi-total').textContent        = total + '問';
+      document.getElementById('goi-rate').textContent         = rate + '%';
+      document.getElementById('goi-review').textContent       = review + '問';
+      document.getElementById('goi-progress-fill').style.width = pct + '%';
+    }
+
+    loadGoiProgress();
+
   </script>
 
 </body>
