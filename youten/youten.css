@@ -646,3 +646,86 @@ rt{
   box-shadow:0 12px 40px rgba(0,0,0,.5);
 }
 @media print{.yt-spine-hint,.yt-spine-overlay{display:none;}}
+/* ===== ○×の確認問題 ===== */
+.yt-ox { margin-top: 4px; }
+.yt-ox-list { list-style: none; margin: 0; padding: 0; }
+
+.yt-ox-q {
+  border: 1px solid #e2e5ea;
+  border-radius: 10px;
+  padding: 14px 14px 12px;
+  margin-bottom: 12px;
+  background: #fff;
+  transition: border-color .15s, background-color .15s;
+}
+.yt-ox-q:last-child { margin-bottom: 0; }
+.yt-ox-q.is-right { border-color: #2f9e6e; background: #f4fbf7; }
+.yt-ox-q.is-wrong { border-color: #d3756b; background: #fdf6f5; }
+
+.yt-ox-ask { display: flex; gap: 10px; align-items: flex-start; }
+.yt-ox-no {
+  flex: 0 0 auto;
+  min-width: 1.7em; height: 1.7em; line-height: 1.7em;
+  text-align: center; border-radius: 50%;
+  background: #eef1f5; color: #4a5568;
+  font-size: .85em; font-weight: 700;
+}
+.yt-ox-text { flex: 1 1 auto; line-height: 2.1; }
+
+.yt-ox-btns { display: flex; gap: 10px; margin: 12px 0 0; }
+.yt-ox-btn {
+  flex: 1 1 0;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 8px;
+  border: 2px solid #cbd3dc; border-radius: 8px;
+  background: #fff; color: #2d3748;
+  font-size: 1em; font-family: inherit; cursor: pointer;
+  transition: all .12s;
+}
+.yt-ox-btn:hover { background: #f5f7fa; }
+.yt-ox-sign { font-size: 1.35em; line-height: 1; font-weight: 700; }
+.yt-ox-word { font-size: .85em; }
+.yt-ox-btn.is-picked.is-right { border-color: #2f9e6e; background: #2f9e6e; color: #fff; }
+.yt-ox-btn.is-picked.is-wrong { border-color: #d3756b; background: #d3756b; color: #fff; }
+
+.yt-ox-result { margin-top: 10px; min-height: 0; }
+.yt-ox-result:empty { display: none; }
+.yt-ox-judge { font-weight: 700; margin-right: .6em; }
+.yt-ox-judge-o { color: #1f7a54; }
+.yt-ox-judge-x { color: #b4453a; }
+.yt-ox-ans { font-size: .92em; color: #4a5568; }
+
+.yt-ox-exp {
+  display: none;
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px dashed #d8dde4;
+  font-size: .94em; line-height: 2; color: #4a5568;
+}
+.yt-ox-q.is-done .yt-ox-exp { display: block; }
+.yt-ox-exp:empty { display: none !important; }
+
+.yt-ox-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-top: 12px;
+}
+.yt-ox-score { font-size: .92em; color: #4a5568; }
+.yt-ox-score b { font-size: 1.25em; color: #1f7a54; }
+.yt-ox-reset {
+  padding: 6px 14px;
+  border: 1px solid #cbd3dc; border-radius: 999px;
+  background: #fff; color: #4a5568;
+  font-size: .85em; font-family: inherit; cursor: pointer;
+}
+.yt-ox-reset:hover { background: #f5f7fa; }
+
+/* ===== ブロックの色分け（tone） ===== */
+.yt-block.yt-tone-tubo  .yt-block-cap { color: #b06a1f; }
+.yt-block.yt-tone-tubo  { border-left: 4px solid #e8b55f; padding-left: 12px; }
+.yt-block.yt-tone-genba .yt-block-cap { color: #2b6ea8; }
+.yt-block.yt-tone-genba { border-left: 4px solid #7fb3dc; padding-left: 12px; }
+
+@media (max-width: 480px) {
+  .yt-ox-btns { gap: 8px; }
+  .yt-ox-word { display: none; }
+  .yt-ox-sign { font-size: 1.5em; }
+}
