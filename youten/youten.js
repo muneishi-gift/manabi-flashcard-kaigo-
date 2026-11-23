@@ -10,6 +10,11 @@
      データファイル側の part / partTitle は使いません。
    ※ ふりがなは、データに一度書いた読みを辞書に覚えて
      画面ぜんたいの同じ言葉に自動で付けます（法改正ノートと同じ考え方）。
+   ※ ブロックは8種類です。
+     text / list / table / judge / key / pyramid / steps / ox
+     ox … ○×の確認問題。押すとその場で正解・不正解が出ます。
+   ※ どのブロックにも tone を付けられます（例 tone:'tubo'）。
+     見ための色だけが変わります。中身の作りは変わりません。
    Created by Mitsuhide Muneishi
    =================================================================== */
 (function () {
@@ -131,7 +136,11 @@
     '気':'き', '大丈夫':'だいじょうぶ', '一覧':'いちらん',
     '一般社団法人':'いっぱんしゃだんほうじん', '協会':'きょうかい',
     '宗石':'むねいし', '光英':'みつひで',
-    '歳':'さい', '万円':'まんえん', '日以内':'にちいない'
+    '歳':'さい', '万円':'まんえん', '日以内':'にちいない',
+    /* ○× 確認問題で使う言葉 */
+    '正解':'せいかい', '不正解':'ふせいかい', '答':'こた',
+    '中':'ちゅう', '選':'えら', '問目':'もんめ', '解説':'かいせつ',
+    '試験':'しけん', '現場':'げんば'
   };
 
   var FG_DICT = {};   // 漢字 → よみ
@@ -179,6 +188,11 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  /* 属性に入れる文字（" を消しておきます） */
+  function escAttr(s) {
+    return esc(s).replace(/"/g, '&quot;');
+  }
+
   /* 読みのカッコを消す（ON/OFF どちらでも消します） */
   function stripRuby(text) {
     if (text === undefined || text === null) return '';
@@ -218,7 +232,7 @@
     return out;
   }
 
-    /* 書いたとおりの「漢字（かな）」を、その位置のまま ruby にする。
+  /* 書いたとおりの「漢字（かな）」を、その位置のまま ruby にする。
      カッコで読みを書いていない漢字だけ、辞書（FG_DICT）で補います。 */
   function fgInlineHtml(s) {
     var out = '', last = 0, m;
@@ -254,12 +268,21 @@
   }
 
   /* =================================================================
-     3. ブロック（5種類）を描く
-        text / list / table / judge / key
+     2-2. ○×の確認問題がいま何を押されているか
+          画面を描き直しても消えないように、ここに置いておきます。
+          ページを開き直すと消えます（成績は保存しません）。
      ================================================================= */
-  function renderBlock(b) {
+  var OX_STATE = {};
+
+  /* =================================================================
+     3. ブロック（8種類）を描く
+        text / list / table / judge / key / pyramid / steps / ox
+        keyBase … ox のときだけ使う「どの問題か」を表す合い札
+     ================================================================= */
+  function renderBlock(b, keyBase) {
     if (!b || !b.type) return '';
     var cap = b.cap ? '<div class="yt-block-cap">' + deco(b.cap) + '</div>' : '';
+    var tone = b.tone ? ' yt-tone-' + String(b.tone).replace(/[^a-z0-9_-]/gi, '') : '';
     var h = '';
     var i, j;
 
@@ -306,7 +329,7 @@
       }
       h += '</div>';
 
-        } else if (b.type === 'key') {
+    } else if (b.type === 'key') {
       h = '<div class="yt-key">' + deco(b.body) + '</div>';
 
     } else if (b.type === 'pyramid') {
@@ -341,9 +364,102 @@
              '</li>';
       }
       h += '</ol>';
+
+    } else if (b.type === 'ox') {
+      var qs = b.items || [];
+      if (!qs.length) return '';
+      var base = escAttr(keyBase || 'ox');
+      h = '<div class="yt-ox" data-yt-ox-group="' + base + '">' +
+          '<ol class="yt-ox-list">';
+      for (i = 0; i < qs.length; i++) {
+        var it = qs[i] || {};
+        var ansMark = (it.a === true || it.a === '○' || it.a === 'o') ? 'o' : 'x';
+        var qkey = base + '#' + i;
+        h += '<li class="yt-ox-q" data-yt-ox-item="' + escAttr(qkey) + '" data-yt-ox-ans="' + ansMark + '">' +
+               '<div class="yt-ox-ask">' +
+                 '<span class="yt-ox-no">' + (i + 1) + '</span>' +
+                 '<span class="yt-ox-text">' + deco(it.q) + '</span>' +
+               '</div>' +
+               '<div class="yt-ox-btns" role="group">' +
+                 '<button type="button" class="yt-ox-btn yt-ox-o" data-yt-ox="' + escAttr(qkey) + '" data-yt-ox-pick="o" aria-pressed="false">' +
+                   '<span class="yt-ox-sign" aria-hidden="true">○</span>' +
+                   '<span class="yt-ox-word">' + deco('正（ただ）しい') + '</span>' +
+                 '</button>' +
+                 '<button type="button" class="yt-ox-btn yt-ox-x" data-yt-ox="' + escAttr(qkey) + '" data-yt-ox-pick="x" aria-pressed="false">' +
+                   '<span class="yt-ox-sign" aria-hidden="true">×</span>' +
+                   '<span class="yt-ox-word">' + deco('誤（あやま）り') + '</span>' +
+                 '</button>' +
+               '</div>' +
+               '<div class="yt-ox-result" role="status" aria-live="polite"></div>' +
+               '<div class="yt-ox-exp">' + deco(it.exp || '') + '</div>' +
+             '</li>';
+      }
+      h += '</ol>' +
+           '<div class="yt-ox-foot">' +
+             '<span class="yt-ox-score" data-yt-ox-score="1"></span>' +
+             '<button type="button" class="yt-ox-reset" data-yt-ox-reset="1">' + deco('もう一度（いちど）') + '</button>' +
+           '</div>' +
+           '</div>';
     }
 
-    return '<div class="yt-block">' + cap + h + '</div>';
+    return '<div class="yt-block' + tone + '">' + cap + h + '</div>';
+  }
+
+  /* ---- ○×：押された中身を画面にうつす ---- */
+  function oxPaintGroup(grp) {
+    if (!grp) return;
+    var lis = grp.querySelectorAll('[data-yt-ox-item]');
+    var total = lis.length;
+    var done = 0, right = 0;
+    var i, j;
+
+    for (i = 0; i < total; i++) {
+      var li   = lis[i];
+      var qkey = li.getAttribute('data-yt-ox-item');
+      var ans  = li.getAttribute('data-yt-ox-ans');
+      var pick = OX_STATE[qkey] || '';
+      var btns = li.querySelectorAll('[data-yt-ox-pick]');
+      var res  = li.querySelector('.yt-ox-result');
+
+      li.classList.remove('is-done', 'is-right', 'is-wrong');
+      for (j = 0; j < btns.length; j++) {
+        btns[j].classList.remove('is-picked', 'is-right', 'is-wrong');
+        btns[j].setAttribute('aria-pressed', 'false');
+      }
+
+      if (!pick) { if (res) res.innerHTML = ''; continue; }
+
+      done++;
+      var ok = (pick === ans);
+      if (ok) right++;
+
+      li.classList.add('is-done', ok ? 'is-right' : 'is-wrong');
+      for (j = 0; j < btns.length; j++) {
+        if (btns[j].getAttribute('data-yt-ox-pick') === pick) {
+          btns[j].classList.add('is-picked', ok ? 'is-right' : 'is-wrong');
+          btns[j].setAttribute('aria-pressed', 'true');
+        }
+      }
+      if (res) {
+        res.innerHTML = ok
+          ? '<span class="yt-ox-judge yt-ox-judge-o">' + deco('正解（せいかい）') + '</span>'
+          : '<span class="yt-ox-judge yt-ox-judge-x">' + deco('不正解（ふせいかい）') + '</span>' +
+            '<span class="yt-ox-ans">' + deco('答（こた）えは ') +
+              (ans === 'o' ? '○' : '×') + deco(' です') + '</span>';
+      }
+    }
+
+    var sc = grp.querySelector('[data-yt-ox-score]');
+    if (sc) {
+      sc.innerHTML = done
+        ? deco(total + '問（もん）中（ちゅう） ') + '<b>' + right + '</b>' + deco('問（もん）正解（せいかい）')
+        : deco('○か×を選（えら）んでください');
+    }
+  }
+
+  function oxPaintAll() {
+    var grps = document.querySelectorAll('[data-yt-ox-group]');
+    for (var i = 0; i < grps.length; i++) { oxPaintGroup(grps[i]); }
   }
 
   /* =================================================================
@@ -496,8 +612,8 @@
       var it = s.items[i];
       var open = keepOpen ? (keepOpen.indexOf(it.id) !== -1) : false;
 
-      html += '<section class="yt-item' + (open ? ' yt-open' : '') + '" data-yt-item="' + esc(it.id) + '">' +
-        '<button type="button" class="yt-item-head" data-yt-toggle="' + esc(it.id) + '" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+      html += '<section class="yt-item' + (open ? ' yt-open' : '') + '" data-yt-item="' + escAttr(it.id) + '">' +
+        '<button type="button" class="yt-item-head" data-yt-toggle="' + escAttr(it.id) + '" aria-expanded="' + (open ? 'true' : 'false') + '">' +
           '<span class="yt-item-id">' + esc(it.id) + '</span>' +
           '<span class="yt-item-title">' + deco(it.title) + '</span>' +
           '<span class="yt-item-star">' + starMark(it.star || 1) + '</span>' +
@@ -507,13 +623,16 @@
 
       if (it.hitokoto) html += '<div class="yt-hitokoto">' + deco(it.hitokoto) + '</div>';
       for (var b = 0; b < (it.blocks || []).length; b++) {
-        html += renderBlock(it.blocks[b]);
+        html += renderBlock(it.blocks[b], s.no + '-' + it.id + '-' + b);
       }
       if (it.point) html += '<div class="yt-point"><span class="yt-point-cap">ここが出る</span>' + deco(it.point) + '</div>';
 
       html += '</div></section>';
     }
     box.innerHTML = html;
+
+    /* 描き直しても、さっき押した○×は残します */
+    oxPaintAll();
   }
 
   function openSubject(no, keepOpen, y) {
@@ -580,6 +699,32 @@
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
+
+      /* ○×：○か×を押した */
+      var oxb = t.closest('[data-yt-ox]');
+      if (oxb) {
+        var qkey = oxb.getAttribute('data-yt-ox');
+        var pick = oxb.getAttribute('data-yt-ox-pick');
+        if (qkey && pick) {
+          OX_STATE[qkey] = pick;
+          oxPaintGroup(oxb.closest('[data-yt-ox-group]'));
+        }
+        return;
+      }
+
+      /* ○×：もう一度 */
+      var oxr = t.closest('[data-yt-ox-reset]');
+      if (oxr) {
+        var grp = oxr.closest('[data-yt-ox-group]');
+        if (grp) {
+          var lis = grp.querySelectorAll('[data-yt-ox-item]');
+          for (var i = 0; i < lis.length; i++) {
+            delete OX_STATE[lis[i].getAttribute('data-yt-ox-item')];
+          }
+          oxPaintGroup(grp);
+        }
+        return;
+      }
 
       var open = t.closest('[data-yt-open]');
       if (open) { openSubject(parseInt(open.getAttribute('data-yt-open'), 10)); return; }
