@@ -1,731 +1,145 @@
 /* ===================================================================
-   各科目ごと要点集 - スタイル
-   manabi-flashcard-kaigo- / youten/youten.css
-   ※ class名はすべて yt- で始まり、過去問・法改正ノートとぶつかりません。
-   ※ 色と文字サイズの値は houkaisei.css と同じものを使っています。
-   Created by Mitsuhide Muneishi
-   -------------------------------------------------------------------
-   更新メモ（系統図の追加）
-   ・.yt-cap を .yt-block-cap と同じ見た目にしました（JSがどちらを出力しても崩れません）
-   ・系統図（tree）の色をテーマ変数にそろえ、ダークテーマでも読めるようにしました
+   ○×の確認問題（ox）
+   解説を読んだあと、その場で○か×を押して答え合わせをします。
+   色はすべてテーマ変数を使うので、ライトでもダークでも読めます。
+   成績は保存しません（ページを開き直すと消えます）。
    =================================================================== */
 
-/* ---------- 文字サイズ（theme.js が data-fs を付けます） ---------- */
-:root{
-  --fs-body: 16px;
-  --fs-sub:  13.5px;
-  --lh-body: 1.90;
-  --ruby-scale: 58%;
-}
-:root[data-fs="large"]{  --fs-body:18px; --fs-sub:14.5px; --lh-body:1.95; }
-:root[data-fs="xlarge"]{ --fs-body:20px; --fs-sub:15.5px; --lh-body:2.00; }
-
-/* ---------- 配色（theme.js が data-theme を付けます） ---------- */
+/* 正解・不正解のうすい背景色だけ、ここで作ります */
 :root[data-theme="dark"]{
-  --bg-grad: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-  --glow-a: rgba(120,100,255,.15);
-  --glow-b: rgba(255,120,200,.10);
-  --ink:       #EDEFF4;
-  --ink-sub:   rgba(237,239,244,.78);
-  --ink-faint: rgba(237,239,244,.60);
-  --card:      rgba(255,255,255,.08);
-  --card-soft: rgba(255,255,255,.05);
-  --line:      rgba(255,255,255,.16);
-  --line-soft: rgba(255,255,255,.10);
-  --hover:     rgba(255,255,255,.15);
-  --accent:    #a78bfa;
-  --accent-2:  #60a5fa;
-  --btn-grad:  linear-gradient(135deg, #a78bfa, #60a5fa);
-  --ok:   #3ECFC0;
-  --ng:   #FFA45C;
-  --pick: #F2B705;
-  --pick-bg: rgba(242,183,5,.16);
-  --shadow: rgba(0,0,0,.30);
-  --ruby-ink: rgba(237,239,244,.86);
+  --ox-ok-bg: rgba(62,207,192,.13);
+  --ox-ng-bg: rgba(255,164,92,.13);
+  --ox-face:  rgba(255,255,255,.04);
 }
 :root[data-theme="light"]{
-  --bg-grad: linear-gradient(135deg, #E8E3DA 0%, #EDE9E2 50%, #E4E7EC 100%);
-  --glow-a: rgba(120,100,255,.06);
-  --glow-b: rgba(255,120,200,.04);
-  --ink:       #1F2328;
-  --ink-sub:   #4A5158;
-  --ink-faint: #626A72;
-  --card:      #FAF8F5;
-  --card-soft: #F4F1EC;
-  --line:      rgba(31,35,40,.20);
-  --line-soft: rgba(31,35,40,.12);
-  --hover:     #FFFFFF;
-  --accent:    #6D28D9;
-  --accent-2:  #1D4ED8;
-  --btn-grad:  linear-gradient(135deg, #6D28D9, #1D4ED8);
-  --ok:   #0E7C86;
-  --ng:   #C2410C;
-  --pick: #9A6700;
-  --pick-bg: rgba(154,103,0,.12);
-  --shadow: rgba(31,35,40,.14);
-  --ruby-ink: #3D444B;
+  --ox-ok-bg: rgba(14,124,134,.09);
+  --ox-ng-bg: rgba(194,65,12,.08);
+  --ox-face:  #FFFFFF;
 }
 
-/* ---------- リセット ---------- */
-*{ margin:0; padding:0; box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+.yt-ox{ margin-top:2px; }
+.yt-ox-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
 
-body{
-  font-family:'Noto Sans JP','Noto Sans',sans-serif;
-  font-size:var(--fs-body);
-  line-height:var(--lh-body);
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  background:var(--bg-grad);
-  color:var(--ink);
-  overflow-x:hidden;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-  position:relative;
-}
-body::before{
-  content:'';
-  position:fixed; inset:0;
-  background:
-    radial-gradient(ellipse at 30% 20%, var(--glow-a) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, var(--glow-b) 0%, transparent 60%);
-  pointer-events:none; z-index:0;
-}
-body > *{ position:relative; z-index:1; }
-
-.hidden{ display:none !important; }
-
-/* ---------- ふりがなの見え方 ---------- */
-ruby{ ruby-position:over; -webkit-ruby-position:before; }
-rt{
-  font-size:var(--ruby-scale);
-  font-weight:400;
-  color:var(--ruby-ink);
-  letter-spacing:0;
-  user-select:none;            /* コピーしたとき読みが混ざらないように */
-}
-
-/* ---------- ヘッダー ---------- */
-.yt-header{
-  width:100%; max-width:760px;
-  padding:22px 18px 6px;
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  text-align:center;
-}
-.yt-header-logo{ width:64px; height:auto; border-radius:14px; }
-.yt-header-title{
-  font-family:'Poppins','Noto Sans JP',sans-serif;
-  font-size:clamp(1.25rem,4.6vw,1.7rem);
-  font-weight:800; letter-spacing:-.01em;
-  background:var(--btn-grad);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-}
-.yt-header-sub{ font-size:var(--fs-sub); color:var(--ink-sub); font-weight:600; }
-
-/* ---------- ふりがなスイッチ ---------- */
-.yt-furigana-toggle{
-  width:100%; max-width:760px;
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  padding:10px 18px 0;
-}
-.yt-furigana-label{ font-size:var(--fs-sub); font-weight:700; color:var(--ink-sub); }
-.yt-furigana-switch{
-  display:flex; align-items:center; gap:9px;
-  padding:7px 14px 7px 9px; min-height:44px;
-  border:1px solid var(--line); border-radius:999px;
-  background:var(--card); cursor:pointer;
-}
-.yt-furigana-switch:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
-.yt-furigana-track{
-  width:40px; height:22px; border-radius:999px;
-  background:var(--line); position:relative; transition:background .22s; flex-shrink:0;
-}
-.yt-furigana-track.on{ background:var(--btn-grad); }
-.yt-furigana-thumb{
-  position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%;
-  background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.35); transition:transform .22s;
-}
-.yt-furigana-track.on .yt-furigana-thumb{ transform:translateX(18px); }
-.yt-furigana-status{ font-size:.78rem; font-weight:900; color:var(--accent); letter-spacing:.06em; }
-
-/* ---------- 表示設定 ---------- */
-.yt-display-settings{
-  width:100%; max-width:760px;
-  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
-  padding:10px 18px 0;
-}
-.yt-theme-group, .yt-fs-group{
-  display:flex; align-items:center; gap:4px;
-  padding:4px; border:1px solid var(--line); border-radius:999px; background:var(--card);
-}
-.yt-fs-label{ font-size:.78rem; font-weight:800; color:var(--ink-sub); padding:0 6px 0 8px; }
-.theme-btn, .fs-btn{
-  border:0; background:transparent; color:var(--ink); cursor:pointer;
-  font-family:inherit; font-size:.82rem; font-weight:800;
-  padding:9px 13px; min-height:40px; border-radius:999px; white-space:nowrap;
-}
-.theme-btn.selected, .fs-btn.selected{
-  background:var(--btn-grad); color:#fff;
-  box-shadow:0 2px 10px var(--shadow);
-}
-
-/* ---------- 共通の枠 ---------- */
-.yt-container{
-  width:100%; max-width:760px;
-  padding:16px 18px 40px;
-}
-.yt-back{
-  display:inline-block; margin-bottom:14px;
-  padding:11px 16px; min-height:44px;
-  border:1px solid var(--line); border-radius:999px;
-  background:var(--card); color:var(--ink);
-  font-family:inherit; font-size:.9rem; font-weight:700;
-  text-decoration:none; cursor:pointer;
-}
-.yt-back-bottom{ margin:10px 0 0; }
-
-/* ---------- ダッシュボード ---------- */
-.yt-dash{
-  background:var(--card); border:1px solid var(--line);
-  border-radius:18px; padding:16px; margin-bottom:14px;
-}
-.yt-dash-row{ display:flex; gap:10px; }
-.yt-dash-cell{ flex:1; text-align:center; }
-.yt-dash-num{ font-size:1.6rem; font-weight:900; color:var(--accent); line-height:1.3; }
-.yt-dash-num span{ font-size:.9rem; color:var(--ink-faint); font-weight:700; }
-.yt-dash-cap{ font-size:var(--fs-sub); color:var(--ink-sub); }
-.yt-dash-bar{
-  height:8px; border-radius:999px; background:var(--line-soft);
-  margin:12px 0 8px; overflow:hidden;
-}
-.yt-dash-fill{ height:100%; background:var(--btn-grad); transition:width .4s; }
-.yt-dash-msg{ font-size:var(--fs-sub); color:var(--ink-sub); text-align:center; }
-
-.yt-note-caution{
-  background:var(--card-soft); border:1px dashed var(--line);
-  border-radius:14px; padding:12px 14px; margin-bottom:16px;
-  font-size:var(--fs-sub); color:var(--ink-sub); line-height:1.9;
-}
-
-/* ---------- 科目えらび ---------- */
-.yt-section-title{
-  font-size:.92rem; font-weight:900; color:var(--ink-sub);
-  letter-spacing:.04em; margin:18px 0 8px;
-}
-.yt-menu-list{ list-style:none; display:flex; flex-direction:column; gap:10px; }
-.yt-menu-item{
-  position:relative; width:100%; text-align:left;
-  display:flex; flex-direction:column; gap:4px;
-  padding:16px 18px; min-height:56px;
-  border:1px solid var(--line); border-radius:16px;
-  background:var(--card); color:var(--ink);
-  font-family:inherit; font-size:1rem; cursor:pointer;
-  transition:background .2s, transform .1s;
-}
-.yt-menu-item:hover{ background:var(--hover); }
-.yt-menu-item:active{ transform:scale(.99); }
-.yt-menu-no{ font-size:.74rem; font-weight:900; color:var(--accent); letter-spacing:.08em; }
-.yt-menu-title{ font-weight:800; line-height:1.7; word-break:auto-phrase; }
-.yt-menu-sub{ font-size:var(--fs-sub); color:var(--ink-sub); }
-.yt-menu-read{
-  position:absolute; top:12px; right:14px;
-  font-size:.7rem; font-weight:900; color:var(--ok);
-  border:1px solid var(--ok); border-radius:999px; padding:2px 8px;
-}
-.yt-empty{
-  padding:26px; text-align:center; color:var(--ink-sub);
-  border:1px dashed var(--line); border-radius:16px;
-}
-
-/* ---------- 科目の中身 ---------- */
-.yt-subject-head{ margin-bottom:16px; }
-.yt-subject-part{ font-size:var(--fs-sub); color:var(--ink-faint); font-weight:700; }
-.yt-subject-no{ font-size:.76rem; font-weight:900; color:var(--accent); letter-spacing:.08em; margin-top:4px; }
-.yt-subject-title{
-  font-size:clamp(1.2rem,4.4vw,1.55rem); font-weight:900; line-height:1.6;
-  margin:2px 0 6px; word-break:auto-phrase;
-}
-.yt-subject-lead{ font-size:var(--fs-sub); color:var(--ink-sub); font-weight:700; }
-.yt-subject-intro{
-  margin-top:10px; padding:14px 16px;
-  background:var(--card); border:1px solid var(--line); border-radius:16px;
-  font-size:.95rem; line-height:1.95;
-}
-
-/* ---------- テーマ（アコーディオン） ---------- */
-.yt-item{
-  border:1px solid var(--line); border-radius:18px;
-  background:var(--card); margin-bottom:12px; overflow:hidden;
-  scroll-margin-top:14px;
-}
-.yt-item-head{
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  width:100%; text-align:left;
-  padding:16px 16px; min-height:56px;
-  border:0; background:transparent; color:var(--ink);
-  font-family:inherit; font-size:1rem; font-weight:800; cursor:pointer;
-}
-.yt-item-head:focus-visible{ outline:3px solid var(--accent); outline-offset:-3px; }
-.yt-item-id{
-  font-size:.74rem; font-weight:900; color:#fff;
-  background:var(--btn-grad); border-radius:999px; padding:3px 10px; flex-shrink:0;
-}
-.yt-item-title{ flex:1; line-height:1.7; word-break:auto-phrase; }
-.yt-item-star{ font-size:.85rem; color:var(--pick); letter-spacing:.04em; }
-.yt-item-arrow{ font-size:.8rem; color:var(--ink-faint); transition:transform .2s; }
-.yt-item.yt-open .yt-item-arrow{ transform:rotate(180deg); }
-
-.yt-item-body{ display:none; padding:0 16px 18px; }
-.yt-item.yt-open .yt-item-body{ display:block; }
-
-.yt-hitokoto{
-  background:var(--card-soft); border-left:4px solid var(--accent);
-  border-radius:0 12px 12px 0; padding:11px 14px; margin-bottom:14px;
-  font-size:var(--fs-sub); color:var(--ink-sub); line-height:1.9;
-}
-
-/* ---------- ブロック ---------- */
-.yt-block{ margin-bottom:16px; }
-
-/* 見出し（.yt-block-cap と .yt-cap はまったく同じ見た目です）
-   JS が どちらのクラス名を書き出しても崩れないようにしてあります */
-.yt-block-cap,
-.yt-cap{
-  font-size:.92rem; font-weight:900; color:var(--accent);
-  margin-bottom:8px; line-height:1.7;
-}
-
-.yt-text{ line-height:1.95; word-break:auto-phrase; }
-.yt-list{ list-style:none; display:flex; flex-direction:column; gap:9px; }
-.yt-list li{
-  position:relative; padding-left:1.35em; line-height:1.95; word-break:auto-phrase;
-}
-.yt-list li::before{
-  content:'●'; position:absolute; left:0; top:0;
-  font-size:.62em; color:var(--accent); line-height:2.9;
-}
-
-/* 表（横に長い表はスワイプで見られます） */
-.yt-table-wrap{
-  overflow-x:auto; -webkit-overflow-scrolling:touch;
+/* 設問ひとつぶんの箱（1問ずつ行をかえて並びます） */
+.yt-ox-q{
   border:1px solid var(--line); border-radius:14px;
+  background:var(--ox-face);
+  padding:14px 15px 13px;
+  transition:border-color .18s, background-color .18s;
 }
-.yt-table{ width:100%; border-collapse:collapse; min-width:520px; font-size:.93rem; }
-.yt-table th, .yt-table td{
-  border-bottom:1px solid var(--line-soft);
-  border-right:1px solid var(--line-soft);
-  padding:11px 12px; text-align:left; vertical-align:top; line-height:1.85;
-  word-break:auto-phrase;
-}
-.yt-table th{
-  background:var(--card-soft); font-weight:900; color:var(--ink-sub);
-  font-size:.86rem; white-space:nowrap;
-}
-.yt-table tr:last-child td{ border-bottom:0; }
-.yt-table th:last-child, .yt-table td:last-child{ border-right:0; }
-.yt-td-head{ font-weight:800; }
+.yt-ox-q::before{ content:none; }      /* 親の ul の●を出さない保険 */
+.yt-ox-q.is-right{ border-color:var(--ok); background:var(--ox-ok-bg); }
+.yt-ox-q.is-wrong{ border-color:var(--ng); background:var(--ox-ng-bg); }
 
-/* ○×の考え方 */
-.yt-judge{ display:flex; flex-direction:column; gap:10px; }
-.yt-judge-col{ border-radius:14px; padding:12px 14px; border:1px solid var(--line); }
-.yt-judge-ok{ border-left:4px solid var(--ok); }
-.yt-judge-ng{ border-left:4px solid var(--ng); }
-.yt-judge-cap{ font-size:.86rem; font-weight:900; margin-bottom:7px; }
-.yt-judge-ok .yt-judge-cap{ color:var(--ok); }
-.yt-judge-ng .yt-judge-cap{ color:var(--ng); }
-.yt-judge ul{ list-style:none; display:flex; flex-direction:column; gap:8px; }
-.yt-judge li{ position:relative; padding-left:1.2em; line-height:1.9; }
-.yt-judge li::before{ content:'・'; position:absolute; left:0; top:0; }
-
-/* 強調わく */
-.yt-key{
-  background:var(--pick-bg); border:1px solid var(--pick);
-  border-radius:14px; padding:13px 15px; line-height:1.95; font-weight:600;
+/* 設問文 */
+.yt-ox-ask{ display:flex; gap:10px; align-items:flex-start; }
+.yt-ox-no{
+  flex:0 0 auto;
+  min-width:1.8em; height:1.8em; line-height:1.8em;
+  text-align:center; border-radius:50%;
+  background:var(--card-soft); border:1px solid var(--line);
+  color:var(--ink-sub); font-size:.8rem; font-weight:900;
 }
-
-/* ここが出る */
-.yt-point{
-  margin-top:14px; padding:14px 15px;
-  background:var(--card-soft); border:1px solid var(--line); border-radius:14px;
-  line-height:1.95; font-size:.95rem;
-}
-.yt-point-cap{
-  display:inline-block; margin-right:8px; padding:2px 10px;
-  font-size:.72rem; font-weight:900; color:#fff;
-  background:var(--btn-grad); border-radius:999px;
-}
-
-/* ---------- 下のボタン ---------- */
-.yt-foot-tools{ display:flex; flex-direction:column; gap:10px; margin-top:22px; }
-.yt-fc-btn{
-  width:100%; padding:16px; min-height:56px;
-  border:0; border-radius:16px;
-  background:var(--btn-grad); color:#fff;
-  font-family:inherit; font-size:1rem; font-weight:800; cursor:pointer;
-}
-.yt-fc-btn:active{ transform:scale(.99); }
-
-.yt-credit{
-  width:100%; max-width:760px; padding:0 18px 28px;
-  text-align:center; font-size:.76rem; color:var(--ink-faint);
-}
-
-/* ---------- 本文は指でなぞれるように（ボタンは除く） ---------- */
-#ytItems, #ytItems *, .yt-subject-head, .yt-subject-head *, .yt-note-caution{
-  user-select:text; -webkit-user-select:text;
-}
-#ytItems button, #ytItems .yt-back{
-  user-select:none; -webkit-user-select:none;
-}
-::selection{ background:var(--pick-bg); }
-
-/* ---------- 画面が広いとき ---------- */
-@media (min-width:640px){
-  .yt-judge{ flex-direction:row; }
-  .yt-judge-col{ flex:1; }
-}
-
-/* ---------- 紙に印刷するとき ---------- */
-@media print{
-  body{ background:#fff; color:#000; }
-  .yt-furigana-toggle, .yt-display-settings, .yt-back, .yt-foot-tools, .yt-dash{ display:none !important; }
-  .yt-item-body{ display:block !important; }
-  .yt-item{ break-inside:avoid; border:1px solid #999; }
-}
-
-/* ===================================================================
-   パート／領域の区分（公式の出題科目表にあわせた並び）
-   =================================================================== */
-.yt-part{ margin-top:18px; }
-.yt-part:first-child{ margin-top:6px; }
-
-.yt-part-head{
-  display:flex; align-items:center; flex-wrap:wrap; gap:8px;
-  padding:11px 14px; margin-bottom:10px;
-  border:1px solid var(--line); border-radius:14px;
-  background:var(--card-soft);
-}
-.yt-part-badge{
-  font-size:.74rem; font-weight:900; color:#fff;
-  background:var(--btn-grad); border-radius:999px; padding:3px 11px;
-  letter-spacing:.04em; flex-shrink:0;
-}
-.yt-part-title{ flex:1; font-size:.95rem; font-weight:900; line-height:1.7; word-break:auto-phrase; }
-.yt-part-count{ font-size:.8rem; font-weight:900; color:var(--ink-sub); flex-shrink:0; }
-
-/* 科目ボタンの中の小さな札（領域・出題数・科目群） */
-.yt-menu-meta{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
-.yt-chip{
-  font-size:.72rem; font-weight:800; line-height:1.9;
-  padding:1px 9px; border-radius:999px;
-  border:1px solid var(--line); background:var(--card-soft); color:var(--ink-sub);
-}
-.yt-chip-area{ color:var(--accent-2); border-color:var(--accent-2); }
-.yt-chip-q{ color:var(--pick); border-color:var(--pick); }
-
-/* まだ作っていない科目 */
-.yt-menu-item.is-soon{
-  opacity:.55; cursor:default;
-  display:flex; flex-direction:column; gap:4px;
-}
-.yt-menu-item.is-soon:hover{ background:var(--card); }
-.yt-menu-soon{
-  position:absolute; top:12px; right:14px;
-  font-size:.7rem; font-weight:900; color:var(--ink-faint);
-  border:1px solid var(--line); border-radius:999px; padding:2px 8px;
-}
-
-/* 科目ページの見出しの札 */
-.yt-subject-part{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-.yt-tag{ font-size:.72rem; font-weight:900; line-height:1.9; padding:2px 10px; border-radius:999px; }
-.yt-tag-part{ color:#fff; background:var(--btn-grad); }
-.yt-tag-area{ color:var(--accent-2); border:1px solid var(--accent-2); }
-.yt-tag-q{ color:var(--pick); border:1px solid var(--pick); }
-.yt-tag-group{ color:var(--ink-sub); border:1px solid var(--line); }
-
-/* ===== ピラミッド図（pyramid） ===== */
-.yt-pyramid{display:flex;flex-direction:column;align-items:center;gap:6px;margin:2px 0}
-.yt-pyr-row{width:100%;display:flex;justify-content:center}
-.yt-pyr-layer{
-  box-sizing:border-box;min-width:10em;max-width:100%;
-  padding:10px 14px;border-radius:10px;text-align:center;
-  display:flex;flex-direction:column;gap:2px;
-  background:linear-gradient(135deg,rgba(124,77,255,.14),rgba(96,165,250,.14));
-  border:1px solid rgba(124,77,255,.26);
-}
-.yt-pyr-label{font-weight:700;line-height:1.8}
-.yt-pyr-note{font-size:.84em;opacity:.78;line-height:1.7}
-
-/* ===== 段階図（steps） ===== */
-.yt-steps{list-style:none;margin:2px 0;padding:0}
-.yt-step{display:flex;gap:11px;align-items:flex-start;padding:9px 0;position:relative}
-.yt-step-no{
-  flex-shrink:0;width:1.9em;height:1.9em;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Poppins',sans-serif;font-weight:700;font-size:.85em;
-  background:linear-gradient(135deg,#7c4dff,#448aff);color:#fff;
-}
-.yt-step-body{display:flex;flex-direction:column;gap:2px;padding-top:.15em}
-.yt-step-label{font-weight:700;line-height:1.85}
-.yt-step-note{font-size:.86em;opacity:.78;line-height:1.75}
-.yt-steps-flow .yt-step:not(:last-child)::before{
-  content:'';position:absolute;left:.92em;top:2.5em;bottom:-.3em;
-  width:2px;background:linear-gradient(180deg,rgba(124,77,255,.5),rgba(68,138,255,.2));
-}
-
-/* ===================================================================
-   系統図（tree）
-   神経の分類のように「枝分かれ」を見せたいときに使います。
-   色はテーマ変数を使うので、ライトでもダークでも読めます。
-   =================================================================== */
-.yt-tree{
-  overflow-x:auto; -webkit-overflow-scrolling:touch;
-  padding:4px 0 8px;
-}
-.yt-tree ul{ list-style:none; margin:0; padding:0 0 0 20px; }
-.yt-tree > ul{ padding-left:0; }
-.yt-tree li{ position:relative; padding:6px 0 6px 18px; }
-.yt-tree > ul > li{ padding-left:0; }
-
-/* 縦の罫線 */
-.yt-tree li::before{
-  content:''; position:absolute; top:0; bottom:0; left:0;
-  border-left:2px solid var(--line);
-}
-.yt-tree li:last-child::before{ bottom:auto; height:22px; }
-.yt-tree > ul > li::before{ display:none; }
-
-/* 横の罫線 */
-.yt-tree li::after{
-  content:''; position:absolute; top:22px; left:0; width:16px;
-  border-top:2px solid var(--line);
-}
-.yt-tree > ul > li::after{ display:none; }
-
-/* 枝のはこ */
-.yt-tree-box{
-  display:inline-block; max-width:34em;
-  padding:7px 13px; border-radius:10px;
-  border:2px solid var(--line);
-  background:var(--card-soft);
-}
-.yt-tree-label{
-  display:block; font-weight:800; line-height:1.8;
-  color:var(--ink); word-break:auto-phrase;
-}
-.yt-tree-note{
-  display:block; margin-top:2px;
-  font-size:.86em; line-height:1.75; color:var(--ink-sub);
-  word-break:auto-phrase;
-}
-
-/* 階層ごとに濃さを変えて、親子関係を見分けやすくします */
-/* 1階層目（いちばん親：神経系） */
-.yt-tree > ul > li > .yt-tree-box{
-  border-color:var(--accent);
-  background:var(--pick-bg);
-}
-.yt-tree > ul > li > .yt-tree-box .yt-tree-label{ color:var(--accent); }
-
-/* 2階層目（体性神経・自律神経） */
-.yt-tree > ul > li > ul > li > .yt-tree-box{
-  border-color:var(--accent-2);
-}
-.yt-tree > ul > li > ul > li > .yt-tree-box .yt-tree-label{ color:var(--accent-2); }
-
-/* 3階層目（運動神経・感覚神経・交感神経・副交感神経） */
-.yt-tree > ul > li > ul > li > ul > li > .yt-tree-box{
-  border-color:var(--line);
-  background:var(--card);
-}
-
-@media (max-width:480px){
-  .yt-tree ul{ padding-left:12px; }
-  .yt-tree-box{ padding:6px 10px; font-size:.94em; }
-}
-
-@media print{
-  .yt-tree-box{ border:1px solid #666; background:#fff; }
-  .yt-tree li::before, .yt-tree li::after{ border-color:#666; }
-}
-/* ===================================================================
-   脊髄損傷（せきずいそんしょう）の図と一覧　yt-spine
-   youten-10b.js の 10-9 で使います。youten.js の改造は不要です。
-   =================================================================== */
-
-/* 見出しが空のときは、すき間を作らずに消します */
-.yt-cap:empty, .yt-block-cap:empty{ display:none; }
-
-.yt-spine{ margin:2px 0; }
-
-.yt-spine-title{
-  font-size:1.04rem; font-weight:900; line-height:1.7;
-  color:var(--accent-2); margin-bottom:12px;
-  word-break:auto-phrase;
-}
-
-/* 図と一覧を横に並べます */
-.yt-spine-body{ display:flex; align-items:flex-start; gap:14px; }
-
-/* 左：イラスト（スクロールしても見えるように貼り付きます） */
-.yt-spine-fig{
-  flex:0 0 130px; width:130px; margin:0;
-  text-align:center; position:sticky; top:10px;
-}
-.yt-spine-fig img{
-  display:block; width:100%; height:auto;
-  border-radius:8px; background:#fff; padding:4px;
-}
-.yt-spine-cap{
-  margin-top:7px; font-size:.72rem; line-height:1.75; color:var(--ink-faint);
-}
-
-/* 右：影響の一覧 */
-.yt-spine-list{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:14px; }
-
-.yt-spine-group{
-  border-left:6px solid var(--line);
-  border-radius:0 10px 10px 0;
-  padding:2px 0 4px 12px;
-}
-.yt-spine-region{
-  display:inline-block; margin-bottom:6px; padding:2px 12px;
-  font-size:.76rem; font-weight:900; color:#fff;
-  border-radius:999px; letter-spacing:.04em;
-}
-.yt-spine-row{ display:flex; gap:10px; align-items:flex-start; padding:6px 0; }
-.yt-spine-row + .yt-spine-row{ border-top:1px dashed var(--line-soft); }
-.yt-spine-lv{ flex:0 0 5.8em; font-weight:900; font-size:.9rem; line-height:1.9; }
-.yt-spine-eff{
+.yt-ox-text{
   flex:1 1 auto; min-width:0;
-  font-size:.93rem; line-height:1.9; word-break:auto-phrase;
-}
-.yt-spine-note{
-  display:block; margin-top:2px;
-  font-size:.86em; line-height:1.8; color:var(--ink-sub);
+  line-height:2.05; word-break:auto-phrase;
 }
 
-/* 部位ごとの色（イラストの色に合わせています） */
-.yt-sp-cervical{ border-left-color:#4AA3DD; }
-.yt-sp-cervical .yt-spine-region{ background:#1F6FA8; }
-.yt-sp-thoracic{ border-left-color:#8CC63F; }
-.yt-sp-thoracic .yt-spine-region{ background:#4E7A12; }
-.yt-sp-lumbar{   border-left-color:#F07D2A; }
-.yt-sp-lumbar .yt-spine-region{ background:#B34A0C; }
-.yt-sp-sacral{   border-left-color:#F5C242; }
-.yt-sp-sacral .yt-spine-region{ background:#8A6200; }
+/* ○ × のボタン */
+.yt-ox-btns{ display:flex; gap:10px; margin-top:13px; }
+.yt-ox-btn{
+  flex:1 1 0; min-height:48px;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  padding:9px 8px;
+  border:2px solid var(--line); border-radius:12px;
+  background:var(--card); color:var(--ink);
+  font-family:inherit; font-size:.95rem; font-weight:800;
+  cursor:pointer; transition:background .14s, border-color .14s, color .14s;
+}
+.yt-ox-btn:hover{ background:var(--hover); }
+.yt-ox-btn:active{ transform:scale(.99); }
+.yt-ox-btn:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+.yt-ox-sign{ font-size:1.4em; line-height:1; font-weight:900; }
+.yt-ox-word{ font-size:.82em; font-weight:700; }
 
-/* スマホでは、イラストを上にして縦に並べます */
-@media (max-width:560px){
-  .yt-spine-body{ flex-direction:column; align-items:center; }
-  .yt-spine-fig{ position:static; flex:0 0 auto; width:104px; margin-bottom:4px; }
-  .yt-spine-list{ width:100%; }
-  .yt-spine-row{ flex-direction:column; gap:2px; }
-  .yt-spine-lv{ flex:none; }
+/* 押したボタン（うすい色＋ふちの色で示します） */
+.yt-ox-btn.is-picked.is-right{
+  border-color:var(--ok); background:var(--ox-ok-bg); color:var(--ok);
+}
+.yt-ox-btn.is-picked.is-wrong{
+  border-color:var(--ng); background:var(--ox-ng-bg); color:var(--ng);
 }
 
+/* 正解・不正解の文字 */
+.yt-ox-result{ margin-top:11px; line-height:1.9; }
+.yt-ox-result:empty{ display:none; }
+.yt-ox-judge{ font-size:1rem; font-weight:900; margin-right:.7em; }
+.yt-ox-judge-o{ color:var(--ok); }
+.yt-ox-judge-x{ color:var(--ng); }
+.yt-ox-ans{ font-size:.9rem; font-weight:700; color:var(--ink-sub); }
+
+/* 解説（答えたあとに開きます） */
+.yt-ox-exp{
+  display:none;
+  margin-top:9px; padding-top:9px;
+  border-top:1px dashed var(--line);
+  font-size:.93rem; line-height:1.95; color:var(--ink-sub);
+  word-break:auto-phrase;
+}
+.yt-ox-q.is-done .yt-ox-exp{ display:block; }
+.yt-ox-exp:empty{ display:none !important; }
+
+/* 下の点数と「もう一度」 */
+.yt-ox-foot{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-top:13px;
+}
+.yt-ox-score{ font-size:.88rem; font-weight:700; color:var(--ink-sub); line-height:1.8; }
+.yt-ox-score b{ font-size:1.3em; font-weight:900; color:var(--accent); }
+.yt-ox-reset{
+  flex-shrink:0; min-height:40px;
+  padding:7px 16px;
+  border:1px solid var(--line); border-radius:999px;
+  background:var(--card); color:var(--ink-sub);
+  font-family:inherit; font-size:.82rem; font-weight:800; cursor:pointer;
+}
+.yt-ox-reset:hover{ background:var(--hover); }
+.yt-ox-reset:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+/* ===================================================================
+   ブロックの色分け（tone）
+   tone:'tubo'  … 試験のツボ
+   tone:'genba' … 現場とのつながり
+   =================================================================== */
+.yt-block.yt-tone-tubo,
+.yt-block.yt-tone-genba{
+  border-left:4px solid var(--line);
+  border-radius:0 12px 12px 0;
+  padding:11px 14px;
+  background:var(--card-soft);
+}
+.yt-block.yt-tone-tubo{  border-left-color:var(--pick); }
+.yt-block.yt-tone-genba{ border-left-color:var(--accent-2); }
+.yt-block.yt-tone-tubo  > .yt-block-cap{ color:var(--pick); }
+.yt-block.yt-tone-genba > .yt-block-cap{ color:var(--accent-2); }
+.yt-block.yt-tone-tubo  .yt-text,
+.yt-block.yt-tone-genba .yt-text{ font-size:.95rem; }
+
+/* ---------- せまい画面 ---------- */
+@media (max-width:480px){
+  .yt-ox-q{ padding:13px 12px 12px; }
+  .yt-ox-btns{ gap:8px; }
+  .yt-ox-word{ display:none; }          /* ○ × の記号だけにします */
+  .yt-ox-sign{ font-size:1.6em; }
+  .yt-ox-foot{ flex-direction:column; align-items:stretch; gap:9px; }
+  .yt-ox-reset{ width:100%; }
+}
+
+/* ---------- 紙に印刷するとき（答えと解説を出します） ---------- */
 @media print{
-  .yt-spine-fig{ position:static; }
-  .yt-spine-group{ break-inside:avoid; }
-}
-.yt-spine-zoom{display:block;cursor:zoom-in;}
-.yt-spine-zoom .yt-spine-img{display:block;width:100%;height:auto;}
-.yt-spine-hint{display:block;margin-top:5px;text-align:center;
-  font-size:.68rem;font-weight:800;line-height:1.7;color:var(--accent-2);}
-
-.yt-spine-overlay{
-  position:fixed;inset:0;z-index:9999;padding:12px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.78);cursor:zoom-out;
-}
-.yt-spine-overlay img{
-  width:auto;height:auto;max-width:96vw;max-height:94vh;
-  background:#fff;border-radius:12px;padding:8px;
-  box-shadow:0 12px 40px rgba(0,0,0,.5);
-}
-@media print{.yt-spine-hint,.yt-spine-overlay{display:none;}}
-/* ===== ○×の確認問題 ===== */
-.yt-ox { margin-top: 4px; }
-.yt-ox-list { list-style: none; margin: 0; padding: 0; }
-
-.yt-ox-q {
-  border: 1px solid #e2e5ea;
-  border-radius: 10px;
-  padding: 14px 14px 12px;
-  margin-bottom: 12px;
-  background: #fff;
-  transition: border-color .15s, background-color .15s;
-}
-.yt-ox-q:last-child { margin-bottom: 0; }
-.yt-ox-q.is-right { border-color: #2f9e6e; background: #f4fbf7; }
-.yt-ox-q.is-wrong { border-color: #d3756b; background: #fdf6f5; }
-
-.yt-ox-ask { display: flex; gap: 10px; align-items: flex-start; }
-.yt-ox-no {
-  flex: 0 0 auto;
-  min-width: 1.7em; height: 1.7em; line-height: 1.7em;
-  text-align: center; border-radius: 50%;
-  background: #eef1f5; color: #4a5568;
-  font-size: .85em; font-weight: 700;
-}
-.yt-ox-text { flex: 1 1 auto; line-height: 2.1; }
-
-.yt-ox-btns { display: flex; gap: 10px; margin: 12px 0 0; }
-.yt-ox-btn {
-  flex: 1 1 0;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px 8px;
-  border: 2px solid #cbd3dc; border-radius: 8px;
-  background: #fff; color: #2d3748;
-  font-size: 1em; font-family: inherit; cursor: pointer;
-  transition: all .12s;
-}
-.yt-ox-btn:hover { background: #f5f7fa; }
-.yt-ox-sign { font-size: 1.35em; line-height: 1; font-weight: 700; }
-.yt-ox-word { font-size: .85em; }
-.yt-ox-btn.is-picked.is-right { border-color: #2f9e6e; background: #2f9e6e; color: #fff; }
-.yt-ox-btn.is-picked.is-wrong { border-color: #d3756b; background: #d3756b; color: #fff; }
-
-.yt-ox-result { margin-top: 10px; min-height: 0; }
-.yt-ox-result:empty { display: none; }
-.yt-ox-judge { font-weight: 700; margin-right: .6em; }
-.yt-ox-judge-o { color: #1f7a54; }
-.yt-ox-judge-x { color: #b4453a; }
-.yt-ox-ans { font-size: .92em; color: #4a5568; }
-
-.yt-ox-exp {
-  display: none;
-  margin-top: 8px; padding-top: 8px;
-  border-top: 1px dashed #d8dde4;
-  font-size: .94em; line-height: 2; color: #4a5568;
-}
-.yt-ox-q.is-done .yt-ox-exp { display: block; }
-.yt-ox-exp:empty { display: none !important; }
-
-.yt-ox-foot {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; margin-top: 12px;
-}
-.yt-ox-score { font-size: .92em; color: #4a5568; }
-.yt-ox-score b { font-size: 1.25em; color: #1f7a54; }
-.yt-ox-reset {
-  padding: 6px 14px;
-  border: 1px solid #cbd3dc; border-radius: 999px;
-  background: #fff; color: #4a5568;
-  font-size: .85em; font-family: inherit; cursor: pointer;
-}
-.yt-ox-reset:hover { background: #f5f7fa; }
-
-/* ===== ブロックの色分け（tone） ===== */
-.yt-block.yt-tone-tubo  .yt-block-cap { color: #b06a1f; }
-.yt-block.yt-tone-tubo  { border-left: 4px solid #e8b55f; padding-left: 12px; }
-.yt-block.yt-tone-genba .yt-block-cap { color: #2b6ea8; }
-.yt-block.yt-tone-genba { border-left: 4px solid #7fb3dc; padding-left: 12px; }
-
-@media (max-width: 480px) {
-  .yt-ox-btns { gap: 8px; }
-  .yt-ox-word { display: none; }
-  .yt-ox-sign { font-size: 1.5em; }
+  .yt-ox-q{ break-inside:avoid; border:1px solid #999; background:#fff; }
+  .yt-ox-btns, .yt-ox-foot, .yt-ox-result{ display:none !important; }
+  .yt-ox-exp{ display:block !important; border-top:1px dashed #999; }
+  .yt-block.yt-tone-tubo,
+  .yt-block.yt-tone-genba{ border-left:3px solid #999; background:#fff; }
 }
