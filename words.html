@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>介護用語じてん｜一般社団法人GIFT協会</title>
+<meta name="description" content="介護福祉士試験の用語を五十音・科目から引ける辞書。学習の進み具合も図鑑で確認できます。">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="gift-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--fscale:1}
+html.fs-s{--fscale:1}
+html.fs-l{--fscale:1.25}
+html.fs-xl{--fscale:1.55}
+
+:root{
+  --accent:#5b4bd6;--accent-rgb:91,75,214;--accent2:#22b8a6;
+  --tint-a:#f4f6ff;--tint-b:#e7ebfb;--tint-c:#dbe1f7;
+}
+body.theme-light{
+  --bg-a:var(--tint-a);--bg-b:var(--tint-c);
+  --panel:rgba(255,255,255,.66);--panel-line:rgba(255,255,255,.9);
+  --card:#fff;--card-line:rgba(var(--accent-rgb),.18);
+  --ink:#282533;--ink-sub:rgba(40,37,51,.6);
+  --chip:rgba(255,255,255,.72);--chip-line:rgba(var(--accent-rgb),.28);
+  --bar-bg:rgba(var(--accent-rgb),.14);
+  --shadow:0 10px 26px rgba(var(--accent-rgb),.14);
+  --shadow-s:0 3px 10px rgba(var(--accent-rgb),.12);
+  --grid-0:#e4e7f2;
+}
+body.theme-dark{
+  --bg-a:#100e1c;--bg-b:#1a1630;
+  --panel:rgba(255,255,255,.07);--panel-line:rgba(255,255,255,.13);
+  --card:#211d38;--card-line:rgba(255,255,255,.12);
+  --ink:#f2f0fb;--ink-sub:rgba(242,240,251,.6);
+  --chip:rgba(255,255,255,.07);--chip-line:rgba(255,255,255,.18);
+  --bar-bg:rgba(255,255,255,.14);
+  --shadow:0 14px 34px rgba(0,0,0,.45);
+  --shadow-s:0 3px 12px rgba(0,0,0,.35);
+  --grid-0:rgba(255,255,255,.12);
+}
+body{
+  font-family:'Noto Sans JP','Noto Sans',sans-serif;
+  min-height:100dvh;color:var(--ink);
+  background:linear-gradient(170deg,var(--bg-a) 0%,var(--bg-b) 100%);
+  -webkit-tap-highlight-color:transparent;
+  padding-bottom:40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ===== ヘッダー ===== */
+.dict-head{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;
+  padding:10px 14px;box-shadow:0 4px 18px rgba(var(--accent-rgb),.3);
+}
+.dict-head-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.hbtn{
+  width:38px;height:38px;border-radius:12px;flex-shrink:0;cursor:pointer;
+  border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.16);color:#fff;
+  font-size:1rem;display:flex;align-items:center;justify-content:center;
+  font-family:inherit;text-decoration:none;
+}
+.dict-title{font-size:calc(1rem * var(--fscale));font-weight:900;line-height:1.3}
+.dict-title small{display:block;font-size:.66rem;font-weight:600;opacity:.85}
+
+/* ===== パネル ===== */
+.panel{
+  background:var(--panel);border:1px solid var(--panel-line);border-radius:20px;
+  padding:14px;margin-top:12px;box-shadow:var(--shadow-s);
+}
+.panel-title{
+  font-size:calc(.82rem * var(--fscale));font-weight:800;opacity:.75;margin-bottom:10px;
+}
+
+/* ===== 設定バー ===== */
+.pref-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.switch{
+  display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px 6px 7px;
+  border-radius:999px;background:var(--chip);border:1px solid var(--chip-line);color:var(--ink);
+  font-family:inherit;font-size:calc(.76rem * var(--fscale));font-weight:800;
+}
+.switch-track{width:36px;height:20px;border-radius:999px;background:var(--bar-bg);position:relative;flex-shrink:0}
+.switch-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch.on .switch-track{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.switch.on .switch-thumb{transform:translateX(16px)}
+.switch-state{font-size:.72em;font-weight:900;color:var(--accent)}
+body.theme-dark .switch-state{color:var(--accent2)}
+.seg{display:flex;align-items:center;gap:2px;padding:4px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-line)}
+.seg-cap{font-size:calc(.68rem * var(--fscale));font-weight:800;color:var(--ink-sub);padding:0 7px 0 5px;white-space:nowrap}
+.seg-btn{
+  border:none;background:transparent;color:var(--ink);cursor:pointer;font-family:inherit;
+  font-size:calc(.74rem * var(--fscale));font-weight:800;padding:6px 11px;border-radius:999px;white-space:nowrap;
+}
+.seg-btn.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+
+/* ===== 検索 ===== */
+.search-box{position:relative;margin-top:12px}
+.search-input{
+  width:100%;padding:14px 44px 14px 16px;border-radius:16px;
+  border:1px solid var(--chip-line);background:var(--card);color:var(--ink);
+  font-size:calc(1rem * var(--fscale));font-family:inherit;outline:none;
+  box-shadow:var(--shadow-s);
+}
+.search-input::placeholder{color:var(--ink-sub)}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.18)}
+.search-clear{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--chip);color:var(--ink-sub);font-size:.9rem;display:none;
+}
+.search-clear.show{display:block}
+
+/* ===== タブ ===== */
+.tabs{display:flex;gap:6px;margin-top:12px}
+.tab{
+  flex:1;padding:11px 6px;border-radius:14px;border:1px solid var(--chip-line);
+  background:var(--chip);color:var(--ink);cursor:pointer;font-family:inherit;
+  font-size:calc(.82rem * var(--fscale));font-weight:800;
+}
+.tab.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+
+/* ===== ボタン群 ===== */
+.btn-flow{display:flex;flex-wrap:wrap;gap:7px}
+.kbtn{
+  min-width:46px;padding:10px 8px;border-radius:12px;cursor:pointer;font-family:inherit;
+  border:1px solid var(--chip-line);background:var(--chip);color:var(--ink);
+  font-size:calc(.92rem * var(--fscale));font-weight:800;
+}
+.kbtn.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.kbtn:disabled{opacity:.3;cursor:not-allowed}
+.sbtn{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  padding:12px 14px;border-radius:14px;cursor:pointer;font-family:inherit;text-align:left;
+  border:1px solid var(--chip-line);background:var(--chip);color:var(--ink);margin-bottom:7px;
+}
+.sbtn-name{font-size:calc(.86rem * var(--fscale));font-weight:800;line-height:1.4}
+.sbtn-num{font-size:calc(.72rem * var(--fscale));color:var(--ink-sub);font-weight:700;white-space:nowrap}
+.sbtn-bar{height:6px;border-radius:999px;background:var(--bar-bg);overflow:hidden;margin-top:6px}
+.sbtn-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+/* ===== 語リスト ===== */
+.result-note{font-size:calc(.76rem * var(--fscale));color:var(--ink-sub);font-weight:700;margin:10px 2px 6px}
+.wlist{display:flex;flex-direction:column;gap:7px}
+.witem{
+  background:var(--card);border:1px solid var(--card-line);border-radius:15px;
+  overflow:hidden;box-shadow:var(--shadow-s);
+}
+.whead{
+  display:flex;align-items:center;gap:9px;padding:12px 13px;cursor:pointer;
+  background:none;border:none;width:100%;text-align:left;font-family:inherit;color:var(--ink);
+}
+.wdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--grid-0)}
+.wdot.lv1{background:#bcd7ff}.wdot.lv2{background:#7fb4f5}
+.wdot.lv3{background:#4f8fe0}.wdot.lv4{background:#2f9e6b}.wdot.lv5{background:#e8ab15}
+.wtxt{min-width:0;flex:1}
+.wword{font-size:calc(.98rem * var(--fscale));font-weight:800;line-height:1.5}
+.wword ruby{ruby-position:over;-webkit-ruby-position:before}
+.wword rt{font-size:.45em;font-weight:400;opacity:.7}
+.wsub{font-size:calc(.74rem * var(--fscale));color:var(--ink-sub);line-height:1.55;margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.warrow{color:var(--ink-sub);font-size:.8rem;flex-shrink:0;transition:transform .2s}
+.witem.open .warrow{transform:rotate(90deg)}
+.wbody{display:none;padding:0 13px 14px;border-top:1px solid var(--card-line)}
+.witem.open .wbody{display:block}
+.wrow{margin-top:11px}
+.wlabel{font-size:calc(.7rem * var(--fscale));font-weight:800;color:var(--accent);margin-bottom:3px}
+body.theme-dark .wlabel{color:var(--accent2)}
+.wtext{font-size:calc(.88rem * var(--fscale));line-height:1.95}
+.wtext ruby{ruby-position:over;-webkit-ruby-position:before}
+.wtext rt{font-size:.5em;font-weight:400;opacity:.75}
+.wtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.wtag{font-size:.64rem;font-weight:800;padding:3px 9px;border-radius:999px;
+  background:rgba(var(--accent-rgb),.12);color:var(--accent)}
+body.theme-dark .wtag{background:rgba(255,255,255,.1);color:var(--ink)}
+.wtag.lvtag{background:rgba(232,171,21,.18);color:#a9780a}
+body.theme-dark .wtag.lvtag{background:rgba(232,171,21,.2);color:#ffd36e}
+.wacts{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.wact{
+  flex:1;min-width:120px;padding:11px 10px;border-radius:13px;cursor:pointer;font-family:inherit;
+  border:1px solid var(--chip-line);background:var(--chip);color:var(--ink);
+  font-size:calc(.82rem * var(--fscale));font-weight:800;text-align:center;text-decoration:none;
+}
+.wact.main{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.soon{
+  font-size:calc(.78rem * var(--fscale));color:var(--ink-sub);font-weight:700;
+  padding:9px 12px;border-radius:12px;background:var(--chip);border:1px dashed var(--chip-line);
+  line-height:1.7;
+}
+
+/* ===== 図鑑 ===== */
+.grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.gcell{
+  width:26px;height:26px;border-radius:7px;cursor:pointer;border:none;
+  background:var(--grid-0);padding:0;
+}
+.gcell.lv1{background:#bcd7ff}.gcell.lv2{background:#7fb4f5}
+.gcell.lv3{background:#4f8fe0}.gcell.lv4{background:#2f9e6b}
+.gcell.lv5{background:#e8ab15;box-shadow:0 0 8px rgba(232,171,21,.6)}
+.gcell.na{background:transparent;border:1px dashed var(--chip-line)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:11px;font-size:.68rem;color:var(--ink-sub);font-weight:700}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend i{width:12px;height:12px;border-radius:4px;display:block}
+.done-msg{
+  margin-top:12px;padding:12px;border-radius:14px;text-align:center;font-weight:900;
+  background:linear-gradient(120deg,rgba(232,171,21,.18),rgba(47,158,107,.18));
+  font-size:calc(.9rem * var(--fscale));
+}
+.empty{text-align:center;color:var(--ink-sub);font-size:calc(.84rem * var(--fscale));
+  font-weight:700;padding:26px 10px;line-height:1.9}
+.loading{text-align:center;padding:40px 10px;color:var(--ink-sub);font-weight:700}
+.credit{text-align:center;font-size:.68rem;color:var(--ink-sub);margin-top:22px;line-height:1.8}
+</style>
+</head>
+<body class="theme-light">
+
+<header class="dict-head">
+  <div class="dict-head-in">
+    <a class="hbtn" href="index.html" aria-label="top">🏠</a>
+    <a class="hbtn" href="flashcard.html" aria-label="flashcard">🎴</a>
+    <div class="dict-title">介護用語じてん<small>Kaigo Vocabulary Dictionary</small></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="search-box">
+    <input type="text" class="search-input" id="q" placeholder="漢字・ひらがな・母国語で検索…" autocomplete="off">
+    <button class="search-clear" id="qClear" type="button" aria-label="clear">✕</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" data-tab="find">🔍 さがす</button>
+    <button class="tab" type="button" data-tab="book">📖 ずかん</button>
+    <button class="tab" type="button" data-tab="weak">🔥 にがて</button>
+  </div>
+
+  <div id="main"><div class="loading">読み込んでいます…</div></div>
+
+  <div class="panel">
+    <div class="panel-title">⚙ 表示の設定</div>
+    <div id="prefBar"></div>
+    <div style="margin-top:10px">
+      <div class="panel-title" style="margin-bottom:7px">🌏 意味を見る言語</div>
+      <div class="btn-flow" id="langBar"></div>
+    </div>
+    <div style="text-align:center;margin-top:12px">
+      <button class="wact" type="button" id="reloadBtn" style="max-width:220px">↻ 最新データを読み込む</button>
+    </div>
+  </div>
+
+  <div class="credit">
+    一般社団法人 GIFT協会／Created by Mitsuhide Muneishi
+  </div>
+</div>
+
+<script>
+/* ========== 設定（フラッシュカードと同じ場所を見ています） ========== */
+var CSV_MAIN='https://docs.google.com/spreadsheets/d/e/2PACX-1vSSigciJqcqSYI9Wkwp4-QIvXocFtV9li12It8QvOd4qosRL-gRjeLfciF1CPZQp9EOFxMF2sZHWB4H/pub?gid=0&single=true&output=csv';
+var GAS_URL='https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR_vOBSK7HV9efuW2FCB9S_B_7RJPr1G1hbNUMXx2ktg/exec';
+var LANG_PREFIX={id:'ID',th:'TH',vi:'VI',en:'EN',my:'MY',ne:'NE',mn:'MN'};
+var LANG_NAMES={ja:'日本語',en:'English',id:'Indonesia',vi:'Tiếng Việt',th:'ไทย',my:'မြန်မာ',ne:'नेपाली',mn:'Монгол'};
+var LEVEL_SHORT={L:'日常生活',K1:'初任者',K2:'実務者',K3:'国家試験'};
+var PART_ORDER=['A','B','C','Z'];
+
+/* ========== ふりがな（フラッシュカードと同じ処理） ========== */
+var FURI_RE=/([\u4E00-\u9FFF\u3005\u3006\u30F5\u30F6]+)（([^（）]+)）/g;
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toRubyHtml(t){
+  if(!t)return '';
+  var src=String(t),out='',i=0,m;FURI_RE.lastIndex=0;
+  while((m=FURI_RE.exec(src))!==null){
+    out+=esc(src.slice(i,m.index));
+    out+='<ruby>'+esc(m[1])+'<rt>'+esc(m[2])+'</rt></ruby>';
+    i=m.index+m[0].length;
+  }
+  return out+esc(src.slice(i));
+}
+function stripFuri(t){return t?String(t).replace(FURI_RE,'$1'):'';}
+function toKana(t){return t?String(t).replace(FURI_RE,function(_,k,y){return y;}):'';}
+function deco(t){return furiOn?toRubyHtml(t):esc(stripFuri(t));}
+
+/* ========== 表示の設定（キーはフラッシュカードと共通） ========== */
+var theme='light',fontSize='s',furiOn=true;
+var FONT_SIZES=['s','l','xl'];
+function loadPrefs(){
+  try{var t=localStorage.getItem('kaigo-theme');if(t==='dark'||t==='light')theme=t;}catch(e){}
+  try{var v=localStorage.getItem('kaigo-fontsize');if(v&&FONT_SIZES.indexOf(v)>=0)fontSize=v;}catch(e){}
+  try{var f=localStorage.getItem('kaigo-furigana');furiOn=(f===null)?true:(f==='1');}catch(e){}
+}
+function applyPrefs(){
+  document.body.className='theme-'+theme;
+  var h=document.documentElement;
+  h.className='fs-'+fontSize;
+  renderPrefBar();
+}
+function renderPrefBar(){
+  var sizes=FONT_SIZES.map(function(c){
+    var n=(c==='s')?'標準':(c==='l'?'大':'特大');
+    return '<button class="seg-btn'+(fontSize===c?' on':'')+'" type="button" data-act="size" data-val="'+c+'">'+n+'</button>';
+  }).join('');
+  document.getElementById('prefBar').innerHTML=
+    '<div class="pref-row">'+
+      '<button class="switch'+(furiOn?' on':'')+'" type="button" data-act="furi">'+
+        '<span class="switch-track"><span class="switch-thumb"></span></span>'+
+        '<span>ふりがな</span><span class="switch-state">'+(furiOn?'ON':'OFF')+'</span></button>'+
+      '<div class="seg">'+
+        '<button class="seg-btn'+(theme==='light'?' on':'')+'" type="button" data-act="theme" data-val="light">☀ ライト</button>'+
+        '<button class="seg-btn'+(theme==='dark'?' on':'')+'" type="button" data-act="theme" data-val="dark">🌙 ダーク</button>'+
+      '</div>'+
+      '<div class="seg"><span class="seg-cap">文字</span>'+sizes+'</div>'+
+    '</div>';
+}
+
+/* ========== データ ========== */
+var allData=[],subjects=[],currentLang='ja';
+var srsData={},masteredSet={};
+var tab='find',filterRow='',filterSubject='',keyword='';
+var openSet={};
+
+function normHeader(s){return String(s==null?'':s).replace(/^\ufeff/,'').replace(/\s/g,'').trim();}
+function normCode(s){
+  return String(s==null?'':s).replace(/[Ａ-Ｚａ-ｚ０-９]/g,function(c){
+    return String.fromCharCode(c.charCodeAt(0)-0xFEE0);
+  }).replace(/\s/g,'').toUpperCase().trim();
+}
+function cell(row,i){
+  if(i==null||i<0||!row||i>=row.length||row[i]==null)return '';
+  return String(row[i]).trim();
+}
+function pickCol(H,head,exact,prefix,fb){
+  if(H[exact]!==undefined)return H[exact];
+  for(var i=0;i<head.length;i++){if(head[i].indexOf(prefix)===0)return i;}
+  return fb;
+}
+
+/* 五十音の行わけ */
+var ROWS=[['あ','あいうえおぁぃぅぇぉ'],['か','かきくけこがぎぐげご'],
+['さ','さしすせそざじずぜぞ'],['た','たちつてとだぢづでどっ'],['な','なにぬねの'],
+['は','はひふへほばびぶべぼぱぴぷぺぽ'],['ま','まみむめも'],['や','やゆよゃゅょ'],
+['ら','らりるれろ'],['わ','わをんゎ']];
+var ROWMAP={};
+(function(){for(var i=0;i<ROWS.length;i++){var r=ROWS[i];for(var j=0;j<r[1].length;j++)ROWMAP[r[1][j]]=r[0];}})();
+function kanaRow(kana){
+  if(!kana)return '';
+  var c=kana.charAt(0),n=c.charCodeAt(0);
+  if(n>=0x30A1&&n<=0x30F6)c=String.fromCharCode(n-0x60);
+  return ROWMAP[c]||'';
+}
+
+function loadData(force){
+  var url=force?(CSV_MAIN+(CSV_MAIN.indexOf('?')>=0?'&':'?')+'cb='+Date.now()):CSV_MAIN;
+  Papa.parse(url,{download:true,complete:function(res){build(res.data);},error:function(){
+    document.getElementById('main').innerHTML='<div class="empty">データを読み込めませんでした。<br>電波の良い場所でもう一度お試しください。</div>';
+  }});
+}
+
+function build(rows){
+  if(!rows||rows.length<2){document.getElementById('main').innerHTML='<div class="empty">データが空でした。</div>';return;}
+  var head=rows[0].map(normHeader),H={};
+  for(var i=0;i<head.length;i++){if(head[i]&&H[head[i]]===undefined)H[head[i]]=i;}
+  var cNo=pickCol(H,head,'行ID','行ID',0);
+  var cPart=(H['Part']!==undefined)?H['Part']:1;
+  var cSubj=(H['科目']!==undefined)?H['科目']:2;
+  var cType=(H['種類']!==undefined)?H['種類']:3;
+  var cWord=pickCol(H,head,'語（ふりがな付き）','語（',4);
+  var cMean=pickCol(H,head,'意味（日本語・ふりがな付き）','意味（',5);
+  var cLevel=(H['レベル']!==undefined)?H['レベル']:6;
+  var LC={};
+  Object.keys(LANG_PREFIX).forEach(function(lk){
+    var p=LANG_PREFIX[lk];
+    LC[lk]={w:(H[p+'_語']!==undefined)?H[p+'_語']:-1,d:(H[p+'_意味']!==undefined)?H[p+'_意味']:-1};
+  });
+
+  allData=[];
+  for(var r=1;r<rows.length;r++){
+    var row=rows[r];
+    var no=cell(row,cNo),word=cell(row,cWord);
+    if(!no||!word)continue;
+    var o={no:no,word:word,meaning:cell(row,cMean),part:normCode(cell(row,cPart)),
+      subject:cell(row,cSubj),type:cell(row,cType),level:normCode(cell(row,cLevel)),t:{}};
+    Object.keys(LANG_PREFIX).forEach(function(lk){
+      o.t[lk]={w:cell(row,LC[lk].w),d:cell(row,LC[lk].d)};
+    });
+    /* 検索用のキーを作る（／で区切った語も別々に拾う） */
+    var parts=word.split(/[／\/]/),keys=[],kanas=[];
+    for(var p2=0;p2<parts.length;p2++){
+      var pw=parts[p2].trim();if(!pw)continue;
+      keys.push(stripFuri(pw).toLowerCase());
+      var kk=toKana(pw).trim();
+      if(kk){keys.push(kk.toLowerCase());kanas.push(kk);}
+    }
+    o.keys=keys;
+    o.kana=kanas.length?kanas[0]:'';
+    o.row=kanaRow(o.kana||stripFuri(word));
+    allData.push(o);
+  }
+
+  var seen={};subjects=[];
+  for(var s=0;s<allData.length;s++){
+    var sj=allData[s].subject||'その他';
+    if(!seen[sj]){seen[sj]=1;subjects.push(sj);}
+  }
+  loadRecords();
+  render();
+}
+
+/* ========== 学習の記録を読む（書き換えはしません） ========== */
+function loadRecords(){
+  try{var s=localStorage.getItem('kaigo-srs-'+currentLang);srsData=s?JSON.parse(s):{};}catch(e){srsData={};}
+  if(!srsData||typeof srsData!=='object')srsData={};
+  masteredSet={};
+  try{
+    var m=localStorage.getItem('kaigo-mastered-'+currentLang);
+    var arr=m?JSON.parse(m):[];
+    for(var i=0;i<arr.length;i++)masteredSet[String(arr[i])]=1;
+  }catch(e){}
+}
+function boxOf(no){var r=srsData[String(no)];return (r&&r.box)?r.box:0;}
+function againOf(no){var r=srsData[String(no)];return (r&&r.again)?r.again:0;}
+function isMastered(no){return !!masteredSet[String(no)];}
+function lvOf(d){var b=boxOf(d.no);if(b)return b;return isMastered(d.no)?5:0;}
+
+/* ========== 最近調べた語 ========== */
+function recentList(){
+  try{var s=localStorage.getItem('kaigo-dict-recent');var a=s?JSON.parse(s):[];return a.slice(0,12);}catch(e){return [];}
+}
+function pushRecent(no){
+  var a=recentList().filter(function(x){return x!==no;});
+  a.unshift(no);
+  try{localStorage.setItem('kaigo-dict-recent',JSON.stringify(a.slice(0,12)));}catch(e){}
+}
+
+/* ========== 描画 ========== */
+function byNo(no){for(var i=0;i<allData.length;i++){if(allData[i].no===no)return allData[i];}return null;}
+
+function matchList(){
+  var kw=keyword.trim().toLowerCase();
+  var out=[];
+  for(var i=0;i<allData.length;i++){
+    var d=allData[i],ok=false;
+    if(kw){
+      for(var k=0;k<d.keys.length;k++){if(d.keys[k].indexOf(kw)>=0){ok=true;break;}}
+      if(!ok&&d.meaning&&stripFuri(d.meaning).toLowerCase().indexOf(kw)>=0)ok=true;
+      if(!ok&&currentLang!=='ja'&&d.t[currentLang]){
+        var tw=(d.t[currentLang].w||'').toLowerCase(),td=(d.t[currentLang].d||'').toLowerCase();
+        if(tw.indexOf(kw)>=0||td.indexOf(kw)>=0)ok=true;
+      }
+    }else if(filterRow){ok=(d.row===filterRow);}
+    else if(filterSubject){ok=(d.subject===filterSubject||(!d.subject&&filterSubject==='その他'));}
+    if(ok)out.push(d);
+  }
+  return out;
+}
+
+function wordItem(d){
+  var lv=lvOf(d),open=!!openSet[d.no];
+  var sub=d.meaning?stripFuri(d.meaning):'';
+  var h='<div class="witem'+(open?' open':'')+'" id="w-'+esc(d.no)+'">';
+  h+='<button class="whead" type="button" data-open="'+esc(d.no)+'">';
+  h+='<span class="wdot lv'+lv+'"></span>';
+  h+='<span class="wtxt"><span class="wword">'+deco(d.word)+'</span>';
+  if(sub)h+='<span class="wsub">'+esc(sub)+'</span>';
+  h+='</span><span class="warrow">▶</span></button>';
+  h+='<div class="wbody">';
+  if(d.meaning)h+='<div class="wrow"><div class="wlabel">意味</div><div class="wtext">'+deco(d.meaning)+'</div></div>';
+  if(currentLang!=='ja'){
+    var tt=d.t[currentLang]||{w:'',d:''};
+    if(tt.w||tt.d){
+      h+='<div class="wrow"><div class="wlabel">'+esc(LANG_NAMES[currentLang])+'</div><div class="wtext">';
+      if(tt.w)h+='<b>'+esc(tt.w)+'</b>';
+      if(tt.d)h+=(tt.w?'<br>':'')+esc(tt.d);
+      h+='</div></div>';
+    }else{
+      h+='<div class="wrow"><div class="soon">🌱 この語は'+esc(LANG_NAMES[currentLang])+'の翻訳を準備中です。<br>'+
+         '「翻訳をおねがい」を押すと、作成の順番が早くなります。</div></div>';
+    }
+  }
+  h+='<div class="wtags">';
+  if(d.subject)h+='<span class="wtag">'+esc(d.subject)+'</span>';
+  if(d.level&&LEVEL_SHORT[d.level])h+='<span class="wtag">'+esc(LEVEL_SHORT[d.level])+'</span>';
+  if(d.type)h+='<span class="wtag">'+esc(d.type)+'</span>';
+  h+='<span class="wtag lvtag">'+(lv>=5?'⭐ マスター':'Lv.'+lv)+'</span>';
+  var ag=againOf(d.no);
+  if(ag>0)h+='<span class="wtag">🔄 もう一回 '+ag+'かい</span>';
+  h+='</div>';
+  h+='<div class="wacts">';
+  h+='<button class="wact" type="button" data-speak="'+esc(d.no)+'">🔊 聞く</button>';
+  h+='<a class="wact main" href="flashcard.html?lang='+encodeURIComponent(currentLang)+'&word='+encodeURIComponent(stripFuri(d.word))+'">🎴 カードで練習</a>';
+  if(currentLang!=='ja'&&!(d.t[currentLang]&&(d.t[currentLang].w||d.t[currentLang].d)))
+    h+='<button class="wact" type="button" data-req="'+esc(d.no)+'">🌱 翻訳をおねがい</button>';
+  h+='</div></div></div>';
+  return h;
+}
+
+function renderFind(){
+  var h='';
+  if(!keyword){
+    h+='<div class="panel"><div class="panel-title">🔤 五十音（ごじゅうおん）でさがす</div><div class="btn-flow">';
+    for(var i=0;i<ROWS.length;i++){
+      var r=ROWS[i][0],n=0;
+      for(var j=0;j<allData.length;j++){if(allData[j].row===r)n++;}
+      h+='<button class="kbtn'+(filterRow===r?' on':'')+'" type="button" data-row="'+r+'"'+(n?'':' disabled')+'>'+r+'</button>';
+    }
+    h+='</div></div>';
+    h+='<div class="panel"><div class="panel-title">📚 科目（かもく）でさがす</div>';
+    for(var s=0;s<subjects.length;s++){
+      var sj=subjects[s],cnt=0;
+      for(var k=0;k<allData.length;k++){if((allData[k].subject||'その他')===sj)cnt++;}
+      h+='<button class="sbtn'+(filterSubject===sj?' on':'')+'" type="button" data-subj="'+esc(sj)+'">'+
+         '<span class="sbtn-name">'+esc(sj)+'</span><span class="sbtn-num">'+cnt+'語</span></button>';
+    }
+    h+='</div>';
+    var rc=recentList();
+    if(rc.length){
+      h+='<div class="panel"><div class="panel-title">🕐 さいきん調べた語</div><div class="btn-flow">';
+      for(var q=0;q<rc.length;q++){
+        var dd=byNo(rc[q]);if(!dd)continue;
+        h+='<button class="kbtn" type="button" data-jump="'+esc(dd.no)+'">'+esc(stripFuri(dd.word))+'</button>';
+      }
+      h+='</div></div>';
+    }
+  }
+  if(keyword||filterRow||filterSubject){
+    var list=matchList();
+    var label=keyword?('「'+esc(keyword)+'」の検索結果'):(filterRow?('「'+filterRow+'」の行'):esc(filterSubject));
+    h+='<div class="result-note">'+label+'　'+list.length+'語</div>';
+    if(!list.length){h+='<div class="empty">見つかりませんでした。<br>ひらがなや、みじかい言葉でも試してみてください。</div>';}
+    else{
+      var show=list.slice(0,80);
+      h+='<div class="wlist">';
+      for(var m=0;m<show.length;m++)h+=wordItem(show[m]);
+      h+='</div>';
+      if(list.length>show.length)h+='<div class="result-note">ほかに'+(list.length-show.length)+'語あります。もう少し文字を足すと絞れます。</div>';
+    }
+  }
+  return h;
+}
+
+function renderBook(){
+  var h='<div class="panel"><div class="panel-title">📖 ずかん　マスをうめていこう</div>';
+  h+='<div class="legend">'+
+     '<span><i style="background:var(--grid-0)"></i>これから</span>'+
+     '<span><i style="background:#7fb4f5"></i>練習中</span>'+
+     '<span><i style="background:#2f9e6b"></i>あと少し</span>'+
+     '<span><i style="background:#e8ab15"></i>マスター</span></div></div>';
+  for(var s=0;s<subjects.length;s++){
+    var sj=subjects[s],list=[];
+    for(var k=0;k<allData.length;k++){if((allData[k].subject||'その他')===sj)list.push(allData[k]);}
+    var done=0;
+    for(var i=0;i<list.length;i++){if(lvOf(list[i])>=5)done++;}
+    var pct=list.length?Math.round(done/list.length*100):0;
+    h+='<div class="panel"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'+
+       '<div class="sbtn-name">'+esc(sj)+'</div>'+
+       '<div class="sbtn-num">'+done+' / '+list.length+'（'+pct+'%）</div></div>'+
+       '<div class="sbtn-bar"><div class="sbtn-fill" style="width:'+pct+'%"></div></div>';
+    h+='<div class="grid">';
+    for(var g=0;g<list.length;g++){
+      var d=list[g],lv=lvOf(d);
+      h+='<button class="gcell lv'+lv+'" type="button" data-jump="'+esc(d.no)+'" title="'+esc(stripFuri(d.word))+'"></button>';
+    }
+    h+='</div>';
+    if(list.length&&done===list.length)h+='<div class="done-msg">🎉 この科目はぜんぶマスター！</div>';
+    h+='</div>';
+  }
+  return h;
+}
+
+function renderWeak(){
+  var list=allData.filter(function(d){return againOf(d.no)>0;});
+  list.sort(function(a,b){
+    var d=againOf(b.no)-againOf(a.no);
+    if(d!==0)return d;
+    return lvOf(a)-lvOf(b);
+  });
+  var h='<div class="panel"><div class="panel-title">🔥 もう少しの語</div>'+
+    '<div style="font-size:calc(.8rem * var(--fscale));color:var(--ink-sub);line-height:1.9;font-weight:700">'+
+    'カードで「🔄 もう一回」を押した回数が多い順にならびます。<br>'+
+    'ここにある語は、あと一歩でおぼえられる語です。</div></div>';
+  if(!list.length){
+    h+='<div class="empty">まだ記録がありません。<br>カードで練習すると、ここに出てきます。</div>';
+    return h;
+  }
+  var show=list.slice(0,40);
+  h+='<div class="wlist">';
+  for(var i=0;i<show.length;i++)h+=wordItem(show[i]);
+  h+='</div>';
+  return h;
+}
+
+function renderLangBar(){
+  var ks=['ja','en','id','vi','th','my','ne','mn'],h='';
+  for(var i=0;i<ks.length;i++){
+    h+='<button class="kbtn'+(currentLang===ks[i]?' on':'')+'" type="button" data-lang="'+ks[i]+'" '+
+       'style="min-width:auto;padding:9px 12px;font-size:calc(.8rem * var(--fscale))">'+esc(LANG_NAMES[ks[i]])+'</button>';
+  }
+  document.getElementById('langBar').innerHTML=h;
+}
+
+function render(){
+  var h='';
+  if(tab==='find')h=renderFind();
+  else if(tab==='book')h=renderBook();
+  else h=renderWeak();
+  document.getElementById('main').innerHTML=h;
+  renderLangBar();
+}
+
+/* ========== 読み上げ ========== */
+var TTS_OK=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+var jaVoice=null;
+function pickVoice(){
+  if(!TTS_OK)return;
+  var vs=speechSynthesis.getVoices()||[];
+  var ja=vs.filter(function(v){return /^ja/i.test(v.lang||'');});
+  var pref=['Kyoko','Otoya','O-Ren','Hattori','Google 日本語','Google Japanese','Nanami','Ayumi','Haruka'];
+  for(var i=0;i<pref.length;i++){
+    for(var j=0;j<ja.length;j++){if((ja[j].name||'').indexOf(pref[i])>=0){jaVoice=ja[j];return;}}
+  }
+  jaVoice=ja.length?ja[0]:null;
+}
+if(TTS_OK){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function speak(txt){
+  if(!TTS_OK||!txt)return;
+  try{
+    if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(txt);
+    u.lang='ja-JP';if(jaVoice)u.voice=jaVoice;
+    u.rate=0.85;u.pitch=1.05;u.volume=1;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ========== 操作 ========== */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button,a');
+  if(!b)return;
+
+  if(b.hasAttribute('data-act')){
+    var act=b.getAttribute('data-act');
+    if(act==='furi'){furiOn=!furiOn;try{localStorage.setItem('kaigo-furigana',furiOn?'1':'0');}catch(x){}}
+    if(act==='theme'){theme=b.getAttribute('data-val');try{localStorage.setItem('kaigo-theme',theme);}catch(x){}}
+    if(act==='size'){fontSize=b.getAttribute('data-val');try{localStorage.setItem('kaigo-fontsize',fontSize);}catch(x){}}
+    applyPrefs();render();return;
+  }
+  if(b.hasAttribute('data-tab')){
+    tab=b.getAttribute('data-tab');
+    var ts=document.querySelectorAll('.tab');
+    for(var i=0;i<ts.length;i++)ts[i].classList.toggle('on',ts[i].getAttribute('data-tab')===tab);
+    render();window.scrollTo(0,0);return;
+  }
+  if(b.hasAttribute('data-lang')){
+    currentLang=b.getAttribute('data-lang');
+    try{localStorage.setItem('kaigo-last-lang',currentLang);}catch(x){}
+    loadRecords();render();return;
+  }
+  if(b.hasAttribute('data-row')){
+    var r=b.getAttribute('data-row');
+    filterRow=(filterRow===r)?'':r;filterSubject='';render();return;
+  }
+  if(b.hasAttribute('data-subj')){
+    var sj=b.getAttribute('data-subj');
+    filterSubject=(filterSubject===sj)?'':sj;filterRow='';render();return;
+  }
+  if(b.hasAttribute('data-open')){
+    var no=b.getAttribute('data-open');
+    if(openSet[no])delete openSet[no];else{openSet[no]=1;pushRecent(no);}
+    var el=document.getElementById('w-'+no);
+    if(el)el.classList.toggle('open');
+    return;
+  }
+  if(b.hasAttribute('data-jump')){
+    var jn=b.getAttribute('data-jump'),jd=byNo(jn);
+    if(!jd)return;
+    openSet={};openSet[jn]=1;pushRecent(jn);
+    keyword='';filterRow='';filterSubject=jd.subject||'その他';
+    document.getElementById('q').value='';
+    document.getElementById('qClear').classList.remove('show');
+    tab='find';
+    var tb=document.querySelectorAll('.tab');
+    for(var k=0;k<tb.length;k++)tb[k].classList.toggle('on',tb[k].getAttribute('data-tab')==='find');
+    render();
+    setTimeout(function(){
+      var t=document.getElementById('w-'+jn);
+      if(t)t.scrollIntoView({behavior:'smooth',block:'center'});
+    },60);
+    return;
+  }
+  if(b.hasAttribute('data-speak')){
+    var sd=byNo(b.getAttribute('data-speak'));
+    if(sd)speak(toKana(sd.word)||stripFuri(sd.word));
+    return;
+  }
+  if(b.hasAttribute('data-req')){
+    var rd=byNo(b.getAttribute('data-req'));
+    if(!rd)return;
+    b.textContent='送信中…';b.disabled=true;
+    fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({word:stripFuri(rd.word)+'（'+LANG_NAMES[currentLang]+'の翻訳希望）',from:'dictionary'})})
+    .then(function(){b.textContent='✅ 送りました';})
+    .catch(function(){b.textContent='⚠ 送れませんでした';b.disabled=false;});
+    return;
+  }
+});
+
+var qEl=document.getElementById('q'),timer=null;
+qEl.addEventListener('input',function(){
+  document.getElementById('qClear').classList.toggle('show',!!qEl.value);
+  clearTimeout(timer);
+  timer=setTimeout(function(){
+    keyword=qEl.value;
+    if(keyword){filterRow='';filterSubject='';}
+    tab='find';
+    var tb=document.querySelectorAll('.tab');
+    for(var i=0;i<tb.length;i++)tb[i].classList.toggle('on',tb[i].getAttribute('data-tab')==='find');
+    render();
+  },180);
+});
+document.getElementById('qClear').addEventListener('click',function(){
+  qEl.value='';keyword='';
+  document.getElementById('qClear').classList.remove('show');
+  render();qEl.focus();
+});
+document.getElementById('reloadBtn').addEventListener('click',function(){
+  document.getElementById('main').innerHTML='<div class="loading">読み込んでいます…</div>';
+  loadData(true);
+});
+
+/* ========== 起動 ========== */
+(function(){
+  loadPrefs();applyPrefs();
+  try{var l=localStorage.getItem('kaigo-last-lang');if(l&&LANG_NAMES[l])currentLang=l;}catch(e){}
+  loadData(false);
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+})();
+</script>
+</body>
+</html>
