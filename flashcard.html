@@ -1029,7 +1029,7 @@ function updateSrs(no,ok){
   const key=String(no);
   const rec=srsData[key]||{box:0};
   if(ok){rec.box=Math.min((rec.box||0)+1,5);rec.next=Date.now()+SRS_INTERVALS[rec.box]*86400000;}
-  else{rec.box=1;rec.next=Date.now();}
+  else{rec.box=1;rec.next=Date.now();rec.again=(rec.again||0)+1;}
   srsData[key]=rec;
 }
 function getDueCards(){
