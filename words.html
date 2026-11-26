@@ -15,7 +15,7 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--fscale:1}
+:root{--fscale:1;--ruby:58%}
 html.fs-s{--fscale:1}
 html.fs-l{--fscale:1.25}
 html.fs-xl{--fscale:1.55}
@@ -55,6 +55,12 @@ body{
 }
 .wrap{max-width:560px;margin:0 auto;padding:0 14px}
 
+/* ===== ふりがな（ルビ）の共通設定 ===== */
+ruby{ruby-position:over;-webkit-ruby-position:before}
+rt{font-size:var(--ruby);font-weight:400;opacity:.78;user-select:none;-webkit-user-select:none}
+body.furi-on .wword,body.furi-on .sbtn-name,body.furi-on .panel-title,
+body.furi-on .dict-title,body.furi-on .tab,body.furi-on .wact,body.furi-on .result-note{line-height:2.0}
+
 /* ===== ヘッダー ===== */
 .dict-head{
   position:sticky;top:0;z-index:50;
@@ -68,8 +74,9 @@ body{
   font-size:1rem;display:flex;align-items:center;justify-content:center;
   font-family:inherit;text-decoration:none;
 }
-.dict-title{font-size:calc(1rem * var(--fscale));font-weight:900;line-height:1.3}
-.dict-title small{display:block;font-size:.66rem;font-weight:600;opacity:.85}
+.dict-title{font-size:calc(1rem * var(--fscale));font-weight:900;line-height:1.4}
+.dict-title rt{opacity:.95}
+.dict-title small{display:block;font-size:.66rem;font-weight:600;opacity:.85;line-height:1.3}
 
 /* ===== パネル ===== */
 .panel{
@@ -137,17 +144,18 @@ body.theme-dark .switch-state{color:var(--accent2)}
 .kbtn.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
 .kbtn:disabled{opacity:.3;cursor:not-allowed}
 .sbtn{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  display:block;width:100%;
   padding:12px 14px;border-radius:14px;cursor:pointer;font-family:inherit;text-align:left;
   border:1px solid var(--chip-line);background:var(--chip);color:var(--ink);margin-bottom:7px;
 }
-.sbtn-name{font-size:calc(.86rem * var(--fscale));font-weight:800;line-height:1.4}
+.sbtn-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sbtn-name{font-size:calc(.86rem * var(--fscale));font-weight:800;line-height:1.5}
 .sbtn-num{font-size:calc(.72rem * var(--fscale));color:var(--ink-sub);font-weight:700;white-space:nowrap}
 .sbtn-bar{height:6px;border-radius:999px;background:var(--bar-bg);overflow:hidden;margin-top:6px}
 .sbtn-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 
 /* ===== 語リスト ===== */
-.result-note{font-size:calc(.76rem * var(--fscale));color:var(--ink-sub);font-weight:700;margin:10px 2px 6px}
+.result-note{font-size:calc(.76rem * var(--fscale));color:var(--ink-sub);font-weight:700;margin:10px 2px 6px;line-height:1.8}
 .wlist{display:flex;flex-direction:column;gap:7px}
 .witem{
   background:var(--card);border:1px solid var(--card-line);border-radius:15px;
@@ -161,11 +169,9 @@ body.theme-dark .switch-state{color:var(--accent2)}
 .wdot.lv1{background:#bcd7ff}.wdot.lv2{background:#7fb4f5}
 .wdot.lv3{background:#4f8fe0}.wdot.lv4{background:#2f9e6b}.wdot.lv5{background:#e8ab15}
 .wtxt{min-width:0;flex:1}
-.wword{font-size:calc(.98rem * var(--fscale));font-weight:800;line-height:1.5}
-.wword ruby{ruby-position:over;-webkit-ruby-position:before}
-.wword rt{font-size:.45em;font-weight:400;opacity:.7}
+.wword{font-size:calc(.98rem * var(--fscale));font-weight:800;line-height:1.6;display:block}
 .wsub{font-size:calc(.74rem * var(--fscale));color:var(--ink-sub);line-height:1.55;margin-top:2px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .warrow{color:var(--ink-sub);font-size:.8rem;flex-shrink:0;transition:transform .2s}
 .witem.open .warrow{transform:rotate(90deg)}
 .wbody{display:none;padding:0 13px 14px;border-top:1px solid var(--card-line)}
@@ -173,9 +179,7 @@ body.theme-dark .switch-state{color:var(--accent2)}
 .wrow{margin-top:11px}
 .wlabel{font-size:calc(.7rem * var(--fscale));font-weight:800;color:var(--accent);margin-bottom:3px}
 body.theme-dark .wlabel{color:var(--accent2)}
-.wtext{font-size:calc(.88rem * var(--fscale));line-height:1.95}
-.wtext ruby{ruby-position:over;-webkit-ruby-position:before}
-.wtext rt{font-size:.5em;font-weight:400;opacity:.75}
+.wtext{font-size:calc(.88rem * var(--fscale));line-height:2.0}
 .wtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
 .wtag{font-size:.64rem;font-weight:800;padding:3px 9px;border-radius:999px;
   background:rgba(var(--accent-rgb),.12);color:var(--accent)}
@@ -192,7 +196,7 @@ body.theme-dark .wtag.lvtag{background:rgba(232,171,21,.2);color:#ffd36e}
 .soon{
   font-size:calc(.78rem * var(--fscale));color:var(--ink-sub);font-weight:700;
   padding:9px 12px;border-radius:12px;background:var(--chip);border:1px dashed var(--chip-line);
-  line-height:1.7;
+  line-height:1.9;
 }
 
 /* ===== 図鑑 ===== */
@@ -204,55 +208,52 @@ body.theme-dark .wtag.lvtag{background:rgba(232,171,21,.2);color:#ffd36e}
 .gcell.lv1{background:#bcd7ff}.gcell.lv2{background:#7fb4f5}
 .gcell.lv3{background:#4f8fe0}.gcell.lv4{background:#2f9e6b}
 .gcell.lv5{background:#e8ab15;box-shadow:0 0 8px rgba(232,171,21,.6)}
-.gcell.na{background:transparent;border:1px dashed var(--chip-line)}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:11px;font-size:.68rem;color:var(--ink-sub);font-weight:700}
 .legend span{display:flex;align-items:center;gap:4px}
 .legend i{width:12px;height:12px;border-radius:4px;display:block}
 .done-msg{
   margin-top:12px;padding:12px;border-radius:14px;text-align:center;font-weight:900;
   background:linear-gradient(120deg,rgba(232,171,21,.18),rgba(47,158,107,.18));
-  font-size:calc(.9rem * var(--fscale));
+  font-size:calc(.9rem * var(--fscale));line-height:1.8;
 }
+.total-num{font-size:calc(1.5rem * var(--fscale));font-weight:900;color:var(--accent)}
+body.theme-dark .total-num{color:var(--accent2)}
 .empty{text-align:center;color:var(--ink-sub);font-size:calc(.84rem * var(--fscale));
-  font-weight:700;padding:26px 10px;line-height:1.9}
+  font-weight:700;padding:26px 10px;line-height:2.0}
 .loading{text-align:center;padding:40px 10px;color:var(--ink-sub);font-weight:700}
 .credit{text-align:center;font-size:.68rem;color:var(--ink-sub);margin-top:22px;line-height:1.8}
 </style>
 </head>
-<body class="theme-light">
+<body class="theme-light furi-on">
 
 <header class="dict-head">
   <div class="dict-head-in">
-    <a class="hbtn" href="index.html" aria-label="top">🏠</a>
-    <a class="hbtn" href="flashcard.html" aria-label="flashcard">🎴</a>
-    <div class="dict-title">介護用語じてん<small>Kaigo Vocabulary Dictionary</small></div>
+    <a class="hbtn" href="index.html" aria-label="ホーム">🏠</a>
+    <a class="hbtn" href="flashcard.html" aria-label="フラッシュカード">🎴</a>
+    <div class="dict-title"><span id="dictTitle">介護用語じてん</span><small>Kaigo Vocabulary Dictionary</small></div>
   </div>
 </header>
 
 <div class="wrap">
 
   <div class="search-box">
-    <input type="text" class="search-input" id="q" placeholder="漢字・ひらがな・母国語で検索…" autocomplete="off">
-    <button class="search-clear" id="qClear" type="button" aria-label="clear">✕</button>
+    <input type="text" class="search-input" id="q" placeholder="ことばを さがす" autocomplete="off">
+    <button class="search-clear" id="qClear" type="button" aria-label="けす">✕</button>
   </div>
 
-  <div class="tabs">
-    <button class="tab on" type="button" data-tab="find">🔍 さがす</button>
-    <button class="tab" type="button" data-tab="book">📖 ずかん</button>
-    <button class="tab" type="button" data-tab="weak">🔥 にがて</button>
-  </div>
+  <div class="tabs" id="tabs"></div>
 
   <div id="main"><div class="loading">読み込んでいます…</div></div>
 
   <div class="panel">
-    <div class="panel-title">⚙ 表示の設定</div>
+    <div class="panel-title" id="prefCap">⚙ 表示の設定</div>
     <div id="prefBar"></div>
     <div style="margin-top:10px">
-      <div class="panel-title" style="margin-bottom:7px">🌏 意味を見る言語</div>
+      <div class="panel-title" id="langCap" style="margin-bottom:7px">🌏 意味を見る言語</div>
       <div class="btn-flow" id="langBar"></div>
     </div>
     <div style="text-align:center;margin-top:12px">
-      <button class="wact" type="button" id="reloadBtn" style="max-width:220px">↻ 最新データを読み込む</button>
+      <button class="wact" type="button" id="reloadBtn" style="max-width:240px">↻ 最新データを読み込む</button>
     </div>
   </div>
 
@@ -268,10 +269,11 @@ var GAS_URL='https://script.google.com/macros/s/AKfycbzx9GYBBvhGV3eG5c0yK1lw3vkR
 var LANG_PREFIX={id:'ID',th:'TH',vi:'VI',en:'EN',my:'MY',ne:'NE',mn:'MN'};
 var LANG_NAMES={ja:'日本語',en:'English',id:'Indonesia',vi:'Tiếng Việt',th:'ไทย',my:'မြန်မာ',ne:'नेपाली',mn:'Монгол'};
 var LEVEL_SHORT={L:'日常生活',K1:'初任者',K2:'実務者',K3:'国家試験'};
-var PART_ORDER=['A','B','C','Z'];
 
-/* ========== ふりがな（フラッシュカードと同じ処理） ========== */
-var FURI_RE=/([\u4E00-\u9FFF\u3005\u3006\u30F5\u30F6]+)（([^（）]+)）/g;
+/* ========== ふりがな ==========
+   データも画面の文字も「漢字（かんじ）」の形で書きます。
+   ふりがなONなら <ruby> に、OFFならカッコごと消して表示します。 */
+var FURI_RE=/([\u4E00-\u9FFF\u3005\u3006\u3007\u30F5\u30F6]+)（([ぁ-んァ-ヶーゝゞ・]+)）/g;
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function toRubyHtml(t){
   if(!t)return '';
@@ -283,8 +285,8 @@ function toRubyHtml(t){
   }
   return out+esc(src.slice(i));
 }
-function stripFuri(t){return t?String(t).replace(FURI_RE,'$1'):'';}
-function toKana(t){return t?String(t).replace(FURI_RE,function(_,k,y){return y;}):'';}
+function stripFuri(t){if(!t)return '';FURI_RE.lastIndex=0;return String(t).replace(FURI_RE,'$1');}
+function toKana(t){if(!t)return '';FURI_RE.lastIndex=0;return String(t).replace(FURI_RE,function(_,k,y){return y;});}
 function deco(t){return furiOn?toRubyHtml(t):esc(stripFuri(t));}
 
 /* ========== 表示の設定（キーはフラッシュカードと共通） ========== */
@@ -296,15 +298,20 @@ function loadPrefs(){
   try{var f=localStorage.getItem('kaigo-furigana');furiOn=(f===null)?true:(f==='1');}catch(e){}
 }
 function applyPrefs(){
-  document.body.className='theme-'+theme;
-  var h=document.documentElement;
-  h.className='fs-'+fontSize;
+  document.body.className='theme-'+theme+(furiOn?' furi-on':'');
+  document.documentElement.className='fs-'+fontSize;
+  var q=document.getElementById('q');
+  q.placeholder=furiOn?'ことばを さがす（かんじ・ひらがな・ぼこくご）':'漢字・ひらがな・母国語でさがす';
+  document.getElementById('dictTitle').innerHTML=deco('介護（かいご）用語（ようご）じてん');
+  document.getElementById('prefCap').innerHTML='⚙ '+deco('表示（ひょうじ）の設定（せってい）');
+  document.getElementById('langCap').innerHTML='🌏 '+deco('意味（いみ）を見（み）る言語（げんご）');
+  document.getElementById('reloadBtn').innerHTML='↻ '+deco('最新（さいしん）データを読（よ）みこむ');
   renderPrefBar();
 }
 function renderPrefBar(){
   var sizes=FONT_SIZES.map(function(c){
-    var n=(c==='s')?'標準':(c==='l'?'大':'特大');
-    return '<button class="seg-btn'+(fontSize===c?' on':'')+'" type="button" data-act="size" data-val="'+c+'">'+n+'</button>';
+    var n=(c==='s')?'標準（ひょうじゅん）':(c==='l'?'大（だい）':'特大（とくだい）');
+    return '<button class="seg-btn'+(fontSize===c?' on':'')+'" type="button" data-act="size" data-val="'+c+'">'+deco(n)+'</button>';
   }).join('');
   document.getElementById('prefBar').innerHTML=
     '<div class="pref-row">'+
@@ -315,15 +322,15 @@ function renderPrefBar(){
         '<button class="seg-btn'+(theme==='light'?' on':'')+'" type="button" data-act="theme" data-val="light">☀ ライト</button>'+
         '<button class="seg-btn'+(theme==='dark'?' on':'')+'" type="button" data-act="theme" data-val="dark">🌙 ダーク</button>'+
       '</div>'+
-      '<div class="seg"><span class="seg-cap">文字</span>'+sizes+'</div>'+
+      '<div class="seg"><span class="seg-cap">'+deco('文字（もじ）')+'</span>'+sizes+'</div>'+
     '</div>';
 }
 
 /* ========== データ ========== */
 var allData=[],subjects=[],currentLang='ja';
 var srsData={},masteredSet={};
-var tab='find',filterRow='',filterSubject='',keyword='';
-var openSet={};
+var tab='find',filterRow='',filterSubject='',keyword='',jumpNo='';
+var openSet={},partyDone={};
 
 function normHeader(s){return String(s==null?'':s).replace(/^\ufeff/,'').replace(/\s/g,'').trim();}
 function normCode(s){
@@ -341,7 +348,7 @@ function pickCol(H,head,exact,prefix,fb){
   return fb;
 }
 
-/* 五十音の行わけ */
+/* 五十音の行わけ（ひらがな・カタカナ以外は「他」にまとめます） */
 var ROWS=[['あ','あいうえおぁぃぅぇぉ'],['か','かきくけこがぎぐげご'],
 ['さ','さしすせそざじずぜぞ'],['た','たちつてとだぢづでどっ'],['な','なにぬねの'],
 ['は','はひふへほばびぶべぼぱぴぷぺぽ'],['ま','まみむめも'],['や','やゆよゃゅょ'],
@@ -349,11 +356,12 @@ var ROWS=[['あ','あいうえおぁぃぅぇぉ'],['か','かきくけこがぎ
 var ROWMAP={};
 (function(){for(var i=0;i<ROWS.length;i++){var r=ROWS[i];for(var j=0;j<r[1].length;j++)ROWMAP[r[1][j]]=r[0];}})();
 function kanaRow(kana){
-  if(!kana)return '';
+  if(!kana)return '他';
   var c=kana.charAt(0),n=c.charCodeAt(0);
   if(n>=0x30A1&&n<=0x30F6)c=String.fromCharCode(n-0x60);
-  return ROWMAP[c]||'';
+  return ROWMAP[c]||'他';
 }
+function rowLabel(r){return r==='他'?'その他':r;}
 
 function loadData(force){
   var url=force?(CSV_MAIN+(CSV_MAIN.indexOf('?')>=0?'&':'?')+'cb='+Date.now()):CSV_MAIN;
@@ -385,11 +393,11 @@ function build(rows){
     var no=cell(row,cNo),word=cell(row,cWord);
     if(!no||!word)continue;
     var o={no:no,word:word,meaning:cell(row,cMean),part:normCode(cell(row,cPart)),
-      subject:cell(row,cSubj),type:cell(row,cType),level:normCode(cell(row,cLevel)),t:{}};
+      subject:cell(row,cSubj),type:cell(row,cType),level:normCode(cell(row,cLevel)),t:{},ord:r};
     Object.keys(LANG_PREFIX).forEach(function(lk){
       o.t[lk]={w:cell(row,LC[lk].w),d:cell(row,LC[lk].d)};
     });
-    /* 検索用のキーを作る（／で区切った語も別々に拾う） */
+    /* 「自立（じりつ）／自律（じりつ）」のように／で並べた語は、どちらでも引けるようにします */
     var parts=word.split(/[／\/]/),keys=[],kanas=[];
     for(var p2=0;p2<parts.length;p2++){
       var pw=parts[p2].trim();if(!pw)continue;
@@ -398,8 +406,8 @@ function build(rows){
       if(kk){keys.push(kk.toLowerCase());kanas.push(kk);}
     }
     o.keys=keys;
-    o.kana=kanas.length?kanas[0]:'';
-    o.row=kanaRow(o.kana||stripFuri(word));
+    o.kana=kanas.length?kanas[0]:stripFuri(parts[0]||word);
+    o.row=kanaRow(o.kana);
     allData.push(o);
   }
 
@@ -438,28 +446,43 @@ function pushRecent(no){
   try{localStorage.setItem('kaigo-dict-recent',JSON.stringify(a.slice(0,12)));}catch(e){}
 }
 
-/* ========== 描画 ========== */
+/* ========== 検索 ========== */
 function byNo(no){for(var i=0;i<allData.length;i++){if(allData[i].no===no)return allData[i];}return null;}
 
 function matchList(){
-  var kw=keyword.trim().toLowerCase();
-  var out=[];
+  var kw=keyword.trim().toLowerCase(),out=[];
   for(var i=0;i<allData.length;i++){
-    var d=allData[i],ok=false;
+    var d=allData[i],sc=-1;
     if(kw){
-      for(var k=0;k<d.keys.length;k++){if(d.keys[k].indexOf(kw)>=0){ok=true;break;}}
-      if(!ok&&d.meaning&&stripFuri(d.meaning).toLowerCase().indexOf(kw)>=0)ok=true;
-      if(!ok&&currentLang!=='ja'&&d.t[currentLang]){
-        var tw=(d.t[currentLang].w||'').toLowerCase(),td=(d.t[currentLang].d||'').toLowerCase();
-        if(tw.indexOf(kw)>=0||td.indexOf(kw)>=0)ok=true;
+      for(var k=0;k<d.keys.length;k++){
+        var key=d.keys[k];
+        if(key===kw){sc=0;break;}
+        if(key.indexOf(kw)===0){if(sc<0||sc>1)sc=1;}
+        else if(key.indexOf(kw)>=0){if(sc<0||sc>2)sc=2;}
       }
-    }else if(filterRow){ok=(d.row===filterRow);}
-    else if(filterSubject){ok=(d.subject===filterSubject||(!d.subject&&filterSubject==='その他'));}
-    if(ok)out.push(d);
+      if(sc<0&&d.meaning&&stripFuri(d.meaning).toLowerCase().indexOf(kw)>=0)sc=3;
+      if(sc<0&&currentLang!=='ja'&&d.t[currentLang]){
+        var tw=(d.t[currentLang].w||'').toLowerCase(),td=(d.t[currentLang].d||'').toLowerCase();
+        if(tw.indexOf(kw)>=0||td.indexOf(kw)>=0)sc=3;
+      }
+    }else if(filterRow){ if(d.row===filterRow)sc=0; }
+    else if(filterSubject){ if((d.subject||'その他')===filterSubject)sc=0; }
+    if(sc>=0){d._s=sc;out.push(d);}
+  }
+  if(kw){
+    out.sort(function(a,b){
+      if(a._s!==b._s)return a._s-b._s;
+      return String(a.kana).localeCompare(String(b.kana),'ja');
+    });
+  }else if(filterRow){
+    out.sort(function(a,b){return String(a.kana).localeCompare(String(b.kana),'ja');});
+  }else{
+    out.sort(function(a,b){return a.ord-b.ord;});
   }
   return out;
 }
 
+/* ========== 語カード ========== */
 function wordItem(d){
   var lv=lvOf(d),open=!!openSet[d.no];
   var sub=d.meaning?stripFuri(d.meaning):'';
@@ -470,7 +493,7 @@ function wordItem(d){
   if(sub)h+='<span class="wsub">'+esc(sub)+'</span>';
   h+='</span><span class="warrow">▶</span></button>';
   h+='<div class="wbody">';
-  if(d.meaning)h+='<div class="wrow"><div class="wlabel">意味</div><div class="wtext">'+deco(d.meaning)+'</div></div>';
+  if(d.meaning)h+='<div class="wrow"><div class="wlabel">'+deco('意味（いみ）')+'</div><div class="wtext">'+deco(d.meaning)+'</div></div>';
   if(currentLang!=='ja'){
     var tt=d.t[currentLang]||{w:'',d:''};
     if(tt.w||tt.d){
@@ -479,8 +502,8 @@ function wordItem(d){
       if(tt.d)h+=(tt.w?'<br>':'')+esc(tt.d);
       h+='</div></div>';
     }else{
-      h+='<div class="wrow"><div class="soon">🌱 この語は'+esc(LANG_NAMES[currentLang])+'の翻訳を準備中です。<br>'+
-         '「翻訳をおねがい」を押すと、作成の順番が早くなります。</div></div>';
+      h+='<div class="wrow"><div class="soon">🌱 '+deco('この語（ご）は')+esc(LANG_NAMES[currentLang])+deco('の翻訳（ほんやく）を準備中（じゅんびちゅう）です。')+'<br>'+
+         deco('「翻訳（ほんやく）をおねがい」をおすと、作成（さくせい）の順番（じゅんばん）が早（はや）くなります。')+'</div></div>';
     }
   }
   h+='<div class="wtags">';
@@ -492,87 +515,120 @@ function wordItem(d){
   if(ag>0)h+='<span class="wtag">🔄 もう一回 '+ag+'かい</span>';
   h+='</div>';
   h+='<div class="wacts">';
-  h+='<button class="wact" type="button" data-speak="'+esc(d.no)+'">🔊 聞く</button>';
-  h+='<a class="wact main" href="flashcard.html?lang='+encodeURIComponent(currentLang)+'&word='+encodeURIComponent(stripFuri(d.word))+'">🎴 カードで練習</a>';
+  h+='<button class="wact" type="button" data-speak="'+esc(d.no)+'">🔊 '+deco('聞（き）く')+'</button>';
+  h+='<a class="wact main" href="flashcard.html?lang='+encodeURIComponent(currentLang)+'&word='+encodeURIComponent(stripFuri(d.word))+'">🎴 '+deco('カードで練習（れんしゅう）')+'</a>';
   if(currentLang!=='ja'&&!(d.t[currentLang]&&(d.t[currentLang].w||d.t[currentLang].d)))
-    h+='<button class="wact" type="button" data-req="'+esc(d.no)+'">🌱 翻訳をおねがい</button>';
+    h+='<button class="wact" type="button" data-req="'+esc(d.no)+'">🌱 '+deco('翻訳（ほんやく）をおねがい')+'</button>';
   h+='</div></div></div>';
   return h;
 }
 
+/* ========== さがす ========== */
 function renderFind(){
   var h='';
   if(!keyword){
-    h+='<div class="panel"><div class="panel-title">🔤 五十音（ごじゅうおん）でさがす</div><div class="btn-flow">';
-    for(var i=0;i<ROWS.length;i++){
-      var r=ROWS[i][0],n=0;
+    h+='<div class="panel"><div class="panel-title">🔤 '+deco('五十音（ごじゅうおん）でさがす')+'</div><div class="btn-flow">';
+    var rowKeys=[];for(var i=0;i<ROWS.length;i++)rowKeys.push(ROWS[i][0]);rowKeys.push('他');
+    for(var i2=0;i2<rowKeys.length;i2++){
+      var r=rowKeys[i2],n=0;
       for(var j=0;j<allData.length;j++){if(allData[j].row===r)n++;}
-      h+='<button class="kbtn'+(filterRow===r?' on':'')+'" type="button" data-row="'+r+'"'+(n?'':' disabled')+'>'+r+'</button>';
+      h+='<button class="kbtn'+(filterRow===r?' on':'')+'" type="button" data-row="'+r+'"'+(n?'':' disabled')+'>'+rowLabel(r)+'</button>';
     }
     h+='</div></div>';
-    h+='<div class="panel"><div class="panel-title">📚 科目（かもく）でさがす</div>';
+    h+='<div class="panel"><div class="panel-title">📚 '+deco('科目（かもく）でさがす')+'</div>';
     for(var s=0;s<subjects.length;s++){
       var sj=subjects[s],cnt=0;
       for(var k=0;k<allData.length;k++){if((allData[k].subject||'その他')===sj)cnt++;}
       h+='<button class="sbtn'+(filterSubject===sj?' on':'')+'" type="button" data-subj="'+esc(sj)+'">'+
-         '<span class="sbtn-name">'+esc(sj)+'</span><span class="sbtn-num">'+cnt+'語</span></button>';
+         '<span class="sbtn-line"><span class="sbtn-name">'+deco(sj)+'</span>'+
+         '<span class="sbtn-num">'+cnt+'語</span></span></button>';
     }
     h+='</div>';
     var rc=recentList();
     if(rc.length){
-      h+='<div class="panel"><div class="panel-title">🕐 さいきん調べた語</div><div class="btn-flow">';
+      h+='<div class="panel"><div class="panel-title">🕐 '+deco('さいきん調（しら）べた語（ご）')+'</div><div class="btn-flow">';
       for(var q=0;q<rc.length;q++){
         var dd=byNo(rc[q]);if(!dd)continue;
-        h+='<button class="kbtn" type="button" data-jump="'+esc(dd.no)+'">'+esc(stripFuri(dd.word))+'</button>';
+        h+='<button class="kbtn" type="button" data-jump="'+esc(dd.no)+'" style="min-width:auto;padding:9px 12px;font-size:calc(.84rem * var(--fscale))">'+esc(stripFuri(dd.word))+'</button>';
       }
       h+='</div></div>';
     }
   }
   if(keyword||filterRow||filterSubject){
     var list=matchList();
-    var label=keyword?('「'+esc(keyword)+'」の検索結果'):(filterRow?('「'+filterRow+'」の行'):esc(filterSubject));
+    var label=keyword?('「'+esc(keyword)+'」'+deco('の結果（けっか）')):(filterRow?('「'+rowLabel(filterRow)+'」'+deco('の行（ぎょう）')):deco(filterSubject));
     h+='<div class="result-note">'+label+'　'+list.length+'語</div>';
-    if(!list.length){h+='<div class="empty">見つかりませんでした。<br>ひらがなや、みじかい言葉でも試してみてください。</div>';}
-    else{
+    if(!list.length){
+      h+='<div class="empty">'+deco('見（み）つかりませんでした。')+'<br>'+deco('ひらがなや、みじかい言葉（ことば）でも試（ため）してみてください。')+'</div>';
+    }else{
       var show=list.slice(0,80);
+      if(jumpNo){
+        var inShow=false;
+        for(var z=0;z<show.length;z++){if(show[z].no===jumpNo){inShow=true;break;}}
+        if(!inShow){
+          for(var y=0;y<list.length;y++){
+            if(list[y].no===jumpNo){show=[list[y]].concat(show.slice(0,79));break;}
+          }
+        }
+      }
       h+='<div class="wlist">';
       for(var m=0;m<show.length;m++)h+=wordItem(show[m]);
       h+='</div>';
-      if(list.length>show.length)h+='<div class="result-note">ほかに'+(list.length-show.length)+'語あります。もう少し文字を足すと絞れます。</div>';
+      if(list.length>show.length)h+='<div class="result-note">'+deco('ほかに')+(list.length-show.length)+deco('語（ご）あります。文字（もじ）を足（た）すと、もっとしぼれます。')+'</div>';
     }
   }
   return h;
 }
 
+/* ========== ずかん ========== */
 function renderBook(){
-  var h='<div class="panel"><div class="panel-title">📖 ずかん　マスをうめていこう</div>';
-  h+='<div class="legend">'+
-     '<span><i style="background:var(--grid-0)"></i>これから</span>'+
-     '<span><i style="background:#7fb4f5"></i>練習中</span>'+
-     '<span><i style="background:#2f9e6b"></i>あと少し</span>'+
-     '<span><i style="background:#e8ab15"></i>マスター</span></div></div>';
+  var totalDone=0;
+  for(var t=0;t<allData.length;t++){if(lvOf(allData[t])>=5)totalDone++;}
+  var totalPct=allData.length?Math.round(totalDone/allData.length*100):0;
+
+  var h='<div class="panel" style="text-align:center">'+
+    '<div class="panel-title" style="margin-bottom:4px">📖 '+deco('ずかん　マスをうめていこう')+'</div>'+
+    '<div class="total-num">'+totalDone+' / '+allData.length+'</div>'+
+    '<div class="sbtn-bar" style="margin-top:8px"><div class="sbtn-fill" style="width:'+totalPct+'%"></div></div>'+
+    '<div class="sbtn-num" style="margin-top:6px">'+deco('ぜんたいの')+totalPct+'%</div>'+
+    '<div class="legend" style="justify-content:center">'+
+     '<span><i style="background:var(--grid-0)"></i>'+deco('これから')+'</span>'+
+     '<span><i style="background:#7fb4f5"></i>'+deco('練習中（れんしゅうちゅう）')+'</span>'+
+     '<span><i style="background:#2f9e6b"></i>'+deco('あと少（すこ）し')+'</span>'+
+     '<span><i style="background:#e8ab15"></i>'+deco('マスター')+'</span></div></div>';
+
   for(var s=0;s<subjects.length;s++){
     var sj=subjects[s],list=[];
     for(var k=0;k<allData.length;k++){if((allData[k].subject||'その他')===sj)list.push(allData[k]);}
     var done=0;
     for(var i=0;i<list.length;i++){if(lvOf(list[i])>=5)done++;}
     var pct=list.length?Math.round(done/list.length*100):0;
-    h+='<div class="panel"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'+
-       '<div class="sbtn-name">'+esc(sj)+'</div>'+
+    h+='<div class="panel"><div class="sbtn-line">'+
+       '<div class="sbtn-name">'+deco(sj)+'</div>'+
        '<div class="sbtn-num">'+done+' / '+list.length+'（'+pct+'%）</div></div>'+
        '<div class="sbtn-bar"><div class="sbtn-fill" style="width:'+pct+'%"></div></div>';
     h+='<div class="grid">';
     for(var g=0;g<list.length;g++){
       var d=list[g],lv=lvOf(d);
-      h+='<button class="gcell lv'+lv+'" type="button" data-jump="'+esc(d.no)+'" title="'+esc(stripFuri(d.word))+'"></button>';
+      h+='<button class="gcell lv'+lv+'" type="button" data-jump="'+esc(d.no)+'" title="'+esc(stripFuri(d.word))+'" aria-label="'+esc(stripFuri(d.word))+'"></button>';
     }
     h+='</div>';
-    if(list.length&&done===list.length)h+='<div class="done-msg">🎉 この科目はぜんぶマスター！</div>';
+    if(list.length&&done===list.length){
+      h+='<div class="done-msg">🎉 '+deco('この科目（かもく）は ぜんぶマスター！')+'</div>';
+      party(sj);
+    }
     h+='</div>';
   }
   return h;
 }
+function party(sj){
+  if(partyDone[sj])return;
+  partyDone[sj]=1;
+  if(typeof confetti!=='function')return;
+  try{confetti({particleCount:90,spread:72,origin:{y:.7},scalar:.9});}catch(e){}
+}
 
+/* ========== にがて ========== */
 function renderWeak(){
   var list=allData.filter(function(d){return againOf(d.no)>0;});
   list.sort(function(a,b){
@@ -580,21 +636,32 @@ function renderWeak(){
     if(d!==0)return d;
     return lvOf(a)-lvOf(b);
   });
-  var h='<div class="panel"><div class="panel-title">🔥 もう少しの語</div>'+
-    '<div style="font-size:calc(.8rem * var(--fscale));color:var(--ink-sub);line-height:1.9;font-weight:700">'+
-    'カードで「🔄 もう一回」を押した回数が多い順にならびます。<br>'+
-    'ここにある語は、あと一歩でおぼえられる語です。</div></div>';
+  var h='<div class="panel"><div class="panel-title">🔥 '+deco('もう少（すこ）しの語（ご）')+'</div>'+
+    '<div style="font-size:calc(.8rem * var(--fscale));color:var(--ink-sub);line-height:2.0;font-weight:700">'+
+    deco('カードで「🔄 もう一回（いっかい）」をおした回数（かいすう）が多（おお）い順（じゅん）にならびます。')+'<br>'+
+    deco('ここにある語（ご）は、あと一歩（いっぽ）でおぼえられる語（ご）です。')+'</div></div>';
   if(!list.length){
-    h+='<div class="empty">まだ記録がありません。<br>カードで練習すると、ここに出てきます。</div>';
+    h+='<div class="empty">'+deco('まだ記録（きろく）がありません。')+'<br>'+deco('カードで練習（れんしゅう）すると、ここに出（で）てきます。')+'</div>';
     return h;
   }
+  h+='<div class="result-note">'+list.length+deco('語（ご）が ならんでいます')+'</div>';
   var show=list.slice(0,40);
   h+='<div class="wlist">';
   for(var i=0;i<show.length;i++)h+=wordItem(show[i]);
   h+='</div>';
+  if(list.length>show.length)h+='<div class="result-note">'+deco('ほかに')+(list.length-show.length)+deco('語（ご）あります。')+'</div>';
   return h;
 }
 
+/* ========== タブ・言語 ========== */
+var TABS=[['find','🔍 さがす'],['book','📖 ずかん'],['weak','🔥 にがて']];
+function renderTabs(){
+  var h='';
+  for(var i=0;i<TABS.length;i++){
+    h+='<button class="tab'+(tab===TABS[i][0]?' on':'')+'" type="button" data-tab="'+TABS[i][0]+'">'+deco(TABS[i][1])+'</button>';
+  }
+  document.getElementById('tabs').innerHTML=h;
+}
 function renderLangBar(){
   var ks=['ja','en','id','vi','th','my','ne','mn'],h='';
   for(var i=0;i<ks.length;i++){
@@ -605,12 +672,14 @@ function renderLangBar(){
 }
 
 function render(){
+  renderTabs();
   var h='';
   if(tab==='find')h=renderFind();
   else if(tab==='book')h=renderBook();
   else h=renderWeak();
   document.getElementById('main').innerHTML=h;
   renderLangBar();
+  jumpNo='';
 }
 
 /* ========== 読み上げ ========== */
@@ -637,10 +706,19 @@ function speak(txt){
     speechSynthesis.speak(u);
   }catch(e){}
 }
+function readingOf(d){
+  var first=String(d.word).split(/[／\/]/)[0];
+  return toKana(first).trim()||stripFuri(first);
+}
 
 /* ========== 操作 ========== */
+function setTab(t){
+  tab=t;
+  render();
+  window.scrollTo(0,0);
+}
 document.addEventListener('click',function(e){
-  var b=e.target.closest('button,a');
+  var b=(e.target&&e.target.closest)?e.target.closest('button,a'):null;
   if(!b)return;
 
   if(b.hasAttribute('data-act')){
@@ -648,14 +726,12 @@ document.addEventListener('click',function(e){
     if(act==='furi'){furiOn=!furiOn;try{localStorage.setItem('kaigo-furigana',furiOn?'1':'0');}catch(x){}}
     if(act==='theme'){theme=b.getAttribute('data-val');try{localStorage.setItem('kaigo-theme',theme);}catch(x){}}
     if(act==='size'){fontSize=b.getAttribute('data-val');try{localStorage.setItem('kaigo-fontsize',fontSize);}catch(x){}}
-    applyPrefs();render();return;
+    var y=window.scrollY;
+    applyPrefs();render();
+    window.scrollTo(0,y);
+    return;
   }
-  if(b.hasAttribute('data-tab')){
-    tab=b.getAttribute('data-tab');
-    var ts=document.querySelectorAll('.tab');
-    for(var i=0;i<ts.length;i++)ts[i].classList.toggle('on',ts[i].getAttribute('data-tab')===tab);
-    render();window.scrollTo(0,0);return;
-  }
+  if(b.hasAttribute('data-tab')){setTab(b.getAttribute('data-tab'));return;}
   if(b.hasAttribute('data-lang')){
     currentLang=b.getAttribute('data-lang');
     try{localStorage.setItem('kaigo-last-lang',currentLang);}catch(x){}
@@ -680,12 +756,10 @@ document.addEventListener('click',function(e){
     var jn=b.getAttribute('data-jump'),jd=byNo(jn);
     if(!jd)return;
     openSet={};openSet[jn]=1;pushRecent(jn);
-    keyword='';filterRow='';filterSubject=jd.subject||'その他';
+    keyword='';filterRow='';filterSubject=jd.subject||'その他';jumpNo=jn;
     document.getElementById('q').value='';
     document.getElementById('qClear').classList.remove('show');
     tab='find';
-    var tb=document.querySelectorAll('.tab');
-    for(var k=0;k<tb.length;k++)tb[k].classList.toggle('on',tb[k].getAttribute('data-tab')==='find');
     render();
     setTimeout(function(){
       var t=document.getElementById('w-'+jn);
@@ -695,7 +769,7 @@ document.addEventListener('click',function(e){
   }
   if(b.hasAttribute('data-speak')){
     var sd=byNo(b.getAttribute('data-speak'));
-    if(sd)speak(toKana(sd.word)||stripFuri(sd.word));
+    if(sd)speak(readingOf(sd));
     return;
   }
   if(b.hasAttribute('data-req')){
@@ -718,8 +792,6 @@ qEl.addEventListener('input',function(){
     keyword=qEl.value;
     if(keyword){filterRow='';filterSubject='';}
     tab='find';
-    var tb=document.querySelectorAll('.tab');
-    for(var i=0;i<tb.length;i++)tb[i].classList.toggle('on',tb[i].getAttribute('data-tab')==='find');
     render();
   },180);
 });
@@ -735,8 +807,14 @@ document.getElementById('reloadBtn').addEventListener('click',function(){
 
 /* ========== 起動 ========== */
 (function(){
-  loadPrefs();applyPrefs();
+  loadPrefs();applyPrefs();renderTabs();
   try{var l=localStorage.getItem('kaigo-last-lang');if(l&&LANG_NAMES[l])currentLang=l;}catch(e){}
+  try{
+    var p=new URLSearchParams(location.search);
+    var lg=p.get('lang');if(lg&&LANG_NAMES[lg])currentLang=lg;
+    var w=p.get('word');
+    if(w){keyword=w;qEl.value=w;document.getElementById('qClear').classList.add('show');}
+  }catch(e){}
   loadData(false);
   if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 })();
